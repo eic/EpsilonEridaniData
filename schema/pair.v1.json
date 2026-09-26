@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tauceti.pair/v1",
+  "title": "A/B pair registration",
+  "description": "Two run records for the same (pr, head_sha, rubric), registered for pairwise judging. Canonical order: arm a is the run with the lexicographically smaller run_id, so pair_id is order-free and re-registration is a no-op.",
+  "type": "object",
+  "required": ["schema", "pair_id", "pr", "head_sha", "rubric", "arms"],
+  "properties": {
+    "schema": {"const": "tauceti.pair/v1"},
+    "pair_id": {"type": "string", "description": "sha256('pair-v1|pr|head_sha|rubric|run_id_a|run_id_b')[:16]"},
+    "pr": {"type": "integer"},
+    "head_sha": {"type": "string"},
+    "rubric": {"type": "string"},
+    "prompt_policy": {"enum": ["fresh", "reactivation", null]},
+    "arms": {
+      "type": "object",
+      "required": ["a", "b"],
+      "properties": {
+        "a": {"$ref": "#/$defs/arm"},
+        "b": {"$ref": "#/$defs/arm"}
+      }
+    },
+    "diff_blob": {"type": ["string", "null"]},
+    "created_ts": {"type": ["string", "null"], "format": "date-time"},
+    "created_by": {"type": ["string", "null"]}
+  },
+  "$defs": {
+    "arm": {
+      "type": "object",
+      "required": ["run_id"],
+      "properties": {
+        "run_id": {"type": "string"},
+        "provider": {"type": ["string", "null"]},
+        "model": {"type": ["string", "null"]},
+        "rubrics_sha": {"type": ["string", "null"]},
+        "arm": {"type": ["string", "null"]},
+        "verdict": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

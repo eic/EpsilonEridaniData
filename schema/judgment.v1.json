@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tauceti.judgment/v1",
+  "title": "AI pairwise judgment",
+  "description": "One judge model's verdict on an A/B pair for a single presentation order and sample. Idempotency key: (pair_id, judge.model, judge.prompt_sha, order, sample). winner_arm names the better arm in true (un-flipped) terms; \"error\" marks a recorded parse failure of the judge output (rationale \"(unparseable judge output)\").",
+  "type": "object",
+  "required": ["schema", "judgment_id", "pair_id", "judge", "winner_arm"],
+  "properties": {
+    "schema": {"const": "tauceti.judgment/v1"},
+    "judgment_id": {"type": "string"},
+    "pair_id": {"type": "string"},
+    "pr": {"type": ["integer", "null"]},
+    "rubric": {"type": ["string", "null"]},
+    "order": {
+      "enum": ["ab", "ba", null],
+      "description": "presentation order shown to the judge: ab = arm a first, ba = arm b first"
+    },
+    "sample": {"type": ["integer", "null"]},
+    "judge": {
+      "type": "object",
+      "required": ["spec", "model", "prompt_sha"],
+      "properties": {
+        "spec": {"type": "string", "description": "judge slot label, e.g. sonnet, grok, gpt-5.5"},
+        "model": {"type": "string"},
+        "prompt_file": {"type": ["string", "null"]},
+        "prompt_sha": {"type": "string"}
+      }
+    },
+    "winner_arm": {
+      "enum": ["a", "b", "tie", "error"],
+      "description": "the better arm in true terms; \"error\" = the judge output could not be parsed"
+    },
+    "confidence": {"enum": ["high", "medium", "low", null]},
+    "rationale": {"type": ["string", "null"]}
+  }
+}

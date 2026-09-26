@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tauceti.scrape_event/v1",
+  "title": "Comment scrape event",
+  "description": "One observed revision of a review comment on GitHub (the sticky scoreboard is edited in place, so its history only exists as revisions). Immutable; keyed by (comment_id, edited_at, body sha256).",
+  "type": "object",
+  "required": ["schema", "comment_id", "kind", "pr"],
+  "properties": {
+    "schema": {"const": "tauceti.scrape_event/v1"},
+    "comment_id": {"type": "integer"},
+    "node_id": {"type": ["string", "null"]},
+    "kind": {"enum": ["scoreboard", "thread"]},
+    "pr": {"type": "integer"},
+    "author": {"type": ["string", "null"]},
+    "edited_at": {"type": ["string", "null"]},
+    "editor": {"type": ["string", "null"]},
+    "body_sha256": {"type": ["string", "null"]},
+    "body_blob": {"type": ["string", "null"]},
+    "body_lost": {"type": ["boolean", "null"], "description": "GraphQL returned a null diff: GitHub no longer has this revision's body"},
+    "meta": {"type": ["object", "null"], "description": "the parsed tauceti-meta:v1 block, when the body carries one (trust requires author == the known poster)"},
+    "meta_parse_error": {"type": ["boolean", "null"]},
+    "scraped_at": {"type": ["string", "null"], "format": "date-time"}
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tauceti.run/v1",
+  "title": "Review run record",
+  "description": "One review execution: a single rubric judged once on a single PR head by a single model. The core A/B-comparison unit.",
+  "type": "object",
+  "required": ["schema", "run_id", "dedupe_key", "source", "arm", "repo", "pr",
+               "head_sha", "rubric", "provider", "model", "verdict"],
+  "properties": {
+    "schema": {"const": "tauceti.run/v1"},
+    "run_id": {"type": "string", "pattern": "^r-"},
+    "dedupe_key": {
+      "type": "string",
+      "description": "repo|pr|head_sha|rubric|model|rubrics_version|arm|round — for reconciling the same execution reaching the archive via different sources (live, ledger import, scrape)"
+    },
+    "source": {"enum": ["live", "shadow", "backfill-ledger", "backfill-reviews-branch",
+                         "backfill-scrape", "backfill-logs"]},
+    "arm": {"type": "string", "description": "production, or shadow:<label>"},
+    "prompt_policy": {
+      "enum": ["fresh", "reactivation"],
+      "description": "reactivation runs carry the prior case file and author replies into the prompt; only compare runs with matching policy"
+    },
+    "repo": {"type": "string"},
+    "pr": {"type": "integer"},
+    "round": {"type": ["integer", "null"]},
+    "head_sha": {"type": "string"},
+    "base_ref_oid": {"type": ["string", "null"], "description": "the PR base branch tip — NOT necessarily the merge base"},
+    "merge_base_sha": {"type": ["string", "null"], "description": "the actual left side of the reviewed three-dot diff"},
+    "rubric": {"type": "string"},
+    "rubrics_repo": {"type": ["string", "null"]},
+    "rubrics_sha": {"type": ["string", "null"], "description": "git commit of the rubrics+engine checkout that ran"},
+    "rubrics_sha_approx": {"type": ["boolean", "null"]},
+    "rubrics_version": {"type": ["string", "null"], "description": "content hash of the rubric files (review.py rubrics_fingerprint)"},
+    "provider": {"type": "string"},
+    "model": {"type": "string"},
+    "mode": {"type": ["string", "null"], "description": "commit | manual | reply"},
+    "auth": {"type": ["string", "null"], "description": "api | subscription"},
+    "ci": {"type": ["boolean", "null"]},
+    "prompt_sha256": {"type": ["string", "null"]},
+    "diff_sha256": {"type": ["string", "null"], "description": "sha256 of the full reviewed diff text"},
+    "diff_prompt_sha256": {"type": ["string", "null"], "description": "sha256 of the (possibly truncated) diff in the prompt; present only when truncated"},
+    "diff_prompt_truncated": {"type": ["boolean", "null"]},
+    "started_at": {"type": ["string", "null"], "format": "date-time"},
+    "duration_s": {"type": ["number", "null"]},
+    "attempts": {
+      "type": ["array", "null"],
+      "description": "per provider call: returncode, cost_usd, usage, secs, parse_error — every attempt, not just the accepted one",
+      "items": {"type": "object"}
+    },
+    "usage": {"type": ["object", "null"]},
+    "cost_usd": {"type": ["number", "null"]},
+    "cost_estimated": {"type": ["boolean", "null"]},
+    "cost_usd_legacy": {"type": ["number", "null"], "description": "the pre-recost cost_usd, retained when this record was recosted against a fixed price table"},
+    "cost_recosted": {"type": ["boolean", "null"], "description": "true when cost_usd was recomputed from usage against a pinned price table (see prices_sha); cost_usd_legacy holds the original"},
+    "prices_sha": {"type": ["string", "null"], "description": "content hash of the price table used for recosting; null when the recost predates price-table pinning"},
+    "verdict": {"enum": ["approve", "request_changes", "block", "error"]},
+    "confidence": {"type": ["string", "null"]},
+    "summary": {"type": ["string", "null"]},
+    "findings": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": {"type": ["string", "null"]},
+          "line": {"type": ["integer", "string", "null"]},
+          "issue": {"type": ["string", "null"]},
+          "fix": {"type": ["string", "null"]},
+          "evidence": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "transcript_blob": {"type": ["string", "null"], "description": "sha256 key into blobs/ for the reviewer's final text (redacted, gzipped)"},
+    "diff_blob": {"type": ["string", "null"], "description": "sha256 key into blobs/ for the full reviewed diff (gzipped)"},
+    "fidelity": {
+      "enum": ["exact", "reconstructed", "scoreboard-parse", null],
+      "description": "exact: written at execution time; reconstructed: backfilled with best-effort recovery of base/diff; scoreboard-parse: parsed from a rendered comment body. Only exact records belong in strict A/B cohorts"
+    },
+    "duration_source": {"type": ["string", "null"], "description": "e.g. log-mined, for backfilled durations"}
+  }
+}

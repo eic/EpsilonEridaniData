@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tauceti.post/v1",
+  "title": "Post sidecar record",
+  "description": "What actually landed on GitHub for a round: confirmed comment ids only (a failed API call is recorded in failures, never as an id), so database records can link to live threads.",
+  "type": "object",
+  "required": ["schema", "repo", "pr"],
+  "properties": {
+    "schema": {"const": "tauceti.post/v1"},
+    "repo": {"type": "string"},
+    "pr": {"type": "integer"},
+    "round": {"type": ["integer", "null"]},
+    "head_sha": {"type": ["string", "null"]},
+    "posted_at": {"type": ["string", "null"], "format": "date-time"},
+    "scoreboard_comment_id": {"type": ["integer", "null"]},
+    "scoreboard_body_sha256": {"type": ["string", "null"]},
+    "threads": {
+      "type": ["object", "null"],
+      "description": "rubric -> root review-comment id",
+      "additionalProperties": {"type": "integer"}
+    },
+    "failures": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string"},
+          "rubric": {"type": ["string", "null"]},
+          "error": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}
