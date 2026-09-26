@@ -179,7 +179,7 @@ def main():
         r1, r2 = (ra, rb) if first_arm == "a" else (rb, ra)
         print("=" * 90)
         print(f"{BOLD}PR #{pair['pr']} · rubric: {pair['rubric']}{RESET}   "
-              f"({CYAN}https://github.com/eic/EpsilonEridani/pull/{pair['pr']}/files{RESET})\n")
+              f"({CYAN}https://github.com/EpsilonEridaniProject/EpsilonEridani/pull/{pair['pr']}/files{RESET})\n")
         print(render_diff(blob_text(pair["diff_blob"])))
         print(f"\n{BOLD}{'-'*40} REVIEW 1 {'-'*40}{RESET}\n" + render_review(r1))
         print(f"\n{BOLD}{'-'*40} REVIEW 2 {'-'*40}{RESET}\n" + render_review(r2))
@@ -193,7 +193,7 @@ def main():
         note = input("  note (optional): ").strip()
         winner = "tie" if choice == "t" else (first_arm if choice == "1" else ("b" if first_arm == "a" else "a"))
         did = "d-" + hashlib.sha256(f"{pid}|{me}".encode()).hexdigest()[:16]
-        rec = {"schema": "tauceti.decision/v1", "decision_id": did, "labeller": me,
+        rec = {"schema": "epsiloneridani.decision/v1", "decision_id": did, "labeller": me,
                "pair_id": pid, "pr": pair["pr"], "rubric": pair["rubric"],
                "winner_arm": winner, "raw_choice": choice, "presented_first_arm": first_arm,
                "note": note or None,

@@ -226,7 +226,7 @@ def main():
                     rec = json.loads(dst.read_text()); skip += 1
                 else:
                     res = one_judgment(pair, a.judge, order, s)
-                    rec = {"schema": "tauceti.judgment/v1", "judgment_id": jid,
+                    rec = {"schema": "epsiloneridani.judgment/v1", "judgment_id": jid,
                            "pair_id": pair["pair_id"], "pr": pair["pr"], "rubric": pair["rubric"],
                            "judge": {"spec": a.judge, "model": JUDGES[a.judge][1],
                                      "prompt_file": f"eval/prompts/{PROMPT_NAME}.md",

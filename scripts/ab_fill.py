@@ -4,7 +4,7 @@
 We have a production review for most (pr, head_sha, rubric) tasks. To A/B-test a different
 agent — say deepseek — against them, we need that agent's review of the SAME tasks. This tool
 finds the tasks lacking the target provider's arm and either estimates what running them would
-cost, or emits the `tauceti-review --shadow` commands that produce them (which archive back to
+cost, or emits the `epsiloneridani-review --shadow` commands that produce them (which archive back to
 this repo and pair up automatically via make_pairs.py).
 
     python3 scripts/ab_fill.py --target deepseek                  # cost estimate (default)
@@ -62,7 +62,7 @@ def main():
                     help="emit shadow-review commands instead of an estimate")
     ap.add_argument("--label", default="", help="shadow label (default: <target>-backfill)")
     ap.add_argument("--limit", type=int, default=0, help="cap the number of PRs in command mode")
-    ap.add_argument("--repo", default="eic/EpsilonEridani")
+    ap.add_argument("--repo", default="EpsilonEridaniProject/EpsilonEridani")
     a = ap.parse_args()
     target_model = PROVIDER_MODEL.get(a.target, a.target)
     p_in, p_out = PRICES.get(target_model, (1.0, 1.0))
@@ -112,7 +112,7 @@ def main():
         print("set -e")
         for pr, v in items:
             rubrics = ",".join(sorted(v["rubrics"]))
-            print(f"tauceti-review {pr} --repo {a.repo} --shadow --label {label} "
+            print(f"epsiloneridani-review {pr} --repo {a.repo} --shadow --label {label} "
                   f"--reviewer {a.target} --expect-head {v['head'][:12]} --rubrics {rubrics}")
         return
 

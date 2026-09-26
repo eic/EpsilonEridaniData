@@ -71,7 +71,7 @@ def main():
                 f"pair-v1|{pr}|{head}|{rubric}|{a_run['run_id']}|{b_run['run_id']}"
                 .encode()).hexdigest()[:16]
             rec = {
-                "schema": "tauceti.pair/v1", "pair_id": pair_id,
+                "schema": "epsiloneridani.pair/v1", "pair_id": pair_id,
                 "pr": pr, "head_sha": head, "rubric": rubric, "prompt_policy": policy,
                 "arms": {
                     "a": {k: a_run.get(k) for k in

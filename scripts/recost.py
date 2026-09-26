@@ -23,7 +23,7 @@ import subprocess
 
 import tcdata
 
-# Single source of truth: eic/EpsilonEridaniReview runner/prices.json. We never keep our own
+# Single source of truth: EpsilonEridaniProject/EpsilonEridaniReview runner/prices.json. We never keep our own
 # copy — fetch the canonical file from GitHub (TAUCETI_PRICES path override, else a local engine
 # checkout, can stand in offline).
 _PRICES_PATH = "runner/prices.json"
@@ -35,11 +35,11 @@ def _load_prices_text():
         return pathlib.Path(override).read_text()
     try:
         return subprocess.run(
-            ["gh", "api", "repos/eic/EpsilonEridaniReview/contents/" + _PRICES_PATH,
+            ["gh", "api", "repos/EpsilonEridaniProject/EpsilonEridaniReview/contents/" + _PRICES_PATH,
              "-H", "Accept: application/vnd.github.raw"],
             check=True, capture_output=True, text=True).stdout
     except Exception:
-        for p in (os.path.expanduser("~/.cache/tauceti-review/EpsilonEridaniReview/" + _PRICES_PATH),
+        for p in (os.path.expanduser("~/.cache/epsiloneridani-review/EpsilonEridaniReview/" + _PRICES_PATH),
                   "/tmp/EpsilonEridaniReview/" + _PRICES_PATH):
             if pathlib.Path(p).is_file():
                 return pathlib.Path(p).read_text()

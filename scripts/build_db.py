@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rebuild the derived SQLite database from the record files.
 
-The record files in records/ and eval/ are the source of truth; db/tauceti.db is a throwaway
+The record files in records/ and eval/ are the source of truth; db/epsiloneridani.db is a throwaway
 materialization rebuilt from scratch on every invocation (and gitignored). Tables: runs, rounds,
 findings (one row per finding), posts, pairs, judgments, resolutions, human_decisions. Views:
 
@@ -16,7 +16,7 @@ import sqlite3
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-DB = ROOT / "db" / "tauceti.db"
+DB = ROOT / "db" / "epsiloneridani.db"
 
 
 def records(subdir):

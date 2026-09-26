@@ -15,5 +15,10 @@ echo "Checking out non-data files from upstream/main..."
 # We explicitly EXCLUDE README.md to avoid overwriting EpsilonEridani customizations
 git checkout upstream/main -- schema/ scripts/ docs/ eval/prompts/ .gitignore || true
 
-echo "Successfully pulled latest code/schema from upstream."
+echo "Applying EpsilonEridani re-branding to updated files..."
+# Be careful not to replace the upstream URL in this script itself!
+find schema/ scripts/ docs/ eval/prompts/ .gitignore -type f -not -name "update-upstream.sh" -exec sed -i 's/TauCeti/EpsilonEridani/g' {} +
+find schema/ scripts/ docs/ eval/prompts/ .gitignore -type f -not -name "update-upstream.sh" -exec sed -i 's/tauceti/epsiloneridani/g' {} +
+
+echo "Successfully pulled and re-branded latest code/schema from upstream."
 echo "Review the changes with 'git status' and 'git diff', then commit."

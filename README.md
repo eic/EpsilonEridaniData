@@ -23,7 +23,7 @@ in the worker reads from here.
   (the local worker and CI), and shadow A/B arms add more; unique filenames
   make pushes conflict-free by construction and re-ingestion idempotent.
 - **SQLite is derived, never committed.** `scripts/build_db.py` rebuilds
-  `db/tauceti.db` from the record files in seconds.
+  `db/epsiloneridani.db` from the record files in seconds.
 - **Public, redacted.** Records are built from an explicit field allowlist;
   provider session ids and raw stderr never leave the producing machine, and
   transcripts are scrubbed before upload.
@@ -46,7 +46,7 @@ db/            derived SQLite (gitignored)
 
 ## The analysis unit
 
-A **run record** (`tauceti.run/v1`) is one review execution. A/B queries group
+A **run record** (`epsiloneridani.run/v1`) is one review execution. A/B queries group
 runs by `(pr, head_sha, rubric)` and compare across `(model, rubrics_sha, arm)`
 — restricted to matching `prompt_policy`, because a production re-review
 carries prior-case-file context that a fresh shadow run does not see.
@@ -74,7 +74,7 @@ python3 scripts/ab_fill.py --target deepseek --commands --limit 25 > fill.sh   #
 model-vs-model collisions already in the history, plus any shadow arm added later.
 `ab_fill.py` finds tasks lacking a given provider's arm and either estimates the cost of
 filling them (calibrated against that provider's own historical token usage) or emits the
-`tauceti-review --shadow` commands that produce the arms. The shadow runs archive back here and
+`epsiloneridani-review --shadow` commands that produce the arms. The shadow runs archive back here and
 pair up the next time `make_pairs.py` runs.
 
 ## Evaluation so far
@@ -109,13 +109,13 @@ queue round-robins across PRs so topics interleave; `--models`/`--pr`/`--rubric`
 ## Rebuilding the database
 
 ```
-python3 scripts/build_db.py            # writes db/tauceti.db
-sqlite3 db/tauceti.db "SELECT * FROM ab_pairs LIMIT 5"
+python3 scripts/build_db.py            # writes db/epsiloneridani.db
+sqlite3 db/epsiloneridani.db "SELECT * FROM ab_pairs LIMIT 5"
 ```
 
 ## Cost analysis
 
-`tauceti-review-costs` (in
+`epsiloneridani-review-costs` (in
 [EpsilonEridaniReview](https://github.com/eic/EpsilonEridaniReview/blob/main/runner/COSTS.md))
 attributes review spend — tokens **and** imputed dollars — to PRs and to merged
 lines of code, reading the `records/runs/` files here. Because the token counts
@@ -125,7 +125,7 @@ when a run happened and reproducible by anyone from this public archive:
 
 ```
 git clone --depth 1 https://github.com/eic/EpsilonEridaniData /tmp/EpsilonEridaniData
-uvx --from git+https://github.com/eic/EpsilonEridaniReview tauceti-review-costs \
+uvx --from git+https://github.com/eic/EpsilonEridaniReview epsiloneridani-review-costs \
   --source data --data-dir /tmp/EpsilonEridaniData all
 ```
 

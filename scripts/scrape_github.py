@@ -7,7 +7,7 @@ raw comment bodies as they appear(ed) on GitHub, including in-place edits of the
 scoreboard, and (b) repair gaps if a store is ever lost. It stores immutable SCRAPE EVENTS —
 one per (comment, revision) under records/scrape/ with the body in blobs/ — rather than
 synthesizing run records: every revision whose meta block parses is cross-checked against the
-archive instead (post-provenance comments embed `tauceti-meta:v1`).
+archive instead (post-provenance comments embed `epsiloneridani-meta:v1`).
 
 Honest limits: GraphQL `userContentEdits.diff` returns the full body per revision (verified),
 but `diff` is nullable (a lost revision is recorded as a gap) and GitHub may coalesce rapid
@@ -30,9 +30,9 @@ import sys
 
 import tcdata
 
-REPO = "eic/EpsilonEridani"
-MARKERS = ("<!--tauceti-scoreboard-->", "<!--tauceti-rubric:")
-META_RE = re.compile(r"<!--tauceti-meta:v1 (\{.*\})-->\s*$")
+REPO = "EpsilonEridaniProject/EpsilonEridani"
+MARKERS = ("<!--epsiloneridani-scoreboard-->", "<!--epsiloneridani-rubric:")
+META_RE = re.compile(r"<!--epsiloneridani-meta:v1 (\{.*\})-->\s*$")
 
 
 def gh_json(args):
@@ -73,7 +73,7 @@ def event_for(comment, kind, revision, counts):
     body = revision.get("diff")
     edited_at = revision.get("editedAt") or ""
     ev = {
-        "schema": "tauceti.scrape_event/v1",
+        "schema": "epsiloneridani.scrape_event/v1",
         "comment_id": comment["id"], "node_id": comment.get("node_id"),
         "kind": kind, "pr": comment["_pr"],
         "author": (comment.get("user") or {}).get("login"),

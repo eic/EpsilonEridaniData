@@ -5,7 +5,7 @@ The store is the richest historical source: per-rubric artifacts carry the full 
 usage, and cost, and the rendered scoreboard of every round is on disk — none of which is
 recoverable from GitHub. Two stores exist; ingest both:
 
-    python3 scripts/ingest_ledger.py --store ~/.cache/tauceti-review/store/eic__EpsilonEridani
+    python3 scripts/ingest_ledger.py --store ~/.cache/epsiloneridani-review/store/EpsilonEridaniProject__EpsilonEridani
     python3 scripts/ingest_ledger.py --reviews-branch       # CI's store (the EpsilonEridaniReview branch)
 
 Backfilled records are flagged `fidelity: reconstructed`: the runner did not record base SHAs,
@@ -28,8 +28,8 @@ import tempfile
 
 import tcdata
 
-REPO = "eic/EpsilonEridani"
-REVIEW_REPO = "eic/EpsilonEridaniReview"
+REPO = "EpsilonEridaniProject/EpsilonEridani"
+REVIEW_REPO = "EpsilonEridaniProject/EpsilonEridaniReview"
 
 
 def base_oids(repo):
@@ -69,7 +69,7 @@ def ingest_store(store, source, repo, bases, counts):
                 run_id = f"r-{iso_compact(ts)}-{pr}-{rubric}-{rid}"
                 run_ids.append(run_id)
                 rec = {
-                    "schema": "tauceti.run/v1", "run_id": run_id,
+                    "schema": "epsiloneridani.run/v1", "run_id": run_id,
                     "dedupe_key": "|".join([repo, str(pr), head, rubric, model,
                                             rnd.get("rubrics_version") or "", "production",
                                             str(num)]),
@@ -98,7 +98,7 @@ def ingest_store(store, source, repo, bases, counts):
                     f"records/runs/{pr}/{run_id}.json",
                     {k: v for k, v in rec.items() if v is not None}, id_field="run_id")] += 1
             rrec = {
-                "schema": "tauceti.round/v1", "round_id": f"{pr}-{num}",
+                "schema": "epsiloneridani.round/v1", "round_id": f"{pr}-{num}",
                 "repo": repo, "pr": int(pr), "round": num, "ts": ts or None,
                 "mode": rnd.get("mode"), "arm": "production", "source": source,
                 "head_sha": head or None, "base_ref_oid": bases.get(int(pr)),
