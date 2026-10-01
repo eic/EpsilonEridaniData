@@ -1,0 +1,210 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.7135135,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 221.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 172332,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 172332,
+    "cache_read_input_tokens": 1096437,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4540,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4540,
+      "cache_read_input_tokens": 149679,
+      "input_tokens": 2,
+      "output_tokens": 9061,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17675,
+    "output_tokens_details": {
+     "thinking_tokens": 13306
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "cost_usd": 2.713513,
+ "dedupe_key": "eic/EpsilonEridani|71|911818323b2b5a035c5aaecbc0dc108195bf6cf2|api-design|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "6b128f294ee74e1f47103f5f0b91de63dd259da688a0d8fda71573da53af56e0",
+ "diff_sha256": "6b128f294ee74e1f47103f5f0b91de63dd259da688a0d8fda71573da53af56e0",
+ "duration_s": 221.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "ParityOdd.lean:419-427 define `aFour` and the only accessor; ParityOdd.lean:466-471 expands the determinant by hand. Expanding `det ![v, w, ![1,0,0,0], ![0,0,0,1]]` by moving rows 2,3 to the front (two adjacent swaps each, sign +1) and Laplace-expanding gives `v 1 * w 2 - v 2 * w 1`, which is `1` at `(e\u2081, e\u2082)`, matching `aFour_ne_zero`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Add `@[simp] lemma aFour_apply (v w : Fin 4 \u2192 \u211d) : aFour v w = v 1 * w 2 - v 2 * w 1`, make that the simp normal form, and demote the basis-determinant restatement to a non-simp `aFour_eq_det`. `aFour_ne_zero` then becomes `by simp` on `e\u2081 = ![0,1,0,0]`, `e\u2082 = ![0,0,1,0]`.",
+   "issue": "`aFour` has no closed-form characterisation. `@[simp] aFour_apply` restates it as `(Pi.basisFun \u211d (Fin 4)).det ![v, w, kFour.p, kFour.q]`, which is just the unfolded body; as a simp lemma it rewrites every `aFour v w` into a determinant simp cannot finish, so each consumer must redo the expansion. `aFour_ne_zero` (line 466) already pays this cost inline, needing `Module.Basis.det_apply`, `Matrix.det_succ_row_zero`, `Fin.sum_univ_succ`, `Module.Basis.toMatrix_apply` and `Fin.succAbove`. Contrast `gFour_apply` (line 383), which gives the closed form.",
+   "line": "426"
+  },
+  {
+   "evidence": "ParityOdd.lean:261-262 derive `h\u2081' : W hP.e\u2081 (pTransverse g K) = 0` and `h\u2082' : W hP.e\u2082 (pTransverse g K) = 0` inline; ParityOdd.lean:344-345 derives `hTu' : W (pTransverse g K) u' = 0` the same way. ParityOdd.lean:133-135 shows `conserved_right` is the established both-slots convention in this file. Roadmap InclusiveStructureFunctions/README.md:131-139.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Add the mirrors next to `conserved_right`: `apply_pTransverse_eq_zero_right (hSymm) (hP) (hW) (v) : W v (pTransverse g K) = 0` and `apply_p_eq_zero_right : W v K.p = 0`, each one `rw [\u2190 hW.isAlt.neg_eq, \u2026, neg_zero]` off the existing left-slot lemma, and use them for the inline `have`s below.",
+   "issue": "`apply_pTransverse_eq_zero` (270) and `apply_p_eq_zero` (277) exist only in the first slot. The file otherwise develops both slots \u2014 `conserved_left` is a field and `conserved_right` (134) is its public mirror \u2014 and the roadmap names annihilation of `p` as a defining property of `A` (README convention 6: \"antisymmetry, annihilation of `p` and `q`\"). The second-slot facts are used internally three times but derived ad hoc each time, so a consumer contracting `W` in the second slot must re-derive them.",
+   "line": "270"
+  }
+ ],
+ "head_sha": "911818323b2b5a035c5aaecbc0dc108195bf6cf2",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "9115df7002755ebe9bfefbcc21eb937cfde30a049c54f9ef58b63fcf203d5130",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "b75e321b60aca223a904b1cd5d8d87e40ebb9143",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261001T213207Z-71-api-design-b920d9",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-01T21:32:07Z",
+ "submitted_by": "wdconinc",
+ "summary": "No compatibility surface, bodies are unexposed with full accessor coverage, and the prior round's annihilation gap is fixed. Two characteristic lemmas are still missing: `aFour` has no closed-form value lemma (its `@[simp]` accessor rewrites into an unworkable basis determinant), and the `p_T`/`p` annihilation facts exist only in the first slot although the file develops both slots for `q`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/docbuild/mk_docs_root.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e74fead82ff533354b92476b088b02eb397a62dc461efc4d9da84a8cb542e97c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 172332,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 172332,
+  "cache_read_input_tokens": 1096437,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4540,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4540,
+    "cache_read_input_tokens": 149679,
+    "input_tokens": 2,
+    "output_tokens": 9061,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17675,
+  "output_tokens_details": {
+   "thinking_tokens": 13306
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
