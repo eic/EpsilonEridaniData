@@ -1,0 +1,194 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1741634999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 212.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 149680,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 149680,
+    "cache_read_input_tokens": 561287,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4568,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4568,
+      "cache_read_input_tokens": 123070,
+      "input_tokens": 2,
+      "output_tokens": 2662,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15866,
+    "output_tokens_details": {
+     "thinking_tokens": 13043
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "765d66a3b8b088d76f898e3758d111ccdd82bbd1",
+ "cost_usd": 2.174163,
+ "dedupe_key": "eic/EpsilonEridani|79|da401cde230bd0adc8adb19bca507e4cba4137f8|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "3257eb2330db49fba8723d4df877810dffca39f394a58e5f9c261c6f4aeb1c3f",
+ "diff_sha256": "3257eb2330db49fba8723d4df877810dffca39f394a58e5f9c261c6f4aeb1c3f",
+ "duration_s": 212.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Analysis/SpecialFunctions/Exp.lean:226 `theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (\ud835\udcdd 0) (\ud835\udcdd 1)`; cf. `tendsto_exp_neg_atTop_nhds_zero` where the trailing filter is the target.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "fix": "Rename to `tendsto_reducedCrossSection_nhds_zero_nhds_F2` (source then target), matching Mathlib's name for the same shape.",
+   "issue": "`tendsto_reducedCrossSection_nhds_zero` names only the source filter `\ud835\udcdd 0`, so the name reads as `\u03c3_r \u2192 0`; the actual limit is `F\u2082`, which is the entire content of the lemma.",
+   "line": "263"
+  },
+  {
+   "evidence": "Same file lines 178 and 229 use `crossSectionBracket_zero_mass` / `reducedCrossSection_zero_mass` for the `M = 0` specialisation, with no `at_`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "fix": "Rename to `reducedCrossSection_zero_inelasticity`.",
+   "issue": "`reducedCrossSection_at_zero_inelasticity` uses an `_at_` connective that is not a Mathlib naming particle, and is inconsistent with the file's own pattern for specialising an argument.",
+   "line": "252"
+  },
+  {
+   "evidence": "`EpsilonEridani/Generator/CrossSection.lean:79 def dSigmaDxDQ2 (x q2v y : Float)` with docstring \"`d\u00b2\u03c3/(dx dQ\u00b2)` at leading order, transcribing `DIS.loNCdSigma`\"; `DIS/CrossSection.lean:86 def loNCdSigma`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "fix": "Rename to `dSigmaDxDQ2` and propagate to `dSigma_def`, `dSigma_eq_loNCdSigma`, `dSigma_eq_mul_reducedCrossSection`.",
+   "issue": "`dSigma` does not say which differentials it is; the repo already spells this out for the same quantity `d\u00b2\u03c3/dx dQ\u00b2`, so consumers now meet two spellings for one object.",
+   "line": "186"
+  }
+ ],
+ "head_sha": "da401cde230bd0adc8adb19bca507e4cba4137f8",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 79,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1bc4310b1d31293b5da29efc9f2eaf7d23ee4a0bb3340469d6cb189e50c609aa",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "b75e321b60aca223a904b1cd5d8d87e40ebb9143",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261001T195107Z-79-naming-b31a64",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-01T19:51:07Z",
+ "submitted_by": "wdconinc",
+ "summary": "Terminology (Yplus/Yminus, reducedCrossSection, FL, separation) is standard and no notation is introduced, but one limit lemma is named after its source filter so it reads as asserting a zero limit, and two names drift from the file's and the repo's own conventions.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Longitudinal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/NumberTheory/LSeries/HurwitzZetaEven.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1b416a837963f214ba97eb51cc608a49360c5b04558174202e4f38b80ef07a26",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 149680,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 149680,
+  "cache_read_input_tokens": 561287,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4568,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4568,
+    "cache_read_input_tokens": 123070,
+    "input_tokens": 2,
+    "output_tokens": 2662,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15866,
+  "output_tokens_details": {
+   "thinking_tokens": 13043
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
