@@ -1,0 +1,81 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.083632,
+   "model": "gemini-3.1-pro",
+   "returncode": 0,
+   "secs": 96.5,
+   "usage": {
+    "cache_read_tokens": 8136,
+    "input_tokens": 16508,
+    "output_tokens": 14125,
+    "thinking_tokens": 13414,
+    "total_tokens": 30633
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "cost_estimated": true,
+ "cost_usd": 0.083632,
+ "dedupe_key": "eic/EpsilonEridani|70|ec559d3457db82f45a37c1bc60707c8a563b7e1a|api-design|gemini-3.1-pro|a04d8ed758f03dbb|production|2",
+ "diff_blob": "77da3db3de8373b28539815d99657b233d49a8e2889e66d800282d0fbd136bc9",
+ "diff_sha256": "77da3db3de8373b28539815d99657b233d49a8e2889e66d800282d0fbd136bc9",
+ "duration_s": 96.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "@[expose] public section",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "fix": "Remove `@[expose]` and use only `public section`.",
+   "issue": "The `@[expose] public section` command unnecessarily exposes the body of `bilinMap`. The file already correctly avoids relying on defeq by using `:= (rfl)` for `bilinMap_apply`, so the body should remain hidden.",
+   "line": 34
+  },
+  {
+   "evidence": "@[expose] public section",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/Alternating/Dimension.lean",
+   "fix": "Remove `@[expose]` and use only `public section`.",
+   "issue": "The `@[expose] public section` command unnecessarily exposes bodies. This file contains only a theorem, which does not need to be exposed, making the annotation an over-exposure for any future definitions in the section.",
+   "line": 24
+  },
+  {
+   "evidence": "def lMuNuOdd",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Add `@[simp] lemma lMuNuOdd_apply_self (\u03b5 : V [\u22c0^Fin 4]\u2192\u2097[\u211d] \u211d) (K : Kinematics.DisKinematics V) (v : V) : lMuNuOdd \u03b5 K v v = 0 := \u03b5.bilinMap_apply_self _ v`.",
+   "issue": "`lMuNuOdd` lacks a `@[simp]` lemma for its evaluation on the diagonal (`v v`). Since `lMuNuOdd_apply` is not `@[simp]`, `simp` cannot automatically reduce `lMuNuOdd \u03b5 K v v` to `0` despite `bilinMap_apply_self` being a `simp` lemma.",
+   "line": 0
+  }
+ ],
+ "head_sha": "ec559d3457db82f45a37c1bc60707c8a563b7e1a",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "gemini-3.1-pro",
+ "pr": 70,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "579d062b10b6ddab535cc1f85705c65231d9ceca0a18419fc79ba5fbf7ca1f7c",
+ "provider": "gemini",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "b75e321b60aca223a904b1cd5d8d87e40ebb9143",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261001T022221Z-70-api-design-cc5adc",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-01T02:22:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "The PR over-exposes definitions by using `@[expose] public section` when bodies do not need to be exposed, and misses a characteristic `simp` lemma for the parity-odd leptonic structure evaluated on the diagonal.",
+ "transcript_blob": "11cce3b972308e066af0d407040df61b4f142d03b13a0faa05d2a050bff8a43b",
+ "usage": {
+  "cache_read_tokens": 8136,
+  "input_tokens": 16508,
+  "output_tokens": 14125,
+  "thinking_tokens": 13414,
+  "total_tokens": 30633
+ },
+ "verdict": "request_changes"
+}
