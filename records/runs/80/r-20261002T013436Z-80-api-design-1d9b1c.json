@@ -1,0 +1,181 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4634300000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 183.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 95700,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 95700,
+    "cache_read_input_tokens": 314540,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2317,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2317,
+      "cache_read_input_tokens": 83305,
+      "input_tokens": 2,
+      "output_tokens": 9519,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13964,
+    "output_tokens_details": {
+     "thinking_tokens": 11086
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 1.46343,
+ "dedupe_key": "eic/EpsilonEridani|80|acd2d95bf702ad82c91f62b03195a36fa6008cb5|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "31a18dc2e6ca429b9e194f03f456ef0e88f1d63c12fbebdf0a001fbabf28068a",
+ "diff_sha256": "31a18dc2e6ca429b9e194f03f456ef0e88f1d63c12fbebdf0a001fbabf28068a",
+ "duration_s": 183.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 240 `def StronglyCoupled : Prop := s.binding < s.hadronic \u2227 s.hadronic < s.momentum`; the in-file uses `h'.1` (line 254) and `h.2` work only because the body is visible inside the module. Line 249 shows the intended dot-notation accessor idiom for `WeaklyCoupled`.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "fix": "Add `theorem StronglyCoupled.binding_lt_hadronic (h : s.StronglyCoupled) : s.binding < s.hadronic := (stronglyCoupled_iff.1 h).1` and `StronglyCoupled.hadronic_lt_momentum := (stronglyCoupled_iff.1 h).2`.",
+   "issue": "`StronglyCoupled` is an opaque `def` (body not exposed), so downstream `h : s.StronglyCoupled` cannot use `h.1`/`h.2`; the file supplies the derived accessor `WeaklyCoupled.hadronic_lt_momentum` for the other regime but no projections for this one.",
+   "line": 240
+  },
+  {
+   "evidence": "Line 133-135 docstring `the ratio \u03ba = E / (m v\u00b2) = E m / p\u00b2`; only `coulombRatio_def` (line 137, `E * m / p\u00b2`) and `mass_mul_velocity_sq_mul_coulombRatio` (line 143) exist. `binding_div_momentum_eq` (line 156) is the \u03ba-form for the other ratio.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "fix": "Add `coulombRatio_eq_div : s.coulombRatio = s.binding / (s.mass * s.velocity ^ 2)` and `binding_div_mass_eq_coulombRatio : s.binding / s.mass = s.velocity ^ 2 * s.coulombRatio`.",
+   "issue": "The docstring and module header advertise `\u03ba = E / (m v\u00b2)`, but no lemma states it; and while `binding_div_momentum_eq` gives `E / p = v \u00b7 \u03ba`, the companion `E / m = v\u00b2 \u00b7 \u03ba` is absent \u2014 `binding_div_mass_eq` writes the factor out as `(E / p\u00b2) \u00b7 m` instead of using `coulombRatio`.",
+   "line": 135
+  },
+  {
+   "evidence": "Line 112 `@[simp] theorem mass_mul_velocity : s.mass * s.velocity = s.momentum`; line 143 the analogous `s.mass * s.velocity ^ 2 * s.coulombRatio = s.binding` is unannotated.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "fix": "Mark `mass_mul_velocity_sq_mul_coulombRatio` `@[simp]`; its LHS pattern `m * v ^ 2 * \u03ba` is strictly more complex than `E` and does not overlap the `mass * velocity` pattern of the existing simp lemma.",
+   "issue": "`mass_mul_velocity_sq_mul_coulombRatio` is the defining normal-form identity for `coulombRatio` (exactly parallel to `mass_mul_velocity`, which is `@[simp]`) but carries no annotation.",
+   "line": 143
+  },
+  {
+   "evidence": "Lines 197, 211, 269, 277: each `exists_*` theorem's witness is built by `{ s with ... }` or from `s.mass`/`s.momentum`; grep shows no `Nonempty`, `Inhabited`, or unconditional `HeavyQuarkScales` term in the file.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "fix": "Add `instance : Nonempty HeavyQuarkScales := \u27e8\u27e83, 2, 1, 0, by norm_num, by norm_num, by norm_num\u27e9\u27e9` (or a named witness), giving the structure its introduction API.",
+   "issue": "No inhabitant of `HeavyQuarkScales` is exposed: every existence theorem (`exists_coulombicScaling_one`, `exists_not_coulombicScaling`, `exists_weaklyCoupled`, `exists_stronglyCoupled`) takes an `s` as input, so the file's non-vacuity claims are all conditional on the type being nonempty and never discharge it.",
+   "line": 79
+  }
+ ],
+ "head_sha": "acd2d95bf702ad82c91f62b03195a36fa6008cb5",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 80,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f281ba4f644af30a2ab82415e0495d4da1fa4093e8ae2f06875692f7d65e3665",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "b75e321b60aca223a904b1cd5d8d87e40ebb9143",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261002T013436Z-80-api-design-1d9b1c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-02T01:34:36Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and bodies are correctly unexposed with `_def`/`_iff` restatements, but the elimination API for `StronglyCoupled` is missing (its conjunction is unreachable downstream by projection), the advertised `\u03ba = E / (m v\u00b2)` form is never stated, the defining identity for `coulombRatio` lacks the `@[simp]` its `velocity` analogue carries, and no inhabitant of `HeavyQuarkScales` is exposed.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/QuarkoniaAndExotics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/QuarkoniaAndExotics/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Scales/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8fc6664488ced4b2944d84cf40105fa7209248ccc506480308892bf44c1f3f43",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 95700,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 95700,
+  "cache_read_input_tokens": 314540,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2317,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2317,
+    "cache_read_input_tokens": 83305,
+    "input_tokens": 2,
+    "output_tokens": 9519,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13964,
+  "output_tokens_details": {
+   "thinking_tokens": 11086
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

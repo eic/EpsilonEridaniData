@@ -1,0 +1,156 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3053325,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 149.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 91547,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 91547,
+    "cache_read_input_tokens": 157595,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4017,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4017,
+      "cache_read_input_tokens": 78033,
+      "input_tokens": 2,
+      "output_tokens": 6344,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12441,
+    "output_tokens_details": {
+     "thinking_tokens": 9615
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 1.305333,
+ "dedupe_key": "eic/EpsilonEridani|80|acd2d95bf702ad82c91f62b03195a36fa6008cb5|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "31a18dc2e6ca429b9e194f03f456ef0e88f1d63c12fbebdf0a001fbabf28068a",
+ "diff_sha256": "31a18dc2e6ca429b9e194f03f456ef0e88f1d63c12fbebdf0a001fbabf28068a",
+ "duration_s": 149.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 177 `rw [coulombicScaling_iff, ...]` and line 273 `weaklyCoupled_iff.2 (half_lt_self ...)` use the exported lemmas; lines 250, 254, 265, 182-183, 189, 223 unfold the definitions instead. The PR description states \"Definition bodies are not exposed. The characterisations are exported as velocity_def, coulombRatio_def, coulombicScaling_iff, weaklyCoupled_iff and stronglyCoupled_iff.\"",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "fix": "Route through the characterisation lemmas, as `coulombicScaling_iff_binding` already does: e.g. `(weaklyCoupled_iff.1 h).trans s.binding_lt_momentum`; `fun h' \u21a6 lt_asymm (weaklyCoupled_iff.1 h) (stronglyCoupled_iff.1 h').1`; `hE.lt_or_gt.imp weaklyCoupled_iff.2 (fun h \u21a6 stronglyCoupled_iff.2 \u27e8h, hp\u27e9)`; `(coulombicScaling_iff.1 h).1` / `.2` in `one_le`, `mono` and `exists_not_coulombicScaling`.",
+   "issue": "`WeaklyCoupled.hadronic_lt_momentum` applies `.trans` to `h : s.WeaklyCoupled`, which only typechecks by unfolding the `def` to `<`. The same undocumented defeq reliance appears at line 254 (`lt_asymm h h'.1` uses both the `<` unfolding of `WeaklyCoupled` and the `And` projection of `StronglyCoupled`), line 265 (`hE.lt_or_gt.imp id (\u27e8\u00b7, hp\u27e9)` \u2014 `id` silently retypes `\u039b < E` as `WeaklyCoupled`, and the anonymous constructor builds `StronglyCoupled`), and lines 182-183, 189, 223 (`h.1`/`h.2` on `CoulombicScaling`). The file states these bodies are not part of the API and exports `weaklyCoupled_iff`, `stronglyCoupled_iff`, `coulombicScaling_iff` for exactly this; any later restatement of a definition keeps those lemmas true but breaks these six proofs.",
+   "line": 250
+  },
+  {
+   "evidence": "Lines 202-205 and 217-222 are structurally identical: `refine \u27e8\u27e8s.mass, s.momentum, s.momentum ^ 2 / \u2026, s.hadronic, by positivity, ?_, s.momentum_lt_mass\u27e9, rfl, rfl, rfl, ?_\u27e9` followed by `rw [div_lt_iff\u2080 \u2026, sq]; \u2026 mul_lt_mul_of_pos_left \u2026 hp`.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "fix": "Factor out the construction, e.g. `def ofCoulombRatio (s : HeavyQuarkScales) (c : \u211d) (hc : 1 \u2264 c) : HeavyQuarkScales := \u27e8s.mass, s.momentum, s.momentum ^ 2 / (s.mass * c), s.hadronic, ...\u27e9` together with `ofCoulombRatio_coulombRatio : (s.ofCoulombRatio c hc).coulombRatio = c\u207b\u00b9` (plus the three `mass/momentum/hadronic` rfl-lemmas); both existence theorems then instantiate it at `c = 1` and `c = 2 * (|K| + 1)` in two lines each, and the builder is reusable for the Layer-0 material the PR says still follows.",
+   "issue": "`exists_coulombicScaling_one` (197-207) and `exists_not_coulombicScaling` (211-229) build the same object twice \u2014 same `m`, `p`, `\u039b`, binding `p\u00b2 / (m * c)` \u2014 and each reproves the positivity and the `p\u00b2 / (m * c) < p` field hypothesis from scratch (lines 204-205 and 219-222). The repeated construction and its side-goal reasoning are hidden inside two existence proofs rather than available as a lemma.",
+   "line": 197
+  }
+ ],
+ "head_sha": "acd2d95bf702ad82c91f62b03195a36fa6008cb5",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 80,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "85432c5eb5aa8d5e88d89327d5b8bbd9f5cef6bc76bb4ef79a47ba4ce402e4e7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "b75e321b60aca223a904b1cd5d8d87e40ebb9143",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261002T014409Z-80-proof-quality-f181b5",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-02T01:44:09Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are short and mostly robust, but several bypass the file's own exported characterisation lemmas and rely on the definitional unfolding of `WeaklyCoupled`/`StronglyCoupled`/`CoulombicScaling` instead, and the two existence proofs duplicate the same scales construction and side-goal reasoning.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d34816d3d2918e4891f6740af0628af3ad2788a80cf89872ec76ad2f840a3f9a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 91547,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 91547,
+  "cache_read_input_tokens": 157595,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4017,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4017,
+    "cache_read_input_tokens": 78033,
+    "input_tokens": 2,
+    "output_tokens": 6344,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12441,
+  "output_tokens_details": {
+   "thinking_tokens": 9615
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

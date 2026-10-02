@@ -1,0 +1,152 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.0647875,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 80.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 86241,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 86241,
+    "cache_read_input_tokens": 79545,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5891,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5891,
+      "cache_read_input_tokens": 71110,
+      "input_tokens": 2,
+      "output_tokens": 5756,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6503,
+    "output_tokens_details": {
+     "thinking_tokens": 4122
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 1.064787,
+ "dedupe_key": "eic/EpsilonEridani|80|acd2d95bf702ad82c91f62b03195a36fa6008cb5|generality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "31a18dc2e6ca429b9e194f03f456ef0e88f1d63c12fbebdf0a001fbabf28068a",
+ "diff_sha256": "31a18dc2e6ca429b9e194f03f456ef0e88f1d63c12fbebdf0a001fbabf28068a",
+ "duration_s": 80.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 200-203 and 214-218: `have hm := s.mass_pos; have hp := s.momentum_pos`, then `refine \u27e8\u27e8s.mass, s.momentum, <new binding>, s.hadronic, \u2026\u27e9, rfl, rfl, rfl, ?_\u27e9`. `s.binding` occurs in neither statement nor witness.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "fix": "State them over the bare scales: `theorem exists_coulombicScaling_one {m p : \u211d} (hp : 0 < p) (hpm : p < m) (\u039b : \u211d) : \u2203 s : HeavyQuarkScales, s.mass = m \u2227 s.momentum = p \u2227 s.hadronic = \u039b \u2227 s.CoulombicScaling 1`, and likewise for `exists_not_coulombicScaling (K : \u211d)`. Proofs are unchanged modulo renaming. (`exists_weaklyCoupled`/`exists_stronglyCoupled` should keep the `s`-indexed form \u2014 they genuinely reuse `m`, `p`, `E`.)",
+   "issue": "`exists_coulombicScaling_one` and `exists_not_coulombicScaling` (line 211) take `s : HeavyQuarkScales`, but `s.binding` is unused and `binding_pos`/`binding_lt_momentum` only serve to produce `0 < s.momentum`; the witness uses just `s.mass`, `s.momentum`, `s.hadronic`.",
+   "line": "197"
+  },
+  {
+   "evidence": "`s.binding / s.momentum = s.velocity * s.coulombRatio` follows from `s.mass * s.velocity ^ 2 * s.coulombRatio = s.binding` and `mass_mul_velocity : s.mass * s.velocity = s.momentum` (line 113); `E / m = v ^ 2 * (E / p ^ 2) * m` is the same statement with `(E / p ^ 2) * m = coulombRatio` (line 135).",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "fix": "Derive both from `mass_mul_velocity_sq_mul_coulombRatio`: for line 150, rewrite `\u2190 s.mass_mul_velocity_sq_mul_coulombRatio` and `coulombRatio_def` then `field_simp`/`ring`; for line 156, use `E / p = (m v\u00b2 \u03ba) / p` with `m * v = p`. Keeps one computational proof for the single underlying identity.",
+   "issue": "`binding_div_mass_eq` (line 150) and `binding_div_momentum_eq` (line 156) are the general identity `mass_mul_velocity_sq_mul_coulombRatio : m * v ^ 2 * \u03ba = E` (line 143) divided by `m` resp. `p`, but each is reproved by its own `rw [velocity_def]; field_simp` rather than derived from it.",
+   "line": "150"
+  }
+ ],
+ "head_sha": "acd2d95bf702ad82c91f62b03195a36fa6008cb5",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 80,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "48af26f581b50376897b618c1c91d3b3d951e8725012e8ceebc5bbd266074c33",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "b75e321b60aca223a904b1cd5d8d87e40ebb9143",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261002T013740Z-80-generality-d7a750",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-02T01:37:40Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two existence theorems carry an unused binding energy and its ordering hypotheses where only `0 < p < m` is needed, and the two scale-ratio identities reprove the general identity `E = m v\u00b2 \u03ba` instead of deriving from it.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/QuarkoniaAndExotics/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/QuarkoniaAndExotics/Suggested.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0004ccea4f0ba671e82fbaec8469c7352d3365a7612c54be9b3704d0aa56ed70",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 86241,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 86241,
+  "cache_read_input_tokens": 79545,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5891,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5891,
+    "cache_read_input_tokens": 71110,
+    "input_tokens": 2,
+    "output_tokens": 5756,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6503,
+  "output_tokens_details": {
+   "thinking_tokens": 4122
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
