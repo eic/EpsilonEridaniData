@@ -1,0 +1,201 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1337625,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 250.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 129325,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 129325,
+    "cache_read_input_tokens": 620795,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6963,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6963,
+      "cache_read_input_tokens": 108541,
+      "input_tokens": 2,
+      "output_tokens": 2374,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21201,
+    "output_tokens_details": {
+     "thinking_tokens": 17241
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 2.133763,
+ "dedupe_key": "eic/EpsilonEridani|83|aaa49f2c54b119cd3ea4b118d142d365029f62df|correctness|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "eb9d9c7faccb79d59384cb84b4b9b41a941d447dfb9c758bfc4c9ca3f93149cc",
+ "diff_sha256": "eb9d9c7faccb79d59384cb84b4b9b41a941d447dfb9c758bfc4c9ca3f93149cc",
+ "duration_s": 250.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 250 `def transverse (K : DisKinematics V) (n : V) (hSymm : g.IsSymm) (hpk : g K.p K.k \u2260 0) (hn : ...)` vs line 204 `theorem apply_transverseSpin_k_eq_zero (hSymm : g.IsSymm) (hk : g K.k K.k = 0) (hpk : ...)`; the `k\u00b7u = (k\u00b7n) \u2212 (k\u00b7n)/(p\u00b7k)\u00b7(p\u00b7k) \u2212 b\u00b7(k\u00b7k)` cancellation needs `k\u00b7k = 0` for the last term.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "fix": "Add `hk : g K.k K.k = 0` to `transverse` and record the beam-transversality of the constructed configuration as a lemma (e.g. `g (transverse K n hSymm hk hpk hn).S K.k = 0` from `apply_transverseSpin_k_eq_zero`), so the name is backed by a proved property.",
+   "issue": "`PolarizedKinematics.transverse` takes only `hSymm`, `hpk`, `hn` \u2014 not `hk : g K.k K.k = 0`. Both structure fields are provable without it, but `transverseSpin g K n` is orthogonal to `k` only when the lepton is massless (`apply_transverseSpin_k_eq_zero` line 204 requires `hk`). So for a massive lepton the constructor yields a configuration called \"transverse\" whose spin vector is not transverse to the beam, while the docstring asserts \"the kinematics `K` of a massless lepton\". The sibling `longitudinal` (line 241) does carry `hk`.",
+   "line": 250
+  },
+  {
+   "evidence": "Lines 292-298 `kPrime := 0`, `q := (1, 1, 0)`; `gWit v w = v.1*w.1 - v.2.1*w.2.1 - v.2.2*w.2.2` (Tensors/Basic.lean:768) gives `gWit q q = 1 - 1 - 0 = 0`, hence `Q2 = 0`. Compare `kWit` (Tensors/Basic.lean:780), whose docstring explicitly records `Q\u00b2 = 1 > 0, the physical DIS sign`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "fix": "Give `kPol` a genuine scattered momentum, e.g. `kPrime := (1/4, 0, 1/4)` (massless), so `q = (3/4, 1, -1/4)`, `Q\u00b2 = 1/2`, `p\u00b7q = 3/4`, `p\u00b7k = 1`, `x = 1/3` \u2014 this satisfies `BasicAssumptions` strictly and `M2 = 1 > 0`, letting the witness discharge `gammaSq_pos` (`\u03b3\u00b2 = 8/9`). The spin lemmas depend only on `p` and `k` and are unaffected.",
+   "issue": "The witness `kPol` sets `kPrime = 0` and `q = k = (1,1,0)`, which is lightlike under `gWit`, so `Q2 = -g q q = 0` and `xBj = 0/2 = 0`: there is no scattered lepton and the point is not a DIS event. Consequently `gammaSq kPol = 0` and nothing in this PR instantiates `gammaSq_pos`/`gamma_pos`, the only results stated on the physical region. The docstring describes the target as \"struck by a massless lepton\" and never mentions `q`.",
+   "line": 292
+  },
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md:434 `A\u2081 = (g\u2081 \u2212 \u03b3\u00b2 g\u2082)/F\u2081,        A\u2082 = \u03b3 (g\u2081 + g\u2082)/F\u2081`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean",
+   "fix": "Reword to \"`\u03b3\u00b2` is the coefficient with which `g\u2082` enters the longitudinal asymmetry, and `\u03b3` the coefficient of `g\u2081 + g\u2082` in the transverse one\".",
+   "issue": "Module docstring: \"`\u03b3` is the coefficient with which `g\u2082` enters the longitudinal asymmetry and `g\u2081 + g\u2082` the transverse one\". The longitudinal asymmetry carries `\u03b3\u00b2`, not `\u03b3`, on `g\u2082`; only the transverse one carries a single power of `\u03b3`.",
+   "line": 21
+  }
+ ],
+ "head_sha": "aaa49f2c54b119cd3ea4b118d142d365029f62df",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 83,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "58e4d44576a8ec6d45a40de2c85fa71422f7647e7249d1cd772140d67d76fa87",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "b75e321b60aca223a904b1cd5d8d87e40ebb9143",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261002T025750Z-83-correctness-f0c97b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-02T02:57:50Z",
+ "submitted_by": "wdconinc",
+ "summary": "The \u03b3 identities, the two spin-vector normalisations and the witness values all check out by hand. Three defects: the `transverse` constructor does not carry `k\u00b7k = 0`, so a configuration named \"transverse\" need not be transverse to the beam; the witness kinematics is a non-event (Q\u00b2 = 0, x = 0) that cannot instantiate the PR's own physical-region results; and a docstring states the wrong power of \u03b3.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f684dccaf96e298b9d58b7a9d00c96000af493e10602269d0aa63e2ebe31ca45",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 129325,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 129325,
+  "cache_read_input_tokens": 620795,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6963,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6963,
+    "cache_read_input_tokens": 108541,
+    "input_tokens": 2,
+    "output_tokens": 2374,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21201,
+  "output_tokens_details": {
+   "thinking_tokens": 17241
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

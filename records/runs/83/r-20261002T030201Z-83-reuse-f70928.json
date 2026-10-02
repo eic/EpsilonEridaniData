@@ -1,0 +1,239 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5894524999999993,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 194.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 150331,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 150331,
+    "cache_read_input_tokens": 1448135,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1626,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1626,
+      "cache_read_input_tokens": 134664,
+      "input_tokens": 2,
+      "output_tokens": 3273,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14477,
+    "output_tokens_details": {
+     "thinking_tokens": 9270
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 2.589452,
+ "dedupe_key": "eic/EpsilonEridani|83|aaa49f2c54b119cd3ea4b118d142d365029f62df|reuse|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "eb9d9c7faccb79d59384cb84b4b9b41a941d447dfb9c758bfc4c9ca3f93149cc",
+ "diff_sha256": "eb9d9c7faccb79d59384cb84b4b9b41a941d447dfb9c758bfc4c9ca3f93149cc",
+ "duration_s": 194.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:98 `lemma W2_eq_with_Q2 (g) (K) (hSymm) : K.W2 g = g K.p K.p + 2 * g K.p K.q - K.Q2 g`; TargetMass.lean:61 `def M2 (g) (K) : \u211d := g K.p K.p`; TargetMass.lean:70 proof body is literally `W2_eq_with_Q2 g K hSymm`. `grep -rn 'W2_eq_M2_add' EpsilonEridani/` returns only the definition and its docstring mention.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean",
+   "fix": "Delete `W2_eq_M2_add`. Use `W2_eq_with_Q2 g K hSymm` directly (it elaborates at the `M2`-shaped goal, as the current proof term demonstrates), with `M2_def` available where an `M2`-shaped rewrite is wanted.",
+   "issue": "`W2_eq_M2_add` is `DisKinematics.W2_eq_with_Q2` (EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean:98) restated with `M2` in place of `g K.p K.p`; since `M2 g K := g K.p K.p` the two are the same proposition, and the proof is the existing lemma applied unchanged. It has no consumer anywhere in the repository.",
+   "line": 68
+  },
+  {
+   "evidence": "Line 279: `apply_longitudinalSpin_transverseSpin_eq_zero hSymm hk hpk n` typechecks as the whole proof, i.e. the two statements are definitionally the same; lines 267 and 273 are `:= (rfl)` simp lemmas.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "fix": "Delete `apply_longitudinal_S_transverse_S_eq_zero`; callers get it from `simp [longitudinal_S, transverse_S]` followed by `apply_longitudinalSpin_transverseSpin_eq_zero hSymm hk hpk n`, or by applying that theorem directly.",
+   "issue": "`apply_longitudinal_S_transverse_S_eq_zero` is the composite that its own `@[simp]` component lemmas already prove: `longitudinal_S` (line 267) and `transverse_S` (line 273) are both `rfl`, so the goal is `apply_longitudinalSpin_transverseSpin_eq_zero` (line 229) verbatim \u2014 the proof is that theorem applied with no additional argument.",
+   "line": 277
+  }
+ ],
+ "head_sha": "aaa49f2c54b119cd3ea4b118d142d365029f62df",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 83,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4f33258d59bb34ec1d19269b18ebc2b35bcd4ce44373dbe8fd79bbd36efcc2a0",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "b75e321b60aca223a904b1cd5d8d87e40ebb9143",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261002T030201Z-83-reuse-f70928",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-02T03:02:01Z",
+ "submitted_by": "wdconinc",
+ "summary": "The PR adds genuinely new material (\u03b3, the spin vectors, PolarizedKinematics) and reuses DisKinematics/gWit properly, but it contains two declarations that existing lemmas directly replace up to defeq: W2_eq_M2_add restates Kinematics/Basic.lean's W2_eq_with_Q2, and apply_longitudinal_S_transverse_S_eq_zero restates apply_longitudinalSpin_transverseSpin_eq_zero.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Order/Filter",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Longitudinal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "166e070df22ab8010547336dc42d3a051353fc1762ddd66b224d9eab4774274f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 150331,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 150331,
+  "cache_read_input_tokens": 1448135,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1626,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1626,
+    "cache_read_input_tokens": 134664,
+    "input_tokens": 2,
+    "output_tokens": 3273,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14477,
+  "output_tokens_details": {
+   "thinking_tokens": 9270
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "block"
+}
