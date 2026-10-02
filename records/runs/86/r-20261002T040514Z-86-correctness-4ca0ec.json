@@ -1,0 +1,81 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.105176,
+   "model": "gemini-3.1-pro",
+   "returncode": 0,
+   "secs": 107.1,
+   "usage": {
+    "cache_read_tokens": 0,
+    "input_tokens": 21429,
+    "output_tokens": 15678,
+    "thinking_tokens": 15144,
+    "total_tokens": 37107
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "55b2e8fed32ae1fca799fc8cb1670d38573f2066",
+ "cost_estimated": true,
+ "cost_usd": 0.105176,
+ "dedupe_key": "eic/EpsilonEridani|86|4150632df277690c7309069d534f145ab9d0efa5|correctness|gemini-3.1-pro|a04d8ed758f03dbb|production|1",
+ "diff_blob": "105759f76a3ae90a988b83a0ceeeac8c35a44760959a29cde473c791d7da7da6",
+ "diff_sha256": "105759f76a3ae90a988b83a0ceeeac8c35a44760959a29cde473c791d7da7da6",
+ "duration_s": 107.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "def MomentumSumRule [Fintype Hadron] (D : Frag Hadron Flavor) : Prop := \u2200 (i : Flavor) (Q2 : \u211d), \u2211 h, zMoment D 1 h i Q2 = 1",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "Require integrability of the first moment: `\u2200 (i : Flavor) (Q2 : \u211d), (\u2200 h, IntegrableOn (fun z => z * D h i z Q2) (Icc 0 1)) \u2227 \u2211 h, zMoment D 1 h i Q2 = 1`.",
+   "issue": "Lean evaluates the integral of a non-integrable function to 0. A species with a divergent first moment (e.g., `D \u221d 1/z^2`) will contribute 0 to the sum, falsely satisfying `MomentumSumRule` if other species sum to 1.",
+   "line": 67
+  },
+  {
+   "evidence": "lemma momentumSumRule_iff",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "Update to match the fixed `MomentumSumRule` definition.",
+   "issue": "Unfolding lemma omits integrability condition.",
+   "line": 71
+  },
+  {
+   "evidence": "lemma momentumSumRule_iff_of_unique",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "Update to match the fixed `MomentumSumRule` definition.",
+   "issue": "Single-species sum rule lemma omits integrability condition.",
+   "line": 76
+  }
+ ],
+ "head_sha": "4150632df277690c7309069d534f145ab9d0efa5",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "gemini-3.1-pro",
+ "pr": 86,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c88d1476f31b2e2fdb22ae8502b2c5e3076864b71f3430c004bcb123fefa8314",
+ "provider": "gemini",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261002T040514Z-86-correctness-4ca0ec",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-02T04:05:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "The momentum sum rule definition mis-formalizes the physical constraint by failing to require integrability. Because Lean's integral defaults to 0 for non-integrable functions, a family with a physically divergent momentum fraction can contribute 0 to the sum and falsely satisfy the sum rule.",
+ "transcript_blob": "457c1d21b88049350c208d587ef4edaf705d51e6a3a426fff571a904f0d80480",
+ "usage": {
+  "cache_read_tokens": 0,
+  "input_tokens": 21429,
+  "output_tokens": 15678,
+  "thinking_tokens": 15144,
+  "total_tokens": 37107
+ },
+ "verdict": "block"
+}
