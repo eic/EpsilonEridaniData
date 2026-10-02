@@ -1,0 +1,74 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.187616,
+   "model": "gemini-3.1-pro",
+   "returncode": 0,
+   "secs": 189.3,
+   "usage": {
+    "cache_read_tokens": 199618,
+    "input_tokens": 60179,
+    "output_tokens": 25047,
+    "thinking_tokens": 24026,
+    "total_tokens": 85226
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "cost_estimated": true,
+ "cost_usd": 0.187616,
+ "dedupe_key": "eic/EpsilonEridani|71|1c21d63cff63ccab086ef8b22831f6cf6d11412c|generality|gemini-3.1-pro|a04d8ed758f03dbb|production|4",
+ "diff_blob": "3d8a160203b7d1faa5c7e52684207119e70596edd8774fab2b6d1db24fab67df",
+ "diff_sha256": "3d8a160203b7d1faa5c7e52684207119e70596edd8774fab2b6d1db24fab67df",
+ "duration_s": 189.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib avoids conditional hypotheses for mathematically trivial cases. The callers currently pass `(fun hu => ...)` to instantiate it.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Generalize to the natural signature `(hu : g u u \u2260 0)` to match upstream convention, and handle `u = 0` via `by_cases` at the call sites in `exists_isF1F2Decomposition` and `eq_zero_of_isLorentzCovariant`.",
+   "issue": "`covariant_spectator_apply_eq_zero` uses the non-standard conditional hypothesis `(hu : u \u2260 0 \u2192 g u u \u2260 0)` to absorb `u = 0` internally.",
+   "line": 0
+  },
+  {
+   "evidence": "The proof only invokes `hW.covariant f hf hdet (pTransverse g K) u`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Generalize the signature to take `(hcov : IsProperLorentzCovariant g K W)` directly, and move the lemma to the `IsProperLorentzCovariant` namespace.",
+   "issue": "`apply_pTransverse_eq_zero_of_apply_eq_neg` unnecessarily assumes the full `ParityOddAssumptions g K W` bundle, leaving `isAlt` and `conserved_left` visibly unused.",
+   "line": 0
+  }
+ ],
+ "head_sha": "1c21d63cff63ccab086ef8b22831f6cf6d11412c",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "gemini-3.1-pro",
+ "pr": 71,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "f58261d0daed1e11ea3201c1985e3f8c3e2dc2a71b2f4843b7802e0a755537cb",
+ "provider": "gemini",
+ "repo": "eic/EpsilonEridani",
+ "round": 4,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "b75e321b60aca223a904b1cd5d8d87e40ebb9143",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261002T015033Z-71-generality-3db7a8",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-02T01:50:33Z",
+ "submitted_by": "wdconinc",
+ "summary": "The PR contains under-generalized lemmas: one unnecessarily assumes the full `ParityOddAssumptions` bundle when it only needs proper covariance, and another uses a non-standard conditional hypothesis to avoid trivial zero cases.",
+ "transcript_blob": "e394838ff2a45a5e7127812cb833c0c5e61e1e986c8f4ebfcb73fde66228ccc0",
+ "usage": {
+  "cache_read_tokens": 199618,
+  "input_tokens": 60179,
+  "output_tokens": 25047,
+  "thinking_tokens": 24026,
+  "total_tokens": 85226
+ },
+ "verdict": "request_changes"
+}
