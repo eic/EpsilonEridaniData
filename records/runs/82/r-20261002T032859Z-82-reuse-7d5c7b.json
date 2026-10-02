@@ -1,0 +1,256 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.655115,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 249.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 138539,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 138539,
+    "cache_read_input_tokens": 1499010,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 817,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 817,
+      "cache_read_input_tokens": 127719,
+      "input_tokens": 2,
+      "output_tokens": 2651,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20802,
+    "output_tokens_details": {
+     "thinking_tokens": 15084
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 2.655115,
+ "dedupe_key": "eic/EpsilonEridani|82|a07304caf83df406c0e0ac28442a390e3262d8a5|reuse|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "bd47f7d244b59652cbc1b2ea4122635b31bdff5e8f78c9a455c15913b4320e4d",
+ "diff_sha256": "bd47f7d244b59652cbc1b2ea4122635b31bdff5e8f78c9a455c15913b4320e4d",
+ "duration_s": 249.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Data/Matrix/Mul.lean:910 `mul_vecMulVec : M * vecMulVec x y = vecMulVec (M *\u1d65 x) y`; :915 `vecMulVec_mul : vecMulVec x y * M = vecMulVec x (y \u1d65* M)`; :1103 `vecMul_transpose : x \u1d65* A\u1d40 = A *\u1d65 x`; :905 `vecMulVec_mulVec`; :818 `smul_mulVec`; :325/:331 `smul_mul`/`mul_smul`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "fix": "Keep `neutralMassMatrix` in `vecMulVec` form and rewrite with `Matrix.mul_smul`/`Matrix.smul_mul`, `Matrix.mul_vecMulVec`, `Matrix.vecMulVec_mul`, `Matrix.vecMul_transpose`: this reduces the goal to `R *\u1d65 ![g, -g'] = ![g * cos \u03b8 + g' * sin \u03b8, g * sin \u03b8 - g' * cos \u03b8]`, the only computation that is actually specific to this matrix. For line 74 use `Matrix.smul_mulVec` then `Matrix.vecMulVec_mulVec` (note its RHS is `MulOpposite.op (v \u2b1d\u1d65 w) \u2022 u`, so `op_smul_eq_mul`/`mul_comm` is needed to land on the stated form).",
+   "issue": "mixingRotation_conj_neutralMassMatrix is proved by rewriting to explicit entries and a 4-case `fin_cases` bash, re-deriving the generic conjugation of a rank-one matrix that Mathlib already has. Same pattern at line 74 (neutralMassMatrix_mulVec).",
+   "line": 138
+  },
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Group/Fin/Tuple.lean:116 `@[simp] lemma cons_eq_zero_iff {v : Fin n \u2192 \u03b1} {x : \u03b1} : vecCons x v = 0 \u2194 x = 0 \u2227 v = 0`; also :120 `cons_nonzero_iff : vecCons x v \u2260 0 \u2194 x \u2260 0 \u2228 v \u2260 0`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "fix": "Replace the block with `have hu : ![g, -g'] \u2260 0 := by simpa [not_and_or] using hg` (using `Matrix.cons_eq_zero_iff` and `neg_eq_zero`).",
+   "issue": "`hu : ![g, -g'] \u2260 0` is proved in seven lines of `congrFun`/`simp only`/`tauto` plumbing; Mathlib has a `@[simp]` lemma for exactly this.",
+   "line": 85
+  },
+  {
+   "evidence": "mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean:125 `arctan_mem_Ioo (x : \u211d) : arctan x \u2208 Ioo (-(\u03c0 / 2)) (\u03c0 / 2)`; :150/:153 derive `arctan_lt_pi_div_two`/`neg_pi_div_two_lt_arctan` from it.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "fix": "`rw [weakMixingAngle_eq]; exact arctan_mem_Ioo _`.",
+   "issue": "weakMixingAngle_mem_Ioo reassembles the membership from the two component bounds, but Mathlib states the membership itself (the two bounds are derived from it upstream).",
+   "line": 190
+  },
+  {
+   "evidence": "mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean:194 `arctan_eq_of_tan_eq (h : tan x = y) (hx : x \u2208 Ioo (-(\u03c0 / 2)) (\u03c0 / 2)) : arctan y = x`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "fix": "`exact fun h => (arctan_eq_of_tan_eq (by rw [tan_eq_sin_div_cos]; field_simp; linarith) h\u03b8).symm` (after `rw [weakMixingAngle_eq]`).",
+   "issue": "The forward direction of mul_sin_eq_mul_cos_iff_eq_weakMixingAngle re-derives `arctan_tan` + `congr` plumbing that Mathlib packages as a single lemma.",
+   "line": 234
+  }
+ ],
+ "head_sha": "a07304caf83df406c0e0ac28442a390e3262d8a5",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 82,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b36758c9f2a62bf0b7e1a99a6752e18ba600ee3997af889eee4933b77855fe1d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "b75e321b60aca223a904b1cd5d8d87e40ebb9143",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261002T032859Z-82-reuse-7d5c7b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-02T03:28:59Z",
+ "submitted_by": "wdconinc",
+ "summary": "No duplicated declaration: the mass matrix, mixing rotation and weak mixing angle are new, and the bridge to Parameters.weakMixingConsistency is genuine reuse. Four proofs, however, re-derive located Mathlib lemmas by hand (vecMulVec algebra, cons_eq_zero_iff, arctan_mem_Ioo, arctan_eq_of_tan_eq).",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/NeutralCurrent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": false,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Fin/Tuple.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e6639a0f175fe8e40eb52683a831c9774f08aa283126df7bc0c0f217a85e6b56",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 138539,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 138539,
+  "cache_read_input_tokens": 1499010,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 817,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 817,
+    "cache_read_input_tokens": 127719,
+    "input_tokens": 2,
+    "output_tokens": 2651,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20802,
+  "output_tokens_details": {
+   "thinking_tokens": 15084
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
