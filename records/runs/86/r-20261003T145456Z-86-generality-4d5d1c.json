@@ -1,0 +1,74 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.092581,
+   "model": "gemini-3.1-pro",
+   "returncode": 0,
+   "secs": 106.9,
+   "usage": {
+    "cache_read_tokens": 8128,
+    "input_tokens": 13125,
+    "output_tokens": 16759,
+    "thinking_tokens": 16109,
+    "total_tokens": 29884
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "55b2e8fed32ae1fca799fc8cb1670d38573f2066",
+ "cost_estimated": true,
+ "cost_usd": 0.092581,
+ "dedupe_key": "eic/EpsilonEridani|86|206081d2ddc860639056f049694201bf9a6f672d|generality|gemini-3.1-pro|a04d8ed758f03dbb|production|2",
+ "diff_blob": "659db236333482cc2ee3c860c8931378faf15fa0f828eff802972d2d300bc250",
+ "diff_sha256": "659db236333482cc2ee3c860c8931378faf15fa0f828eff802972d2d300bc250",
+ "duration_s": 106.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The proof `mul_nonneg (pow_nonneg hz.1 n) (hD.nonneg h i z Q2 hz.1 hz.2)` delegates directly to `hD.nonneg` and does not use `hD.support`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "fix": "Weaken `(hD : Assumptions D)` to an unbundled non-negativity assumption, e.g., `(hnonneg : \u2200 z \u2208 Icc (0 : \u211d) 1, 0 \u2264 D h i z Q2)`.",
+   "issue": "`zMoment_nonneg` takes the bundled `hD : Assumptions D` but visibly only uses its `nonneg` field, making the assumption stronger than necessary by requiring `D` to vanish outside `[0, 1]`.",
+   "line": 55
+  },
+  {
+   "evidence": "The proof delegates to `zMoment_nonneg`, which itself only requires non-negativity on `[0, 1]`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "Weaken `(hD : Assumptions D)` to an unbundled non-negativity assumption, e.g., `(hnonneg : \u2200 h i z Q2, 0 \u2264 z \u2192 z \u2264 1 \u2192 0 \u2264 D h i z Q2)`.",
+   "issue": "`MomentumSumRule.zMoment_one_le_one` also takes the bundled `hD : Assumptions D` when only non-negativity is needed.",
+   "line": 90
+  }
+ ],
+ "head_sha": "206081d2ddc860639056f049694201bf9a6f672d",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "gemini-3.1-pro",
+ "pr": 86,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "75c0036ad3a272a78d3f9977b982d19807d7160c979018c44ef6faae9f7eb377",
+ "provider": "gemini",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261003T145456Z-86-generality-4d5d1c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T14:54:56Z",
+ "submitted_by": "wdconinc",
+ "summary": "The PR uses the bundled `Assumptions D` in generic moment lemmas where only non-negativity is needed. This is an unnecessarily strong assumption that violates the upstream convention of taking the weakest unbundled hypothesis.",
+ "transcript_blob": "16bb37f4d647f5e0ad3ebbbcb0c534c76873da2bbaaadf5a2498d53cc59d7103",
+ "usage": {
+  "cache_read_tokens": 8128,
+  "input_tokens": 13125,
+  "output_tokens": 16759,
+  "thinking_tokens": 16109,
+  "total_tokens": 29884
+ },
+ "verdict": "request_changes"
+}
