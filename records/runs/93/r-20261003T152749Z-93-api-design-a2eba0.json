@@ -1,0 +1,197 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9051850000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 198.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 121181,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 121181,
+    "cache_read_input_tokens": 596740,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3683,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3683,
+      "cache_read_input_tokens": 108565,
+      "input_tokens": 2,
+      "output_tokens": 2060,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15797,
+    "output_tokens_details": {
+     "thinking_tokens": 12114
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.905185,
+ "dedupe_key": "eic/EpsilonEridani|93|3624500448e956122373fa1dd413b83b2ebca984|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "3b534afb6699100d35e765c41ff1aad387a66ab61e1ff19cb8c663411d41e817",
+ "diff_sha256": "3b534afb6699100d35e765c41ff1aad387a66ab61e1ff19cb8c663411d41e817",
+ "duration_s": 198.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -n '^public section' EpsilonEridani/**/*.lean` matches only this file; all other modules use `@[expose] public section`, so `euclideanSection`'s body `LinearMap.range continuation` (line 170) is not in the exported interface.",
+   "file": "EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "fix": "Add the four missing characteristic lemmas: `continuation_mem_euclideanSection (x) : continuation x \u2208 euclideanSection d`, `ofMinkowski_mem_minkowskiSection (v) : ofMinkowski v \u2208 minkowskiSection d`, and the eliminations `mem_euclideanSection_iff_exists : z \u2208 euclideanSection d \u2194 \u2203 x, continuation x = z` / `mem_minkowskiSection_iff_exists` (or `euclideanSection_eq_range`/`minkowskiSection_eq_range`). Mark the two intro lemmas `@[simp]`, and consider `@[simp]` on `mem_minkowskiSection_iff`/`mem_euclideanSection_iff` so membership of a concrete image discharges automatically.",
+   "issue": "`euclideanSection` (line 169) and `minkowskiSection` (line 121) are `def`s under a bare `public section` (line 59, the only non-`@[expose]` section in the repo), so `LinearMap.range` is invisible downstream, yet no intro/elim lemma is provided. Every in-file proof uses the sealed body: `rintro \u27e8v, rfl\u27e9` (128), `rintro \u27e8x, rfl\u27e9` (177), `obtain \u27e8x, rfl\u27e9` (227), `obtain \u27e8x, hx\u27e9` (241). A consumer has no `continuation x \u2208 euclideanSection d`, no `ofMinkowski v \u2208 minkowskiSection d`, and no way to extract the preimage from membership.",
+   "line": 169
+  },
+  {
+   "evidence": "Lines 174-184: `mem_euclideanSection_iff` is the only membership characterisation, and specialising it at `ofMinkowski v` requires `ofReal_re`/`ofReal_im` plus `Complex.ext_iff` reasoning that no lemma in the file performs.",
+   "file": "EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "fix": "Add `@[simp] theorem ofMinkowski_mem_euclideanSection_iff {v : Vector d} : ofMinkowski v \u2208 euclideanSection d \u2194 v (Sum.inl 0) = 0`, and state the obstruction corollary against it so the hypothesis is readable (a nonzero Minkowski vector with vanishing time component is spacelike, hence never light-like).",
+   "issue": "`causalCharacter_eq_spaceLike_of_ofMinkowski_mem_euclideanSection` takes `hv : ofMinkowski v \u2208 euclideanSection d`, and `ofMinkowski_not_mem_euclideanSection` (251) concludes the negation of the same predicate, but nothing characterises when a *real* Minkowski vector lies on the Euclidean section. `mem_euclideanSection_iff` applied to `ofMinkowski v` gives `(\u2191(v (Sum.inl 0))).re = 0 \u2227 \u2200 i, (\u2191(v (Sum.inr i))).im = 0`, i.e. `v (Sum.inl 0) = 0`, which every user must re-derive.",
+   "line": 238
+  },
+  {
+   "evidence": "`mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean:88` `structure IsSymm (B : BilinForm R M)`, with `IsSymm.isRefl` (:100), `IsSymm.restrict` (:116) and `IsSymm.eq_iff` (`BilinearForm/Orthogonal.lean:84`) gated behind it.",
+   "file": "EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "fix": "Add `theorem complexMinkowskiProduct_isSymm : (complexMinkowskiProduct (d := d)).IsSymm := \u27e8complexMinkowskiProduct_symm\u27e9` alongside the pointwise form.",
+   "issue": "`complexMinkowskiProduct` is deliberately packaged as a `LinearMap.BilinForm \u2102` for Mathlib interop, but symmetry is exported only unbundled (`complexMinkowskiProduct_symm`), so none of Mathlib's symmetric-bilinear-form API applies without reproving the predicate.",
+   "line": 91
+  }
+ ],
+ "head_sha": "3624500448e956122373fa1dd413b83b2ebca984",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 93,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "cc14da7dc00b3b281c8ef2ef0e86a44c6ca43e73d2b14512b08eb489cbb724bc",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261003T152749Z-93-api-design-a2eba0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T15:27:49Z",
+ "submitted_by": "wdconinc",
+ "summary": "Bodies are correctly left unexposed and the maps `ofMinkowski`, `continuation`, `complexMinkowskiProduct` each carry their `_apply` characterisation, but the two section submodules ship no introduction/elimination API, so downstream consumers cannot produce or consume the membership hypotheses of the headline theorems without re-deriving the witness construction. Symmetry is also only in unbundled form.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "53068e165f7db890774d1489d13e98ad8517b1e242531b3548b14ce0f6f8dc4b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 121181,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 121181,
+  "cache_read_input_tokens": 596740,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3683,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3683,
+    "cache_read_input_tokens": 108565,
+    "input_tokens": 2,
+    "output_tokens": 2060,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15797,
+  "output_tokens_details": {
+   "thinking_tokens": 12114
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
