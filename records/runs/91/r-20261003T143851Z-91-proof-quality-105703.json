@@ -1,0 +1,175 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.451096,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 176.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 94236,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 94236,
+    "cache_read_input_tokens": 312502,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6186,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6186,
+      "cache_read_input_tokens": 78540,
+      "input_tokens": 2,
+      "output_tokens": 1404,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14097,
+    "output_tokens_details": {
+     "thinking_tokens": 11442
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.451096,
+ "dedupe_key": "eic/EpsilonEridani|91|e21cfab3253b577698190356bf3e639c504f0165|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "191750c0dc95054316aa581ad0c521d6cf36df405cf3056ec40531d364ff5272",
+ "diff_sha256": "191750c0dc95054316aa581ad0c521d6cf36df405cf3056ec40531d364ff5272",
+ "duration_s": 176.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 212 `congr 2 <;> ring` is the only `congr n` in the whole repo (grep over `code/EpsilonEridani` returns this single hit); after the `simp only` the goal is `(-1 * Q / g p \u2113) \u2022 p + (1 * Q / g p' \u2113) \u2022 p' = Q \u2022 ((g p' \u2113)\u207b\u00b9 \u2022 p' - (g p \u2113)\u207b\u00b9 \u2022 p)`, exactly the shape `module` targets.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "fix": "Drop both chains and finish with `module` after the `simp only` (line 212), and per summand at line 185 \u2014 the goals are plain `\u2022`-linear combinations with scalar side conditions that `ring` discharges. `Mathlib/Tactic/Module.lean:763` provides `module` in the pinned Mathlib (`match_scalars` at :734 if the sum must be entered first).",
+   "issue": "`eikonalCurrent_chargedLine` reshapes the goal by hand (`rw [sub_eq_neg_add, \u2190 neg_smul]`) purely so that `congr 2` splits it into two scalar goals; both rewrites are position-sensitive and `congr n` depends on the exact term shape `simp only` happens to leave. Same pattern at line 185, where `eikonalCurrent_smul` proves `sc / (c * x) \u2022 p = (c\u207b\u00b9 * (sc / x)) \u2022 p` with the chain `rw [div_mul_eq_div_div_swap, div_eq_mul_inv _ c, mul_comm _ c\u207b\u00b9]`, two of whose steps use positional placeholders.",
+   "line": "212"
+  },
+  {
+   "evidence": "grep `LinearMap.sum_apply|map_sum, map_smul` in the file: hits at lines 167 and 193 with identical lemma lists; line 195 `rw [Finset.sum_comm]` carries no comment.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "fix": "Add `apply_eikonalCurrent (g) (L) (\u2113 v) : g (eikonalCurrent g L \u2113) v = \u2211 i, (L i).signedCharge / g (L i).momentum \u2113 * g (L i).momentum v` (and the mirrored `eikonalCurrent_apply` for the second slot), then derive `eikonalCurrent_conserved` by `div_mul_cancel\u2080` and `apply_eikonalCurrent_eikonalCurrent` by applying both, which fixes the sum order and removes `Finset.sum_comm`. The contraction `J\u00b7v` is needed anyway for the YFS material the PR description defers.",
+   "issue": "The step that contracts `eikonalCurrent` against a vector \u2014 `simp only [eikonalCurrent, map_sum, map_smul, LinearMap.sum_apply, LinearMap.smul_apply, smul_eq_mul]` \u2014 is repeated verbatim at lines 167 and 193, so the reusable fact `g (eikonalCurrent g L \u2113) v = \u2211 i, (L i).signedCharge / g (L i).momentum \u2113 * g (L i).momentum v` exists only inside two proofs. It also forces the unexplained `rw [Finset.sum_comm]` at line 195, which is there only to undo the summation order simp produced.",
+   "line": "167"
+  }
+ ],
+ "head_sha": "e21cfab3253b577698190356bf3e639c504f0165",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 91,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c14297eb70a1e93367599293c6d3f8f01de6ab8a84c62d0a85513f984dd411c2",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261003T143851Z-91-proof-quality-105703",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T14:38:51Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two proofs hand-normalize scalar arithmetic under `\u2022` with `congr 2` and a three-lemma `rw` chain where Mathlib's `module` tactic closes the goal directly, and the contraction of `eikonalCurrent` against a vector is duplicated inline in two proofs instead of being a reusable lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Tactic/Module.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "61fd8af51a26e8fafa1cace67fc2a9fd4551b7ede9036e6a08300601ebf4a55c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 94236,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 94236,
+  "cache_read_input_tokens": 312502,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6186,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6186,
+    "cache_read_input_tokens": 78540,
+    "input_tokens": 2,
+    "output_tokens": 1404,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14097,
+  "output_tokens_details": {
+   "thinking_tokens": 11442
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
