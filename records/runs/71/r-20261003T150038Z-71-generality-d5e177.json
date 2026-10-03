@@ -1,0 +1,182 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4518639999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 244.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 158988,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 158988,
+    "cache_read_input_tokens": 868288,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7300,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7300,
+      "cache_read_input_tokens": 133339,
+      "input_tokens": 2,
+      "output_tokens": 3728,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17110,
+    "output_tokens_details": {
+     "thinking_tokens": 13627
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "cost_usd": 2.451864,
+ "dedupe_key": "eic/EpsilonEridani|71|9ae873f3414bdbada4ce8471f1115b94451932a5|generality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "9d2924f82d04137dbff5e10a704d87c2093ebcc4c522d80f7d2a1630f6ea5c61",
+ "diff_sha256": "9d2924f82d04137dbff5e10a704d87c2093ebcc4c522d80f7d2a1630f6ea5c61",
+ "duration_s": 244.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "ParityOdd.lean:205 `span : \u2200 v : V, \u2203 a b c\u2081 c\u2082 : \u211d, v = a \u2022 pTransverse g K + b \u2022 K.q + c\u2081 \u2022 e\u2081 + c\u2082 \u2022 e\u2082` (so dim V \u2264 4); ParityOdd.lean:335-339 `eq_zero_of_isLorentzCovariant` already takes `hspan`/`hnull` free-form instead of a plane, and ParityOdd.lean:223 `exists_halfTurn` uses only `e\u2081`,`e\u2082` orthogonality and non-nullity \u2014 never `span`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Restate the four lemmas from dimension-free hypotheses in the style the same file already uses at line 335 \u2014 `hspan : \u2200 v, \u2203 a b u, g K.q u = 0 \u2227 g (pTransverse g K) u = 0 \u2227 v = a \u2022 pTransverse g K + b \u2022 K.q + u` plus a partner hypothesis `\u2200 u, g K.q u = 0 \u2192 g (pTransverse g K) u = 0 \u2192 u \u2260 0 \u2192 g u u \u2260 0 \u2227 \u2203 u', g K.q u' = 0 \u2227 g (pTransverse g K) u' = 0 \u2227 g u u' = 0 \u2227 g u' u' \u2260 0` \u2014 and derive the `SpectatorPlane` versions from them; alternatively make `\u2200 v, W K.p v = 0` a field of `ParityOddAssumptions` per roadmap convention 6.",
+   "issue": "`apply_pTransverse_eq_zero` (274), `apply_p_eq_zero` (281), `apply_pTransverse_eq_zero_right` (290) and `apply_p_eq_zero_right` (296) all take `hP : SpectatorPlane g K`, i.e. the four-dimensionality input (`SpectatorPlane.span` forces `V = span{p_T, q, e\u2081, e\u2082}`), for conclusions that do not need it. `W p_T u = 0` for a spectator `u` needs only a half-turn `reflect u \u2218 reflect u'` in `u` and one orthogonal non-null spectator partner `u'` (plus a `SpectatorAssumptions.span`-style decomposition of `v`), which holds for a definite spectator subspace of any dimension \u2265 2. The roadmap names exactly this as the trap to avoid: \"forcing every statement about `F\u2083` to carry a four-dimensionality hypothesis that only one theorem actually needs\" (InclusiveStructureFunctions/README.md convention 6), and it lists annihilation of `p` among the properties `A` carries, not a consequence of the plane.",
+   "line": "274"
+  },
+  {
+   "evidence": "ParityOdd.lean:120-123 and Basic.lean:393-399 contain the same three-step argument; the PR already factored the other shared step this way (`covariant_spectator_apply_eq_zero`, Basic.lean:630, used from both files).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "State the general lemma once, e.g. in `Bilin`/`Hadronic` in Basic: `lemma apply_eq_zero_of_apply_eq_self_of_apply_eq_neg {W : Bilin V} {f : V \u2192\u2097[\u211d] V} (hf : \u2200 v w, W (f v) (f w) = W v w) {v u : V} (hfv : f v = v) (hfu : f u = -u) : W v u = 0`, then get `covariant_spectator_offDiagonal_zero` by instantiating at `Bilin.reflect g u` and the ParityOdd use by instantiating at `hW f hf hdet`.",
+   "issue": "`IsProperLorentzCovariant.apply_eq_zero_of_apply_eq_self_of_apply_eq_neg` re-proves, for the proper-covariance predicate, the argument already proved for the full one in `Tensors/Basic.lean:390` (`covariant_spectator_offDiagonal_zero`, lines 395-399: rewrite `f u = -u`, `map_neg`, `linarith`). Neither `IsKinematicStabilizer` nor `det f = 1` enters the argument; they only serve to feed `hW`, so the lemma is a special case of a predicate-free statement and the two covariance notions cannot share it as written.",
+   "line": "117"
+  }
+ ],
+ "head_sha": "9ae873f3414bdbada4ce8471f1115b94451932a5",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a6f7e5e919bd28fbe7c7e98cbe0af096cc13b7b4b9e34e2fc644295ee2e83d91",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261003T150038Z-71-generality-d5e177",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T15:00:38Z",
+ "submitted_by": "wdconinc",
+ "summary": "The headline uniqueness results sit at the right level, but the four `annihilates p / p_T` corollaries carry the four-dimensionality input they do not need, and the sign-flip core of covariance is now proved twice, once per covariance predicate.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Transvection/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Transvection/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4ef9694f7c2175f92dbe2ef35d7390d069b9000d1c2a46ee6591663a1b881ea5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 158988,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 158988,
+  "cache_read_input_tokens": 868288,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7300,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7300,
+    "cache_read_input_tokens": 133339,
+    "input_tokens": 2,
+    "output_tokens": 3728,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17110,
+  "output_tokens_details": {
+   "thinking_tokens": 13627
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,272 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.619611,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 316.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 175627,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 175627,
+    "cache_read_input_tokens": 2473142,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 44,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2025,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2025,
+      "cache_read_input_tokens": 154637,
+      "input_tokens": 2,
+      "output_tokens": 2111,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 25062,
+    "output_tokens_details": {
+     "thinking_tokens": 19673
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "cost_usd": 3.619611,
+ "dedupe_key": "eic/EpsilonEridani|71|9ae873f3414bdbada4ce8471f1115b94451932a5|reuse|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "9d2924f82d04137dbff5e10a704d87c2093ebcc4c522d80f7d2a1630f6ea5c61",
+ "diff_sha256": "9d2924f82d04137dbff5e10a704d87c2093ebcc4c522d80f7d2a1630f6ea5c61",
+ "duration_s": 316.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `isProperLorentzCovariant_def` across `code/EpsilonEridani` returns only the declaration at ParityOdd.lean:86. The analogous `IsLorentzCovariant` (Tensors/Basic.lean:343) carries no `_def` lemma, and grep for `lemma \\w+_def` under `QFT/Scattering` finds no other instance in the tree.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Delete the lemma; `IsProperLorentzCovariant` already unfolds definitionally (every use in the file applies it directly, e.g. `hW f hf hdet v u` at line 121).",
+   "issue": "`isProperLorentzCovariant_def` is `Iff.rfl` restating the definition `IsProperLorentzCovariant` declared four lines above it; it is a second name for the same statement and has no consumer anywhere in the repo.",
+   "line": "86"
+  },
+  {
+   "evidence": "grep for `kFour_kPrime|kFour_pPrime|kFour_k\\b|spectatorPlaneFour_e` over `code/EpsilonEridani` returns only the five declaration lines. The existing witness section in Tensors/Basic.lean states only the two projections it consumes (`kWit_p` at 806, `kWit_q` at 808).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Delete these five; keep only the projections actually used (`kFour_p`, `kFour_q`, used in the `simp only` at line 455).",
+   "issue": "Five `@[simp]` `rfl` lemmas restate fields of `kFour`/`spectatorPlaneFour` with no consumer: `kFour_pPrime` (412), `kFour_k` (414), `kFour_kPrime` (416), `spectatorPlaneFour_e\u2081` (477), `spectatorPlaneFour_e\u2082` (479). `aFour_e\u2081_e\u2082` (483) states the literals `![0,1,0,0]`/`![0,0,1,0]` rather than the projections, so the last two never fire.",
+   "line": "412"
+  }
+ ],
+ "head_sha": "9ae873f3414bdbada4ce8471f1115b94451932a5",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "bb796586d4a9fe8f5be60aee438a7c768cab3e1bb606f6ceb651c2390dc81ccf",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261003T144708Z-71-reuse-f0d191",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T14:47:08Z",
+ "submitted_by": "wdconinc",
+ "summary": "The mathematics is new and reuses upstream API well (LinearMap.transvection.det, AlternatingMap.curryLeft/map_vecCons_*, Matrix.toBilin', LinearMap.BilinForm.IsAlt, and the refactored covariant_spectator_apply_eq_zero). Two leftovers restate existing declarations up to defeq with no consumer and should be deleted.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Reflection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Alternating/Curry.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Alternating",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Multilinear",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "tool": "Bash"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Metrics/LeviCivita.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Transvection/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Longitudinal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 29,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8730afe17270fef0472fddb8c1c8ffab6b9b2ce44254bacefc2f70809708f8a5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 175627,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 175627,
+  "cache_read_input_tokens": 2473142,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 44,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2025,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2025,
+    "cache_read_input_tokens": 154637,
+    "input_tokens": 2,
+    "output_tokens": 2111,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 25062,
+  "output_tokens_details": {
+   "thinking_tokens": 19673
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
