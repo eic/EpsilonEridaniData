@@ -1,0 +1,222 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2354165000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 210.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 140893,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 140893,
+    "cache_read_input_tokens": 808673,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2234,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2234,
+      "cache_read_input_tokens": 114755,
+      "input_tokens": 2,
+      "output_tokens": 2068,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16882,
+    "output_tokens_details": {
+     "thinking_tokens": 12912
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "55b2e8fed32ae1fca799fc8cb1670d38573f2066",
+ "cost_usd": 2.235417,
+ "dedupe_key": "eic/EpsilonEridani|87|d7b9ae71362a6098a323cecf00eb6091c2b65f09|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "d4b77b2be155ca5fd635349d0a3e246ecb0828472a093bf512dfe2daedbbd614",
+ "diff_sha256": "d4b77b2be155ca5fd635349d0a3e246ecb0828472a093bf512dfe2daedbbd614",
+ "duration_s": 210.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 70, 248, 322\u2013326; docstring lines 35\u201338 write `t\u2080(\u03be)` exclusively.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "Rename `tMin` to `tZero` (and `tZero_nonpos`, `le_tZero_iff`, `t_le_tZero`, `isGreatest_tZero`), matching the `t\u2080(\u03be)` used throughout the docstrings and \u00a73 of the cited reference.",
+   "issue": "`tMin M \u03be` is the *maximum* of the attainable `t`: `t_le_tMin : K.t \u2264 tMin M K.skewness` (line 248) and `isGreatest_tMin : IsGreatest {t | \u2026} (tMin M \u03be)` (line 322). `t \u2264 tMin` reads backwards, and the module docstring and the cited Diehl reference both call this quantity `t\u2080`, not `t_min`.",
+   "line": 70
+  },
+  {
+   "evidence": "Lines 75, 79, 83.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "Rename to `tMin_neg_right` (whatever the head name becomes), per `Mathlib/Geometry/Euclidean/Angle/Unoriented/Basic.lean:94 angle_neg_right (x y : V) : angle x (-y) = \u03c0 - angle x y`.",
+   "issue": "`tMin_neg : tMin M (-\u03be) = tMin M \u03be` reads as a sign assertion about `tMin`, colliding with `tMin_nonpos` four lines below, and is inconsistent with the sibling `tMin_zero_right` (line 75) which does mark the second argument.",
+   "line": 79
+  },
+  {
+   "evidence": "Lines 228\u2013229 and 237\u2013240; conventions doc: \"the name of theorem simply describes the conclusion\".",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "Spell out the omitted operands and the conclusion, e.g. `one_sub_skewness_sq_mul_t_add_four_skewness_sq_mul_sq_eq_minkowskiProduct_self` (or state it as a `t_eq_\u2026` form) and `minkowskiProduct_n_delta_add_smul_avgMomentum_eq_zero`.",
+   "issue": "`one_sub_sq_mul_t_add` ends in `_add` with no operand and never names the right-hand side; `sq` is ambiguous (both `\u03be^2` and `M^2` occur). Same dangling-operand defect at line 228, `minkowskiProduct_n_delta_add_eq_zero` (the statement is `\u27ean, \u0394 + 2\u03beP\u27eb\u2098 = 0`).",
+   "line": 237
+  },
+  {
+   "evidence": "Grep hit above; `delta` already matches `ExclKinematics.delta`, so the mismatch is only on this one name.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "Rename `OffForwardKinematics.t` to `tMom` (with `tMom_def`, `tMom_nonpos`, `tMom_le_\u2026`), matching `ExclKinematics.tMom`.",
+   "issue": "`OffForwardKinematics.t` is the invariant `\u0394\u00b2`, which this repo already names `tMom` (`EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean:68 def tMom (g : Bilin V) (K : ExclKinematics V) : \u211d := g K.delta K.delta`). Two names for the same invariant, and a one-letter declaration shadowed by the pervasive variable `t` (e.g. line 263, line 323).",
+   "line": 145
+  },
+  {
+   "evidence": "Definition at line 28\u201329 is `x \u2022 basis (Sum.inl 0) + y \u2022 basis (Sum.inr i) + z \u2022 basis (Sum.inr j)`; `frameVector i j 1 0 1` (Kinematics.lean:286) is a light-like vector, not a frame element.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "fix": "Rename to something describing the construction, e.g. `Lorentz.Vector.ofTimeAndTwoSpatial i j x y z`, updating `frameVector_def`, `minkowskiProduct_frameVector`, `frameVector_sub_frameVector` and the three use sites in `GPD/Kinematics.lean`.",
+   "issue": "`frameVector i j x y z` is an arbitrary vector in the span of `e\u2080, e\u1d62, e\u2c7c`, but \"frame\" in this area means a basis/tetrad, not a vector in its span (Mathlib `Geometry/Manifold/VectorBundle/LocalFrame.lean:19: \"a predicate `IsLocalFrame` for a collection of sections to be a local frame\"`). The name promises a basis vector.",
+   "line": 28
+  }
+ ],
+ "head_sha": "d7b9ae71362a6098a323cecf00eb6091c2b65f09",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 87,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d289c828970f673bf5a77085f577bf2086a503f6c4effc0e6c77a27dac462886",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261003T200325Z-87-naming-80cc34",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T20:03:25Z",
+ "submitted_by": "wdconinc",
+ "summary": "Several names misdescribe their statements: `tMin` denotes the greatest attainable `t`, `tMin_neg` reads as a sign claim, and two lemma names end in a dangling `_add`. `OffForwardKinematics.t` also conflicts with the repo's existing `ExclKinematics.tMom` for the identical invariant \u0394\u00b2.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Causality/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold/VectorBundle/LocalFrame.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1d44602e2a8df019159336d330d5f0414725d0d5f33ed856ea401b313493c65c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 140893,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 140893,
+  "cache_read_input_tokens": 808673,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2234,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2234,
+    "cache_read_input_tokens": 114755,
+    "input_tokens": 2,
+    "output_tokens": 2068,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16882,
+  "output_tokens_details": {
+   "thinking_tokens": 12912
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
