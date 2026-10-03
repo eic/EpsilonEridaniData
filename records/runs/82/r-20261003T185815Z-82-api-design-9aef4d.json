@@ -1,0 +1,211 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1051525,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 206.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 118788,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 118788,
+    "cache_read_input_tokens": 1041685,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 895,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 895,
+      "cache_read_input_tokens": 104869,
+      "input_tokens": 2,
+      "output_tokens": 2988,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15852,
+    "output_tokens_details": {
+     "thinking_tokens": 11719
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 2.105152,
+ "dedupe_key": "eic/EpsilonEridani|82|a7d6aba46179f1dfccc19c6b1d4672b1e3e233dc|api-design|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "3180cb7e244878db1b870458f2523dbff91e769d33b691dde2b5b2d1ef0d56d5",
+ "diff_sha256": "3180cb7e244878db1b870458f2523dbff91e769d33b691dde2b5b2d1ef0d56d5",
+ "duration_s": 206.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Rotation.lean exports only `rotation`, `rotation_eq`, `rotation_mulVec`, `rotation_mem_specialOrthogonalGroup`; grep for `transpose` in the file returns nothing, and Mathlib has no `transpose_fin_two` (`rg 'transpose_fin_two' mathlib/Mathlib` \u2192 no matches), so `(rotation \u03b8)\u1d40` can only be computed by `ext`/`fin_cases` on the literal.",
+   "file": "EpsilonEridani/Mathematics/DataStructures/Matrix/Rotation.lean",
+   "fix": "Add `theorem rotation_transpose (\u03b8 : \u211d) : (rotation \u03b8)\u1d40 = rotation (-\u03b8)` (both sides are `!![cos \u03b8, sin \u03b8; -sin \u03b8, cos \u03b8]`); composed with `rotation_mulVec` it supplies the inverse action without unfolding.",
+   "issue": "`rotation` has no lemma for its transpose, yet transpose is the operation every public consumer uses: `(rotation \u03b8)\u1d40` appears in the statements of `rotation_conj_neutralMassMatrix` (Mixing.lean:128), `rotation_conj_neutralMassMatrix_one_one` (141), `..._eq_diagonal_iff_mul_sin_eq_mul_cos` (150), `..._eq_diagonal_iff` (245) and `rotation_weakMixingAngle_conj_neutralMassMatrix_eq_diagonal` (256). `rotation_mulVec` gives the action of `rotation \u03b8` on a vector but nothing gives `(rotation \u03b8)\u1d40 *\u1d65 w`, i.e. the inverse map `(Z, A) \u21a6 (W\u00b3, B)` that \u00a70.4 needs; a consumer must rewrite with `rotation_eq` and recompute the mulVec by hand each time.",
+   "line": 40
+  },
+  {
+   "evidence": "Proof is `rw [show (1:\u211d) + (g'/g)^2 = (g^2+g'^2)/g^2 by field_simp, sqrt_div (by positivity), sqrt_sq hg.le]` \u2014 pure `Real.sqrt` algebra. Mathlib has no such lemma (`rg 'sqrt_one_add|one_add_div_sq' mathlib/Mathlib` returns only `sqrt_one_add_le`, `inv_sqrt_one_add_tan_sq`, `tan_div_sqrt_one_add_tan_sq`, `sqrt_one_add_norm_sq_le`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "fix": "Move it, public, to the mathematics tree next to the other general matter this PR extracts (e.g. alongside `Mathematics/DataStructures/Matrix/Rotation.lean`, or a `Real.sqrt`-facing file), and import it here.",
+   "issue": "`private theorem sqrt_one_add_div_sq {g : \u211d} (hg : 0 < g) (g' : \u211d) : \u221a(1 + (g' / g) ^ 2) = \u221a(g ^ 2 + g' ^ 2) / g` mentions only upstream types and its proof has no dependence on the electroweak subject of this file \u2014 it is the general radicand identity pairing with `Real.sin_arctan`/`cos_arctan`, hidden in a physics module.",
+   "line": 195
+  }
+ ],
+ "head_sha": "a7d6aba46179f1dfccc19c6b1d4672b1e3e233dc",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 82,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "8546d04740f2f866829f2c23294c98a6912090dc66035437ac2d0ee28dccde33",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261003T185815Z-82-api-design-9aef4d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T18:58:15Z",
+ "submitted_by": "wdconinc",
+ "summary": "The prior round's findings are resolved and the surface is otherwise minimal with bodies sealed. Two gaps remain: `rotation` has no transpose lemma although every public statement that consumes it is phrased with `(rotation \u03b8)\u1d40`, and a pure `Real.sqrt` identity is hidden as `private` in the physics file.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/Rotation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "mathlib/Mathlib/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8d91e2c8a2726143503d3d0e67019ead6c6c7c4d64f3ab3bca7378e308a404a1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 118788,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 118788,
+  "cache_read_input_tokens": 1041685,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 895,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 895,
+    "cache_read_input_tokens": 104869,
+    "input_tokens": 2,
+    "output_tokens": 2988,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15852,
+  "output_tokens_details": {
+   "thinking_tokens": 11719
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

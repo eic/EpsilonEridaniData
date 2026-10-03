@@ -1,0 +1,249 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3508855000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 183.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 130700,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 130700,
+    "cache_read_input_tokens": 1357101,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 244,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 244,
+      "cache_read_input_tokens": 117529,
+      "input_tokens": 2,
+      "output_tokens": 2766,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14607,
+    "output_tokens_details": {
+     "thinking_tokens": 8947
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 2.350886,
+ "dedupe_key": "eic/EpsilonEridani|82|a7d6aba46179f1dfccc19c6b1d4672b1e3e233dc|reuse|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "3180cb7e244878db1b870458f2523dbff91e769d33b691dde2b5b2d1ef0d56d5",
+ "diff_sha256": "3180cb7e244878db1b870458f2523dbff91e769d33b691dde2b5b2d1ef0d56d5",
+ "duration_s": 183.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/UnitaryGroup.lean:329 `@[simp] lemma of_mem_specialOrthogonalGroup_fin_two_iff {a b c d : R} : !![a, b; c, d] \u2208 Matrix.specialOrthogonalGroup (Fin 2) R \u2194 a = d \u2227 b = -c \u2227 a ^ 2 + b ^ 2 = 1`; that file is already imported at Rotation.lean:10.",
+   "file": "EpsilonEridani/Mathematics/DataStructures/Matrix/Rotation.lean",
+   "fix": "`rw [rotation_eq, of_mem_specialOrthogonalGroup_fin_two_iff]` and discharge the three conjuncts (`cos \u03b8 = cos \u03b8`, `-sin \u03b8 = -sin \u03b8`, `cos \u03b8 ^ 2 + (-sin \u03b8) ^ 2 = 1` by `neg_sq`/`cos_sq_add_sin_sq`).",
+   "issue": "`rotation_mem_specialOrthogonalGroup` re-derives orthogonality by an entrywise `fin_cases i <;> fin_cases j` bash plus a separate `det_fin_two_of` step, duplicating Mathlib's membership criterion for an explicit 2\u00d72 matrix.",
+   "line": "47"
+  },
+  {
+   "evidence": "mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean:141 `theorem cos_sq_arctan (x : \u211d) : cos (arctan x) ^ 2 = 1 / (1 + x ^ 2)`; Mixing.lean:10 already imports this file.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "fix": "`rw [weakMixingAngle_eq, cos_sq_arctan]; field_simp` \u2014 i.e. use `Real.cos_sq_arctan` instead of unwinding `cos_arctan` and the square root.",
+   "issue": "`cos_sq_weakMixingAngle` goes through `cos_arctan`, `div_pow`, `sq_sqrt`, re-deriving the squared-cosine-of-arctan identity Mathlib already states.",
+   "line": "211"
+  },
+  {
+   "evidence": "mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean:138 `theorem sin_sq_arctan (x : \u211d) : sin (arctan x) ^ 2 = x ^ 2 / (1 + x ^ 2)`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "fix": "`rw [weakMixingAngle_eq, sin_sq_arctan]; field_simp`.",
+   "issue": "Same duplication in `sin_sq_weakMixingAngle`: `sin_arctan` + `div_pow` + `sq_sqrt` re-derives the squared-sine-of-arctan identity.",
+   "line": "217"
+  }
+ ],
+ "head_sha": "a7d6aba46179f1dfccc19c6b1d4672b1e3e233dc",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 82,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "4c5870123d17957b3bc4fe9f8b2f4219765add9961993996d0eba66d6e1376d8",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261003T185512Z-82-reuse-04a364",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T18:55:12Z",
+ "submitted_by": "wdconinc",
+ "summary": "No duplicated declarations: the mass matrix, plane rotation and weak mixing angle are new, and the bridge to Parameters.weakMixingConsistency is real reuse. Three proofs still re-derive located Mathlib lemmas that their own imports already provide.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/Rotation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/UnitaryGroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Reflection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Compactification/OnePoint/ProjectiveLine.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/StandardModel/HiggsBoson/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/StandardModel/HiggsBoson/BasicExtensions.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0866198d6133b286562c3b93c96fa132f87e212d0a43ccc8f15426cbe3655464",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 130700,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 130700,
+  "cache_read_input_tokens": 1357101,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 244,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 244,
+    "cache_read_input_tokens": 117529,
+    "input_tokens": 2,
+    "output_tokens": 2766,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14607,
+  "output_tokens_details": {
+   "thinking_tokens": 8947
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
