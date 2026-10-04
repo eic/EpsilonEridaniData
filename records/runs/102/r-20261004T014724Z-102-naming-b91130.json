@@ -1,0 +1,200 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.7126702,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 213.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 67990,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 67990,
+    "cache_read_input_tokens": 577909,
+    "inference_geo": "",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8073,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8073,
+      "cache_read_input_tokens": 73214,
+      "input_tokens": 2,
+      "output_tokens": 3091,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17496,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 0.71267,
+ "dedupe_key": "eic/EpsilonEridani|102|2de43ed45982b79bf5f6496fa5e3c63e0521f883|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "a5e01a46c36ff85758bf19bedfa4bbe8e291de36a5e211d9556815f4bf9efc43",
+ "diff_sha256": "a5e01a46c36ff85758bf19bedfa4bbe8e291de36a5e211d9556815f4bf9efc43",
+ "duration_s": 213.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 327: `Real.log n + Real.eulerMascheroniConstant + (2 * (n : \u211d))\u207b\u00b9 - (8 * (n : \u211d) ^ 2)\u207b\u00b9 \u2264 (harmonic n : \u211d)`; the name stops at `inv_two_mul_sub`. Compare line 315 `harmonic_le_log_add_eulerMascheroniConstant_add_inv_two_mul`, which has no error term and is identical modulo the swap.",
+   "file": "EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "fix": "Name the subtracted term, e.g. `log_add_eulerMascheroniConstant_add_inv_two_mul_sub_inv_eight_mul_sq_le_harmonic`, or restate the pair as one `abs_sub_le`/`Set.Icc` bound.",
+   "issue": "`log_add_eulerMascheroniConstant_add_inv_two_mul_sub_le_harmonic` names the left side as `log n + \u03b3 + (2n)\u207b\u00b9 - ?` but never names the subtrahend `(8 * n ^ 2)\u207b\u00b9`, so the name reads as the strictly stronger (and false) claim `log N + \u03b3 + 1/(2N) \u2264 S\u2081(N)` \u2014 exactly the upper bound of line 315 with the sides swapped.",
+   "line": "326"
+  },
+  {
+   "evidence": "Mathlib names both sides: `isBigO_psi_sub_theta_sqrt` (Mathlib/NumberTheory/Chebyshev.lean:606), `isBigO_logb_log` (Analysis/SpecialFunctions/Log/Base.lean:526), `isBigO_cpow_rpow` (Pow/Asymptotics.lean:196).",
+   "file": "EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "fix": "Append the right-hand side: `..._inv` for line 353 and `..._inv_sq` for lines 341 and 371.",
+   "issue": "The three `isBigO_` names omit the comparison function, against Mathlib's `isBigO_<lhs>_<rhs>` convention; worse, line 341's trailing `_sub_inv_two_mul` reads as the bound, so `isBigO_harmonic_sub_log_sub_eulerMascheroniConstant_sub_inv_two_mul` (bound `(n\u00b2)\u207b\u00b9`) and `isBigO_harmonic_sub_log_sub_eulerMascheroniConstant` (bound `n\u207b\u00b9`, line 353) are indistinguishable in strength from their names. Same for `isBigO_digamma_natCast_sub_log_add_inv_two_mul` (line 371, bound `(n\u00b2)\u207b\u00b9`).",
+   "line": "341"
+  },
+  {
+   "evidence": "Line 241-244: `0 \u2264 (2 * a)\u207b\u00b9 + \u2026 \u2227 \u2026 \u2264 (8 * a ^ 2)\u207b\u00b9 - (8 * (a + 1) ^ 2)\u207b\u00b9`; line 300-303: `secondOrderError n \u2264 secondOrderError (n + j) \u2227 \u2026`. No `\u2208` occurs in either.",
+   "file": "EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "fix": "Either state the conclusion as `\u2026 \u2208 Set.Icc 0 (\u2026)` and keep a `_mem_Icc` suffix, or rename to the conjunction, e.g. `trapezoid_sub_log_one_add_inv_nonneg_and_le` and `secondOrderError_le_add_and_sub_le`.",
+   "issue": "`trapezoid_sub_log_one_add_inv_mem` (line 240) and `secondOrderError_add_mem` (line 299) end in `_mem`, but neither conclusion is a membership \u2014 both are conjunctions `0 \u2264 x \u2227 x \u2264 y` / `a \u2264 b \u2227 b - a \u2264 c`. The suffix describes a statement shape the lemma does not have.",
+   "line": "240"
+  }
+ ],
+ "head_sha": "2de43ed45982b79bf5f6496fa5e3c63e0521f883",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 102,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "bffcaae93be81ee1016eae29485006c257ec28bf486e24936afa7b1ccd2c823a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261004T014724Z-102-naming-b91130",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T01:47:24Z",
+ "submitted_by": "veprbl",
+ "summary": "Names are mostly in line with Mathlib's digamma/harmonic precedent, but the lower bound's name omits the error term it subtracts (so it advertises a false stronger inequality), the three `isBigO_` names omit the comparison function, and two private lemmas carry a `_mem` suffix with no membership in the statement.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/NumberTheory/Harmonic",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Gamma",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3155d8f0ac63a01a78d747d1c55a02f015a00c11dc2eff259cad7530c997c488",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 67990,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 67990,
+  "cache_read_input_tokens": 577909,
+  "inference_geo": "",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8073,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8073,
+    "cache_read_input_tokens": 73214,
+    "input_tokens": 2,
+    "output_tokens": 3091,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17496,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
