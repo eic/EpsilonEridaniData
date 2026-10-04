@@ -1,0 +1,220 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.9383030000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 128.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 199978,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 199978,
+    "cache_read_input_tokens": 1388536,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3116,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3116,
+      "cache_read_input_tokens": 134207,
+      "input_tokens": 2,
+      "output_tokens": 2569,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9765,
+    "output_tokens_details": {
+     "thinking_tokens": 6138
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.938303,
+ "dedupe_key": "eic/EpsilonEridani|96|01b7745e06b526e1928f0139fd59d20698afb420|placement|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "c2a8290321a58921e9fe134fa3170236c6275f4141eca9d78b7bd06b856df261",
+ "diff_prompt_sha256": "b4ba7b621e5d986c61dcbc9d8bdc70d5833b9822fea112d5a9b35159e38e3f02",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "c2a8290321a58921e9fe134fa3170236c6275f4141eca9d78b7bd06b856df261",
+ "duration_s": 128.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "scripts/resolve_deps.py:157-167 (`cached_master_tip` raw query, then `cache_published` delegating to `mathlib_cache.cache_published`); scripts/mathlib_cache.py:1-4 and :34-36 (`master_build_published` uses `build.yml` + `event=push` + `head_branch == master`).",
+   "file": "scripts/resolve_deps.py",
+   "fix": "Move the query into `mathlib_cache.py` (e.g. `newest_cached_master_commit(gh, repo)`, next to `master_build_published`) and have `cached_master_tip` call it with the module-level `gh`, exactly as `cache_published` does.",
+   "issue": "`GitHub.cached_master_tip` builds its own `build.yml/runs?branch=master&event=push&status=success` query, duplicating the mathlib-cache policy that `scripts/mathlib_cache.py` declares it owns (\"the one definition for every script\"); the immediately following `cache_published` (line 162) correctly delegates there. It is also the only entry in `GitHub` that is not a generic git fact. The two spellings already differ (`status=success` vs `status == \"completed\" and conclusion == \"success\"`), and this rev is exempted from the cache check in `resolve` (`m != cached`, line 371), so drift here directly decides whether an uncached rev is proposed.",
+   "line": 157
+  }
+ ],
+ "head_sha": "01b7745e06b526e1928f0139fd59d20698afb420",
+ "merge_base_sha": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 96,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "590941721809c3b050f894c970926e06dff288565e703e38d730f8bde056f53b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "placement",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261004T155945Z-96-placement-663624",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T15:59:45Z",
+ "submitted_by": "wdconinc",
+ "summary": "The prior finding (unused `parse_release` re-export in `toolchain_tags.py`) is fixed; docs, fixtures and test placement are all fine. One declaration is in the wrong home: `cached_master_tip` encodes the mathlib cache-publication signal inside `resolve_deps.py` instead of `mathlib_cache.py`, which the adjacent method delegates to.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/scripts/toolchain_tags.py",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_toolchain_tags.py",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/toolchain_tags.py",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_toolchain_tags.py",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/resolve_deps.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/mathlib_cache.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/web/Site/About.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_resolve_deps.py",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/pr_status/core.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/pr_status/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7f3899d533b6d34e07d7372fcfb53fcc20d4e53ad086ba2bd3d7caf523542ede",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 199978,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 199978,
+  "cache_read_input_tokens": 1388536,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3116,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3116,
+    "cache_read_input_tokens": 134207,
+    "input_tokens": 2,
+    "output_tokens": 2569,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9765,
+  "output_tokens_details": {
+   "thinking_tokens": 6138
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
