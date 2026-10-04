@@ -1,0 +1,207 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.966412,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 194.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 124703,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 124703,
+    "cache_read_input_tokens": 664634,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8009,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8009,
+      "cache_read_input_tokens": 97922,
+      "input_tokens": 2,
+      "output_tokens": 2980,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15479,
+    "output_tokens_details": {
+     "thinking_tokens": 11359
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 1.966412,
+ "dedupe_key": "eic/EpsilonEridani|84|ef0ac2eb8bb5d10ca4e5d90f53342b1a1ec4d48a|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "6ffa4fb4958f9e2d6c1aa80417360594be7796577b5172613e09b832ef657b00",
+ "diff_sha256": "6ffa4fb4958f9e2d6c1aa80417360594be7796577b5172613e09b832ef657b00",
+ "duration_s": 194.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 84-89; the repo otherwise accesses components through the Physlib API, e.g. `Lorentz.Vector.minkowskiProduct_toCoord` in EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean:191.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "fix": "Build `p` and `p'` with Physlib's Lorentz-vector constructor and discharge the four component equations with its `timeComponent`/`spatialPart` simp lemmas; if no such lemma exists, add a comment at the `let` stating which defeq is being used and why no rewrite is available.",
+   "issue": "`hps`, `hp's`, `hpt`, `hp't` (lines 86-89) are proved by bare `rfl`, relying on undocumented definitional equality between the raw function `fun \u03bc => Sum.elim (fun _ => E) (fun i => (P \u2022 e\u2080) i) \u03bc` and `Lorentz.Vector d` / `spatialPart` / `timeComponent` (the eta-expansion `fun i => (P \u2022 e\u2080) i` is written only to make `rfl` go through, and `spatialPart` lands in an `EuclideanSpace`/`PiLp` wrapper).",
+   "line": "86"
+  },
+  {
+   "evidence": "Emission.lean lines 110-111 vs 124-125 (byte-identical `have hA`), 115-116 vs 126-127 vs 166-167 (byte-identical `have hid`), 129-130.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "fix": "Add `sq_le_mul_of_abs_le : |m| \u2264 E \u2192 |m| \u2264 E' \u2192 m ^ 2 \u2264 E * E'` and `sqrt_mul_sqrt_le_mul_sub_sq` (non-strict, hypotheses `|m| \u2264 E`, `|m| \u2264 E'`), and restate `sq_sub_sq_sqrt_mul_sqrt` with `|m| \u2264 E`/`|m| \u2264 E'` so the `sq_le_sq.2 (\u2026 le_abs_self \u2026)` plumbing disappears from all three call sites; `emissionVirtuality_zero_nonneg` then reduces to two lines.",
+   "issue": "The same two setup blocks are repeated across three theorems: `hA : 0 \u2264 E * E' - m ^ 2` with the identical `nlinarith [sq_abs m, mul_le_mul \u2026]` at lines 110-111 and 124-125, and `hid := sq_sub_sq_sqrt_mul_sqrt (sq_le_sq.2 (hE.trans (le_abs_self E))) \u2026` at lines 115-116, 126-127 and 166-167. `emissionVirtuality_zero_nonneg`'s `hle` (129-130) re-proves the non-strict form of `sqrt_mul_sqrt_lt_mul_sub_sq`.",
+   "line": "110"
+  },
+  {
+   "evidence": "Lines 146-151 duplicate the shape of the named lemma at lines 93-95.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "fix": "Extract it as a named lemma (e.g. `emissionVirtuality_zero_self_eq_zero (hE : |m| \u2264 E) : emissionVirtuality m E E 0 = 0`) and use it in both branches.",
+   "issue": "`emissionVirtuality m E E 0 = 0` \u2014 the second degenerate case of the kinematic minimum \u2014 is proved inline inside `emissionVirtuality_zero_pos_iff` (lines 146-151, including its own `h1` side goal), while the parallel case is exposed as `emissionVirtuality_zero_eq_zero_of_mass_eq_zero`.",
+   "line": "146"
+  },
+  {
+   "evidence": "Basic.lean:217 `have hk0 : 0 < (PhotonKin.ofEmission p p').energy := by simp; linarith`; Basic.lean:218 same pattern for `hk1`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "fix": "Use `simp only [PhotonKin.ofEmission_energy]; linarith` (or `simpa using \u2026`) in both places.",
+   "issue": "Lines 217 and 218 use a bare non-terminal `simp` feeding `linarith` (`by simp; linarith`); any change to the simp set reshapes the goal and breaks `linarith` with no indication of what was being unfolded.",
+   "line": "217"
+  }
+ ],
+ "head_sha": "ef0ac2eb8bb5d10ca4e5d90f53342b1a1ec4d48a",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 84,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7a1703cf697b8a44b58c9fa4332543c1882480e101a8f22699ca52463a1b684f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261004T042957Z-84-proof-quality-3199ed",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T04:29:57Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly robust automation, but the mass-shell construction closes four component equations by undocumented `rfl` through the Lorentz.Vector/EuclideanSpace wrappers, and Emission.lean repeats the same setup block three times instead of factoring two reusable facts.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/PerturbationTheory/FeynmanDiagrams/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "deadc838ecb8461c3396210e62698e54689aca8b68628cea109d21f9b42af3db",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 124703,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 124703,
+  "cache_read_input_tokens": 664634,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8009,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8009,
+    "cache_read_input_tokens": 97922,
+    "input_tokens": 2,
+    "output_tokens": 2980,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15479,
+  "output_tokens_details": {
+   "thinking_tokens": 11359
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

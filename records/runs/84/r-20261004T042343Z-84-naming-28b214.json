@@ -1,0 +1,228 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2769834999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 198.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 143689,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 143689,
+    "cache_read_input_tokens": 840787,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2151,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2151,
+      "cache_read_input_tokens": 113013,
+      "input_tokens": 2,
+      "output_tokens": 4148,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16784,
+    "output_tokens_details": {
+     "thinking_tokens": 12066
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 2.276983,
+ "dedupe_key": "eic/EpsilonEridani|84|ef0ac2eb8bb5d10ca4e5d90f53342b1a1ec4d48a|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "6ffa4fb4958f9e2d6c1aa80417360594be7796577b5172613e09b832ef657b00",
+ "diff_sha256": "6ffa4fb4958f9e2d6c1aa80417360594be7796577b5172613e09b832ef657b00",
+ "duration_s": 198.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`QFT/Scattering/DIS/Kinematics/Basic.lean:47: namespace DisKinematics` and `QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean:54: namespace ExclKinematics` \u2014 the head noun is spelled out in both, only the qualifier is abbreviated.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "fix": "Rename to `PhotonKinematics` (and the `namespace PhotonKin` blocks at lines 86/123 accordingly).",
+   "issue": "`PhotonKin` abbreviates \"Kinematics\" to \"Kin\", against the repo's own precedent for kinematics structures.",
+   "line": 71
+  },
+  {
+   "evidence": "`DIS/Kinematics/Basic.lean:20-24` (`namespace EpsilonEridani/QFT/Scattering/DIS/Kinematics`) and `DIS/Exclusive/Kinematics/Basic.lean:20-25` both carry the `Kinematics` component for the same directory layout.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "fix": "Open `namespace Kinematics` in both files, matching the directory, so the names are `\u2026Scattering.Kinematics.emissionVirtuality` and `\u2026Photoproduction.Kinematics.ChargedSource`.",
+   "issue": "Both new subject files live under a `Kinematics/` directory but omit the `Kinematics` namespace component: `emissionVirtuality` lands directly in `EpsilonEridani.QFT.Scattering`, and `Photoproduction/Kinematics/Basic.lean:47` puts `ChargedSource`/`PhotonKin` directly in `\u2026Scattering.Photoproduction`.",
+   "line": 43
+  },
+  {
+   "evidence": "naming-conventions.md, \"Identifiers and theorem names\": \"The word 'of' is used to separate these hypotheses\" (cf. `lt_of_le_of_ne`); the mass here is instantiated, not hypothesised.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "fix": "Reserve `of_` for real hypotheses: e.g. `emissionVirtuality_zero_zero_eq_zero_of_nonneg`, with the instantiated mass conveyed positionally rather than by `of_`.",
+   "issue": "`emissionVirtuality_zero_eq_zero_of_mass_eq_zero` advertises a hypothesis `mass = 0` that the statement does not have \u2014 the mass slot is the literal `0` in `emissionVirtuality 0 E E' 0 = 0` \u2014 while the two actual hypotheses `0 \u2264 E`, `0 \u2264 E'` go unnamed. A caller who `apply`s it with `hm : m = 0` in context will not unify.",
+   "line": 93
+  },
+  {
+   "evidence": "naming-conventions.md \"Names of symbols\": `-` \u2192 `sub` for the binary function; `div_sub_\u2026` is the established spelling for `a / b - c` (cf. Mathlib `div_sub_div`, `div_sub_one`).",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "fix": "Name both after the denominator without a bare `_sub` after `div`, e.g. `div_mul_sub_sq_lt_emissionVirtuality_zero` and `div_mul_lt_emissionVirtuality_zero`, and bring `sq_mass_mul_sq_div_lt_photonVirtualityMin` into the same pattern.",
+   "issue": "`div_sub_lt_emissionVirtuality_zero` (`m\u00b2(E-E')\u00b2/(E*E' - m\u00b2) < \u2026`) reads under the symbol dictionary as `a / b - c < \u2026`, i.e. a top-level subtraction that is not there; and it differs from `div_lt_emissionVirtuality_zero` (line 173, denominator `E*E'`) only by that `_sub`, which no reader will decode as \"denominator has a `- m\u00b2`\". The Photoproduction analogue spells the numerator out instead (`sq_mass_mul_sq_div_lt_photonVirtualityMin`, Basic.lean:170), so the same shape is named two incompatible ways.",
+   "line": 160
+  },
+  {
+   "evidence": "naming-conventions.md: \"the name of theorem simply describes the conclusion\" (`sub_add_eq_add_sub`, `le_iff_lt_or_eq`); the sibling at Basic.lean:146 already names both sides.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "fix": "`sq_sub_sq_sqrt_mul_sqrt` \u2192 `sq_sub_sq_sqrt_mul_sqrt_eq_sq_mul_sq_sub`; `emissionVirtuality_zero_le` \u2192 `emissionVirtuality_zero_le_emissionVirtuality`.",
+   "issue": "Two names give only the left-hand side of their conclusion. `sq_sub_sq_sqrt_mul_sqrt` states an equality but carries no `eq` and no RHS (`= m\u00b2(E-E')\u00b2`), and the name is generic enough to collide in the subject namespace `EpsilonEridani.QFT.Scattering`; `emissionVirtuality_zero_le` (line 69) names no right-hand side, unlike its own downstream analogue `photonVirtualityMin_le_photonVirtuality` (Basic.lean:146).",
+   "line": 99
+  },
+  {
+   "evidence": "Mathlib names the radicand: `Mathlib/Analysis/Complex/Norm.lean:171 norm_eq_sqrt_sq_add_sq`, `Mathlib/Analysis/InnerProductSpace/Basic.lean:384 norm_eq_sqrt_real_inner`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "fix": "Rename to `norm_spatialPart_eq_sqrt_sq_sub_sq`.",
+   "issue": "`norm_spatialPart_eq_sqrt` ends at `sqrt` without naming the radicand `(p\u2070)\u00b2 - m\u00b2`, so the name does not distinguish this from any other `\u2016spatialPart\u2016 = \u221a\u2026` form.",
+   "line": 38
+  }
+ ],
+ "head_sha": "ef0ac2eb8bb5d10ca4e5d90f53342b1a1ec4d48a",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 84,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "de4d0723654b067882a537d59e481ce16aa1f47e0f3baff7fa7efc25b0cf0b31",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261004T042343Z-84-naming-28b214",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T04:23:43Z",
+ "submitted_by": "wdconinc",
+ "summary": "Several introduced names break in-repo and Mathlib naming precedent: the type abbreviation `PhotonKin`, a `Kinematics` namespace component dropped from both new subject files, an `_of_mass_eq_zero` suffix naming a hypothesis that does not exist, and a pair of opaque `div(_sub)_lt_\u2026` names that misparse under the standard dictionary. No notation is introduced.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e7ab67fcff70ead2cfa89a3ca754cf876355386044ec7d17bf7d4aac3c6e8562",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 143689,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 143689,
+  "cache_read_input_tokens": 840787,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2151,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2151,
+    "cache_read_input_tokens": 113013,
+    "input_tokens": 2,
+    "output_tokens": 4148,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16784,
+  "output_tokens_details": {
+   "thinking_tokens": 12066
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

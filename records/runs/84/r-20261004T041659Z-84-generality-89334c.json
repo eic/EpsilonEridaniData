@@ -1,0 +1,203 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.303045,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 184.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 147325,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 147325,
+    "cache_read_input_tokens": 879790,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2006,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2006,
+      "cache_read_input_tokens": 126800,
+      "input_tokens": 2,
+      "output_tokens": 3922,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15592,
+    "output_tokens_details": {
+     "thinking_tokens": 11828
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 2.303045,
+ "dedupe_key": "eic/EpsilonEridani|84|ef0ac2eb8bb5d10ca4e5d90f53342b1a1ec4d48a|generality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "6ffa4fb4958f9e2d6c1aa80417360594be7796577b5172613e09b832ef657b00",
+ "diff_sha256": "6ffa4fb4958f9e2d6c1aa80417360594be7796577b5172613e09b832ef657b00",
+ "duration_s": 184.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `photonVirtualityMin_pos` in `EpsilonEridani/` returns only its own declaration and the module docstring; lines 279-281 call `emissionVirtuality_zero_pos_iff ... .2 \u27e8hm.ne', _\u27e9` directly.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "fix": "State it at the energy level, e.g. `(hm : 0 < s.mass) (hE : s.mass \u2264 s.energy) (hx : 0 < x) (hE' : s.mass \u2264 (1 - x) * s.energy) : 0 < s.photonVirtualityMin x`, and derive the \u03b3-form (`1 \u2264 (1 - x) * s.gamma`) as a corollary if wanted; then `not_isReal_of_mem_photonRegion` applies it at `x = k.energyFraction s` rather than redoing the argument. Same restatement applies to `sq_mass_mul_sq_div_lt_photonVirtualityMin` (line 170), which shares `energy_bounds`.",
+   "issue": "`photonVirtualityMin_pos` assumes `0 < x`, `x < 1`, `1 \u2264 (1 - x) * s.gamma` (via `energy_bounds`), a \u03b3-packaged form that no consumer can supply: `photonRegion` membership gives `0 < k.energy` and `k.energy < s.energy - s.mass`. As a result the lemma has no use in the repo and `not_isReal_of_mem_photonRegion` (lines 278-281) reproves the same fact from `emissionVirtuality_zero_pos_iff` by hand.",
+   "line": 163
+  },
+  {
+   "evidence": "Lines 279-283: `hpos : 0 < emissionVirtuality ...` together with `hmin : ... \u2264 k.virtuality`, then `rw [PhotonKin.isReal_iff]; linarith` \u2014 the stronger inequality is in context.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "fix": "State `0 < k.virtuality` as the theorem (e.g. `virtuality_pos_of_mem_photonRegion`) and obtain `\u00ac k.IsReal` as a one-line corollary via `PhotonKin.isReal_iff` and `.ne'`.",
+   "issue": "`not_isReal_of_mem_photonRegion` concludes only `\u00ac k.IsReal` although its proof establishes `0 < emissionVirtuality s.mass s.energy (s.energy - k.energy) 0 \u2264 k.virtuality`. The strict positivity is exactly the roadmap's point (\"the virtuality integral has a strictly positive lower limit\", per the module docstring at line 28), and it is thrown away at the last `linarith`.",
+   "line": 275
+  },
+  {
+   "evidence": "Proof body rewrites `hp` with `minkowskiProduct_self_eq_sq_sub` to `p.timeComponent ^ 2 - \u2016p.spatialPart\u2016 ^ 2 = m ^ 2` and closes by `linarith`; substituting `\u27eap, p\u27eb\u2098` for `m ^ 2` makes the statement an unconditional consequence of that Physlib lemma.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "fix": "State `\u2016p.spatialPart\u2016 = \u221a(p.timeComponent ^ 2 - \u27eap, p\u27eb\u2098)` with no hypothesis (same one-line proof from `minkowskiProduct_self_eq_sq_sub`); at the two use sites in `neg_minkowskiProduct_sub_self_eq_emissionVirtuality` rewrite with `hp`/`hp'` afterwards.",
+   "issue": "`norm_spatialPart_eq_sqrt` carries an avoidable mass-shell hypothesis `\u27eap, p\u27eb\u2098 = m ^ 2` and an auxiliary variable `m`; the identity holds for every `p` with the Minkowski square in place of `m\u00b2`.",
+   "line": 38
+  }
+ ],
+ "head_sha": "ef0ac2eb8bb5d10ca4e5d90f53342b1a1ec4d48a",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 84,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e7efe282b1bd41d0bb5442a76dfa8a18e3ebd46a6d3f59350d7dd22dc05ecaf5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261004T041659Z-84-generality-89334c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T04:16:59Z",
+ "submitted_by": "wdconinc",
+ "summary": "The core angle/virtuality development sits at the right level, but the source-level positivity lemma is stated with \u03b3-form hypotheses that do not match the `photonRegion` membership conditions, so `not_isReal_of_mem_photonRegion` reproves it instead of applying it; that same theorem also discards the strict positivity it establishes, and `norm_spatialPart_eq_sqrt` carries a removable mass-shell hypothesis.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "58b4c7402323c549936b32c50a8ffd6ba1a15f7248a02a8296e4d569ac9fb9bf",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 147325,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 147325,
+  "cache_read_input_tokens": 879790,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2006,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2006,
+    "cache_read_input_tokens": 126800,
+    "input_tokens": 2,
+    "output_tokens": 3922,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15592,
+  "output_tokens_details": {
+   "thinking_tokens": 11828
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.533902,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 234.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 156901,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 156901,
+    "cache_read_input_tokens": 961864,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 469,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 469,
+      "cache_read_input_tokens": 137080,
+      "input_tokens": 2,
+      "output_tokens": 9304,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19354,
+    "output_tokens_details": {
+     "thinking_tokens": 14957
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 2.533902,
+ "dedupe_key": "eic/EpsilonEridani|84|ef0ac2eb8bb5d10ca4e5d90f53342b1a1ec4d48a|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "6ffa4fb4958f9e2d6c1aa80417360594be7796577b5172613e09b832ef657b00",
+ "diff_sha256": "6ffa4fb4958f9e2d6c1aa80417360594be7796577b5172613e09b832ef657b00",
+ "duration_s": 234.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 205 `private theorem photonVirtuality_energyFraction (k : PhotonKin) (hs : s.energy \u2260 0) (\u03b8 : \u211d)`; used at lines 230, 231, 254, 255, 278, all inside public theorems.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "fix": "Drop `private`; it is a characteristic restatement of `photonVirtuality` that later stages of \u00a70.2\u20130.5 need.",
+   "issue": "`private theorem photonVirtuality_energyFraction` is the only statement of the region's bounds in terms of the photon's own energy (`s.energy - k.energy`), yet `mem_photonRegion_iff` exports them only as `s.photonVirtualityMin (k.energyFraction s)`. Every consumer of `photonRegion` (the Layer 0.5 flux integral over `Q\u00b2` at fixed photon energy `k` is exactly this) must re-derive it from `photonVirtuality_def` plus `one_sub_energyFraction_mul_energy`. It is not a step specific to one argument: four theorems in this file use it (lines 230, 231, 254, 255, 278).",
+   "line": 205
+  },
+  {
+   "evidence": "Line 163-166 `photonVirtualityMin_pos (hm : 0 < s.mass) {x : \u211d} (hx : 0 < x) (hx1 : x < 1) (h\u03b3 : 1 \u2264 (1 - x) * s.gamma)` vs. line 198-202 `mem_photonRegion_iff ... \u2194 0 < k.energy \u2227 k.energy < s.energy - s.mass \u2227 ...`; lines 279-281 re-derive positivity from `emissionVirtuality_zero_pos_iff` rather than from `photonVirtualityMin_pos`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "fix": "Add public lemmas, for `0 < s.mass` and `k \u2208 s.photonRegion \u03b8max`, giving `0 < k.energyFraction s`, `k.energyFraction s < 1` and `1 \u2264 (1 - k.energyFraction s) * s.gamma` (the content of the `private energy_bounds` at line 154, in region form), and reprove lines 279-281 through `photonVirtualityMin_pos`.",
+   "issue": "`photonVirtualityMin_pos` and `sq_mass_mul_sq_div_lt_photonVirtualityMin` take `0 < x`, `x < 1`, `1 \u2264 (1 - x) * s.gamma`, while `mem_photonRegion_iff` delivers `0 < k.energy`, `k.energy < s.energy - s.mass`. No public lemma connects the two, so a consumer holding `k \u2208 s.photonRegion \u03b8max` cannot apply either headline bound without re-deriving all three hypotheses. The file demonstrates the gap itself: `not_isReal_of_mem_photonRegion` bypasses `photonVirtualityMin_pos` and calls `emissionVirtuality_zero_pos_iff` directly.",
+   "line": 163
+  },
+  {
+   "evidence": "Lines 279-283: `hpos : 0 < emissionVirtuality s.mass s.energy (s.energy - k.energy) 0` and `hmin : emissionVirtuality ... 0 \u2264 k.virtuality` are both in scope; the conclusion only uses them to rule out equality. Roadmap `Photoproduction/README.md:319`: \"The strict positivity is the reason the integrated flux converges\".",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "fix": "Export `virtuality_pos_of_mem_photonRegion : 0 < k.virtuality` as `hpos.trans_le hmin`, and derive `not_isReal_of_mem_photonRegion` from it via `ne'`.",
+   "issue": "`not_isReal_of_mem_photonRegion` exports only `\u00ac k.IsReal`, i.e. `k.virtuality \u2260 0`, although its proof establishes the strictly stronger `0 < k.virtuality` (from `hpos` and `hmin`). Strict positivity, not mere non-vanishing, is what the roadmap calls the reason the integrated flux converges, and it is what a consumer integrating from a positive lower endpoint needs; the stronger fact is thrown away at the interface.",
+   "line": 275
+  }
+ ],
+ "head_sha": "ef0ac2eb8bb5d10ca4e5d90f53342b1a1ec4d48a",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 84,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "74bfb7cfe93b683d1fafa0923a1af4e5ad890487f864584e0d2bbbc3990402a5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261004T041305Z-84-api-design-8f6205",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T04:13:05Z",
+ "submitted_by": "wdconinc",
+ "summary": "The exposure discipline (no `@[expose]`, complete `_def`/`mem_*_iff` set, correct `@[ext]`/`@[simp]`) is sound, but the `ChargedSource` surface is not usable as exported: the bridge from `photonRegion` membership to the energy-fraction hypotheses of the headline bounds is `private` or missing, and `not_isReal_of_mem_photonRegion` exports a strictly weaker conclusion than its proof establishes.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Metrics/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Metrics/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "aebb4fdb795bb23361c24b97efe80aa6fbddde193d79a6b11bc3e78bcf77b5a6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 156901,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 156901,
+  "cache_read_input_tokens": 961864,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 469,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 469,
+    "cache_read_input_tokens": 137080,
+    "input_tokens": 2,
+    "output_tokens": 9304,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19354,
+  "output_tokens_details": {
+   "thinking_tokens": 14957
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
