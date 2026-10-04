@@ -1,0 +1,228 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.8827136,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 273.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 69690,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 69690,
+    "cache_read_input_tokens": 918277,
+    "inference_geo": "",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 235,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 235,
+      "cache_read_input_tokens": 82750,
+      "input_tokens": 2,
+      "output_tokens": 3670,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22159,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 0.882714,
+ "dedupe_key": "eic/EpsilonEridani|101|6f130987cddd399a7d7550150e53ddc93d89d017|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "ab9bdc5ef6a834cfc0a2550913ad384bfa2e60590be33e00de8b2859eafe586a",
+ "diff_sha256": "ab9bdc5ef6a834cfc0a2550913ad384bfa2e60590be33e00de8b2859eafe586a",
+ "duration_s": 273.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`AnalyticOnNhd f s` unfolds to `\u2200 x, x \u2208 s \u2192 AnalyticAt \ud835\udd5c f x` (mathlib/Mathlib/Analysis/Analytic/Basic.lean:120-121), so the `b = a` branch gets `AnalyticAt f a` from `h b hb`; the proof body (lines 65-68) uses only `hb`. Contrast Mathlib's `continuousOn_dslope (h : s \u2208 \ud835\udcdd a)` (Mathlib/Analysis/Calculus/DSlope.lean:108), where the hypothesis is genuinely needed.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Analytic/DSlope.lean",
+   "fix": "Drop `(ha : a \u2208 s)`: `theorem analyticOnNhd_dslope : AnalyticOnNhd \ud835\udd5c (dslope f a) s \u2194 AnalyticOnNhd \ud835\udd5c f s`. The single in-repo call site passes `Set.mem_univ 0` and just drops the argument.",
+   "issue": "`analyticOnNhd_dslope (ha : a \u2208 s)` never uses `ha`; the hypothesis restricts the public iff to sets containing `a` for no reason.",
+   "line": "63"
+  },
+  {
+   "evidence": "Mathlib tags exactly these two shapes for the elementary functions: `@[fun_prop] lemma analyticAt_sin : AnalyticAt \u211d sin x` and `@[fun_prop] theorem contDiff_sin {n} : ContDiff \u211d n sin` (mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Deriv.lean:339-340, 327-328).",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "fix": "Add `@[fun_prop]` to both.",
+   "issue": "`analyticAt_sphericalBesselJ` and `contDiff_sphericalBesselJ` (line 213) are not tagged `@[fun_prop]`, while `differentiable_sphericalBesselJ` and `continuous_sphericalBesselJ` are; downstream `AnalyticAt`/`ContDiff` side goals must be discharged by hand.",
+   "line": "209"
+  },
+  {
+   "evidence": "The private `hasDerivAt_reduced` (line 128) holds at every `x`, and `sphericalBesselJ l = x ^ l * G l x` with `reduced_apply_zero : G l 0 = ((2 * l + 1)\u203c)\u207b\u00b9` (line 189) gives `j_1'(0) = G 1 0 = 1/3` immediately; since `reducedSphericalBesselJ` is `private` (line 65), no consumer can reproduce this.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "fix": "Expose the origin case, e.g. `deriv_sphericalBesselJ_apply_zero (l : \u2115) : deriv (sphericalBesselJ l) 0 = if l = 1 then 3\u207b\u00b9 else 0` with its `HasDerivAt` form; optionally also the pole-free whole-line identities `x * deriv (sphericalBesselJ l) x = l * sphericalBesselJ l x - x * sphericalBesselJ (l + 1) x` and `x * sphericalBesselJ (l + 2) x = (2 * l + 3) * sphericalBesselJ (l + 1) x - x * sphericalBesselJ l x`.",
+   "issue": "Every derivative lemma (`hasDerivAt_sphericalBesselJ`, `hasDerivAt_sphericalBesselJ_succ`, `deriv_sphericalBesselJ`, `deriv_sphericalBesselJ_succ`, `deriv_deriv_sphericalBesselJ`) requires `x \u2260 0`, so the public API fixes no value of `deriv (sphericalBesselJ l)` at the origin \u2014 notably `deriv (sphericalBesselJ 1) 0 = 1/3` is unprovable from it, and `sphericalBesselJ_equation` at `x = 0` is vacuous (every coefficient vanishes there). The API characterizes the function at `0` (`sphericalBesselJ_apply_zero`, `tendsto_sphericalBesselJ_div_pow`) but not its derivative, which is the point of the dslope construction.",
+   "line": "286"
+  },
+  {
+   "evidence": "Mathlib's counterparts are uniformly root-namespace: `ContinuousAt.of_dslope`, `DifferentiableAt.of_dslope`, `continuousAt_dslope_same`, `differentiableAt_dslope_of_ne` (mathlib/Mathlib/Analysis/Calculus/DSlope.lean:91, 121, 82, 141).",
+   "file": "EpsilonEridani/Mathematics/Analysis/Analytic/DSlope.lean",
+   "fix": "Put all four declarations under one namespace \u2014 either all in the root namespace mirroring Mathlib's `dslope` API, or all under `EpsilonEridani`.",
+   "issue": "One file exposes two namespace conventions: `AnalyticAt.of_dslope` is declared in the root namespace, while `analyticAt_dslope_same`, `analyticAt_dslope_of_ne` and `analyticOnNhd_dslope` sit under `EpsilonEridani` (line 43). Consumers need `open EpsilonEridani` for three of the four, and the iff lemmas do not resolve by name next to their Mathlib analogues.",
+   "line": "36"
+  }
+ ],
+ "head_sha": "6f130987cddd399a7d7550150e53ddc93d89d017",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 101,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "973348cb8b2f02bc6d3c543ee035cd42905c62e23f4cbf403cb1f90868f7d330",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261004T072348Z-101-api-design-170fdb",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T07:23:48Z",
+ "submitted_by": "veprbl",
+ "summary": "The surface is minimal and free of compatibility artifacts, but `analyticOnNhd_dslope` carries an unused hypothesis that needlessly weakens it, two regularity lemmas lack the `@[fun_prop]` tags their Mathlib counterparts carry, and no public lemma gives the derivative of `j_l` at the origin, so `deriv (sphericalBesselJ l) 0` is unreachable.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Analytic/DSlope.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Calculus/DSlope.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": false,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Sinc.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Distribution/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Distribution/BasicExtensions.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7e36d088c07a303f7bf6a64719e7f45e25b7a6c5cae47935b2ca2c8d4db20707",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 69690,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 69690,
+  "cache_read_input_tokens": 918277,
+  "inference_geo": "",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 235,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 235,
+    "cache_read_input_tokens": 82750,
+    "input_tokens": 2,
+    "output_tokens": 3670,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22159,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
