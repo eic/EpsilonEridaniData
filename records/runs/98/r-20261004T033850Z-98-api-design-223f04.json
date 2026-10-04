@@ -1,0 +1,289 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.857637,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 263.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 133865,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 133865,
+    "cache_read_input_tokens": 1961604,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2391,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2391,
+      "cache_read_input_tokens": 113657,
+      "input_tokens": 2,
+      "output_tokens": 4891,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21519,
+    "output_tokens_details": {
+     "thinking_tokens": 14175
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.857637,
+ "dedupe_key": "eic/EpsilonEridani|98|16f87586b072adc1c58a4a9e6c4460f384a496c5|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "c3fc6b421a733aff49203af9dac3693a3f7bfefd114382881a6af60979600c11",
+ "diff_sha256": "c3fc6b421a733aff49203af9dac3693a3f7bfefd114382881a6af60979600c11",
+ "duration_s": 263.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 97 sits between `namespace Lorentz.Vector` (line 94) and `end Lorentz.Vector` (line 199); `transverseBoost (v : E\u00b2)` is at line 338 inside `namespace EpsilonEridani` (line 329). `grep -rn 'scoped notation' EpsilonEridani/` returns this one hit only \u2014 it is the sole scoped notation in the repo, and it is placed in someone else's namespace.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Move the notation to `namespace EpsilonEridani` (scoped there), or drop it and spell `EuclideanSpace \u211d (Fin 2)` in signatures.",
+   "issue": "`scoped notation \"E\u00b2\" => EuclideanSpace \u211d (Fin 2)` is declared inside `namespace Lorentz.Vector`, i.e. scoped to an upstream (Physlib) namespace. Any Physlib consumer who writes `open Lorentz.Vector` silently acquires a two-character global-looking notation for the Euclidean plane. Conversely, the declarations that actually use `E\u00b2` in their signatures (`EpsilonEridani.ofLightFront`, `transverseBoost`, `transverseIsometry`) live in `EpsilonEridani`, so a consumer who opens only `EpsilonEridani` cannot parse or read back the notation in those signatures.",
+   "line": "97"
+  },
+  {
+   "evidence": "The file enters/leaves namespaces five times (lines 94, 201, 251, 329, 543); `grep -c '^namespace Lorentz\\|^namespace EpsilonEridani'` gives 5 for this file.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Put the whole light-front surface in one namespace \u2014 `Lorentz.Vector`, which is also where dot notation on the subject type works \u2014 or at minimum keep every lemma about a definition in that definition's namespace.",
+   "issue": "The light-front API is split across `Lorentz.Vector` and `EpsilonEridani` with no externally visible principle, producing near-duplicate names in different namespaces. `EpsilonEridani.transversePart_transverseBoost` (line 389) vs `Lorentz.Vector.transversePart_transverseBoost_eq_relativeTransverse` (line 549); `Lorentz.Vector.relativeTransverse` (305), `relativeTransverse_self` (323), `relativeTransverse_of_plusComponent_eq_zero` (318) vs `EpsilonEridani.relativeTransverse_transverseBoost` (450) and `EpsilonEridani.relativeTransverse_transverseIsometry` (526). A user who finds `relativeTransverse` by dot notation will not find its transformation lemmas in that namespace.",
+   "line": "0"
+  },
+  {
+   "evidence": "Physlib ships a Lorentz group development: `EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean:8` is `public import Physlib.Relativity.LorentzGroup.Restricted.FromBoostRotation`. Roadmap \u00a70.1 (`WignerDistributions/README.md:380`) says \"the light-front transverse-boost subgroup acts\u2026\".",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Expose the boosts as elements of Physlib's Lorentz group type, or at minimum add the bundled map `transverseBoostHom : Multiplicative E\u00b2 \u2192* (Lorentz.Vector 3 \u2243\u2097[\u211d] Lorentz.Vector 3)` built from the three existing lemmas, so the subgroup statement is a declaration rather than a reader's inference.",
+   "issue": "`transverseBoost` and `transverseIsometry` are Lorentz transformations (proved at lines 395 and 514) but are exposed as bare `Lorentz.Vector 3 \u2243\u2097[\u211d] Lorentz.Vector 3`, so the invariance is a side lemma rather than a fact carried by the type, and they cannot be composed with Physlib's Lorentz group. The roadmap's product is the transverse-boost *subgroup*, but the group law is exposed only as three unconnected lemmas (`transverseBoost_zero` 404, `transverseBoost_add` 409, `transverseBoost_symm` 424) with no homomorphism a consumer can apply or push along.",
+   "line": "338"
+  },
+  {
+   "evidence": "`grep -rn 'transverseIsometry_trans\\|transverseIsometry_refl\\|transverseIsometry_one' EpsilonEridani/` returns no matches; the boost analogues are at lines 404, 409, 424, 429.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Add `transverseIsometry_refl : transverseIsometry (LinearIsometryEquiv.refl \u211d E\u00b2) = LinearEquiv.refl \u211d (Lorentz.Vector 3)` (simp) and `transverseIsometry_trans (R S) : transverseIsometry (R.trans S) = (transverseIsometry R).trans (transverseIsometry S)`.",
+   "issue": "Incomplete characteristic API for `transverseIsometry`: only `transverseIsometry_symm` (508) is given, while the parallel boost side develops `_zero`, `_add`, `_symm`, `_sub`. There is no `transverseIsometry_refl` or `transverseIsometry_trans`, so a consumer cannot show that a composition of transverse isometries is again one without unfolding the definition \u2014 and `transverseBoost_trans_transverseIsometry` (519) is exactly the kind of conjugation law whose users need those.",
+   "line": "484"
+  }
+ ],
+ "head_sha": "16f87586b072adc1c58a4a9e6c4460f384a496c5",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 98,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "927595ec6afbc53f7c4b9e27882e37090ad5cca8b4cfb16e38fb1c699537ca9f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261004T033850Z-98-api-design-223f04",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T03:38:50Z",
+ "submitted_by": "wdconinc",
+ "summary": "The light-front characteristic API is largely complete and well annotated, but the surface is organized badly: a generic notation is squatted into Physlib's namespace, the API is split across two namespaces with near-duplicate names, the boost/isometry group structure is exposed only as loose lemmas rather than a homomorphism tied to Physlib's Lorentz group, and the isometry side lacks the composition laws the boost side has.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/InnerProductSpace/Orientation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Orientation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Analytic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace/TwoDim.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace/TwoDim.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace/EuclideanDist.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": false,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/lake-manifest.json",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 29,
+  "trace_truncated": false
+ },
+ "transcript_blob": "dc0e4a3493b1669d414a70c356e9261cfb8a5cf63d07346482a814a157ab2b3e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 133865,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 133865,
+  "cache_read_input_tokens": 1961604,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2391,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2391,
+    "cache_read_input_tokens": 113657,
+    "input_tokens": 2,
+    "output_tokens": 4891,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21519,
+  "output_tokens_details": {
+   "thinking_tokens": 14175
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

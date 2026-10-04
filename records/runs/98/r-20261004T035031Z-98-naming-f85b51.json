@@ -1,0 +1,239 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.7512525000000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 233.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 161614,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 161614,
+    "cache_read_input_tokens": 1299515,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 979,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 979,
+      "cache_read_input_tokens": 133650,
+      "input_tokens": 2,
+      "output_tokens": 5834,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19409,
+    "output_tokens_details": {
+     "thinking_tokens": 14394
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.751253,
+ "dedupe_key": "eic/EpsilonEridani|98|16f87586b072adc1c58a4a9e6c4460f384a496c5|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "c3fc6b421a733aff49203af9dac3693a3f7bfefd114382881a6af60979600c11",
+ "diff_sha256": "c3fc6b421a733aff49203af9dac3693a3f7bfefd114382881a6af60979600c11",
+ "duration_s": 233.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "LightFront.lean:94 `namespace Lorentz.Vector`, :97 `scoped notation \"E\u00b2\" => EuclideanSpace \u211d (Fin 2)`; grep for `scoped notation` over `EpsilonEridani/` returns only this line.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Drop the notation and write `EuclideanSpace \u211d (Fin 2)`, or if an abbreviation is wanted, declare it in EpsilonEridani's own namespace (the roadmap's own sketch uses `abbrev Transverse := EuclideanSpace \u211d (Fin 2)`, `EpsilonEridaniRoadmaps/WignerDistributions/Suggested.lean:44`).",
+   "issue": "`scoped notation \"E\u00b2\" => EuclideanSpace \u211d (Fin 2)` is declared inside `namespace Lorentz.Vector` (line 94), i.e. scoped into Physlib's namespace for an unrelated Mathlib type: any downstream file that does `open Lorentz.Vector` to work with four-vectors silently binds the token `E\u00b2`. Mathlib has no notation for `EuclideanSpace \u211d (Fin 2)`, so there is no upstream precedent to follow.",
+   "line": 97
+  },
+  {
+   "evidence": "LightFront.lean:201 and :329 are `namespace EpsilonEridani` with declarations directly inside; contrast `QFT/Scattering/DIS/SIDIS/Basic.lean:26-30` (`EpsilonEridani`/`QFT`/`Scattering`/`DIS`/`SIDIS`), `Mathematics/OrderedSimplexIntegral.lean:65-66` (`EpsilonEridani`/`OrderedSimplex`), `QFT/Shower/Sudakov.lean:80-82`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Wrap both blocks in a descriptive sub-namespace, e.g. `namespace EpsilonEridani` / `namespace LightFront`, giving `EpsilonEridani.LightFront.ofLightFront` etc.",
+   "issue": "`ofLightFront`, `transverseBoost`, `transverseIsometry` and their ~20 lemmas land directly in the root `EpsilonEridani` namespace (also at line 329). Every other file in the repo nests a descriptive sub-namespace, and root-level generic names like `EpsilonEridani.ofLightFront` say nothing about what they construct and will collide with the later GTMD light-front material (\u00a70.2 `Kinematics`).",
+   "line": 201
+  },
+  {
+   "evidence": "Naming conventions: \"the name of theorem simply describes the conclusion\" and \"The word 'of' is used to separate these hypotheses\"; both statements conclude `= transversePart _` (lines 313, 319).",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Rename to `relativeTransverse_eq_transversePart_of_transversePart_eq_zero` and `relativeTransverse_eq_transversePart_of_plusComponent_eq_zero`.",
+   "issue": "`relativeTransverse_of_transversePart_eq_zero` (line 312) and `relativeTransverse_of_plusComponent_eq_zero` (line 318) name only the hypothesis; the conclusion `relativeTransverse k P = transversePart k` is not described, so the names do not say what either lemma proves.",
+   "line": 312
+  }
+ ],
+ "head_sha": "16f87586b072adc1c58a4a9e6c4460f384a496c5",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 98,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7f67600ccc3b831d47a57ae7dfe87f575bcd042ab883568a187512c64f39e9b3",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261004T035031Z-98-naming-f85b51",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T03:50:31Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names mostly describe their conclusions in standard light-front terminology, but the `E\u00b2` notation is scoped into Physlib's `Lorentz.Vector` namespace, the EpsilonEridani-side declarations sit directly in the root namespace against repo convention, and two lemma names describe only their hypothesis.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/InnerProductSpace/Orientation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace/TwoDim.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": false,
+   "tool": "Bash"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Metrics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/SIDIS/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/OrderedSimplexIntegral.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Shower/Sudakov.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3195e74d49d38a44c19910a45239e4af35d2c93e54d364cf4490cfa7fc1fa0e0",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 161614,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 161614,
+  "cache_read_input_tokens": 1299515,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 979,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 979,
+    "cache_read_input_tokens": 133650,
+    "input_tokens": 2,
+    "output_tokens": 5834,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19409,
+  "output_tokens_details": {
+   "thinking_tokens": 14394
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
