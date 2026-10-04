@@ -1,0 +1,182 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.660419,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 156.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 112587,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 112587,
+    "cache_read_input_tokens": 436158,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6348,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6348,
+      "cache_read_input_tokens": 92755,
+      "input_tokens": 2,
+      "output_tokens": 5353,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12656,
+    "output_tokens_details": {
+     "thinking_tokens": 8956
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.660419,
+ "dedupe_key": "eic/EpsilonEridani|95|ed8c81e921bfec0cf29a58a32bc698cc6b2ae2bb|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "c4d2e3b9b2e353b7cbcbb6eb548d2484929a84fcfb21547878112ebab99fad42",
+ "diff_sha256": "c4d2e3b9b2e353b7cbcbb6eb548d2484929a84fcfb21547878112ebab99fad42",
+ "duration_s": 156.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 269-271, 288-292, 327-332 contain the three `Integrable.of_bound` terms; no `Integrable`/`AEMeasurable` lemma about `qVector` or `twoParticleCorrelation` appears anywhere in the file's declarations.",
+   "file": "EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "fix": "Extract and export public lemmas under `h\u03c6 : \u2200 j, AEMeasurable (\u03c6 j) P`: `aemeasurable_qVector`, `integrable_qVector`, `integrable_norm_qVector_sq` (from `hint`), and `integrable_twoParticleCorrelation`; use them in the existing proofs instead of the inline `have`s.",
+   "issue": "No integrability API is exported. `Integrable (fun \u03c9 => fourier n (\u03c6 j \u03c9))` (lines 269-271), `Integrable (fun \u03c9 => fourier n (\u03c6 j \u03c9) * conj (fourier n (\u03c6 k \u03c9)))` (`hpair`, 288-292) and `Integrable (fun \u03c9 => \u2016qVector n (fun j => \u03c6 j \u03c9)\u2016 ^ 2)` (`hint`, 327-332) are all constructed inline and discarded, so the next \u00a75.1 target (the variance of \u27e82\u27e9, which the PR description names as the remaining bullet) must unfold `twoParticleCorrelation` and re-derive the `AEMeasurable.of_eval h\u03c6` + `norm_qVector_le` + `pow_le_pow_left\u2080` argument.",
+   "line": "327"
+  },
+  {
+   "evidence": "`norm_qVector_le` at line 122; its sole use is line 332 inside `hint`. `twoParticleCorrelation` (line 138) has only `_def`, `_eq_sum`, `_neg`, `_add_const` \u2014 no order lemma. \u2016Q\u2016\u00b2 \u2264 M\u00b2 gives (M\u00b2\u2212M)/(M(M\u22121)) = 1.",
+   "file": "EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "fix": "Add `twoParticleCorrelation_le_one` and `neg_inv_sub_one_le_twoParticleCorrelation` (or a single `|\u27e82\u27e9| \u2264 1`-style statement) for `1 < Fintype.card \u03b9`, derived from `norm_qVector_le` and `norm_nonneg`.",
+   "issue": "`norm_qVector_le` is exported but its only in-file use is the integrability bound at line 332; the derived observable `twoParticleCorrelation` carries no bound. \u00a75.2 defines `vn{2}` as `\u221a\u27e82\u27e9`, so a consumer needing `\u27e82\u27e9 \u2264 1` must unfold `twoParticleCorrelation` and redo the division estimate.",
+   "line": "122"
+  }
+ ],
+ "head_sha": "ed8c81e921bfec0cf29a58a32bc698cc6b2ae2bb",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 95,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b8ce66ea4d3c5f001bc19a24fa034855a1f1caccc4572070e25ce85aef7e2a76",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261004T141914Z-95-api-design-8d792f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T14:19:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "Bodies are correctly unexposed, the simp set is coherent, and there is no compatibility surface, but the characteristic API is incomplete: no integrability/measurability lemmas are exported for `qVector` or `twoParticleCorrelation` (all three are built inline and thrown away), and `norm_qVector_le` is never transported to a bound on `twoParticleCorrelation`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/NuclearMedium/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/SIDIS/Asymmetries/Harmonics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d3076c941b045879e70ae77aa7fba2d969bd8a405c562bd680b4663a8d122bfa",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 112587,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 112587,
+  "cache_read_input_tokens": 436158,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6348,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6348,
+    "cache_read_input_tokens": 92755,
+    "input_tokens": 2,
+    "output_tokens": 5353,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12656,
+  "output_tokens_details": {
+   "thinking_tokens": 8956
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
