@@ -1,0 +1,186 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.386767,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 217.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 155351,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 155351,
+    "cache_read_input_tokens": 804184,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1875,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1875,
+      "cache_read_input_tokens": 120579,
+      "input_tokens": 2,
+      "output_tokens": 5147,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17243,
+    "output_tokens_details": {
+     "thinking_tokens": 13710
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 2.386767,
+ "dedupe_key": "eic/EpsilonEridani|84|e890aae4c32e1ca5f7a1cdaf13e64ab7ef54a2e1|naming|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "47fea0e9d5c6124425e270e515bc8cd9c81c59c4266c0fd80a4269c29378f884",
+ "diff_sha256": "47fea0e9d5c6124425e270e515bc8cd9c81c59c4266c0fd80a4269c29378f884",
+ "duration_s": 217.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Ring/Commute.lean:204 `lemma sub_sq (a b : R) : (a - b) ^ 2 = \u2026`; :200 `lemma sq_sub_sq (a b : R) : a ^ 2 - b ^ 2 = \u2026`. Statement at Emission.lean:110-111 has RHS `m ^ 2 * (E - E') ^ 2`.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "fix": "Rename to `sq_sub_sq_sqrt_mul_sqrt_eq_sq_mul_sub_sq`, keeping `mul_sub_sq` for `E * E' - m ^ 2` only, so `sub_sq` vs `sq_sub` carries the distinction.",
+   "issue": "`sq_sub_sq_sqrt_mul_sqrt_eq_sq_mul_sq_sub` names the RHS `m ^ 2 * (E - E') ^ 2` as `sq_mul_sq_sub`, but `sq_sub` denotes `a ^ 2 - b` in Mathlib; `(a - b) ^ 2` is `sub_sq`. The name therefore describes `m\u00b2 * (E\u00b2 - \u2026)`. It collides with the file's other expression `E * E' - m ^ 2`, named `mul_sub_sq` at lines 118, 129 and 171, so the two distinct quantities carry token-swapped names.",
+   "line": 108
+  },
+  {
+   "evidence": "Every Mathlib `div_mul_*` denotes `(a/b)*c`: `Mathlib/Algebra/GroupWithZero/Basic.lean:534 div_mul_eq_mul_div`, `Mathlib/Algebra/Group/Basic.lean:588 div_mul_div_comm`, `Mathlib/Algebra/Order/Field/Basic.lean:157 div_mul_le_div_mul_of_div_le_div`; naming-conventions.md: \"the name of theorem simply describes the conclusion\".",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "fix": "Spell the numerator and read the LHS left to right: `sq_mul_sub_sq_div_mul_lt_emissionVirtuality_zero`, `sq_mul_sub_sq_div_mul_sub_sq_lt_emissionVirtuality_zero`, and `sq_mul_sq_div_one_sub_lt_photonVirtualityMin`.",
+   "issue": "`div_mul_lt_emissionVirtuality_zero` (LHS `m ^ 2 * (E - E') ^ 2 / (E * E')`) names only the denominator; under the standard dictionary `div_mul` reads as `(a / b) * c`, so the name describes a product, not a quotient. Same defect at line 171 `div_mul_sub_sq_lt_emissionVirtuality_zero` (denominator `E * E' - m ^ 2`), which differs from line 184 only by `_sub_sq`, and at Photoproduction/Kinematics/Basic.lean:178 `div_one_sub_lt_photonVirtualityMin` (LHS `m ^ 2 * x ^ 2 / (1 - x)`, readable as `a / 1 - b`).",
+   "line": 184
+  }
+ ],
+ "head_sha": "e890aae4c32e1ca5f7a1cdaf13e64ab7ef54a2e1",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 84,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "555699c11c0604475f795a3fa5378582d74e854ef6d5c5938013a8d76d16eabc",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261004T140207Z-84-naming-bd75f7",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T14:02:07Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two naming defects remain: a token-order error (`sq_sub` used where Mathlib's `sub_sq` is meant) that swaps the names of the two distinct quadratic expressions in the same file, and a family of bound lemmas named only after the denominator of their left-hand side, using the `div_mul` token that Mathlib reserves for `(a/b)*c`. Everything else (namespaces, structure names, iff/eq strength) checks out.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "80b4b2ad024a98dc5fcf20bf345706fe20794807640584dc61013acd9f7ae6a2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 155351,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 155351,
+  "cache_read_input_tokens": 804184,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1875,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1875,
+    "cache_read_input_tokens": 120579,
+    "input_tokens": 2,
+    "output_tokens": 5147,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17243,
+  "output_tokens_details": {
+   "thinking_tokens": 13710
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
