@@ -1,0 +1,212 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.0580289999999994,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 183.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 210921,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 210921,
+    "cache_read_input_tokens": 1200218,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1793,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1793,
+      "cache_read_input_tokens": 151639,
+      "input_tokens": 2,
+      "output_tokens": 2356,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13944,
+    "output_tokens_details": {
+     "thinking_tokens": 10237
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "23700a5c53abba60891e032ce40d402e22915de3",
+ "cost_usd": 3.058029,
+ "dedupe_key": "eic/EpsilonEridani|97|fbf2399510a38ec63641fb4820bca61206137961|api-design|claude-opus-5|a04d8ed758f03dbb|production|8",
+ "diff_blob": "1ffe2d20f19e69286d8bf00c129e8a3215e814b30fd4ba1dda8b7aa6543f86c5",
+ "diff_prompt_sha256": "18986ea9993dbe3df001f04a2c92894e3098193c32c311efcb0356320a4b67f9",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "adc17280ea7d8a15e334f50e7e945547dd5680d4ce1a33ba0099163db6bb78e8",
+ "duration_s": 183.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "check-bump.sh diff: `-from mathlib_cache import master_build_published` / `+from mathlib_cache import cache_source`. `grep -rn 'master_build_published|release_cache_published'` over ./code matches only mathlib_cache.py:38,40,45,57,63,70,72 and docstring prose; `grep -n 'mc\\.(master_build_published|release_cache_published|on_master)' scripts/test_mathlib_cache.py` matches only line 119 (`mc.on_master`). resolve_deps.py:163 calls `mathlib_cache.newest_master_build`, :172 `mathlib_cache.cache_published`.",
+   "file": "scripts/mathlib_cache.py",
+   "fix": "Rename the three to `_master_build_published`, `_release_cache_published`, `_on_master` (the convention `_runs` at :30 already uses), leaving `cache_source`, `cache_published` and `newest_master_build` (the one with an external caller, resolve_deps.py:163) as the module's surface; update the internal uses at :61, :70, :72 and the `on_master` test at test_mathlib_cache.py:119.",
+   "issue": "This PR moved check-bump.sh step 2b from `master_build_published` to `cache_source`, leaving `master_build_published` (:38), `release_cache_published` (:57) and `on_master` (:52) with no caller outside this module \u2014 not even in test_mathlib_cache.py except `on_master` (:119). The module docstring edited in this diff now says \"Both call `cache_source` / `cache_published`\", so the public surface no longer matches the stated one, and a public half-answer is how a future script asks the cache question differently from the guard \u2014 the split these shared modules exist to prevent.",
+   "line": 38
+  }
+ ],
+ "head_sha": "fbf2399510a38ec63641fb4820bca61206137961",
+ "merge_base_sha": "23700a5c53abba60891e032ce40d402e22915de3",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 97,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "33787bbfc540b87c0dadbf808e592d8a477f4903b04ad4c9c7d8ae18f1a5add2",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 8,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261005T034929Z-97-api-design-73662b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-05T03:49:29Z",
+ "submitted_by": "wdconinc",
+ "summary": "The prior round's duplicated \"direct dependency\" rule is fixed: `bump_manifest.direct_packages` is the one exported definition and both the guard and the resolver import it. One issue left: this PR narrows `mathlib_cache.py`'s documented surface to `cache_source`/`cache_published` but leaves the superseded half-answers public with no caller.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/check-bump.sh",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/resolve_deps.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/check-bump.sh",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/resolve_deps.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/bump_moves.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/bump_manifest.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/mathlib_cache.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_check_bump.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_mathlib_cache.py",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "976d09cb99fe26e976154da4467c48290f6b7376cc0d398e120ec322bb92482d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 210921,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 210921,
+  "cache_read_input_tokens": 1200218,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1793,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1793,
+    "cache_read_input_tokens": 151639,
+    "input_tokens": 2,
+    "output_tokens": 2356,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13944,
+  "output_tokens_details": {
+   "thinking_tokens": 10237
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
