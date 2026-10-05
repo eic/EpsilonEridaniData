@@ -1,0 +1,177 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.780049,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 199.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 202621,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 202621,
+    "cache_read_input_tokens": 775018,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5715,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5715,
+      "cache_read_input_tokens": 140860,
+      "input_tokens": 2,
+      "output_tokens": 2395,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14650,
+    "output_tokens_details": {
+     "thinking_tokens": 12532
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "23700a5c53abba60891e032ce40d402e22915de3",
+ "cost_usd": 2.780049,
+ "dedupe_key": "eic/EpsilonEridani|97|b8c209774f87b3b9dfa08018367f6e0ba75c1358|generality|claude-opus-5|a04d8ed758f03dbb|production|7",
+ "diff_blob": "ad5ba03751d0d26982fbfdfd005df66c44dbc6808f320497bd427da5163b381c",
+ "diff_prompt_sha256": "1de322ec48dd728bcf2bf1221d49a6db7911510f93545d8151f7683fac0bce5e",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "75beb922372b02ed826566f45a98633ec346bda86180706cf5b8ffd3b83526dd",
+ "duration_s": 199.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `dependency_move` appears only at scripts/bump_moves.py:32,93 and scripts/test_bump_moves.py; resolve_deps.py:299 calls only `mathlib_move`. resolve_deps.py:278-281 builds `shas` from `tip` and `parent(boundary)`; only the boundary commits themselves are filtered by `compare(...)== \"ahead\"` (resolve_deps.py:142). check-bump.sh:178-202 requires `ahead` + on-branch for every moved direct dependency.",
+   "file": "scripts/resolve_deps.py",
+   "fix": "Route dep candidates through the shared rule: drop any `sha` for which `bump_moves.dependency_move(self.src.compare(repo, pin, sha)[0], on_branch)` returns no kind (the compares are already memoised in `GitHub.compare`), so mathlib and the other direct dependencies are both filtered by `bump_moves`.",
+   "issue": "`bump_moves.dependency_move` (the new rule for non-mathlib direct dependencies) has only `bump_moves.decide` as a caller; `Resolver.candidates` takes `src.tip(repo, branch)` and `src.parent(boundary)` with no forwardness check, so the resolver can offer a dep rev that is `diverged`/`behind` the pin (merge-commit topology, or a rewritten branch), which check-bump.sh step 2 now rejects as \"not-forward\". The module docstring (\"the one rule, for the guard and the resolver\") and docs/dependency-bumps.md:46 (\"All are at or after the pin: a dependency never moves backward\") assert an invariant only the guard enforces.",
+   "line": 275
+  }
+ ],
+ "head_sha": "b8c209774f87b3b9dfa08018367f6e0ba75c1358",
+ "merge_base_sha": "23700a5c53abba60891e032ce40d402e22915de3",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 97,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "a3ee20b1938065370b438cd60b3fe6adf2934b225a9e813154bc0b45fe7f8e1b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 7,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261005T011638Z-97-generality-ce3c28",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-05T01:16:38Z",
+ "submitted_by": "wdconinc",
+ "summary": "The manifest derivation and the guard are generalized to the natural level (order-parametric, direct deps read from base's manifest, no unused helpers). But the new non-mathlib rule `dependency_move` is applied only by the guard: the resolver never checks that a Physlib/TauCeti candidate is `ahead` of its pin, so it can propose a set the guard refuses.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/scripts/bump_moves.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lake_requires.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/bump_manifest.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/check-bump.sh",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/resolve_deps.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lean_versions.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/resolve_deps.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/resolve_deps.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/docs/dependency-bumps.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6591e1cebaf1303fafe4484ed0d56e0e7ab174aecd875c026430d2a783e03443",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 202621,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 202621,
+  "cache_read_input_tokens": 775018,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5715,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5715,
+    "cache_read_input_tokens": 140860,
+    "input_tokens": 2,
+    "output_tokens": 2395,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14650,
+  "output_tokens_details": {
+   "thinking_tokens": 12532
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

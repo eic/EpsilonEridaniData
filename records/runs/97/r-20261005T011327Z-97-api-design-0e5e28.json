@@ -1,0 +1,221 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.3144560000000007,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 190.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 219782,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 219782,
+    "cache_read_input_tokens": 1540462,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2880,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2880,
+      "cache_read_input_tokens": 160007,
+      "input_tokens": 2,
+      "output_tokens": 1539,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13851,
+    "output_tokens_details": {
+     "thinking_tokens": 10027
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "23700a5c53abba60891e032ce40d402e22915de3",
+ "cost_usd": 3.314456,
+ "dedupe_key": "eic/EpsilonEridani|97|b8c209774f87b3b9dfa08018367f6e0ba75c1358|api-design|claude-opus-5|a04d8ed758f03dbb|production|7",
+ "diff_blob": "ad5ba03751d0d26982fbfdfd005df66c44dbc6808f320497bd427da5163b381c",
+ "diff_prompt_sha256": "1de322ec48dd728bcf2bf1221d49a6db7911510f93545d8151f7683fac0bce5e",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "75beb922372b02ed826566f45a98633ec346bda86180706cf5b8ffd3b83526dd",
+ "duration_s": 190.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "check-bump.sh:154 `direct=[n for n, p in base.items() if p.get(\"inherited\") is False]`; bump_manifest.py:110 `base_direct = {p[\"name\"]: p for p in base[\"packages\"] if p.get(\"inherited\") is False}` and :117 `pr_direct = {n for n, p in pr_by.items() if p.get(\"inherited\") is False}`; resolve_deps.py:231 `pins = {p[\"name\"]: p[\"rev\"] for p in manifest[\"packages\"] if not p.get(\"inherited\")}`.",
+   "file": "scripts/check-bump.sh",
+   "fix": "Export `direct_packages(manifest)` from scripts/bump_manifest.py beside `shape` (which the heredoc already imports at check-bump.sh:143) and call it from all three sites: the `direct_deps` heredoc, `problems`' `base_direct`/`pr_direct`, and `resolve_deps.read_project`'s `pins`.",
+   "issue": "\"direct dependencies of a manifest\" is defined inline in the heredoc (`p.get(\"inherited\") is False`), repeated at scripts/bump_manifest.py:110, and spelled differently at scripts/resolve_deps.py:231 (`not p.get(\"inherited\")`). Every other rule this PR shares between guard and resolver got an importable home (bump_moves.mathlib_move, mathlib_cache.cache_source, lake_requires.repo_slug, bump_manifest.shape); this one did not, and the two spellings disagree for an entry with no `inherited` key \u2014 the resolver counts it as a direct pin, the guard does not and rejects with \"direct dependencies differ from base\", i.e. the resolver-proposes/guard-refuses divergence these shared modules exist to prevent.",
+   "line": 154
+  }
+ ],
+ "head_sha": "b8c209774f87b3b9dfa08018367f6e0ba75c1358",
+ "merge_base_sha": "23700a5c53abba60891e032ce40d402e22915de3",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 97,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "172baa112e860d372d4697f35c5ee05296f37087ca4f937979bbb99fe1b1cc49",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 7,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261005T011327Z-97-api-design-0e5e28",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-05T01:13:27Z",
+ "submitted_by": "wdconinc",
+ "summary": "The post-PR surface carries no compatibility shim and every new public name has a real consumer, but the PR's central notion \u2014 a manifest's direct (non-inherited) dependencies \u2014 is the one shared rule with no exported home: it is spelled three times, including inside a bash heredoc, and the resolver's spelling is not equivalent to the guard's.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/bump_moves.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/mathlib_cache.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/bump_manifest.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lake_requires.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/check-bump.sh",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_check_bump.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_lake_requires.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/docs/ci-performance-gate.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pr-profile.yml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pr-profile.yml",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/resolve_deps.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_lint_scope.py",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9222db7d804258066552f25f5e6c816e6720c0dd8c3b799c5e161dbf2ce74c3b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 219782,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 219782,
+  "cache_read_input_tokens": 1540462,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2880,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2880,
+    "cache_read_input_tokens": 160007,
+    "input_tokens": 2,
+    "output_tokens": 1539,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13851,
+  "output_tokens_details": {
+   "thinking_tokens": 10027
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
