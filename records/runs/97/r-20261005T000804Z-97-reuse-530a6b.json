@@ -1,0 +1,193 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.0629229999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 166.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 213768,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 213768,
+    "cache_read_input_tokens": 1224216,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3993,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3993,
+      "cache_read_input_tokens": 151610,
+      "input_tokens": 2,
+      "output_tokens": 2591,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12521,
+    "output_tokens_details": {
+     "thinking_tokens": 9313
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "23700a5c53abba60891e032ce40d402e22915de3",
+ "cost_usd": 3.062923,
+ "dedupe_key": "eic/EpsilonEridani|97|fefa986b8d1a4d55eaff4defeffa5e47a1a0ecbd|reuse|claude-opus-5|a04d8ed758f03dbb|production|6",
+ "diff_blob": "39fde610ef12ebc5a1fa85379c6381999a4c19185ca3a7b394e9d4bc355e96e5",
+ "diff_prompt_sha256": "ba09fea42d5fff5e2fcdfc9555c17e3661e58bbe1292ae18c749014f6cd72c9d",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "cf36a291beab0a8032fbd9eb9bff0781478a1123a0c0374623c6552a33cb4aed",
+ "duration_s": 166.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "check-bump.sh:291 `ML_TC=\"${ML_TC_NEW:-$(gh api \"repos/$ML_SLUG/contents/lean-toolchain?ref=$ML_REV_P\" --jq '.content' 2>/dev/null | base64 -d | tr -d '[:space:]')}\"` vs bump_moves.py:70-71 `content = gh(f\"repos/{slug}/contents/lean-toolchain?ref={rev_new}\", jq=\".content\"); fetched[\"toolchain\"] = \"\".join(base64.b64decode(content).decode().split())`.",
+   "file": "scripts/check-bump.sh",
+   "fix": "Give bump_moves.py a `toolchain SLUG REV` subcommand that reuses the same decode path as `order()` (or have `decide` print the toolchain for every mathlib move) and call it from step 4 instead of the inline `gh api | base64 -d | tr`, keeping `${ML_TC_NEW:-...}` as the reuse.",
+   "issue": "Step 4's fallback `gh api repos/$ML_SLUG/contents/lean-toolchain?ref=$ML_REV_P --jq .content | base64 -d | tr -d '[:space:]'` is a second implementation of the fetch-and-decode this PR added in `bump_moves.decide`'s `order()` (bump_moves.py:70-71, `base64.b64decode(content).decode()` + `\"\".join(...split())`). Both paths are live: the python one only runs for an off-branch/diverged mathlib move, so a plain descendant or an unchanged pin takes the bash copy, and the two normalisations must stay in step for the step-2 order comparison and the step-4 equality to be about the same string.",
+   "line": 291
+  },
+  {
+   "evidence": "test_check_bump.py:86 `self.compare(TC, TC_OLD, TC_NEW, \"ahead\")`; 145-148 `s.compare(TC, TC_NEW, \"main\", \"diverged\"); self.assertFail(s, \"TauCeti new rev\")`; 279-283 the same two calls and the same assertion. test_bump_manifest.py:190 `{n: load(n) for n in (\"mathlib\", \"Physlib\", \"TauCeti\")}` vs 220-222 `{\"mathlib\": self.load(THREE, \"mathlib\"), \"Physlib\": self.load(THREE, \"Physlib\"), \"TauCeti\": self.load(THREE, \"TauCeti\")}`.",
+   "file": "scripts/test_check_bump.py",
+   "fix": "Delete the clone at lines 279-283 (the case is already covered at 145-148). Same kind of near-clone at test_bump_manifest.py:220-222, where `LastRequireWins.mathlib_first` rebuilds the deps dict `three()` already returns (line 190) \u2014 use `three()[2]` there.",
+   "issue": "`test_a_dependency_other_than_mathlib_off_the_branch_is_still_refused` is a verbatim duplicate of `test_dependency_must_stay_on_its_branch` (line 145): its first `s.compare(TC, TC_OLD, TC_NEW, \"ahead\")` only restates the `Scenario.__init__` default (line 86), leaving the identical `compare(TC, TC_NEW, \"main\", \"diverged\")` and the identical `assertFail(s, \"TauCeti new rev\")`.",
+   "line": 279
+  }
+ ],
+ "head_sha": "fefa986b8d1a4d55eaff4defeffa5e47a1a0ecbd",
+ "merge_base_sha": "23700a5c53abba60891e032ce40d402e22915de3",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 97,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "97d68aa13b0440163daf47fec59b7bd50d08564543949e4acf344f7a813d9a49",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 6,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261005T000804Z-97-reuse-530a6b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-05T00:08:04Z",
+ "submitted_by": "wdconinc",
+ "summary": "All five prior findings are fixed: the move rule, branch-membership predicate, url normalisation, fixture file and test helper are each single-sourced now. Two residual near-clones remain: the guard has two implementations of \"fetch mathlib's lean-toolchain at the new rev\", and one new guard test is a verbatim duplicate of another.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/scripts/check-bump.sh",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/bump_moves.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_bump_manifest.py",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/resolve_deps.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_check_bump.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/bump_manifest.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/resolve_deps.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_bump_manifest.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3d13e4af02a0e7616759964cc8b452fa6df1f75a1115475b1a6f4eef64eaaf89",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 213768,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 213768,
+  "cache_read_input_tokens": 1224216,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3993,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3993,
+    "cache_read_input_tokens": 151610,
+    "input_tokens": 2,
+    "output_tokens": 2591,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12521,
+  "output_tokens_details": {
+   "thinking_tokens": 9313
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
