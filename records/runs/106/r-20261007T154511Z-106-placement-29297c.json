@@ -1,0 +1,264 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9209420000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 141.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 105700,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 105700,
+    "cache_read_input_tokens": 1187894,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 684,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 684,
+      "cache_read_input_tokens": 95945,
+      "input_tokens": 2,
+      "output_tokens": 3464,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10793,
+    "output_tokens_details": {
+     "thinking_tokens": 5983
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.920942,
+ "dedupe_key": "eic/EpsilonEridani|106|447b802b4548412f64ee7f4738e7c0092521982d|placement|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "3a94e94f5ed76a02770c3f596eb47497bb546eddc8aac44b4ad9f51f3f1e81ad",
+ "diff_sha256": "3a94e94f5ed76a02770c3f596eb47497bb546eddc8aac44b4ad9f51f3f1e81ad",
+ "duration_s": 141.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Imports at lines 8-11 are only `EpsilonEridani.Mathematics.LieAlgebra.SpecialUnitary`, `Physlib.Particles.StandardModel.HiggsBoson.Basic`, `Mathlib.LinearAlgebra.Matrix.IsDiag`, `Physlib.Relativity.PauliMatrices.Basic` \u2014 no `QFT.Scattering` dependency. By contrast the siblings are PVES-specific: `Parameters.lean:13-14` \"used by parity-violating electron scattering (PVES) contracts\"; `NeutralCurrent.lean:14-15`. `EpsilonEridani/Particles/StandardModel/{Fermions,HiggsBoson}` already exists as the SM-content subtree.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ElectricCharge.lean",
+   "fix": "Move the file to the Standard Model subtree, e.g. `EpsilonEridani/Particles/StandardModel/Electroweak/ElectricCharge.lean`, with namespace `EpsilonEridani.Particles.StandardModel.Electroweak`, alongside the existing `Particles/StandardModel/Fermions/*` and `HiggsBoson/*` modules.",
+   "issue": "Nothing in this file is about deep-inelastic or parity-violating electron scattering: `isospinT3`, `doubletAction`, `singletAction`, `stabilizer`, `chargeGenerator` and the main theorems are Standard Model gauge-algebra content, and the file imports nothing from `EpsilonEridani/QFT/Scattering/**`. Burying it under `QFT/Scattering/DIS/PVES/` makes broadly useful material reachable only by importing a PVES module and misrepresents its scope.",
+   "line": 0
+  },
+  {
+   "evidence": "`code/EpsilonEridani/Particles/StandardModel/HiggsBoson/BasicExtensions.lean` is a 9-line file whose only content is `public import Physlib.Particles.StandardModel.HiggsBoson.Basic`; roadmap `ElectroweakAndBSM/README.md:383-384`: \"the scalar direction comes from `EpsilonEridani.Particles.StandardModel.HiggsBoson.BasicExtensions`\", and :235-236 names it as \"the scalar sector\".",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ElectricCharge.lean",
+   "fix": "Move `higgsVacuum` and `higgsVacuum_ofLp` into `EpsilonEridani/Particles/StandardModel/HiggsBoson/BasicExtensions.lean` and import that module here instead of `Physlib.Particles.StandardModel.HiggsBoson.Basic`.",
+   "issue": "`higgsVacuum` and `higgsVacuum_ofLp` (line 188) are extensions of Physlib's `HiggsVec` with no dependence on any other declaration in this file; their canonical home is `EpsilonEridani/Particles/StandardModel/HiggsBoson/BasicExtensions.lean`, which currently contains only the import of `Physlib.Particles.StandardModel.HiggsBoson.Basic` and is the module the roadmap designates for the scalar direction.",
+   "line": 184
+  },
+  {
+   "evidence": "`grep -n 'PVES' code/EpsilonEridani.lean` returns lines 111-119 covering `PVES.Basic`, `PVES.Electroweak.NeutralCurrent`, `PVES.Electroweak.Parameters`, `PVES.Examples.*`, `PVES.Interference.Basic`, `PVES.Processes.{EE,EP}` \u2014 no `ElectricCharge` entry.",
+   "file": "EpsilonEridani.lean",
+   "fix": "Add the module to `EpsilonEridani.lean` in alphabetical position (before `EpsilonEridani.QFT.Scattering.DIS.PVES.Electroweak.NeutralCurrent` at line 112, or at the new path if the file is moved per the first finding).",
+   "issue": "The new module is not registered in the library root aggregate, so its declarations are unreachable from `import EpsilonEridani` even though every other PVES module is listed there.",
+   "line": 112
+  }
+ ],
+ "head_sha": "447b802b4548412f64ee7f4738e7c0092521982d",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 106,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9172d466d6cd6d36c546ccba4b402801244a6d7eca6a01f12cf347756e267899",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261007T154511Z-106-placement-29297c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-07T15:45:11Z",
+ "submitted_by": "wdconinc",
+ "summary": "The module is general Standard Model electroweak gauge-algebra material with no dependency on anything under QFT/Scattering, yet it is placed five levels deep inside the PVES scattering tree; the Higgs vacuum in particular belongs in the existing HiggsBoson extension module the roadmap names. It is also missing from the library root aggregate.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ElectricCharge.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/StandardModel/HiggsBoson/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/StandardModel/HiggsBoson/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/StandardModel/Fermions/LeptonDoubletExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/NeutralCurrent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/SU2Generators.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 25,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a696d5aa9bfef3b1be59fd9fc44af6e8ce12e98572cada1521352c1adf1cb99c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105700,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 105700,
+  "cache_read_input_tokens": 1187894,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 684,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 684,
+    "cache_read_input_tokens": 95945,
+    "input_tokens": 2,
+    "output_tokens": 3464,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10793,
+  "output_tokens_details": {
+   "thinking_tokens": 5983
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
