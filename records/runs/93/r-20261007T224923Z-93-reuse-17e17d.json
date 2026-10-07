@@ -1,0 +1,194 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3511585000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 107.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 92925,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 92925,
+    "cache_read_input_tokens": 449907,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2140,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2140,
+      "cache_read_input_tokens": 79746,
+      "input_tokens": 2,
+      "output_tokens": 2014,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 7875,
+    "output_tokens_details": {
+     "thinking_tokens": 4293
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.351159,
+ "dedupe_key": "eic/EpsilonEridani|93|cc25ca5b8d82f4084c6853dffa15e768cb223498|reuse|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "4405fb98f4171aa9f608c543cd06c0bc0ccd6f1de2c1181e6f1f5901474f5875",
+ "diff_sha256": "4405fb98f4171aa9f608c543cd06c0bc0ccd6f1de2c1181e6f1f5901474f5875",
+ "duration_s": 107.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/Matrix/BilinearForm.lean:305 `lemma Matrix.isSymm_toBilin'_iff_isSymm {M : Matrix n n R\u2081} : M.toBilin'.IsSymm \u2194 M.IsSymm` (in `Mathlib.LinearAlgebra.Matrix.BilinearForm`, imported at line 8); mathlib/Mathlib/LinearAlgebra/Matrix/Symmetric.lean:158 `theorem isSymm_diagonal ... : (diagonal v).IsSymm` and :83 `theorem IsSymm.map {A : Matrix n n \u03b1} (h : A.IsSymm) (f : \u03b1 \u2192 \u03b2) : (A.map f).IsSymm`. The file already uses `minkowskiMatrix.as_diagonal` at line 93.",
+   "file": "EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "fix": "State it as `theorem complexMinkowskiProduct_isSymm : (complexMinkowskiProduct (d := d)).IsSymm := Matrix.isSymm_toBilin'_iff_isSymm.mpr ((minkowskiMatrix.as_diagonal \u25b8 Matrix.isSymm_diagonal _).map _)`, and use `.eq z w` where the pointwise form is needed.",
+   "issue": "`complexMinkowskiProduct_symm` re-derives symmetry by unfolding into components (`simp only [complexMinkowskiProduct_apply, mul_comm]`), and states it unbundled, so Mathlib's symmetric-bilinear-form API is unavailable to consumers. It is also unused in the file.",
+   "line": "97"
+  },
+  {
+   "evidence": "Lines 81-87, 104-109, 129-134, 182-187: e.g. `noncomputable def minkowskiSection (d : \u2115) : Submodule \u211d (ComplexSeparation d) := LinearMap.range ofMinkowski` immediately followed by `theorem minkowskiSection_def : minkowskiSection d = LinearMap.range ofMinkowski := (rfl)`. No occurrence of any `*_def` name elsewhere in the file or repo.",
+   "file": "EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "fix": "Delete all four. The usable forms are already present: `complexMinkowskiProduct_apply` (90), `ofMinkowski_apply` (113), `mem_minkowskiSection_iff` (138), `mem_euclideanSection_iff` (192); where raw unfolding is wanted, `simp [complexMinkowskiProduct]` works, as the author's own proof at line 93 does.",
+   "issue": "Four `_def` theorems restate their own definitions verbatim by `rfl` and are never used: `complexMinkowskiProduct_def` (85), `ofMinkowski_def` (108), `minkowskiSection_def` (133), `euclideanSection_def` (186). Each duplicates the `def` body one or three lines above it, adding names with no content.",
+   "line": "85"
+  }
+ ],
+ "head_sha": "cc25ca5b8d82f4084c6853dffa15e768cb223498",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 93,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "31a801c4778e25e3a17e928cf01140e3b7060f31ae8604e3f46aa81319154f8f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261007T224923Z-93-reuse-17e17d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-07T22:49:23Z",
+ "submitted_by": "wdconinc",
+ "summary": "The mathematics is new and reuses Physlib's Minkowski/causality API and Mathlib's bilinear-form and finite-dimensional-subspace API; no in-repo duplication found. Two items remain: symmetry is re-proved by components instead of via Mathlib's matrix-symmetry bridge, and four `_def` lemmas restate their own definitions by `rfl`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/PerturbationTheory/FeynmanDiagrams/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/Symmetric.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/BilinearForm.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5ba7b310d77ccc285a58ed049b08b5cefee967c23c6f8dc1f8df59134ab9644e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 92925,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 92925,
+  "cache_read_input_tokens": 449907,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2140,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2140,
+    "cache_read_input_tokens": 79746,
+    "input_tokens": 2,
+    "output_tokens": 2014,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 7875,
+  "output_tokens_details": {
+   "thinking_tokens": 4293
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
