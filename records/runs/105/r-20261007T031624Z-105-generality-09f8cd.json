@@ -1,0 +1,96 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.167449,
+   "error_kind": "no_verdict",
+   "model": "gemini-3.1-pro",
+   "returncode": 0,
+   "secs": 270.4,
+   "usage": {
+    "cache_read_tokens": 179916,
+    "input_tokens": 72305,
+    "output_tokens": 22245,
+    "thinking_tokens": 20910,
+    "total_tokens": 94550
+   }
+  },
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.087198,
+   "model": "gemini-3.1-pro",
+   "returncode": 0,
+   "secs": 112.0,
+   "usage": {
+    "cache_read_tokens": 8134,
+    "input_tokens": 15127,
+    "output_tokens": 15183,
+    "thinking_tokens": 14381,
+    "total_tokens": 30310
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_estimated": true,
+ "cost_usd": 0.254647,
+ "dedupe_key": "eic/EpsilonEridani|105|ab797e3d37ea5370476410d0f97dc406949424da|generality|gemini-3.1-pro|a04d8ed758f03dbb|production|1",
+ "diff_blob": "fe8aa074a184d8410d9aa6f0c541ba7e66ee614cda292acef3d79a890f895702",
+ "diff_sha256": "fe8aa074a184d8410d9aa6f0c541ba7e66ee614cda292acef3d79a890f895702",
+ "duration_s": 382.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "If `G^2` is not integrable, its integral evaluates to `0`, making the effective cross section `0\u207b\u00b9 = 0`, which is trivially `\u2264 \u03bc.real S`.",
+   "file": "EpsilonEridani/Particles/Parton/DoubleParton/PocketFormula.lean",
+   "fix": "Remove `hG2` and use `by_cases hG2 : Integrable (fun y => G y ^ 2) \u03bc` in the proof.",
+   "issue": "`hG2 : MemLp G 2 \u03bc` is stronger than Mathlib convention, as the bound trivially holds (`0 \u2264 \u03bc.real S`) if `G` is not square-integrable.",
+   "line": 235
+  },
+  {
+   "evidence": "If `\u03bc.real S = 0`, the indicator function evaluates to `0`, its integral is `0`, and the LHS is `0\u207b\u00b9 = 0`, matching the RHS `0`.",
+   "file": "EpsilonEridani/Particles/Parton/DoubleParton/PocketFormula.lean",
+   "fix": "Remove the `h\u03bcS0 : \u03bc S \u2260 0` and `h\u03bcS : \u03bc S \u2260 \u22a4` assumptions.",
+   "issue": "`h\u03bcS0` and `h\u03bcS` are visibly unused because the equality trivially holds (`0 = 0`) when `\u03bc S = 0` or `\u03bc S = \u22a4`.",
+   "line": 269
+  },
+  {
+   "evidence": "If `w = 0`, `gaussianProfile` evaluates to `0`, its `effectiveCrossSection` is `0\u207b\u00b9 = 0`, and the RHS is `4 * \u03c0 * 0 ^ 2 = 0`.",
+   "file": "EpsilonEridani/Particles/Parton/DoubleParton/PocketFormula.lean",
+   "fix": "Remove the `hw : w \u2260 0` assumption.",
+   "issue": "`hw` is visibly unused because the theorem trivially holds (`0 = 0`) for `w = 0`.",
+   "line": 381
+  }
+ ],
+ "head_sha": "ab797e3d37ea5370476410d0f97dc406949424da",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "gemini-3.1-pro",
+ "pr": 105,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3219d8d7d5141cd1a87f50351ad1e5be36ed2b1b86ad3a3f83a1c4dff29b432c",
+ "provider": "gemini",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261007T031624Z-105-generality-09f8cd",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-07T03:16:24Z",
+ "submitted_by": "wdconinc",
+ "summary": "Several theorems include unnecessary assumptions that can be removed because the statements trivially hold via Lean's garbage values (like `0\u207b\u00b9 = 0` and integrals of non-integrable functions being `0`). Removing these aligns the API with Mathlib's convention of dropping integrability or non-zero assumptions when false antecedents still yield a true statement.",
+ "transcript_blob": "63dd598737f1a995c4615ccda0935ca3555cc7799bedbaf7fb063aaff609b56d",
+ "usage": {
+  "cache_read_tokens": 8134,
+  "input_tokens": 15127,
+  "output_tokens": 15183,
+  "thinking_tokens": 14381,
+  "total_tokens": 30310
+ },
+ "verdict": "request_changes"
+}
