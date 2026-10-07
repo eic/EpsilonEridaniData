@@ -1,0 +1,74 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.044553,
+   "model": "gemini-3.1-pro",
+   "returncode": 0,
+   "secs": 57.3,
+   "usage": {
+    "cache_read_tokens": 8127,
+    "input_tokens": 12614,
+    "output_tokens": 7281,
+    "thinking_tokens": 6473,
+    "total_tokens": 19895
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_estimated": true,
+ "cost_usd": 0.044553,
+ "dedupe_key": "eic/EpsilonEridani|106|282f88aa6f78b222d7c20b5abd827c8a0da0c1d9|api-design|gemini-3.1-pro|a04d8ed758f03dbb|production|1",
+ "diff_blob": "448874483fc16f06590fbdb9de241a64d474705d4aa45a6c7e907fd30d64f39a",
+ "diff_sha256": "448874483fc16f06590fbdb9de241a64d474705d4aa45a6c7e907fd30d64f39a",
+ "duration_s": 57.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`@[expose] public section`",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ElectricCharge.lean",
+   "fix": "Remove `@[expose]` to keep definition bodies unexposed, as required by the public API policy.",
+   "issue": "The section is marked `@[expose]`, which over-exposes the bodies of all definitions in the file.",
+   "line": 45
+  },
+  {
+   "evidence": "Lines 77, 91, 106, 124, 129, 165 use `rfl` or `Iff.rfl`",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ElectricCharge.lean",
+   "fix": "Change `:= rfl` to `:= (rfl)` and `:= Iff.rfl` to `:= (Iff.rfl)` in `doubletAction_apply`, `singletAction_apply`, `mem_stabilizer_iff`, `coe_chargeGenerator_fst`, `chargeGenerator_snd`, and `higgsVacuum_ofLp`.",
+   "issue": "Characteristic lemmas restating definition bodies use `:= rfl` and `:= Iff.rfl`, which makes them rely on defeq downstream and defeats body hiding.",
+   "line": 0
+  }
+ ],
+ "head_sha": "282f88aa6f78b222d7c20b5abd827c8a0da0c1d9",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "gemini-3.1-pro",
+ "pr": 106,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "bde538b7a5b8672558665191126315a8a9e493ff0b859a7e78ee39d870da3cf7",
+ "provider": "gemini",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261007T081650Z-106-api-design-a2db70",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-07T08:16:50Z",
+ "submitted_by": "wdconinc",
+ "summary": "The PR over-exposes definition bodies by placing the entire module inside an `@[expose] public section` and relying on defeq downstream. Characteristic lemmas must use `:= (rfl)` instead of `:= rfl` so they do not force consumers to unfold opaque definitions.",
+ "transcript_blob": "fb607079651226c400862bf8b8f752d1f0bb805e301b96652ec145bcbd886a8c",
+ "usage": {
+  "cache_read_tokens": 8127,
+  "input_tokens": 12614,
+  "output_tokens": 7281,
+  "thinking_tokens": 6473,
+  "total_tokens": 19895
+ },
+ "verdict": "request_changes"
+}
