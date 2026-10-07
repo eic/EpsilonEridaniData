@@ -1,0 +1,81 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.044588,
+   "model": "gemini-3.1-pro",
+   "returncode": 0,
+   "secs": 57.4,
+   "usage": {
+    "cache_read_tokens": 8130,
+    "input_tokens": 13576,
+    "output_tokens": 7048,
+    "thinking_tokens": 6506,
+    "total_tokens": 20624
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_estimated": true,
+ "cost_usd": 0.044588,
+ "dedupe_key": "eic/EpsilonEridani|91|0d70d7cca57926ed92ffff9e60f6708cb0354cc6|api-design|gemini-3.1-pro|a04d8ed758f03dbb|production|1",
+ "diff_blob": "1041ac7e1364cb5dbb6ee0a47b73ae84f766a56412d9aadc1a7570a946a5fc85",
+ "diff_sha256": "1041ac7e1364cb5dbb6ee0a47b73ae84f766a56412d9aadc1a7570a946a5fc85",
+ "duration_s": 57.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`netCharge_def` and `eikonalCurrent_def` rely entirely on `(L i).signedCharge`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "fix": "Drop `charge` and `direction` from `ChargedLeg` in favor of a single `signedCharge : \u211d` field.",
+   "issue": "`ChargedLeg` carries `charge` and `direction` as free data since all laws and operations (`eikonalCurrent`, `netCharge`) only ever use their product `signedCharge`. This defeats `@[ext]`, as distinct terms like `(Q, outgoing)` and `(-Q, incoming)` behave identically.",
+   "line": 101
+  },
+  {
+   "evidence": "It is a trivial special case of the generalized `apply_eikonalCurrent_eikonalCurrent` with `M = L`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "fix": "Remove `apply_eikonalCurrent_eikonalCurrent_self` entirely.",
+   "issue": "`apply_eikonalCurrent_eikonalCurrent_self` is duplicated API.",
+   "line": 185
+  },
+  {
+   "evidence": "Similar elimination lemmas like `netCharge_chargedLegs` and `eikonalCurrent_sumElim` correctly carry `@[simp]`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "fix": "Annotate `eikonalCurrent_chargedLegs` with `@[simp]`.",
+   "issue": "`eikonalCurrent_chargedLegs` is a normal-form characteristic lemma but lacks the `@[simp]` annotation.",
+   "line": 261
+  }
+ ],
+ "head_sha": "0d70d7cca57926ed92ffff9e60f6708cb0354cc6",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "gemini-3.1-pro",
+ "pr": 91,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0f805379b13a3a29acdda8f6c307a2f177c1728c113a3effadd4a5c6026dc48b",
+ "provider": "gemini",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261007T040553Z-91-api-design-21d2d7",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-07T04:05:53Z",
+ "submitted_by": "wdconinc",
+ "summary": "The PR exposes duplicated API, carries unconstrained free data in `ChargedLeg` that breaks extensionality, and omits a required `@[simp]` annotation.",
+ "transcript_blob": "6c81b5235f0aafcf2715c04fc66671060c47cb233a201d67873c34c8ab8e6da3",
+ "usage": {
+  "cache_read_tokens": 8130,
+  "input_tokens": 13576,
+  "output_tokens": 7048,
+  "thinking_tokens": 6506,
+  "total_tokens": 20624
+ },
+ "verdict": "request_changes"
+}
