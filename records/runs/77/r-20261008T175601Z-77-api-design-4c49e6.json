@@ -1,0 +1,171 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.618826,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 221.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 103056,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 103056,
+    "cache_read_input_tokens": 331562,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2013,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2013,
+      "cache_read_input_tokens": 87722,
+      "input_tokens": 2,
+      "output_tokens": 9938,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16897,
+    "output_tokens_details": {
+     "thinking_tokens": 13753
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "aee9dda17fd4f54d0e36f2e9e29b74f70a8c6192",
+ "cost_usd": 1.618826,
+ "dedupe_key": "eic/EpsilonEridani|77|ff759593dfb68746920302007b6e8b5626cd1047|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "33c7b0fa52f9a0c48a5db9d7e747b45b72bb3b68d4ccb81dd7e49b76ba3f3c7c",
+ "diff_sha256": "33c7b0fa52f9a0c48a5db9d7e747b45b72bb3b68d4ccb81dd7e49b76ba3f3c7c",
+ "duration_s": 221.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 64-68 (`| n + 2 => C ((n + 2 : \u211d)\u207b\u00b9) * (...)`) vs lines 78-89; grep for `legendre_add_two` in the file returns only the two un-solved forms and the private `coeff_legendre_add_two`. Lines 93 and 101 both open with `refine funext fun x => ?_`, i.e. the file itself does not rewrite with its own defining equation.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/Legendre/Basic.lean",
+   "fix": "Add a public solved form `legendre_add_two' (n : \u2115) : legendre (n + 2) = C ((n + 2 : \u211d)\u207b\u00b9) * ((2 * n + 3 : \u211d[X]) * X * legendre (n + 1) - (n + 1 : \u211d[X]) * legendre n) := (rfl)` (parenthesised `rfl` so downstream does not acquire a defeq dependence), plus the eval counterpart `(legendre (n + 2)).eval x = ((2 * n + 3) * x * (legendre (n + 1)).eval x - (n + 1) * (legendre n).eval x) / (n + 2)`, and use them in `legendre_two`/`legendre_three`.",
+   "issue": "`legendre_add_two` states `(n + 2 : \u211d[X]) * legendre (n + 2) = (2n+3) X P\u2099\u208a\u2081 - (n+1) P\u2099`, and `legendre_eval_add_two` (line 87) likewise keeps the `(n+2)` factor on the left. There is no public lemma that solves for `legendre (n + 2)` or for `(legendre (n + 2)).eval x`. A consumer rewriting or computing `legendre (n+2)` must either unfold the `@[expose]`d body (line 64-68) or supply `(n + 2 : \u211d[X]) \u2260 0` and apply `mul_left_cancel\u2080` while inventing the `C ((n+2 : \u211d)\u207b\u00b9) * \u2026` right-hand side themselves \u2014 \u211d[X] has no division. This is the missing `*_def` restatement; the PR's own `legendre_two` (line 92) and `legendre_three` (line 100) avoid it by dropping to `Polynomial.funext` over evaluations instead of rewriting with the recurrence.",
+   "line": 78
+  },
+  {
+   "evidence": "Line 140 `private theorem coeff_legendre_add_two`; its two uses are at line 153 (`coeff_legendre_of_lt`, public) and line 163 (`coeff_legendre_self`, public), both of which are themselves part of the exported surface, so the lemma is not an argument-local step.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/Legendre/Basic.lean",
+   "fix": "Drop `private` from `coeff_legendre_add_two` and list it with the other coefficient lemmas.",
+   "issue": "`coeff_legendre_add_two` is `private`. It is the characteristic restatement of the defining recurrence at coefficient level and the only handle on `(legendre n).coeff k` for general `k` besides `coeff_legendre_self` and `coeff_legendre_of_lt`, both of which are public. Re-deriving it downstream requires redoing the `coeff_X_mul` index shift the proof performs; a user who wants the explicit coefficient formula, the coefficient parity, or the `shiftedLegendre` identification the module docstring advertises as future work (line 44-46) has to duplicate it.",
+   "line": 140
+  }
+ ],
+ "head_sha": "ff759593dfb68746920302007b6e8b5626cd1047",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 77,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e6cdb3dbf66ce3753ac43f7d30bbdf085741823a5c40e09f53efb79f7fbc05bb",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261008T175601Z-77-api-design-4c49e6",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-08T17:56:01Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is otherwise minimal and well annotated, but the defining recurrence ships only in the un-solved form `(n+2) * P\u2099\u208a\u2082 = \u2026`, with no `legendre (n+2) = \u2026` restatement, so a consumer who wants to compute or rewrite must unfold the exposed body or hand-roll `mul_left_cancel\u2080`. The coefficient-level restatement of the same recurrence is also hidden as `private`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/Legendre/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Calculus/Polynomial.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "93367b55912c0ffb10341e1d0c244fd2648e4686cd0c8a1646d32b58ee60166e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 103056,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 103056,
+  "cache_read_input_tokens": 331562,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2013,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2013,
+    "cache_read_input_tokens": 87722,
+    "input_tokens": 2,
+    "output_tokens": 9938,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16897,
+  "output_tokens_details": {
+   "thinking_tokens": 13753
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
