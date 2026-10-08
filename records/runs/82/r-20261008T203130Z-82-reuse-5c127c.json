@@ -1,0 +1,242 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4491804999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 229.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 126043,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 126043,
+    "cache_read_input_tokens": 1501541,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 36,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2432,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2432,
+      "cache_read_input_tokens": 110145,
+      "input_tokens": 2,
+      "output_tokens": 2190,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17512,
+    "output_tokens_details": {
+     "thinking_tokens": 12059
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 2.44918,
+ "dedupe_key": "eic/EpsilonEridani|82|62147db30609b20310463fc26f178c991b3b23fc|reuse|claude-opus-5|a04d8ed758f03dbb|production|3",
+ "diff_blob": "a872593a63fb75a398a1f5a24ba122f2a13790e92a9547575c8082af267b56b0",
+ "diff_sha256": "a872593a63fb75a398a1f5a24ba122f2a13790e92a9547575c8082af267b56b0",
+ "duration_s": 229.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Data/Matrix/Mul.lean:910 `theorem mul_vecMulVec (M : Matrix l m \u03b1) (x : m \u2192 \u03b1) (y : n \u2192 \u03b1) : M * vecMulVec x y = vecMulVec (M *\u1d65 x) y`; :915 `theorem vecMulVec_mul (x : l \u2192 \u03b1) (y : m \u2192 \u03b1) (M : Matrix m n \u03b1) : vecMulVec x y * M = vecMulVec x (y \u1d65* M)`; :1103 `theorem vecMul_transpose (A : Matrix m n \u03b1) (x : n \u2192 \u03b1) : x \u1d65* A\u1d40 = A *\u1d65 x`; :325 `smul_mul`, :331 `Matrix.mul_smul`. The PR's own `Rotation.lean:52` `rotation_mulVec` supplies `rotation \u03b8 *\u1d65 w`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "fix": "Rewrite with `Matrix.smul_mul`/`Matrix.mul_smul` to pull out `v\u00b2/4`, then `Matrix.mul_vecMulVec` and `Matrix.vecMulVec_mul`, then `Matrix.vecMul_transpose` to turn `u \u1d65* R\u1d40` into `R *\u1d65 u`, and finish with `rotation_mulVec` (plus a small `ext i; fin_cases i <;> ring` to normalise the entries `cos \u03b8 * g - sin \u03b8 * -g' = g * cos \u03b8 + g' * sin \u03b8`).",
+   "issue": "`rotation_conj_neutralMassMatrix` proves `R * ((v\u00b2/4) \u2022 vecMulVec u u) * R\u1d40` by a 4-entry `fin_cases i <;> fin_cases j` expansion of `mul_apply`, re-deriving conjugation-of-a-rank-one-matrix plumbing that Mathlib already names \u2014 and bypassing `rotation_mulVec`, a main result of this PR's own `Rotation.lean`, which is then unused by its only consumer.",
+   "line": 128
+  }
+ ],
+ "head_sha": "62147db30609b20310463fc26f178c991b3b23fc",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 82,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "16c928015d5be4a712c68770438165e1410fecbfd46446af9722315bc257f4dc",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261008T203130Z-82-reuse-5c127c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-08T20:31:30Z",
+ "submitted_by": "wdconinc",
+ "summary": "No duplicated declarations: the rotation matrix, neutral mass matrix and weak mixing angle are new, and the Parameters bridge is real reuse; the three prior findings are fixed. One proof still expands a rank-one conjugation entrywise instead of using the named Mathlib lemmas and the PR's own `rotation_mulVec`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/Rotation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "tool": "Bash"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/Jets.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/DISEvent.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace/TwoDim.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/UnitaryGroup.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 24,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6c03fd62a7613b95f19fad2d03d25303271babc3071aeb34b0e05ff656243f58",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 126043,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 126043,
+  "cache_read_input_tokens": 1501541,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 36,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2432,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2432,
+    "cache_read_input_tokens": 110145,
+    "input_tokens": 2,
+    "output_tokens": 2190,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17512,
+  "output_tokens_details": {
+   "thinking_tokens": 12059
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
