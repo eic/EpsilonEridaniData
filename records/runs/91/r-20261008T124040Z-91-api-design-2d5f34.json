@@ -1,0 +1,88 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.096615,
+   "model": "gemini-3.1-pro",
+   "returncode": 0,
+   "secs": 111.2,
+   "usage": {
+    "cache_read_tokens": 89633,
+    "input_tokens": 41236,
+    "output_tokens": 13721,
+    "thinking_tokens": 12660,
+    "total_tokens": 54957
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_estimated": true,
+ "cost_usd": 0.096615,
+ "dedupe_key": "eic/EpsilonEridani|91|3c0e6ad9f4e2d11ab6025736c60734a785d112d1|api-design|gemini-3.1-pro|a04d8ed758f03dbb|production|3",
+ "diff_blob": "52ab141483f4687a3b5e8d52924aa78e6d34ac8425a6282356d9ba01d6b636b2",
+ "diff_sha256": "52ab141483f4687a3b5e8d52924aa78e6d34ac8425a6282356d9ba01d6b636b2",
+ "duration_s": 111.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`@[expose] public section` on line 35; rubric forbids `@[expose]` to compensate for missing lemmas.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/ChargedLegs.lean",
+   "fix": "Remove `@[expose] public section` and provide characteristic lemmas so consumers do not need to unfold bodies.",
+   "issue": "The file exposes all definition bodies via `@[expose] public section` to compensate for missing characteristic lemmas (e.g. `netCharge_def`).",
+   "line": 35
+  },
+  {
+   "evidence": "`@[expose] public section` on line 61; rubric forbids `@[expose]` to compensate for missing lemmas.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "fix": "Remove `@[expose] public section` and provide characteristic lemmas.",
+   "issue": "The file exposes all definition bodies via `@[expose] public section` to compensate for missing characteristic lemmas (e.g. `eikonalCurrent_def`).",
+   "line": 61
+  },
+  {
+   "evidence": "`@[ext] structure ChargedLeg`. `(Q, outgoing)` and `(-Q, incoming)` agree everywhere meaningful for this PR but remain distinct terms, defeating `@[ext]`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/ChargedLegs.lean",
+   "fix": "Constrain or drop the free data: replace `charge` and `direction` with a single `signedCharge` field, recovering them as derived accessors if possible, or drop them entirely.",
+   "issue": "`ChargedLeg` carries `charge` and `direction` as free data. While the author notes future consumers need `direction` independently, the rubric requires judging only the canonical post-PR interface: no current operation eliminates them independently. If collapsing them trivializes lemmas to `rfl`, that correctly captures the invariants.",
+   "line": 71
+  },
+  {
+   "evidence": "Missing lemma `netCharge_chargedLegs`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/ChargedLegs.lean",
+   "fix": "Add `@[simp] theorem netCharge_chargedLegs (K : DisKinematics V) (eLepton eHadron : \u211d) : netCharge (K.chargedLegs eLepton eHadron) = 0`.",
+   "issue": "`DisKinematics.chargedLegs` lacks its characteristic charge conservation API, despite being mentioned in the PR description.",
+   "line": 122
+  }
+ ],
+ "head_sha": "3c0e6ad9f4e2d11ab6025736c60734a785d112d1",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "gemini-3.1-pro",
+ "pr": 91,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "36a271f0566569ea7590f9259b598f3f8a016a97c7efcf9252f8010c17ebbef8",
+ "provider": "gemini",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261008T124040Z-91-api-design-2d5f34",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-08T12:40:40Z",
+ "submitted_by": "wdconinc",
+ "summary": "The PR exposes definition bodies to compensate for missing characteristic lemmas and retains unconstrained free data on `ChargedLeg`. The author's argument for keeping free data for future consumers is overridden by the rubric's requirement to judge only the canonical post-PR interface and carry only what current laws use.",
+ "transcript_blob": "59be199e31eeaad84cb75479b774b22ababb0a2fbab520b7b7f76ce088a22c79",
+ "usage": {
+  "cache_read_tokens": 89633,
+  "input_tokens": 41236,
+  "output_tokens": 13721,
+  "thinking_tokens": 12660,
+  "total_tokens": 54957
+ },
+ "verdict": "request_changes"
+}
