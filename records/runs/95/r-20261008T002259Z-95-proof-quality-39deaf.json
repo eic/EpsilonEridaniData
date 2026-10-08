@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.122963,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 294.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 130528,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 130528,
+    "cache_read_input_tokens": 473526,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5149,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5149,
+      "cache_read_input_tokens": 110095,
+      "input_tokens": 2,
+      "output_tokens": 1867,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23234,
+    "output_tokens_details": {
+     "thinking_tokens": 19822
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.122963,
+ "dedupe_key": "eic/EpsilonEridani|95|c90ab4eac3e5220fea55b384825e4ffb1fbbaf70|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "e6f855d7e0da4a90950864f3874dca27c5a1cf55e679eeae467af20cbf6a18b3",
+ "diff_sha256": "e6f855d7e0da4a90950864f3874dca27c5a1cf55e679eeae467af20cbf6a18b3",
+ "duration_s": 294.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep '\u2016fourier' mathlib/Mathlib` returns no global lemma for the pointwise norm; Mathlib has it only as a local `have` inside `fourier_norm` (`mathlib/Mathlib/Analysis/Fourier/AddCircle.lean:183`: `have : \u2200 x : AddCircle T, \u2016fourier n x\u2016 = 1 := fun x => Circle.norm_coe _`). Mathlib also marks `fourier_zero` non-simp with the comment `-- simp normal form is \\`fourier_zero'\\`` (AddCircle.lean:145-146), i.e. the simp set deliberately normalises away from `fourier` toward `toCircle`.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Fourier/AddCircle.lean",
+   "fix": "Add `@[simp] theorem norm_fourier (n : \u2124) (x : AddCircle T) : \u2016fourier n x\u2016 = 1 := Circle.norm_coe _` to this extension file and let the five sites use it. While there, name `fourier_zero` explicitly in the `simp` calls at `Basic.lean:99` (`qVector_zero`) and `Basic.lean:199` (`anisotropyCoeff_zero`), which currently go through the same unfolding \u2014 contrast `anisotropyCoeff_neg` (`Basic.lean:205`), which does name `fourier_neg`.",
+   "issue": "The reusable fact `\u2016fourier n x\u2016 = 1` is never stated; it is re-proved by an unfolding-dependent bare `simp` at five sites: this file lines 39 and 48 (the `.of_bound` bounds), and `Nuclear/Medium/Collective/Basic.lean` lines 126 (`norm_qVector_le_card`), 135 (`ofReal_norm_qVector_sq`, diagonal term) and 212 (`norm_anisotropyCoeff_le_one`). Each works only because `fourier_apply` is `@[simp]` and rewrites `fourier n x` to `\u2191(toCircle (n \u2022 x))`, i.e. the proofs depend on the `toCircle` representation rather than on any named fact about `fourier`.",
+   "line": 39
+  },
+  {
+   "evidence": "Line 141: `twoParticleCorrelation` divides by `(Fintype.card \u03b9 * (Fintype.card \u03b9 - 1))`, which is `0 * (-1) = 0` at `M = 0` and `1 * 0 = 0` at `M = 1`; the positive-denominator hypothesis `hD` is established only in the `1 < Fintype.card \u03b9` branch (line 167).",
+   "file": "EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "fix": "Add a one-line comment before the `interval_cases`, e.g. `-- for M \u2264 1 the denominator M (M - 1) vanishes and `\u27e82\u27e9` takes the junk value 0`.",
+   "issue": "In `abs_twoParticleCorrelation_le_one`, the `Fintype.card \u03b9 \u2264 1` branch (`interval_cases Fintype.card \u03b9 <;> simp`) closes only because the denominator `M * (M - 1)` is `0` for `M = 0, 1` and `x / 0 = 0`. Nothing in the proof or the docstring (\"at every multiplicity\") records that the bound is vacuous there, so a reader cannot see why the branch is true.",
+   "line": 164
+  }
+ ],
+ "head_sha": "c90ab4eac3e5220fea55b384825e4ffb1fbbaf70",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 95,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "062be825260b11715cb2d845483949ad4a89b97059c9a7e14d505e07087fd36e",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261008T002259Z-95-proof-quality-39deaf",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-08T00:22:59Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly short and robust, but the pointwise fact `\u2016fourier n x\u2016 = 1` is re-derived by bare `simp` at five sites, each succeeding only because `fourier_apply` unfolds `fourier` into `toCircle`; and the `M \u2264 1` branch of `abs_twoParticleCorrelation_le_one` holds only by division-by-zero junk value with no comment saying so.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Fourier/AddCircle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Fourier/AddCircle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Tactic/Positivity",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Fourier/AddCircle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Fourier/AddCircle.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "75514628ad6f6ce9cc86c3b7100a650c666addbced968f671f6b69bf065de9ab",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 130528,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 130528,
+  "cache_read_input_tokens": 473526,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5149,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5149,
+    "cache_read_input_tokens": 110095,
+    "input_tokens": 2,
+    "output_tokens": 1867,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23234,
+  "output_tokens_details": {
+   "thinking_tokens": 19822
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
