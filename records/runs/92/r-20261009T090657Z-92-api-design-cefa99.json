@@ -1,0 +1,184 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.558616,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 171.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 105870,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 105870,
+    "cache_read_input_tokens": 337512,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1052,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1052,
+      "cache_read_input_tokens": 90748,
+      "input_tokens": 2,
+      "output_tokens": 6001,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13244,
+    "output_tokens_details": {
+     "thinking_tokens": 9591
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.558616,
+ "dedupe_key": "eic/EpsilonEridani|92|a1953de329750faf21c3745bfb759c88e646f978|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "37f8525e7058f5ad9208019fba7a71574209e53df39f42331de55a00d6a6ead4",
+ "diff_sha256": "37f8525e7058f5ad9208019fba7a71574209e53df39f42331de55a00d6a6ead4",
+ "duration_s": 171.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean:63 `def sigmoid (x : \u211d) := (1 + exp (-x))\u207b\u00b9`; roadmap/EpsilonEridaniRoadmaps/NuclearPartonDistributions/README.md:341 `\u03c1_A(r) = \u03c1\u2080 / (1 + exp((r - R_A)/a))`. The file contains only `woodsSaxonDensity_def`, `_nonneg`, `_pos`, `_eq_mul`, `_le`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Add `lemma woodsSaxonDensity_eq_div (\u03c1\u2080 R a r : \u211d) : woodsSaxonDensity \u03c1\u2080 R a r = \u03c1\u2080 / (1 + exp ((r - R) / a))`, proved from `Real.sigmoid_def` and `neg_div`/`neg_sub`.",
+   "issue": "`woodsSaxonDensity_def` only restates the definition as `\u03c1\u2080 * Real.sigmoid ((R - r) / a)`. The form the module docstring (line 162) and the roadmap state, `\u03c1\u2080 / (1 + exp ((r - R)/a))`, has no lemma, so every consumer must unfold `Real.sigmoid` to recognise the Woods\u2013Saxon profile.",
+   "line": 167
+  },
+  {
+   "evidence": "Line 108-109 defines it as `(Iic R).indicator fun _ => 3 * m / (4 * \u03c0 * R ^ 3)`; the only other hard-sphere lemmas in the file are `hardSphereDensity_def` (111), `hardSphereDensity_nonneg` (114) and `integral_hardSphereDensity` (120). roadmap README.md:351-353 requires `T_A(b) = (3A / 2\u03c0 R_A\u00b3) \u221a(R_A\u00b2 - b\u00b2)` on `b \u2264 R_A` and zero beyond.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Add `@[simp] lemma hardSphereDensity_of_le {r : \u211d} (h : r \u2264 R) : hardSphereDensity m R r = 3 * m / (4 * \u03c0 * R ^ 3)` and `@[simp] lemma hardSphereDensity_of_lt {r : \u211d} (h : R < r) : hardSphereDensity m R r = 0`.",
+   "issue": "`hardSphereDensity` is a `Set.indicator` and has no value lemmas. To get `hardSphereDensity m R r = 3*m/(4*\u03c0*R^3)` for `r \u2264 R` or `= 0` for `R < r`, a consumer must chain `hardSphereDensity_def` with `Set.indicator_of_mem`/`indicator_of_notMem` and `Set.mem_Iic`. The \u00a70.2 hard-sphere thickness closed form needs exactly this case split.",
+   "line": 108
+  },
+  {
+   "evidence": "Lines 87-88 declare the field; no `attribute [simp]` appears anywhere in the file, while the parallel bundled-profile accessors at lines 293-301 are all `@[simp]`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Add `attribute [simp] Nucleus.DensityProfile.integral_density` after the structure.",
+   "issue": "The structure field `integral_density` is the characteristic law of `DensityProfile` and carries no `@[simp]`, so `\u222b x, \u03c1.density x` does not normalise to `\u2191nuc.massNumber` automatically; every downstream normalisation argument must cite it by hand.",
+   "line": 88
+  }
+ ],
+ "head_sha": "a1953de329750faf21c3745bfb759c88e646f978",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 92,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "faf5ff50237d986df0fcb37d8718ec0992075bd16a63ca3ed8f19d31141c38a3",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261009T090657Z-92-api-design-cefa99",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-09T09:06:57Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, extensional and free of compatibility artifacts, but the characteristic API of two of the three profiles is incomplete: neither the Woods\u2013Saxon closed form nor the hard-sphere case values are available, forcing consumers to unfold Set.indicator and Real.sigmoid. The DensityProfile normalisation also carries no simp annotation.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/NuclearPartonDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "94bf1ea772305d960ebaac66787ca2ef0d46474413583041b3013c996a7ffc7e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105870,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 105870,
+  "cache_read_input_tokens": 337512,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1052,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1052,
+    "cache_read_input_tokens": 90748,
+    "input_tokens": 2,
+    "output_tokens": 6001,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13244,
+  "output_tokens_details": {
+   "thinking_tokens": 9591
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

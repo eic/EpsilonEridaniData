@@ -1,0 +1,184 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8073235,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 158.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 125486,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 125486,
+    "cache_read_input_tokens": 474287,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3077,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3077,
+      "cache_read_input_tokens": 99168,
+      "input_tokens": 2,
+      "output_tokens": 4427,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12610,
+    "output_tokens_details": {
+     "thinking_tokens": 8983
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.807324,
+ "dedupe_key": "eic/EpsilonEridani|92|a1953de329750faf21c3745bfb759c88e646f978|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "37f8525e7058f5ad9208019fba7a71574209e53df39f42331de55a00d6a6ead4",
+ "diff_sha256": "37f8525e7058f5ad9208019fba7a71574209e53df39f42331de55a00d6a6ead4",
+ "duration_s": 158.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib marks exactly this composite in the name: `GaussianFourier.integral_rexp_neg_mul_sq_norm` (used at line 154) for `\u222b x, exp (-b * \u2016x\u2016^2)`, versus `integral_gaussian` for the 1-D statement; likewise `integral_fun_norm_addHaar` / `integrable_fun_norm_addHaar` (mathlib/Mathlib/MeasureTheory/Constructions/HaarToSphere.lean:255,296), the latter used at line 199.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Mark the composite in the names, e.g. `integral_hardSphereDensity_norm`, `integral_gaussianDensity_norm`, `integrable_woodsSaxonDensity_norm`, `integral_woodsSaxonDensity_norm`, `integral_woodsSaxonDensity_norm_eq_iff`, `existsUnique_integral_woodsSaxonDensity_norm_eq`.",
+   "issue": "`integral_hardSphereDensity` names a statement about `\u222b x : Space, hardSphereDensity m R \u2016x\u2016`, not about `hardSphereDensity` itself; the 1-D reading the name advertises (`\u222b r : \u211d, hardSphereDensity m R r = m`) is false, since the `Iic R` indicator of a nonzero constant is not integrable on \u211d. Same for `integral_gaussianDensity` (146), `integrable_woodsSaxonDensity` (195), `integral_woodsSaxonDensity` (236), `integral_woodsSaxonDensity_eq_iff` (256), `existsUnique_integral_woodsSaxonDensity_eq` (262).",
+   "line": 120
+  },
+  {
+   "evidence": "`mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean:93`: `lemma sigmoid_le {a b : \u211d} : a \u2264 b \u2192 sigmoid a \u2264 sigmoid b`; this file imports `Mathlib.Analysis.SpecialFunctions.Sigmoid` (line 11) and defines `woodsSaxonDensity` directly as `\u03c1\u2080 * Real.sigmoid ((R - r) / a)`, so `woodsSaxonDensity_le` reads as the analogous monotonicity lemma.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Rename to `woodsSaxonDensity_le_mul_exp` (or `_le_mul_exp_neg_div`).",
+   "issue": "`woodsSaxonDensity_le` carries a bare `_le` for the bound `woodsSaxonDensity \u03c1\u2080 R a r \u2264 \u03c1\u2080 * exp (-((r - R) / a))`; the name neither names the right-hand side nor matches the `_le` idiom of the function it is built on, where `_le` means monotonicity.",
+   "line": 185
+  },
+  {
+   "evidence": "Lines 112\u2013121 vs 123\u2013127 of the same file; `massNumber`, `protonNumber` and `neutronNumber` are all `Nucleus \u2192 \u2115`, so nothing distinguishes the two groups. The rubric's rule that consistency with adjacent declarations wins applies directly.",
+   "file": "EpsilonEridani/Particles/Nuclei/Basic.lean",
+   "fix": "Rename to `proton_neutronNumber`, `neutron_neutronNumber`, `deuteron_neutronNumber`, `carbon12_neutronNumber`, `lead208_neutronNumber`, matching the adjacent block.",
+   "issue": "`neutronNumber_proton`, `neutronNumber_neutron`, `neutronNumber_deuteron`, `neutronNumber_carbon12`, `neutronNumber_lead208` (lines 123\u2013127) put the function before the instance, while the immediately preceding lemmas for the same kind of statement put the instance first (`proton_massNumber`, `proton_protonNumber`, \u2026 lines 112\u2013121). Two orders for the same shape of fact in one block hurts name guessing.",
+   "line": 123
+  }
+ ],
+ "head_sha": "a1953de329750faf21c3745bfb759c88e646f978",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 92,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "55adb1dee93d2c6ee6c4280ea4f20e967f3d8b82b040d0c0cabaa5cae4d6b503",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261009T091622Z-92-naming-e1e000",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-09T09:16:22Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names are mostly conventional, but the integral/integrability lemmas omit that the integrand is the radial profile composed with `\u2016\u00b7\u2016` over `Space` \u2014 the 1-D reading their names suggest is false \u2014 `woodsSaxonDensity_le` reads as monotonicity in a file built on `Real.sigmoid_le`, and the worked-instance simp lemmas use two different argument orders.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/NuclearPartonDistributions/Suggested.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2977affd0e400b8850e2af46e9cf27733aabfd4e56b774044afbd7b50ec23e37",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 125486,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 125486,
+  "cache_read_input_tokens": 474287,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3077,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3077,
+    "cache_read_input_tokens": 99168,
+    "input_tokens": 2,
+    "output_tokens": 4427,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12610,
+  "output_tokens_details": {
+   "thinking_tokens": 8983
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
