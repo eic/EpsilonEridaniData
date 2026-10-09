@@ -1,0 +1,192 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4275885000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 156.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 92304,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 92304,
+    "cache_read_input_tokens": 372307,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5333,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5333,
+      "cache_read_input_tokens": 76372,
+      "input_tokens": 2,
+      "output_tokens": 5549,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12733,
+    "output_tokens_details": {
+     "thinking_tokens": 9036
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.427589,
+ "dedupe_key": "eic/EpsilonEridani|106|824bf0f5c610ce7c5afb45fb957d0758485c1a82|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "1616acf367a986d06bb46ec0ed7ab84cc5b5b9c3c39704d9e8dc434c0bff923b",
+ "diff_sha256": "1616acf367a986d06bb46ec0ed7ab84cc5b5b9c3c39704d9e8dc434c0bff923b",
+ "duration_s": 156.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `code/EpsilonEridani/QFT/QCD/SU2Generators.lean:60: def su2GenEntry (a : Fin 3) (i j : Fin 2) : \u2102 := (1 / 2 : \u2102) * pauliMatrix (Sum.inr a) i j`; ElectricCharge.lean:74 `noncomputable def isospinT3 : Matrix (Fin 2) (Fin 2) \u2102 := (1 / 2 : \u2102) \u2022 \u03c33`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ElectricCharge.lean",
+   "fix": "Prove it with explicit lemmas, e.g. `by simp [isospinT3, su2GenEntry, Matrix.smul_apply, smul_eq_mul]`, so the three unfoldings are named in the script.",
+   "issue": "`isospinT3_apply : isospinT3 i j = su2GenEntry 2 i j := rfl` relies on accidental defeq across definitions owned elsewhere: `isospinT3 = (1/2 : \u2102) \u2022 \u03c33` (line 74) vs `su2GenEntry a i j = (1/2 : \u2102) * pauliMatrix (Sum.inr a) i j` (QFT/QCD/SU2Generators.lean:60). The `rfl` silently depends on Physlib's internal definition of the `\u03c33` notation plus `Matrix.smul_apply` and `smul_eq_mul`; any of those changing breaks the bridge with no explicit step to repair.",
+   "line": 77
+  },
+  {
+   "evidence": "ElectricCharge.lean:119-120 defines `doubletStabilizer` as `LinearMap.ker (((mulVecBilin \u211d \u2102).flip \u03c6).comp (doubletAction y))`; `Matrix.mulVecBilin_apply` is itself `rfl` at mathlib/Mathlib/LinearAlgebra/Matrix/ToLin.lean:122.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ElectricCharge.lean",
+   "fix": "Replace with `by rw [doubletStabilizer, LinearMap.mem_ker, LinearMap.comp_apply, LinearMap.flip_apply, Matrix.mulVecBilin_apply]` (or a `simp [doubletStabilizer]`).",
+   "issue": "Same pattern: `mem_doubletStabilizer_iff ... := Iff.rfl` collapses four wrapper unfoldings at once (`LinearMap.mem_ker`, `LinearMap.comp_apply`, `LinearMap.flip_apply`, `Matrix.mulVecBilin_apply`) with nothing in the script recording them.",
+   "line": 126
+  },
+  {
+   "evidence": "ElectricCharge.lean:264-267: `refine \u27e8\u03b2, Prod.ext (Subtype.ext ?_) ?_\u27e9` / `change _ = A` / `rw [eta_fin_two A, ...]`; it is the only `change`/`show` in the diff.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ElectricCharge.lean",
+   "fix": "Either add a one-line comment stating that `\u2191\u27e8A, hA\u27e9` is `A` definitionally and that the rewrite needs it syntactically, or drop the `change` in favour of an explicit `simp only` that reduces the coercion.",
+   "issue": "`change _ = A` carries no comment. After `Subtype.ext` the goal is `(\u03b2 \u2022 chargeGenerator).1.val = (\u27e8A, hA\u27e9 : su (Fin 2)).val`; the `change` exists only to reduce the subtype coercion so the following `rw [eta_fin_two A, ...]` can match. The comment at lines 248-249 documents the mathematics, not this step.",
+   "line": 265
+  }
+ ],
+ "head_sha": "824bf0f5c610ce7c5afb45fb957d0758485c1a82",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 106,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c63e6a0ff7a3db1092b641910ebf8e4f80ba44615e3a310bcf66ac390663d957",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261009T013125Z-106-proof-quality-b15807",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-09T01:31:25Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two statements rest on undocumented cross-definition defeq (`isospinT3_apply` by bare `rfl` through Physlib's `\u03c33` and `Matrix.smul_apply`; `mem_doubletStabilizer_iff` by `Iff.rfl` through ker/comp/flip/mulVecBilin), and the main proof uses an uncommented `change`. Otherwise the proofs are short, well-structured, and use stable lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ElectricCharge.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/StandardModel/HiggsBoson/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/SU2Generators.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a3a0d9ae77a789d68f23d061cd19fae78edbd7647bb33862269dd9f96d266d8c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 92304,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 92304,
+  "cache_read_input_tokens": 372307,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5333,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5333,
+    "cache_read_input_tokens": 76372,
+    "input_tokens": 2,
+    "output_tokens": 5549,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12733,
+  "output_tokens_details": {
+   "thinking_tokens": 9036
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
