@@ -1,0 +1,192 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.539257,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 175.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 94937,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 94937,
+    "cache_read_input_tokens": 528944,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 784,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 784,
+      "cache_read_input_tokens": 84310,
+      "input_tokens": 2,
+      "output_tokens": 4029,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13013,
+    "output_tokens_details": {
+     "thinking_tokens": 9510
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.539257,
+ "dedupe_key": "eic/EpsilonEridani|103|99107bd1f62f6e1b6d55fbd2f506f4a36418f090|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "9393bd8504a5a7872a4159d815912ff868acec01dd424462fbd625f5c972f07e",
+ "diff_sha256": "9393bd8504a5a7872a4159d815912ff868acec01dd424462fbd625f5c972f07e",
+ "duration_s": 175.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 80 `norm : g n n = 1`; `Real.div_sqrt`/`Real.sqrt_one` make all four statements collapse. The file works around the missing normal form at lines 120, 127-128, 138-139, 146-151, 182, 191 (`have hn : g F.n F.n = 1 := F.norm`, six times).",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "State the normal forms: `energy_apply : F.energy p = g p F.n`, `energy_n : F.energy F.n = 1`, `spatial_apply : F.spatial p = p - F.energy p \u2022 F.n`, `energy_smul_add_spatial : F.energy p \u2022 F.n + F.spatial p = p`, and drop the `(\u221a(g F.n F.n))\u207b\u00b9` factor from the `energy` body (line 91). Add `attribute [simp] Frame.norm` so `g F.n F.n` reduces to `1` in consumer goals. If instead the field is relaxed to `0 < g n n` (see the other finding), the factors become live and the statements stand as written.",
+   "issue": "`norm : g n n = 1` (line 80) makes `Real.sqrt (g F.n F.n) = 1`, but the dead factor is baked into the whole characteristic API: `energy_apply` (93) `= g p F.n / \u221a(g F.n F.n)`; `@[simp] energy_n` (98) `= \u221a(g F.n F.n)`, a RHS no simp lemma reduces; `spatial_apply` (114) `p - (g p F.n / g F.n F.n) \u2022 F.n`; `energy_div_smul_add_spatial` (119) divides the energy by `\u221a(g F.n F.n)`. Every consumer must clear these by hand, and the decomposition lemma \u2014 the elimination principle for `spatial` \u2014 is the worst hit.",
+   "line": 93
+  },
+  {
+   "evidence": "Line 80 `norm : g n n = 1` is the only field constraint and `Frame.mk` the only constructor; roadmap README:393 \"A `Frame g` is a vector `n : V` with `0 < g n n`\" and Suggested.lean:111 `timelike : 0 < g n n`.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Either restore the roadmap's field `timelike : 0 < g n n`, or add the smart constructor `Frame.ofTimelike {n : V} (h : 0 < g n n) : Frame g := \u27e8(Real.sqrt (g n n))\u207b\u00b9 \u2022 n, _\u27e9` with `@[simp] ofTimelike_n`. Also fix the Main-definitions line 36, which advertises `Frame g` as \"a timelike reference vector\" without the unit constraint the structure actually imposes.",
+   "issue": "`Frame` is only constructible from an already unit-normalised `n`; there is no introduction form taking a physically given timelike vector. The roadmap's frame is `0 < g n n` (README \u00a71.1 line 393, Suggested.lean:111), and `BreitFrame \u2026 extends Frame g` (Suggested.lean:125) must produce a frame from `K`-derived vectors, so each consumer has to redo the `(\u221a(g n n))\u207b\u00b9 \u2022 n` normalisation and its `g n' n' = 1` proof.",
+   "line": 76
+  }
+ ],
+ "head_sha": "99107bd1f62f6e1b6d55fbd2f506f4a36418f090",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0cd988551cd8cb0f7c144ab474f4a2d4f786854e005691645de0d25d3ee22b04",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261009T090741Z-103-api-design-96d788",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-09T09:07:41Z",
+ "submitted_by": "wdconinc",
+ "summary": "With the committed field `norm : g n n = 1`, every exposed statement still carries a `Real.sqrt (g F.n F.n)` or `/ g F.n F.n` factor that is identically 1, so the characteristic lemmas are not in normal form and no simp lemma reduces `g F.n F.n`. The structure also offers no introduction form for a non-unit timelike vector, which \u00a71.2's `BreitFrame extends Frame g` will need.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": false,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "275f1bc02b52b3b786d5185d12cdbc04b6f3d9a3d32db799a1b99e5434cd529a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 94937,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 94937,
+  "cache_read_input_tokens": 528944,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 784,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 784,
+    "cache_read_input_tokens": 84310,
+    "input_tokens": 2,
+    "output_tokens": 4029,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13013,
+  "output_tokens_details": {
+   "thinking_tokens": 9510
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

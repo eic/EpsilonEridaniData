@@ -1,0 +1,220 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.848126,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 197.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 112451,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 112451,
+    "cache_read_input_tokens": 688432,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1608,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1608,
+      "cache_read_input_tokens": 101042,
+      "input_tokens": 2,
+      "output_tokens": 5670,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15172,
+    "output_tokens_details": {
+     "thinking_tokens": 10120
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.848126,
+ "dedupe_key": "eic/EpsilonEridani|103|99107bd1f62f6e1b6d55fbd2f506f4a36418f090|reuse|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "9393bd8504a5a7872a4159d815912ff868acec01dd424462fbd625f5c972f07e",
+ "diff_sha256": "9393bd8504a5a7872a4159d815912ff868acec01dd424462fbd625f5c972f07e",
+ "duration_s": 197.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: Tensors/Basic.lean:292 `noncomputable def pTransverse (g : Bilin V) (K : DisKinematics V) : V := K.p - (g K.p K.q / g K.q K.q) \u2022 K.q`; :302 `lemma pTransverse_orthogonal_q ... : g (pTransverse g K) K.q = 0`; new file :114 `F.spatial p = p - (g p F.n / g F.n F.n) \u2022 F.n`, :126 `g (F.spatial p) F.n = 0`. The new file imports `...DIS.Tensors.Basic` (:8).",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Factor the construction once into the `Bilin` namespace of Tensors/Basic.lean next to `rankOne`/`reflect`, e.g. `def projAlong (g : Bilin V) (u : V) : V \u2192\u2097[\u211d] V := Module.preReflection u ((g u u)\u207b\u00b9 \u2022 g.flip u)` with the generic `projAlong_apply` and `bilin_projAlong_self (hu : g u u \u2260 0) : g (projAlong g u p) u = 0`; then set `Frame.spatial := Bilin.projAlong g F.n`, redefine `pTransverse g K := Bilin.projAlong g K.q K.p`, and obtain `pTransverse_pairing`/`pTransverse_orthogonal_q` from the generic lemmas. (`Bilin.reflect`, Tensors/Basic.lean:148, hand-rolls the same `preReflection` shape with factor 2 and can be rebuilt on it too.)",
+   "issue": "`Frame.spatial` (`p - (g p n / g n n) \u2022 n`), `spatial_apply` (:114) and `bilin_spatial_n` (:126) duplicate the projection and orthogonality already in the file this one imports: `Hadronic.pTransverse g K = K.p - (g K.p K.q / g K.q K.q) \u2022 K.q` (Tensors/Basic.lean:292), `pTransverse_pairing` (:296), `pTransverse_orthogonal_q` (:302). Two parallel developments of the same construction in one import chain.",
+   "line": 111
+  },
+  {
+   "evidence": "Lines 200-204 and 221-226: statement text is identical to the definition body, proof is `simp [spatialNorm]` / `simp [cosAngle]`; grep for `spatialNorm_def`/`cosAngle_def` in the repo returns only these two definition sites.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Delete both lemmas; consumers unfold the definition or use `spatialNorm`/`cosAngle` directly as the existing proofs already do.",
+   "issue": "`spatialNorm_def` (:203) and `cosAngle_def` (:224) restate the bodies of `spatialNorm` (:200) and `cosAngle` (:221) verbatim (provable by `rfl`), and neither is used anywhere: the file's own proofs unfold the definitions directly (`simp [spatialNorm, ...]` :217, `rw [cosAngle, spatialNorm, ...]` :235, `simp only [cosAngle, ...]` :240, :246, :254).",
+   "line": 203
+  },
+  {
+   "evidence": "Line 80 `norm : g n n = 1`; line 91 `(Real.sqrt (g F.n F.n))\u207b\u00b9 \u2022 g.flip F.n`; line 121 `simp only [..., hnE, Real.sqrt_one, div_one]` shows the factor is discharged as 1 inside the proof itself.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Define `energy := g.flip F.n` with `energy_apply : F.energy p = g p F.n`, state `energy_n : F.energy F.n = 1`, drop `energy_n_pos` (it is `F.energy_n \u25b8 zero_lt_one`), and state the decomposition as `F.energy p \u2022 F.n + F.spatial p = p`.",
+   "issue": "The structure field is `norm : g n n = 1` (:80), so the `\u221a(g n n)` normalization in `energy` is identically `1`: `energy = g.flip F.n`, and `energy_n : E n = \u221a(g n n)` (:98) and `energy_n_pos` (:101) are restatements of `\u221a1 = 1` and `0 < 1`, with `energy_div_smul_add_spatial` (:118) dividing by `1` as well (its own proof rewrites `Real.sqrt_one, div_one`).",
+   "line": 90
+  },
+  {
+   "evidence": "Lines 120, 127-128, 138-139, 146-151, 182-184, 191 each contain a `have ... : g F.n F.n = 1 := F.norm` (or the `\u2260 0` consequence) block.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Prove it once, e.g. `@[simp] theorem norm_ne_zero : g F.n F.n \u2260 0 := by rw [F.norm]; norm_num`, and use `F.norm`/`F.norm_ne_zero` at those six sites.",
+   "issue": "The same `g F.n F.n = 1` / `g F.n F.n \u2260 0` derivation from `F.norm` is re-proved six times: :120, :127-128, :138-139, :146-151, :182-184, :191.",
+   "line": 127
+  }
+ ],
+ "head_sha": "99107bd1f62f6e1b6d55fbd2f506f4a36418f090",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4d6f2603c16522f094f2dd1fbe437cf88f1d0c3f8c2f69e99f9f2b749f4f9677",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261009T090147Z-103-reuse-4c23f6",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-09T09:01:47Z",
+ "submitted_by": "wdconinc",
+ "summary": "The file reuses Mathlib's `Module.preReflection` and the existing `gWit` witness correctly, but it re-introduces the projection-along-a-direction construction that already exists in the file it imports (`Hadronic.pTransverse` and its orthogonality lemma), and it carries definition-restating `_def` lemmas plus normalization scaffolding that `Frame.norm` already trivializes.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/Jets.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Numerics/FourMom.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Reflection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7e3b9d849403efa7d09d4e3164472d122da663de975473f80f164353d528cedd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 112451,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 112451,
+  "cache_read_input_tokens": 688432,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1608,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1608,
+    "cache_read_input_tokens": 101042,
+    "input_tokens": 2,
+    "output_tokens": 5670,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15172,
+  "output_tokens_details": {
+   "thinking_tokens": 10120
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,172 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.275394,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 141.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 86764,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 86764,
+    "cache_read_input_tokens": 294888,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1237,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1237,
+      "cache_read_input_tokens": 76518,
+      "input_tokens": 2,
+      "output_tokens": 6482,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10410,
+    "output_tokens_details": {
+     "thinking_tokens": 6393
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.275394,
+ "dedupe_key": "eic/EpsilonEridani|103|99107bd1f62f6e1b6d55fbd2f506f4a36418f090|generality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "9393bd8504a5a7872a4159d815912ff868acec01dd424462fbd625f5c972f07e",
+ "diff_sha256": "9393bd8504a5a7872a4159d815912ff868acec01dd424462fbd625f5c972f07e",
+ "duration_s": 141.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap README.md:393 \"A `Frame g` is a vector `n : V` with `0 < g n n`. Define `energy g F p = g p F.n / Real.sqrt (g F.n F.n)`\"; roadmap Suggested.lean:107-111 `structure Frame (g : Bilin V) where n : V ; timelike : 0 < g n n`; the PR description itself says \"A frame is a vector `n` with `0 < g n n`\" and lists the field as `timelike`, while Basic.lean:80 has `norm : g n n = 1`. Expanding `bilin_spatial_spatial` for general `N = g n n` gives `g a b - (g a n)(g n b)/N` against `E(a)E(b) = (g a n)(g b n)/N`, so symmetry plus `N \u2260 0`, `0 \u2264 N` suffice; `energy_div_smul_add_spatial` holds because `E(p)/\u221aN = g p n / N`.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Replace the field with `timelike : 0 < g n n` as the roadmap specifies. Proofs adapt mechanically: use `hN : g F.n F.n \u2260 0 := F.timelike.ne'` in place of each `rw [F.norm]; norm_num`, `Real.sq_sqrt F.timelike.le` where `\u221a(g n n)\u00b2 = g n n` is needed in `bilin_spatial_spatial`, and `Real.sqrt_pos.mpr F.timelike` in `energy_n_pos`. The statements of `energy_apply`, `energy_n`, `energy_div_smul_add_spatial` and `bilin_spatial_spatial` are already written in the general form and need no change.",
+   "issue": "Field `norm : g n n = 1` is stronger than needed: every result in the file holds under `0 < g n n` (most need only `g n n \u2260 0`; only `energy_n_pos` uses positivity). The over-strong field makes the normalisation machinery vacuous at three sites \u2014 `energy` divides by `\u221a(g n n)` (:90), `energy_n` states `E(n) = \u221a(g n n)` with a docstring about the non-unit case that cannot arise (:96-99), and `energy_div_smul_add_spatial` divides by `\u221a(g n n)` only for the proof to rewrite it to 1 (:118-122) \u2014 and forces callers to pre-rescale a physical timelike momentum `P` with `g P P = M\u00b2 \u2260 1`, a burden `BreitFrame \u2026 extends Frame g` (\u00a71.2) would inherit in its existence proof.",
+   "line": "80"
+  },
+  {
+   "evidence": "Basic.lean:189-195 `bilin_spatial_spatial` already gives `g (spatial p) (spatial p) = g p p - E p * E p` for all `p`; the current proof of `spatialNorm_of_massless` (:215-217) just substitutes `hp : g p p = 0` into it. Roadmap README.md:357,363 and the PR's own \"A massive pseudojet, such as the `E`-scheme sum of two massless momenta\" note the massive case is needed.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "State `theorem spatialNorm_eq (hg : g.IsSymm) (p : V) : F.spatialNorm p = Real.sqrt (F.energy p ^ 2 - g p p)` from `bilin_spatial_spatial` (since `-(g p p - E p * E p) = E p ^ 2 - g p p`), and derive `spatialNorm_of_massless` from it by `simp [hp, Real.sqrt_sq_eq_abs]`.",
+   "issue": "`spatialNorm_of_massless` proves only the `g p p = 0` case of an identity that holds with no hypothesis on `p` and by the same proof, so the massive case (E-scheme pseudojets, convention 8 / \u00a72.1) is unavailable.",
+   "line": "215"
+  }
+ ],
+ "head_sha": "99107bd1f62f6e1b6d55fbd2f506f4a36418f090",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "aa2dab916b650e8e9589ab4cbd689fb986b7dbc5de43547ef6917cc75cc9bce2",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261009T091036Z-103-generality-934a8b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-09T09:10:36Z",
+ "submitted_by": "wdconinc",
+ "summary": "The `Frame` structure imposes `g n n = 1`, strictly stronger than the roadmap's `0 < g n n` and stronger than anything in the file uses, leaving the normalisation factors in `energy` and `energy_div_smul_add_spatial` dead weight. `spatialNorm_of_massless` is also a special case of a hypothesis-free identity provable by the same proof.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/Suggested.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "daa8fb16b069356908e3762b5d1537b443483a68c0084411b8d2d8edbcf8e226",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 86764,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 86764,
+  "cache_read_input_tokens": 294888,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1237,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1237,
+    "cache_read_input_tokens": 76518,
+    "input_tokens": 2,
+    "output_tokens": 6482,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10410,
+  "output_tokens_details": {
+   "thinking_tokens": 6393
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

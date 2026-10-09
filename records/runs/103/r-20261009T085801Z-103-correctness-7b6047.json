@@ -1,0 +1,182 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.680864,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 226.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 101510,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 101510,
+    "cache_read_input_tokens": 484268,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4202,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4202,
+      "cache_read_input_tokens": 87727,
+      "input_tokens": 2,
+      "output_tokens": 1953,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16942,
+    "output_tokens_details": {
+     "thinking_tokens": 13700
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.680864,
+ "dedupe_key": "eic/EpsilonEridani|103|99107bd1f62f6e1b6d55fbd2f506f4a36418f090|correctness|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "9393bd8504a5a7872a4159d815912ff868acec01dd424462fbd625f5c972f07e",
+ "diff_sha256": "9393bd8504a5a7872a4159d815912ff868acec01dd424462fbd625f5c972f07e",
+ "duration_s": 226.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "README.md:96 `A frame is `n : V` with `g n n > 0`; the energy of `p` is `g p n` normalised by `n`.` vs Basic.lean:80 `norm : g n n = 1`.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Weaken the field to `timelike : 0 < g n n`, matching convention 2; the `\u221a(g n n)` factors then carry content and nothing else in the file changes.",
+   "issue": "`Frame.norm : g n n = 1` is strictly stronger than the roadmap's convention 2 (\"A frame is `n : V` with `g n n > 0`\", JetsAndEventShapes/README.md:96) and than this PR's own description (\"A frame is a vector `n` with `0 < g n n`\", field named `timelike`). Downstream frames (\u00a71.2 `BreitFrame extends Frame`, \u00a71.3 hemispheres) must then carry an explicit normalisation they do not naturally have. Every proof here generalises to `0 < g n n`: `bilin_spatial_n`/`spatial_n` only use `g n n \u2260 0`, `spatial_eq_self_iff` only `n \u2260 0`, and `bilin_spatial_spatial` holds verbatim since `E(a)E(b) = (g a n)(g b n)/(g n n)`.",
+   "line": 80
+  },
+  {
+   "evidence": "Basic.lean:98 `theorem energy_n : F.energy F.n = Real.sqrt (g F.n F.n)` with Basic.lean:80 forcing `g F.n F.n = 1`, so the right-hand side is definitionally `\u221a1 = 1` for every `F`.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "If the fix above is taken, these become genuine; if `g n n = 1` is kept instead, drop the `\u221a(g n n)` divisors (`energy := g.flip n`, `energy_n : E(n) = 1`, `E(p) \u2022 n + spatial p = p`) and correct the `energy_n` docstring.",
+   "issue": "Given `norm : g n n = 1`, the `\u221a(g n n)` and `(g n n)\u207b\u00b9` factors are vestigial and the interface misstates its own generality. `energy_n`'s docstring (\"for a unit-normalised frame vector this is `1`\") implies non-unit frames exist, which the structure forbids; same dressing at `energy` (90-91), `energy_apply` (93), `energy_div_smul_add_spatial` (118-119, the divisor is always 1), `spatial` (111-112) and `ker_spatial` (165).",
+   "line": 96
+  }
+ ],
+ "head_sha": "99107bd1f62f6e1b6d55fbd2f506f4a36418f090",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a95970a6b4f415485a111d144159cc97b36bcc9bb1cf6aee04383ae546d7a0c2",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261009T085801Z-103-correctness-7b6047",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-09T08:58:01Z",
+ "submitted_by": "wdconinc",
+ "summary": "All new statements are mathematically correct under the (+,-,-,-) convention, non-vacuous, and exercised by a genuine witness. The one defect is the frame condition: the structure pins `g n n = 1`, which is strictly stronger than the roadmap's convention 2 and than the PR's own stated design, while the surrounding definitions and docstrings advertise an unconstrained `g n n`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Reflection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d1fc4a8824c01c5e8fd371ece1d43663fbfb98d2095e2339642bd52f4cb85d74",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 101510,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 101510,
+  "cache_read_input_tokens": 484268,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4202,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4202,
+    "cache_read_input_tokens": 87727,
+    "input_tokens": 2,
+    "output_tokens": 1953,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16942,
+  "output_tokens_details": {
+   "thinking_tokens": 13700
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
