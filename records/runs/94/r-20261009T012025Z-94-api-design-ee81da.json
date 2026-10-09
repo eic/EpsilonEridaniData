@@ -1,0 +1,236 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6958055,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 263.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 135924,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 135924,
+    "cache_read_input_tokens": 1665701,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 38,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4881,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4881,
+      "cache_read_input_tokens": 113424,
+      "input_tokens": 2,
+      "output_tokens": 2666,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20141,
+    "output_tokens_details": {
+     "thinking_tokens": 15212
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.695806,
+ "dedupe_key": "eic/EpsilonEridani|94|1bee4427079a41db243a5cb5f1ecc56e1092bcf7|api-design|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "42bf338bfdbab03f763e96e5192b644cbc8180b03ff6bd9431c260d1429ed7d6",
+ "diff_sha256": "42bf338bfdbab03f763e96e5192b644cbc8180b03ff6bd9431c260d1429ed7d6",
+ "duration_s": 263.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 147-167: `longitudinal`, `longitudinal_def`, `nPlus_mem_longitudinal`, `nMinus_mem_longitudinal` are the only API; grep for `mem_longitudinal` in the file hits no iff. The file's own proof at lines 228-235 does exactly this unfolding (`rw [longitudinal_def, Submodule.mem_span_pair]`), confirmed as `Submodule.mem_span_pair` at Mathlib/LinearAlgebra/Span/Defs.lean:518 (not `@[simp]`).",
+   "file": "EpsilonEridani/Relativity/LightConeBasis.lean",
+   "fix": "Add `@[simp] theorem mem_longitudinal_iff {v : V} : v \u2208 L.longitudinal \u2194 L.transverseProj v = 0` (from `ker_transverseProj_eq_longitudinal` + `LinearMap.mem_ker`), or the span-pair form `\u2194 \u2203 a b : R, a \u2022 L.nPlus + b \u2022 L.nMinus = v`.",
+   "issue": "`longitudinal` is public but has no `mem_longitudinal_iff`; deciding `v \u2208 L.longitudinal` forces a consumer to unfold via `longitudinal_def` + `Submodule.mem_span_pair`, while the dual `transverse` gets `@[simp] mem_transverse_iff` (line 171).",
+   "line": 147
+  },
+  {
+   "evidence": "Lines 227-228 and 314-315 have no attribute, while the comparable normal-form lemmas in the file (`mem_transverse_iff` 170, `transverseProj_transverseProj_eq` 214, `transverseProj_nPlus_eq_zero` 219) are all `@[simp]`.",
+   "file": "EpsilonEridani/Relativity/LightConeBasis.lean",
+   "fix": "Annotate both with `@[simp]`; neither can loop (`longitudinal` is an opaque def, `2` is a literal).",
+   "issue": "`ker_transverseProj_eq_longitudinal` and `finrank_longitudinal_eq_two` (line 315) are listed main characteristic lemmas with a clear left-to-right normal form but carry no `@[simp]`, so `LinearMap.ker L.transverseProj` and `finrank K L.longitudinal` are not normalised for consumers.",
+   "line": 228
+  }
+ ],
+ "head_sha": "1bee4427079a41db243a5cb5f1ecc56e1092bcf7",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 94,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "f355158b3ea4dda9035d5a89bd756a3899f121cd7ab46f04fcb41536eb748f65",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261009T012025Z-94-api-design-ee81da",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-09T01:20:25Z",
+ "submitted_by": "wdconinc",
+ "summary": "Prior findings are fixed and the abstract surface is otherwise minimal and well-characterised. Two gaps remain: the public `longitudinal` definition has no membership characterisation (only the `_def` unfolding lemma), and its main characteristic lemmas carry no automation annotation.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Projection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Projection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearForm/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearMap.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/TransverseMomentumDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4c7796082822261abc1b9b1179536c764b66bc145bbf943d746f7d665313b749",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 135924,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 135924,
+  "cache_read_input_tokens": 1665701,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 38,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4881,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4881,
+    "cache_read_input_tokens": 113424,
+    "input_tokens": 2,
+    "output_tokens": 2666,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20141,
+  "output_tokens_details": {
+   "thinking_tokens": 15212
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
