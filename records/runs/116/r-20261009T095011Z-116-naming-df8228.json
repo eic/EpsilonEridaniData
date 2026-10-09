@@ -1,0 +1,223 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.347171,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 222.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 134707,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 134707,
+    "cache_read_input_tokens": 1100942,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 696,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 696,
+      "cache_read_input_tokens": 112205,
+      "input_tokens": 2,
+      "output_tokens": 2797,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17980,
+    "output_tokens_details": {
+     "thinking_tokens": 13167
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.347171,
+ "dedupe_key": "eic/EpsilonEridani|116|bbdb954b8541472a311fd102de3e4ae872fb9ea1|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "7ad209266ce6541202a4728fde2ab97f21d6e41ba3c03a9907b223134088a87d",
+ "diff_sha256": "7ad209266ce6541202a4728fde2ab97f21d6e41ba3c03a9907b223134088a87d",
+ "duration_s": 222.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 79 `def restrict (D : EuclideanDataset \u03b9) (e : \u03ba \u2192 \u03b9)`; the covariance field is `D.covariance.submatrix e e`, and this PR's own CovarianceMatrix.lean:55 names the same construction `covarianceMatrix_comp : covarianceMatrix (X \u2218 e) \u03bc = (covarianceMatrix X \u03bc).submatrix e e`. The two names for one operation are inconsistent inside a single PR.",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Rename to `EuclideanDataset.comp` (and `comp_value`, `comp_covariance`, `comp_id`, `comp_comp`, `HasContinuumLimit.comp`, `IsNoiseModel.comp`), and drop \"subfamily\" from the docstrings in favour of \"reindexing\". Reserve `restrict` for a version taking a set or an injection.",
+   "issue": "`restrict (D : EuclideanDataset \u03b9) (e : \u03ba \u2192 \u03b9)` is precomposition along an arbitrary map, not a restriction: for non-injective `e` it duplicates observations, so the result is not a \"subfamily\" as the docstring and module header claim. In Mathlib `restrict` always takes a `Set`/subobject (`Set.restrict`, `Measure.restrict`, `MemLp.restrict (s : Set \u03b1)` at Mathlib/MeasureTheory/Function/LpSeminorm/Basic.lean:695); the operation here is `comp`/`submatrix`.",
+   "line": 79
+  },
+  {
+   "evidence": "Lines 86, 91, 97, 102 are `restrict_value`, `restrict_covariance`, `restrict_id`, `restrict_restrict`; line 223 alone is `variance_restrict` with LHS `(D.restrict e).variance c`.",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Rename to `restrict_variance` (or `comp_variance` after the rename above), matching `restrict_value` / `restrict_covariance`.",
+   "issue": "`variance_restrict` reverses the word order of its four sibling lemmas and of its own LHS head `(D.restrict e).variance c`.",
+   "line": 223
+  },
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md:270 \"functionals exactly determined by the sampled index set\"; grep for `exactSubspace` in mathlib returns nothing, so the term has no upstream backing.",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Rename to `determinedSubspace` (or `exactlyDeterminedSubspace`), propagating to `mem_exactSubspace`, `mem_exactSubspace_iff_variance_eq_zero`, `variance_add_of_mem_exactSubspace`, `IsNoiseModel.ae_eq_integral_iff_mem_exactSubspace`.",
+   "issue": "`exactSubspace` is a coined term: it names neither the content (functionals the data determines) nor the object (the kernel of the covariance), and `exact` already has an unrelated established Lean meaning (`Function.Exact`, exact sequences). The roadmap's term is \"functionals exactly determined by the sampled index set\".",
+   "line": 238
+  }
+ ],
+ "head_sha": "bbdb954b8541472a311fd102de3e4ae872fb9ea1",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 116,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b08e91b8faff17344a0fdbffea6da65bcba0bd33757bfbc1735fbf65a332f5f3",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261009T095011Z-116-naming-df8228",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-09T09:50:11Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names and suffixes are mostly accurate, but `EuclideanDataset.restrict` calls an arbitrary precomposition \"restrict\", which in Mathlib always means restriction to a subobject, and the PR's own companion lemma names the identical operation `comp`. The coined term `exactSubspace` and the `variance_restrict` word order are the other naming defects.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Moments/CovarianceMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Moments",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Set/Restrict.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "def215bb0364978aef55543e6a14c104b64e3478fd1709946a4d1c4c381dea16",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 134707,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 134707,
+  "cache_read_input_tokens": 1100942,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 696,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 696,
+    "cache_read_input_tokens": 112205,
+    "input_tokens": 2,
+    "output_tokens": 2797,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17980,
+  "output_tokens_details": {
+   "thinking_tokens": 13167
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
