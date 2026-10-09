@@ -1,0 +1,192 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.618098,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 169.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 106256,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 106256,
+    "cache_read_input_tokens": 483166,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 711,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 711,
+      "cache_read_input_tokens": 96418,
+      "input_tokens": 2,
+      "output_tokens": 1504,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12555,
+    "output_tokens_details": {
+     "thinking_tokens": 9255
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.618098,
+ "dedupe_key": "eic/EpsilonEridani|103|39a494d8b1ee6f5fea094d54adf0caae942e30a6|generality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "79523412e51d14292715bd7a1a4833f8414bea6545c03d7e94745ef9010000c5",
+ "diff_sha256": "79523412e51d14292715bd7a1a4833f8414bea6545c03d7e94745ef9010000c5",
+ "duration_s": 169.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Every proof discharges the side condition with `F.timelike.ne'` only (lines 130, 139, 144, 174, 181); positivity itself (`F.timelike.le`) is used only where `Real.sqrt (g n n)` appears, i.e. in the energy lemmas (125, 182). Mathlib `Module.preReflection x f = y - (f y) \u2022 x` (Mathlib/LinearAlgebra/Reflection.lean:71) imposes nothing on `x`.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Define `Bilin.project (g : Bilin V) (u : V) : V \u2192\u2097[\u211d] V := Module.preReflection u ((g u u)\u207b\u00b9 \u2022 g.flip u)` next to `Bilin.reflect` in `DIS/Tensors/Basic.lean`, state the eight lemmas there with hypothesis `g u u \u2260 0` (`project_apply`, `bilin_project_right`, `ker_project`, `range_project`, `bilin_project_project` with `g.IsSymm`), and set `Frame.spatial F := Bilin.project g F.n`, deriving the `Frame`-level forms from `F.timelike.ne'`.",
+   "issue": "`spatial` and its whole lemma suite (`spatial_apply` 119, `energy_div_smul_add_spatial` 123, `bilin_spatial_n` 129, `spatial_n` 138, `spatial_eq_self_iff` 141, `spatial_spatial` 148, `ker_spatial` 152, `range_spatial` 165, `bilin_spatial_spatial` 179) are bound to `F : Frame g`, i.e. to `0 < g F.n F.n`, but none of them uses positivity: each holds for any `u : V` with `g u u \u2260 0` (and `spatial_apply` with no hypothesis at all). This is the wrong level: the projection along a non-isotropic vector is a `Bilin` notion, not a frame notion, and the timelike bundling makes the API unusable for the spacelike axes \u00a71.2/\u00a71.3 need.",
+   "line": 116
+  },
+  {
+   "evidence": "`pTransverse g K = K.p - (g K.p K.q / g K.q K.q) \u2022 K.q` (DIS/Tensors/Basic.lean:292) is literally `spatial_apply`'s formula with `u = K.q`; `Bilin.apply_sub_smul_pair` (DIS/Tensors/Basic.lean:123) already states `g (x - a \u2022 u) (y - b \u2022 u) = g x y - b * g x u - a * g u y + a * b * g u u` for arbitrary `u`, and `q_sq_mul_pTransverse_self` (Longitudinal.lean:181) is the `a = b` case.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Prove the general `g (project g u a) (project g u b) = g a b - g a u * g b u / g u u` (from `Bilin.apply_sub_smul_pair`), then obtain both `Frame.bilin_spatial_spatial` and the DIS `q_sq_mul_pTransverse_self`/`transverseMetric_pTransverse_self` statements as instances.",
+   "issue": "`bilin_spatial_spatial` re-derives, by `field_simp; ring`, the shifted-pair expansion that already exists in general form in the repo, and its `a = b` case duplicates the existing `pTransverse` computation for a spacelike `u`. The general lemma is therefore proved twice, once per special vector.",
+   "line": 179
+  }
+ ],
+ "head_sha": "39a494d8b1ee6f5fea094d54adf0caae942e30a6",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "839844d12b279768e17ef1c8d572e628c5352660a72b659c18c5949293a1bfee",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261009T100500Z-103-generality-d0e2ce",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-09T10:05:00Z",
+ "submitted_by": "wdconinc",
+ "summary": "The projection half of the file is stated only for a timelike frame vector although every one of its lemmas needs just `g u u \u2260 0`, and the repo already carries the same construction for a spacelike `u` (`pTransverse`). The energy/norm/angle layer is at the right level.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Longitudinal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8ec1acab776292a244041c2524562087432888ca12c517b8c44e0f044521617a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 106256,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 106256,
+  "cache_read_input_tokens": 483166,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 711,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 711,
+    "cache_read_input_tokens": 96418,
+    "input_tokens": 2,
+    "output_tokens": 1504,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12555,
+  "output_tokens_details": {
+   "thinking_tokens": 9255
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
