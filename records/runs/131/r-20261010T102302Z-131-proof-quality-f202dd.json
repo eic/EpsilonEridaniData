@@ -1,0 +1,230 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5249289999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 213.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 140116,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 140116,
+    "cache_read_input_tokens": 1441138,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1523,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1523,
+      "cache_read_input_tokens": 122472,
+      "input_tokens": 2,
+      "output_tokens": 4552,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16122,
+    "output_tokens_details": {
+     "thinking_tokens": 10902
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.524929,
+ "dedupe_key": "eic/EpsilonEridani|131|b420042b93b6cc8d58b531ac297f42ca4c308529|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "aa828080b11102458dd9bdbaaa70aa7519a54044d2d671523c0be7110f483c8e",
+ "diff_sha256": "aa828080b11102458dd9bdbaaa70aa7519a54044d2d671523c0be7110f483c8e",
+ "duration_s": 213.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Positivity.lean:337-342 `have hexp : (1 + G) * crossSectionBracket M s x Q2 y F1 F2 F3 = x * (...)`, proved by one `linear_combination`; it uses only `hplus`, `hminus`, `hlong`, `hr2` \u2014 none of `hs`, `hy`, `hphys`, `hx`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Positivity.lean",
+   "fix": "Extract as a standalone theorem `IsHelicityMatrixOf.one_add_targetMass_mul_crossSectionBracket_eq` taking only `h` and `hQ2`, and make `crossSectionBracket_nonneg` `rw` it.",
+   "issue": "`hexp`, the identity `(1+\u03b3\u00b2) \u00b7 crossSectionBracket = x \u00b7 (A\u208a \u03c3\u208a + A\u208b \u03c3\u208b + 4(1-y-\u03b3\u00b2y\u00b2/4) \u03c3_L)`, is the central algebraic content of the file (module docstring line 49-50: \"It is a non-negative combination of \u03c3\u208a, \u03c3\u208b and \u03c3_L\"), but exists only as a `have` inside a 48-line proof; no user can cite it, e.g. for the saturating examples the PR says are still open.",
+   "line": 337
+  },
+  {
+   "evidence": "Positivity.lean:325-335; the companion inequalities `Yminus_le_Yplus`, `Yminus_le_two_mul`, `Yminus_nonneg` already live in CrossSection.lean:149-164.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Positivity.lean",
+   "fix": "State it as its own lemma next to `Yminus_le_Yplus`/`Yminus_le_two_mul` in `Inclusive/CrossSection.lean` (or as a `private` lemma here), with the discriminant identity as a separate `Yminus`-level equation.",
+   "issue": "`hkey`/`hA0`/`hdom`/`hsY` (lines 325-335) prove a statement purely about the inelasticity factors \u2014 `|s \u00b7 Y\u208b y \u00b7 \u221a(1+\u03b3\u00b2)| \u2264 y\u00b2 - 2y + 2 + \u03b3\u00b2y\u00b2/2` under `0 \u2264 y`, `|s| \u2264 1`, `0 \u2264 1 - y - \u03b3\u00b2y\u00b2/4`, with the sharpness identity `A\u00b2 - (1+\u03b3\u00b2)Y\u208b\u00b2 = 4(1-y-\u03b3\u00b2y\u00b2/4)\u00b2`. No helicity matrix or structure function appears. It is inlined in a one-off proof although the PR description leans on its sharpness (\"degenerates exactly at the physical boundary\").",
+   "line": 325
+  },
+  {
+   "evidence": "Positivity.lean:424-445; the analogous single-direction evaluation was already judged lemma-worthy and placed in Tensors/Basic.lean:685-690.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Positivity.lean",
+   "fix": "Factor it into a lemma in `Tensors/Basic.lean` next to the new `apply_self_of_isF1F2Decomposition_of_spectator` (e.g. `apply_self_eq_of_isF1F2Decomposition`, hypotheses `g q q \u2260 0`, `0 < g T T`, `g.IsSymm`), and let this theorem apply it.",
+   "issue": "In `forall_apply_self_nonneg_iff_exists_isHelicityMatrixOf`, the splitting `v = a\u2022q + b\u2022T + u` with `hqu`, `hTu`, `huu` and the evaluation `hWv : W v v = -F1 * g u u + b\u00b2 * W T T` (lines 424-445, four `field_simp; ring` blocks) is a reusable fact about any `IsF1F2Decomposition` tensor, not a one-off of this iff.",
+   "line": 424
+  },
+  {
+   "evidence": "Positivity.lean:447-449 `have := hspec u hqu hTu` / `have : 0 \u2264 W T T := hL` / `nlinarith [sq_nonneg b, mul_nonneg (sq_nonneg b) this]`; Positivity.lean:172-174.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Positivity.lean",
+   "fix": "Name them: `have huu_le := hspec u hqu hTu`, drop `have : 0 \u2264 W T T := hL` and pass `hL` directly to `nlinarith`; in `F1_nonneg` use `have hp := \u2026`, `have hm := \u2026`.",
+   "issue": "`have := hspec u hqu hTu` is immediately shadowed by `have : 0 \u2264 W T T := hL`, so the closing `nlinarith` depends on an inaccessible hypothesis (`this\u271d : g u u \u2264 0`); the second `have` is also a redundant restatement of `hL`. Same pattern in `F1_nonneg` (lines 172-173), where two anonymous `have :=` shadow each other and `positivity` silently relies on both via its hypothesis search.",
+   "line": 447
+  }
+ ],
+ "head_sha": "b420042b93b6cc8d58b531ac297f42ca4c308529",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 131,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "68361259550a3ff5fa1bc06e66332fcc347089ca2c2a323f3b1bcb0fe690e697",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261010T102302Z-131-proof-quality-f202dd",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-10T10:23:02Z",
+ "submitted_by": "wdconinc",
+ "summary": "Three substantial, independently quotable facts \u2014 the bracket/cross-section identity, the kinematic domination inequality, and the orthogonal-splitting evaluation of W v v \u2014 are buried as `have`s inside two long proofs, so none is citable despite the module docstring advertising them. Also two places where an anonymous `have` is shadowed by a later one while the closing tactic silently depends on it.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Longitudinal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/RCLike",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "34a63b2cbcd27912ca455a2c22bd8793989a59385dde24fd729e19a49d5da7cc",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 140116,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 140116,
+  "cache_read_input_tokens": 1441138,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1523,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1523,
+    "cache_read_input_tokens": 122472,
+    "input_tokens": 2,
+    "output_tokens": 4552,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16122,
+  "output_tokens_details": {
+   "thinking_tokens": 10902
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
