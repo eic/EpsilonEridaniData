@@ -1,0 +1,223 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.589855,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 157.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 102438,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 102438,
+    "cache_read_input_tokens": 493390,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3850,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3850,
+      "cache_read_input_tokens": 83777,
+      "input_tokens": 2,
+      "output_tokens": 4342,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12748,
+    "output_tokens_details": {
+     "thinking_tokens": 8605
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.589855,
+ "dedupe_key": "eic/EpsilonEridani|101|439f776cc946cb789486690e5c514d6724fd14a2|documentation|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "2ceba7ebc9e45af61ceddfaa2daab8e06fe47e5108ed602a34cd2a1f3518026d",
+ "diff_sha256": "2ceba7ebc9e45af61ceddfaa2daab8e06fe47e5108ed602a34cd2a1f3518026d",
+ "duration_s": 157.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Analysis/Calculus/DSlope.lean:35 `dslope f a := update (slope f a) a (deriv f a)`, so `dslope (deriv f) 0 0 = deriv (deriv f) 0`. Lines 26-29 of the file as quoted.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "fix": "Rewrite the paragraph: state that for `x \u2260 0` the operator is `-f'(x)/x` (using `deriv f 0 = 0`, which holds since each iterate is even), and that at `x = 0` it takes the value `-f''(0)`, the limit of `-f'(x)/x`.",
+   "issue": "Module docstring lines 22-29 are garbled and mathematically wrong: the parenthesis at \"(a condition satisfied by all functions in the iteration.\" is never closed; \"The operator fills in the limit at the origin where it equals `deriv f 0 = 0`\" is false \u2014 at `0` the operator's value is `-dslope (deriv f) 0 0 = -deriv (deriv f) 0`, i.e. `-f''(0)`; and the next sentence duplicates the earlier evenness claim and breaks off at a dangling \"All\" mid-line.",
+   "line": 22
+  },
+  {
+   "evidence": "Basic.lean:90-97 uses only `analyticOnNhd_dslope` and the induction hypothesis; DSlope.lean:18-20 \"the analytic analogue, which needs no such case distinction\".",
+   "file": "EpsilonEridani/Mathematics/Analysis/Calculus/Deriv/EvenFunction.lean",
+   "fix": "Say the vanishing derivative at 0 is what identifies the operator with the Rayleigh operator `-(1/x) d/dx` (and feeds `hasDerivAt_reduced`); attribute analyticity to `analyticAt_dslope`.",
+   "issue": "\"hence `deriv (G l) 0 = 0`, which makes the iterated operator analytic across the origin\" is inaccurate: analyticity of `dslope` holds with no hypothesis on `deriv f 0` (the DSlope file's own docstring says it \"needs no such case distinction\"), and the analyticity proof `analyticOnNhd_reduced` (Basic.lean:90-97) never uses evenness. The vanishing derivative is what makes the operator equal `-f'(x)/x` and what `hasDerivAt_reduced` needs. Basic.lean:22-29 makes the same conflation (\"All iterates are then real analytic\").",
+   "line": 17
+  },
+  {
+   "evidence": "Basic.lean:75 `local notation \"G\" => reducedSphericalBesselJ`; Basic.lean:108 `private lemma reduced_neg`.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Calculus/Deriv/EvenFunction.lean",
+   "fix": "Describe the consumer in prose (\"the iterates of `f \u21a6 -dslope (deriv f) 0` applied to `Real.sinc` are even\") and reference only the public module name.",
+   "issue": "The module docstring points at `G l` and `reduced_neg`, which are a `local notation` and a `private lemma` in a downstream file; neither is resolvable by a reader (or doc-gen) from this module.",
+   "line": 16
+  },
+  {
+   "evidence": "Statements at lines 251, 260, 276 all take `(hx : x \u2260 0)`.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "fix": "Add \"for `x \u2260 0`\" to those three bullets, matching the per-declaration docstrings at lines 249-250, 259 and 274-275.",
+   "issue": "Main-statements bullets for `sphericalBesselJ_add_two` (line 45) and `hasDerivAt_sphericalBesselJ` / `hasDerivAt_sphericalBesselJ_succ'` (lines 46-48) omit the `x \u2260 0` hypothesis, while neighbouring bullets (lines 40, 51-52) explicitly advertise \"on the whole line\". A reader scanning the header is told more than the statements deliver.",
+   "line": 45
+  },
+  {
+   "evidence": "Only occurrence in the repo is the docstring itself: `grep -rn hasDerivAt_hermiteFunction code/` \u2192 Basic.lean:48. Imports at Basic.lean:8-13 contain no TauCeti module; TauCeti is an external require (lakefile.toml:16-18).",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "fix": "Drop \"arranged after the ladder relations of TauCeti's Hermite functions (`TauCeti.hasDerivAt_hermiteFunction`)\" and keep only \"They form a ladder pair\".",
+   "issue": "The docstring cites `TauCeti.hasDerivAt_hermiteFunction`, but this module does not import anything from the TauCeti package (imports, lines 8-13), so the reference cannot be resolved by a reader or linked by doc-gen; the clause is also API-shaping narrative rather than mathematics.",
+   "line": 48
+  },
+  {
+   "evidence": "DSlope.lean:37 and :59 are the only two theorems in that file; Basic.lean:315 `theorem sphericalBesselJ_one`, :276 `hasDerivAt_sphericalBesselJ_succ'`, :291 `deriv_sphericalBesselJ_succ'`.",
+   "file": "",
+   "fix": "Update the description to the names actually introduced.",
+   "issue": "The PR description names declarations the diff does not contain: `AnalyticAt.of_dslope`, `analyticAt_dslope_same`, `analyticAt_dslope_of_ne` (DSlope.lean has only `analyticAt_dslope` and `analyticOnNhd_dslope`), `sphericalBesselJ_one_of_ne_zero` (actual: `sphericalBesselJ_one`), and `hasDerivAt_sphericalBesselJ_succ` / `deriv_sphericalBesselJ_succ` (actual: `..._succ'`).",
+   "line": 0
+  }
+ ],
+ "head_sha": "439f776cc946cb789486690e5c514d6724fd14a2",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 101,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "64d3488d6b3d586825c9af6ac4b58eb10a5c73b3801afebc8e7bab885abe6b08",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261010T014103Z-101-documentation-52826a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-10T01:41:03Z",
+ "submitted_by": "wdconinc",
+ "summary": "The SphericalBessel module docstring's construction paragraph is garbled and states the wrong value for the operator at the origin, and both it and the EvenFunction docstring credit evenness with the analyticity that actually comes from `analyticAt_dslope` unconditionally. Several doc cross-references point at declarations that are private, unimported, or nonexistent.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Analytic/DSlope.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Calculus/DSlope.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Calculus/Deriv/EvenFunction.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0e9b00ce731282bc463e9e7c1a40501c566e27bc638ad0533ce8f1845ab465d4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 102438,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 102438,
+  "cache_read_input_tokens": 493390,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3850,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3850,
+    "cache_read_input_tokens": 83777,
+    "input_tokens": 2,
+    "output_tokens": 4342,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12748,
+  "output_tokens_details": {
+   "thinking_tokens": 8605
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
