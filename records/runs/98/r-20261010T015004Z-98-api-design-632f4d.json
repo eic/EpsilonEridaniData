@@ -1,0 +1,248 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5165895000000007,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 225.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 133420,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 133420,
+    "cache_read_input_tokens": 1489189,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3394,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3394,
+      "cache_read_input_tokens": 109823,
+      "input_tokens": 2,
+      "output_tokens": 2904,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17505,
+    "output_tokens_details": {
+     "thinking_tokens": 11435
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.51659,
+ "dedupe_key": "eic/EpsilonEridani|98|31e12fa601b044b97a281953dac9e76e88e5b970|api-design|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "8ca29b647237ba77b52a234412e1d0a835c6be1d05253d7eef92d29690782918",
+ "diff_sha256": "8ca29b647237ba77b52a234412e1d0a835c6be1d05253d7eef92d29690782918",
+ "duration_s": 225.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -rn 'areaForm_relativeTransverse_transverseBoost' code/` returns exactly one hit: LightFront.lean:69, inside the docstring. Declaration list of the file shows only `areaForm_transversePart_relativeTransverse_transverseBoost` (464), `areaForm_relativeTransverse_transverseIsometry` (530), `areaForm_relativeTransverse_transverseIsometry'` (540).",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Add the missing general lemma `areaForm (relativeTransverse b P) (relativeTransverse k P)` boost invariance (immediate from `relativeTransverse_transverseBoost`) and derive line 464 from it, as the docstring claims; while adding it, give the momentum/momentum isometry lemma a real name instead of the primed `areaForm_relativeTransverse_transverseIsometry'`.",
+   "issue": "The docstring lists `EpsilonEridani.areaForm_relativeTransverse_transverseBoost` as a main statement (\"the oriented area between two relative transverse momenta is invariant under transverse boosts\"), but no such declaration exists; the boost side only has the position/momentum form `areaForm_transversePart_relativeTransverse_transverseBoost` (line 464), while the isometry side has both forms (lines 530, 540).",
+   "line": "69"
+  },
+  {
+   "evidence": "`grep -rn 'transverseIsometry_trans\\|transverseIsometry_refl\\|transverseIsometry_one' code/` returns no matches; the only isometry structural lemma is `transverseIsometry_symm` (503).",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Add `transverseIsometry_refl : transverseIsometry (LinearIsometryEquiv.refl \u211d E\u00b2) = LinearEquiv.refl \u211d (Lorentz.Vector 3)` and `transverseIsometry_trans (R S) : transverseIsometry (R.trans S) = (transverseIsometry R).trans (transverseIsometry S)`, matching the boost side's annotations.",
+   "issue": "`transverseIsometry` has no `_refl` or `_trans`, so a consumer cannot rewrite a composite `(transverseIsometry R).trans (transverseIsometry S)` to `transverseIsometry (R.trans S)` without unfolding the definition \u2014 exactly what users of the conjugation law `transverseBoost_trans_transverseIsometry` (516) need. The parallel boost side develops the full group law (`_zero` 415, `_add` 420, `_symm` 435, `_sub` 440).",
+   "line": "479"
+  },
+  {
+   "evidence": "Repo convention: `EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean:20-24` nests `EpsilonEridani.QFT.Scattering.DIS.Kinematics`; `Particles/Parton/GPD/Ambiguity.lean:56-59`, `Numerics/Random.lean:54-55`, `Mathematics/LieAlgebra/StructureConstants.lean:60,64` all nest. Extending an upstream namespace is already accepted here (`Relativity/Tensors/RealTensor/Metrics/LeviCivita.lean:27` declares into `realLorentzTensor`).",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Put the whole light-front API in `Lorentz.Vector` (the namespace of the type these definitions construct and act on, matching the accessors and the file's Physlib-mirroring path), so the file has one namespace block; the \"first explicit argument\" rule does not apply to constructors and automorphisms of the type.",
+   "issue": "`ofLightFront`, `transverseBoost`, `transverseIsometry` and ~20 of their lemmas are declared in the bare root namespace `EpsilonEridani`, not in a sub-namespace as every other file in the repo does. Generic names like `EpsilonEridani.transverseBoost`/`transverseIsometry` claim the project's root namespace for one concrete `Lorentz.Vector 3` notion (other roadmaps, e.g. TMD, will need their own), and the split leaves one definition's characteristic API in two namespaces: `EpsilonEridani.plusComponent_ofLightFront` (235) vs `Lorentz.Vector.ofLightFront_plusComponent_minusComponent_transversePart` (263), with the file entering and leaving namespaces five times (94, 201, 255, 337, 551).",
+   "line": "201"
+  }
+ ],
+ "head_sha": "31e12fa601b044b97a281953dac9e76e88e5b970",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 98,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "6ea41befde1ed1fa6db7c9728d618355c200abbdff9dcde0be287aa4ad8f0599",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261010T015004Z-98-api-design-632f4d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-10T01:50:04Z",
+ "submitted_by": "wdconinc",
+ "summary": "The light-front characteristic API is otherwise complete and well annotated, but the module docstring advertises a lemma that does not exist (the general boost invariance of \u03c9, which the isometry side does have), the isometry side lacks the composition laws the boost side has, and the new public surface sits in the bare `EpsilonEridani` root namespace against the repo-wide convention, splitting the constructor from its accessors.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/InnerProductSpace/Orientation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Ambiguity.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Numerics/Random.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LieAlgebra/StructureConstants.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "15dbde150732dd292f455de1fe30f03721dccfcd208df75f1573416ad899c857",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 133420,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 133420,
+  "cache_read_input_tokens": 1489189,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3394,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3394,
+    "cache_read_input_tokens": 109823,
+    "input_tokens": 2,
+    "output_tokens": 2904,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17505,
+  "output_tokens_details": {
+   "thinking_tokens": 11435
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

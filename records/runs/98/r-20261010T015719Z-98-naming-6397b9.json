@@ -1,0 +1,188 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8948789999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 186.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 132607,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 132607,
+    "cache_read_input_tokens": 400798,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 769,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 769,
+      "cache_read_input_tokens": 103165,
+      "input_tokens": 2,
+      "output_tokens": 4194,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14734,
+    "output_tokens_details": {
+     "thinking_tokens": 11425
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.894879,
+ "dedupe_key": "eic/EpsilonEridani|98|31e12fa601b044b97a281953dac9e76e88e5b970|naming|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "8ca29b647237ba77b52a234412e1d0a835c6be1d05253d7eef92d29690782918",
+ "diff_sha256": "8ca29b647237ba77b52a234412e1d0a835c6be1d05253d7eef92d29690782918",
+ "duration_s": 186.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 532 first argument is `transversePart (transverseIsometry R b)`; lines 543-544 first argument is `relativeTransverse (transverseIsometry R b) (transverseIsometry R P)`. Naming conventions: \"the name of theorem simply describes the conclusion\"; `'` is for minor variants, not for two genuinely different statements.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Rename line 530 to `areaForm_transversePart_relativeTransverse_transverseIsometry` (matching line 464) and line 540 to `areaForm_relativeTransverse_transverseIsometry`, dropping the prime; update the docstring entry at line 73.",
+   "issue": "`areaForm_relativeTransverse_transverseIsometry` (line 530) concludes about `areaForm (transversePart b) (relativeTransverse k P)`, while `areaForm_relativeTransverse_transverseIsometry'` (line 540) concludes about `areaForm (relativeTransverse b P) (relativeTransverse k P)`. The names read backwards from the conclusions: the primed lemma is the one whose arguments are two `relativeTransverse` terms, so it owns the unprimed name. The boost analogue at line 464 does name both arguments (`areaForm_transversePart_relativeTransverse_transverseBoost`), so the two parallel families are also inconsistent.",
+   "line": "530"
+  },
+  {
+   "evidence": "`grep -rn areaForm_relativeTransverse_transverseBoost code/` returns exactly one hit: `LightFront.lean:69`, inside the module docstring.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Either add the general boost lemma under that name (the mirror of the isometry primed lemma at line 540), or rewrite lines 69-72 to list only `areaForm_transversePart_relativeTransverse_transverseBoost`.",
+   "issue": "The `## Main statements` list advertises `EpsilonEridani.areaForm_relativeTransverse_transverseBoost` (\"the oriented area between two relative transverse momenta is invariant under transverse boosts\"). No such declaration exists in the PR; only `areaForm_transversePart_relativeTransverse_transverseBoost` (line 464) is present. The docstring names an API the file does not provide.",
+   "line": "69"
+  },
+  {
+   "evidence": "`Mathlib/LinearAlgebra/Complex/Orientation.lean:24`: `protected noncomputable def orientation : Orientation \u211d \u2102 (Fin 2)`.",
+   "file": "EpsilonEridani/Mathematics/InnerProductSpace/Orientation.lean",
+   "fix": "Declare it `protected noncomputable def orientation`, matching `Complex.orientation`; the open at `LightFront.lean:91` already names it explicitly and is unaffected.",
+   "issue": "`EuclideanSpace.orientation` is unprotected, so `open EuclideanSpace` (routine for `basisFun`, `norm_eq`, \u2026) brings a bare `orientation` into scope alongside `Basis.orientation`. Mathlib's direct analogue marks the same name `protected` for exactly this reason.",
+   "line": "41"
+  }
+ ],
+ "head_sha": "31e12fa601b044b97a281953dac9e76e88e5b970",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 98,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "1c6e7c054d64cc2562d97a979ef6b17ebba6ca2c18874b8e3f4f6ab67a4ac790",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261010T015719Z-98-naming-6397b9",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-10T01:57:19Z",
+ "submitted_by": "wdconinc",
+ "summary": "The two isometry area-form lemmas carry names swapped relative to their conclusions, with a gratuitous prime, and the module docstring advertises a `Main statement` name that does not exist. The earlier notation and hypothesis-naming findings are resolved or withdrawn.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/InnerProductSpace/Orientation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Complex/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "322e265996693be58491d542fe2d30f20e57c5fc8a0ba0ea5663c098d52d4d6c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 132607,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 132607,
+  "cache_read_input_tokens": 400798,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 769,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 769,
+    "cache_read_input_tokens": 103165,
+    "input_tokens": 2,
+    "output_tokens": 4194,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14734,
+  "output_tokens_details": {
+   "thinking_tokens": 11425
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
