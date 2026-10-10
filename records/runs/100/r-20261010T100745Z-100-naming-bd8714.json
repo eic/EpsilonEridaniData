@@ -1,0 +1,204 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0343555,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 161.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 127818,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 127818,
+    "cache_read_input_tokens": 868781,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1742,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1742,
+      "cache_read_input_tokens": 103642,
+      "input_tokens": 2,
+      "output_tokens": 4714,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12867,
+    "output_tokens_details": {
+     "thinking_tokens": 8278
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.034356,
+ "dedupe_key": "eic/EpsilonEridani|100|6df4f9066c6ea8428b04fd25abb29b3b8bcc9810|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "4202390eb08a50dbe23387d0fa2dfe24a633ba96e379d8e6c8546743e88ec977",
+ "diff_sha256": "4202390eb08a50dbe23387d0fa2dfe24a633ba96e379d8e6c8546743e88ec977",
+ "duration_s": 161.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:112-113 `/-- A projection `\u03c8bar_\u00b1` of the antiquark field. -/ | antiquark (p : QuarkProjection)`; roadmap MultiPartonCorrelations/README.md:412 `\u03c8\u0304_+ \u03b3^+ \u03c8_+`, :374-375 \"each a quark field with a chirality and a good/bad label\"; EpsilonEridani/Particles/Parton/GPD/Basic.lean:73 `AntiquarkForwardLimitToPdfAtScale` uses antiquark for f\u0304.",
+   "file": "EpsilonEridani/Particles/Parton/HigherTwist/Basic.lean",
+   "fix": "Rename the constructor to `quarkBar` (or `conjQuark`) and follow through on `massDimension_antiquark`, `lightConeSpin_antiquark_good/bad`, `twist_antiquark_good/bad`, `quarkNumber_antiquark`; say \"conjugate quark field \u03c8\u0304\" in the docstrings.",
+   "issue": "Constructor `antiquark (p : QuarkProjection)` and its docstring (\"A projection `\u03c8bar_\u00b1` of the antiquark field\", line 112; same wording line 20, 44, 108) call \u03c8\u0304 the antiquark field. \u03c8\u0304 is the Dirac-conjugate quark field; the roadmap \u00a70.2 writes `\u03c8\u0304_+ \u03b3^+ \u03c8_+` and describes the data as \"a quark field with a chirality and a good/bad label\", with no antiquark field. The repo uses \"antiquark\" in its standard sense for the antiquark density elsewhere, so the term is now overloaded.",
+   "line": "113"
+  },
+  {
+   "evidence": "Basic.lean:101-102 `/-- The purely transverse component `F^{ij}` \u2026 -/ | transverse` vs Basic.lean:97-98 `/-- The components `F^{+i}` \u2026 -/ | plusTransverse` and Basic.lean:405-406 \"`F^{+i} F^{+j}` in transverse field strengths\"; roadmap Suggested.lean:39 names `F^{+i}` `transverseStrength`.",
+   "file": "EpsilonEridani/Particles/Parton/HigherTwist/Basic.lean",
+   "fix": "Rename the constructor to `purelyTransverse` (matching its own docstring \"The purely transverse component `F^{ij}`\") and update the derived lemma names, or reserve \"transverse field strength\" in the prose for `F^{ij}` only.",
+   "issue": "`FieldStrengthComponent.transverse` denotes `F^{ij}`, but the file's own docstrings use \"transverse field strength\" for `F^{+i}` (`plusTransverse`): lines 68-69, 405-406 (\"`F^{+i} F^{+j}` in transverse field strengths\") and 420-421. The bare name therefore means the opposite of the surrounding prose, and `twist_transverse`/`lightConeSpin_transverse` inherit the ambiguity.",
+   "line": "102"
+  },
+  {
+   "evidence": "Basic.lean:158-159 `massDimension_fieldStrength (c : FieldStrengthComponent)` vs :191 `@[simp] theorem twist_transverse : (fieldStrength .transverse).twist = 2`; naming conventions: \"`_`-separated strings in a lemma name correspond to a definition name or connective\".",
+   "file": "EpsilonEridani/Particles/Parton/HigherTwist/Basic.lean",
+   "fix": "Rename to `lightConeSpin_fieldStrength_plusTransverse`, `twist_fieldStrength_plusMinus`, etc., matching `massDimension_fieldStrength` and `twist_quark_good`.",
+   "issue": "The field-strength simp lemmas omit the `fieldStrength` constructor from their names \u2014 `lightConeSpin_plusTransverse` (169), `lightConeSpin_plusMinus` (172), `lightConeSpin_transverse` (174), `lightConeSpin_minusTransverse` (176), `twist_plusTransverse` (187), `twist_plusMinus` (189), `twist_transverse` (191), `twist_minusTransverse` (193) \u2014 although the subject term is `LightConeField.fieldStrength .plusTransverse` etc. The quark lemmas spell out both constructors (`lightConeSpin_quark_good`, `twist_quark_bad`) and `massDimension_fieldStrength` uses the constructor, so the names are inconsistent and unguessable; `plusMinus`/`transverse` are constructors of `FieldStrengthComponent`, not of `LightConeField`.",
+   "line": "169"
+  }
+ ],
+ "head_sha": "6df4f9066c6ea8428b04fd25abb29b3b8bcc9810",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 100,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "122bc280fab817c5df044a40bf7d01a9a99bc6087d94f920b69688ce4d3f6b10",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261010T100745Z-100-naming-bd8714",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-10T10:07:45Z",
+ "submitted_by": "wdconinc",
+ "summary": "Three naming defects: `antiquark` is nonstandard terminology for the conjugate field \u03c8\u0304 and clashes with the repo's existing use of the word; `FieldStrengthComponent.transverse` names F^{ij} while the file's own prose calls F^{+i} transverse; and the field-strength lemma names omit the `fieldStrength` constructor that the sibling quark and massDimension lemmas carry.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/HigherTwist/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MultiPartonCorrelations/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MultiPartonCorrelations/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MultiPartonCorrelations/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MultiPartonCorrelations/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fe6de386142bc68edf19f7589a1f1133bbaa4cdd6d07e5bdf9065381982ed93c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 127818,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 127818,
+  "cache_read_input_tokens": 868781,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1742,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1742,
+    "cache_read_input_tokens": 103642,
+    "input_tokens": 2,
+    "output_tokens": 4714,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12867,
+  "output_tokens_details": {
+   "thinking_tokens": 8278
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
