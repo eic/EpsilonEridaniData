@@ -1,0 +1,166 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.6404149499999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 158.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 85105,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 85105,
+    "cache_read_input_tokens": 399074,
+    "inference_geo": "",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2066,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2066,
+      "cache_read_input_tokens": 72084,
+      "input_tokens": 2,
+      "output_tokens": 5866,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12139,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "fe627d6347274d5771d56cd52017155e88fc2265",
+ "cost_usd": 0.640415,
+ "dedupe_key": "eic/EpsilonEridani|136|ac52296023e79c44637755d8bfee6f489be1459e|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "ecffeb7bdb9feaef974f34a9bf3f44b6d872145925bd688a0653ae9b3cdd6703",
+ "diff_sha256": "ecffeb7bdb9feaef974f34a9bf3f44b6d872145925bd688a0653ae9b3cdd6703",
+ "duration_s": 158.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "naming-conventions.md, Injectivity: \"Bidirectional injectivity lemmas ... `f x = f y \u2194 x = y` ... should be named `f_inj`\". The conclusion here is about the valence pair, not about `M = M'`; the structure also has `mass`/`decayConstant`/`charge` fields that the hypothesis does not constrain.",
+   "file": "EpsilonEridani/Particles/Meson/Basic.lean",
+   "fix": "Rename to `valenceNumber_eq_iff` (or `valenceNumber_eq_iff_of_ne`, since it carries the hypothesis `M.valenceQuark \u2260 M.valenceAntiquark`), and update the module docstring and the use at line 372.",
+   "issue": "`valenceNumber_inj` proves `M.valenceNumber = M'.valenceNumber \u2194 M.valenceQuark = M'.valenceQuark \u2227 M.valenceAntiquark = M'.valenceAntiquark`, not `\u2194 M = M'`. The `_inj` suffix is reserved for the bidirectional `f x = f y \u2194 x = y`, so the name advertises injectivity of `M \u21a6 M.valenceNumber`, which is false (mesons differing only in mass or decay constant have equal valence numbers).",
+   "line": "215"
+  },
+  {
+   "evidence": "Lines 383-386 field docstrings say \"The light-quark mass difference `m_d - m_u`\" and \"The strange-minus-light mass difference\"; the roadmap \u00a71.1 calls them \"the light quark mass difference and the strange-minus-light mass difference\" (roadmap/EpsilonEridaniRoadmaps/MesonStructure/README.md:409-411), i.e. breaking parameters, not isospin or strangeness.",
+   "file": "EpsilonEridani/Particles/Meson/Basic.lean",
+   "fix": "Rename the fields to the quantities they are, e.g. `isospinBreaking` and `strangeBreaking` (or `su3Breaking`), updating `ofMasses`, `ofMasses_isospin`/`ofMasses_strange` (\u2192 `ofMasses_isospinBreaking`/`ofMasses_strangeBreaking`), `IsIsospinLimit`, `IsSU3Limit`, `isIsospinLimit_iff`, `isSU3Limit_iff` and the docstrings.",
+   "issue": "`FlavorBreaking.isospin : \u211d` and `.strange : \u211d` (line 386) are named after physical quantum numbers (isospin; strangeness), but hold `m_d - m_u` and `m_s - (m_u + m_d)/2`. `b.isospin` and `b.strange` read as the meson's isospin and strangeness, so the interface misdescribes the data; `IsIsospinLimit b := b.isospin = 0` compounds this.",
+   "line": "384"
+  },
+  {
+   "evidence": "naming-conventions.md: \"the name of theorem simply describes the conclusion\"; Mathlib names both sides in such lemmas (e.g. `Polynomial.natDegree_le_natDegree`). As written, `kPlus_valenceNumber_ne_piPlus` reads as a function `\u2260` a meson.",
+   "file": "EpsilonEridani/Particles/Meson/Basic.lean",
+   "fix": "Spell out both sides, as Mathlib does for two-sided projection comparisons: `kPlus_valenceQuark_eq_piPlus_valenceQuark`, `kPlus_valenceAntiquark_ne_piPlus_valenceAntiquark`, `kPlus_valenceNumber_ne_piPlus_valenceNumber`, `piMinus_eq_chargeConj_piPlus`, `kMinus_eq_chargeConj_kPlus`. Update the module docstring entry at line 69.",
+   "issue": "Names drop the projection on the right-hand side, so they describe a different (ill-typed) statement: `kPlus_valenceQuark_eq_piPlus` (362) proves `kPlus.valenceQuark = piPlus.valenceQuark`; same for `kPlus_valenceAntiquark_ne_piPlus` (366), `kPlus_valenceNumber_ne_piPlus` (371), `piMinus_eq_chargeConj` (341) and `kMinus_eq_chargeConj` (343), which prove `piMinus = piPlus.chargeConj` and `kMinus = kPlus.chargeConj`.",
+   "line": "362"
+  }
+ ],
+ "head_sha": "ac52296023e79c44637755d8bfee6f489be1459e",
+ "merge_base_sha": "74f99fc7671738951b67f376ec39f1fc6a8f24ae",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 136,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "aac07d25aa780a9d1107a53349e09dad1dbbed215d9105f5f6b321b556406679",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261011T194346Z-136-naming-eb2a5a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-11T19:43:46Z",
+ "submitted_by": "veprbl",
+ "summary": "Three naming defects: `valenceNumber_inj` claims an injectivity it does not prove, the `FlavorBreaking` fields are named after quantum numbers rather than the breaking parameters they carry, and five comparison lemmas elide the projection on the right-hand side so the names misdescribe their conclusions.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MesonStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MesonStructure/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d655032b645d3b9e1ce634c44f73a903fc4d28990e7b8914b5022bea9d15ba31",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 85105,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 85105,
+  "cache_read_input_tokens": 399074,
+  "inference_geo": "",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2066,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2066,
+    "cache_read_input_tokens": 72084,
+    "input_tokens": 2,
+    "output_tokens": 5866,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12139,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
