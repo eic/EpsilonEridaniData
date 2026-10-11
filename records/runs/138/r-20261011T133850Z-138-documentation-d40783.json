@@ -1,0 +1,209 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.84698535,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 298.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 88869,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 88869,
+    "cache_read_input_tokens": 450532,
+    "inference_geo": "",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5724,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5724,
+      "cache_read_input_tokens": 75480,
+      "input_tokens": 2,
+      "output_tokens": 8945,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24081,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "fe627d6347274d5771d56cd52017155e88fc2265",
+ "cost_usd": 0.846985,
+ "dedupe_key": "eic/EpsilonEridani|138|fd183e1493f0c89859069286e46cabaa97b9f188|documentation|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "998e5c36be028fdfb62614cd723b191994ee4c12aed04737c02be17c9869e9a6",
+ "diff_sha256": "998e5c36be028fdfb62614cd723b191994ee4c12aed04737c02be17c9869e9a6",
+ "duration_s": 298.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`transverseEpsLin_volumeForm_apply` (Relativity/LightConeBasis.lean:252) gives `(E u)^\u03bc = \u03b7^{\u03bc\u03bc} \u03b5(u, e_\u03bc, n\u208a, n\u208b)` \u2014 free index in slot 2 \u2014 and the `epsRaise` docstring (line 190) correctly writes that as `\u03b5_\u03bd{}^{\u03bc}{}_{\u03c1\u03c3} u^\u03bd`, contradicting `\u03b5_T^{\u03bc}{}_{\u03bd} u^\u03bd`. Explicitly, for n\u00b1 = (e\u2080\u00b1e\u2083)/\u221a2: \u03b5_T(e\u2081,e\u2082) = -\u03b5_{1203} = -1, so (E e\u2081)^2 = \u03b7^{22}\u00b7(-1) = +1, i.e. E e\u2081 = +e\u2082, while \u03b5_T^{2}{}_{1} = \u03b7^{22}\u03b5_{T21} = -1 gives -e\u2082.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "fix": "Write `(E u)^\u03bc = \u03b5_{T \u03bd}{}^{\u03bc} u^\u03bd` and describe `E` as the tensor with its *second* index raised (or equivalently `-\u03b5_T^{\u03bc}{}_{\u03bd} u^\u03bd`); fix lines 34 and 57 to match.",
+   "issue": "The docstring says `transverseEpsLin` is the tensor \"with its first index raised\", `(E u)^\u03bc = \u03b5_T^{\u03bc}{}_{\u03bd} u^\u03bd`. From `B (E u) v = \u03b5(u, v, n\u208a, n\u208b)` the argument `u` sits in \u03b5's *first* slot and the free raised index in the *second*, so `(E u)^\u03bc = \u03b5_{T \u03bd}{}^{\u03bc} u^\u03bd = -\u03b5_T^{\u03bc}{}_{\u03bd} u^\u03bd`: the documented formula is the negative of the map defined. Same wording at lines 34 and 57 of the module docstring (\"its first index can be raised\", \"with its first index raised\").",
+   "line": 398
+  },
+  {
+   "evidence": "PS defines \u03b3\u2075 \u2261 i\u03b3\u2070\u03b3\u00b9\u03b3\u00b2\u03b3\u00b3 = -(i/4!)\u03b5_{\u03bc\u03bd\u03c1\u03c3}\u03b3^\u03bc\u03b3^\u03bd\u03b3^\u03c1\u03b3^\u03c3; since \u03b5_{\u03bc\u03bd\u03c1\u03c3}\u03b3^\u03bc\u03b3^\u03bd\u03b3^\u03c1\u03b3^\u03c3 = 4!\u00b7\u03b5_{0123}\u03b3\u2070\u03b3\u00b9\u03b3\u00b2\u03b3\u00b3, that identity forces \u03b5_{0123} = -1, i.e. \u03b5^{0123} = +1. roadmap/EpsilonEridaniRoadmaps/MultiPartonCorrelations/README.md:141: \"the four-dimensional Levi-Civita symbol is fixed by `\u03b5\u2070\u00b9\u00b2\u00b3 = +1`\".",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/VolumeForm.lean",
+   "fix": "Drop the Peskin\u2013Schroeder attribution (or cite a reference that actually uses `\u03b5_{0123} = +1`), and state plainly that this file's convention is the opposite of the `\u03b5\u2070\u00b9\u00b2\u00b3 = +1` convention used in the TMD/MPC literature.",
+   "issue": "`\u03b5^{0123} = -1` is attributed to Peskin\u2013Schroeder (also in References, line 43-44). Peskin\u2013Schroeder fix `\u03b5^{0123} = +1`, i.e. `\u03b5_{0123} = -1`, the opposite of this file's `\u03b5_{0123} = +1`. The roadmap also fixes `\u03b5\u2070\u00b9\u00b2\u00b3 = +1`, so the docstring leaves a reader with a wrong anchor for the sign of every T-odd structure built from this form.",
+   "line": 18
+  },
+  {
+   "evidence": "EpsilonEridani/Relativity/Tensors/RealTensor/Metrics/LeviCivita.lean:27 `namespace realLorentzTensor`, :37 `leviCivita4Int \u03bc \u03bd \u03c1 \u03c3 := generalizedKroneckerDelta ![\u03bc,\u03bd,\u03c1,\u03c3] id` (so \u03b5_{0123} = +1) and :61 `leviCivita4UpInt := - leviCivita4Int` (so \u03b5^{0123} = -1) \u2014 identical to `volumeForm`'s convention.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/VolumeForm.lean",
+   "fix": "Name the declaration and its module explicitly (which Physlib object is meant), and reconcile the sentence with the in-repo `realLorentzTensor.leviCivita4Int`/`leviCivita4UpInt`.",
+   "issue": "\"the form is the negative of the contraction of `realLorentzTensor.leviCivita` (which has `\u03b5\u2070\u00b9\u00b2\u00b3 = 1`)\" contradicts the only `realLorentzTensor.leviCivita*` declarations in this repository, which use the same convention as `volumeForm` (so the contraction would be equal, not the negative). The unqualified name is ambiguous between the two.",
+   "line": 19
+  },
+  {
+   "evidence": "VolumeForm.lean:37 and Relativity/LightConeBasis.lean:63-66 list them under `## Main statements`; the declarations at VolumeForm.lean:107, Relativity/LightConeBasis.lean:279 and :299 have no `/-- -/`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/VolumeForm.lean",
+   "fix": "Add a one-line docstring to each stating the result (`\u03b5(e\u2080,e\u2081,e\u2082,e\u2083) = 1`; `\u03b5_T \u2218 \u03b5_T = -g_T`; the `-c\u00b2` rescaling for a four-form of normalisation `c`).",
+   "issue": "Declarations advertised under \"Main statements\" carry no docstring: `volumeForm_basis` (the lemma that fixes the file's normalisation convention), and in Relativity/LightConeBasis.lean `transverseEpsLin_volumeForm_comp_self` (line 279) and `transverseEpsLin_comp_self` (line 299), the PR's headline results.",
+   "line": 107
+  }
+ ],
+ "head_sha": "fd183e1493f0c89859069286e46cabaa97b9f188",
+ "merge_base_sha": "74f99fc7671738951b67f376ec39f1fc6a8f24ae",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 138,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "79a027e0310bab949f6383c164cdf6f8be199cdb8d05cdd4bec52fdbdd5c21e7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261011T133850Z-138-documentation-d40783",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-11T13:38:50Z",
+ "submitted_by": "veprbl",
+ "summary": "The documentation is mostly accurate, but the index formula for `transverseEpsLin` has the wrong sign, the sign convention is misattributed to Peskin\u2013Schroeder, and the cross-reference to `realLorentzTensor.leviCivita` contradicts the repository's own Levi-Civita module.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/VolumeForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Metrics/LeviCivita.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/LeviCivita/ContractionsExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MultiPartonCorrelations/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/TransverseMomentumDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4e5a0a0b2773bc1aeaf1ae7ed17e7e849352081fe714c8edf9b20a5421368349",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 88869,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 88869,
+  "cache_read_input_tokens": 450532,
+  "inference_geo": "",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5724,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5724,
+    "cache_read_input_tokens": 75480,
+    "input_tokens": 2,
+    "output_tokens": 8945,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24081,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
