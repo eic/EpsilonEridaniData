@@ -1,0 +1,229 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.9774927499999997,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 147.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 115029,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 115029,
+    "cache_read_input_tokens": 352371,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 162,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4425,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4425,
+      "cache_read_input_tokens": 96089,
+      "input_tokens": 32,
+      "output_tokens": 2696,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11744,
+    "output_tokens_details": {
+     "thinking_tokens": 6657
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.977493,
+ "dedupe_key": "eic/EpsilonEridani|126|1af826569ca6e8887bb20efc80f95d42908025f2|api-design|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "60866d68524e8aab4418a41928cb20f166bc287c481f3f225ff1b9db56413423",
+ "diff_sha256": "60866d68524e8aab4418a41928cb20f166bc287c481f3f225ff1b9db56413423",
+ "duration_s": 147.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib provides `Real.tanh_artanh {x} (hx : x \u2208 Ioo (-1) 1) : tanh (artanh x) = x` (mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean:76); the file uses only `exp_artanh` (lines 71, 102) and exposes no `tanh` statement (grep `tanh` in EpsilonEridani hits only the `artanh` definition lines).",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Add public `theorem tanh_rapidity (h : |\u27eav.spatialPart, n\u27eb_\u211d| < v.timeComponent) : tanh (v.rapidity n) = \u27eav.spatialPart, n\u27eb_\u211d / v.timeComponent := by rw [rapidity_def]; exact Real.tanh_artanh (div_timeComponent_mem_Ioo h)` next to `rapidity_def`.",
+   "issue": "`rapidity` has no elimination lemma: the defining property `tanh (v.rapidity n) = \u27eav.spatialPart, n\u27eb_\u211d / v.timeComponent` (for `|\u27eav.spatialPart, n\u27eb_\u211d| < v.timeComponent`) is absent, so any consumer needing the velocity\u2013rapidity relation must `rw [rapidity_def]` and re-derive the `Ioo (-1) 1` membership.",
+   "line": 46
+  },
+  {
+   "evidence": "Lines 54\u201358: `private theorem div_timeComponent_mem_Ioo {v : Vector d} {a : \u211d} (h : |a| < v.timeComponent) : a / v.timeComponent \u2208 Set.Ioo (-1) 1`, proved by `lt_div_iff\u2080`/`div_lt_iff\u2080` and `linarith` only; no Mathlib hit for an equivalent (`abs_div_lt_one` and variants: no matches).",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Either state it on reals as a public lemma (`{a t : \u211d} (h : |a| < t) : a / t \u2208 Set.Ioo (-1) 1`) in the Physlib-extensions file or a Mathlib-facing spot, or make it the public domain lemma for `rapidity` (`inner_div_timeComponent_mem_Ioo`) that `tanh_rapidity` and `exp_two_mul_rapidity` both consume.",
+   "issue": "`private div_timeComponent_mem_Ioo` is a pure real-number fact (`|a| < t \u2192 a / t \u2208 Ioo (-1) 1`) dressed in a `Vector d` binder; its statement mentions only upstream types and its proof does not touch rapidity, so it is general infrastructure hidden as `private`.",
+   "line": 54
+  },
+  {
+   "evidence": "InvariantMass.lean:97 `have hsum : (q + P).spatialPart = q.spatialPart + P.spatialPart := by ext i; simp`; grep `spatialPart_add|timeComponent_add` across EpsilonEridani finds no such lemma, and MinkowskiProductExtensions.lean is the file this repo uses for exactly these Physlib extensions (lines 30\u201341).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "If Physlib does not already provide it, add public `@[simp] lemma spatialPart_add (u v : Vector d) : (u + v).spatialPart = u.spatialPart + v.spatialPart` (and `timeComponent_add` if not already a simp lemma upstream) to `MinkowskiProductExtensions.lean`, and use it here; otherwise cite the upstream lemma instead of `ext i; simp`.",
+   "issue": "`(q + P).spatialPart = q.spatialPart + P.spatialPart` is proved inline (`ext i; simp`) inside the private helper `components_add_target`; it is a general additivity fact about Physlib's `spatialPart`, independent of the photon\u2013target subject, and is unavailable to any other consumer.",
+   "line": 97
+  }
+ ],
+ "head_sha": "1af826569ca6e8887bb20efc80f95d42908025f2",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 126,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ee8fe9e8385d923016c0837ba1b75ac41510d7b0b6375c1fcfc3cec350e5ab74",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261011T222156Z-126-api-design-5b0aa5",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-11T22:21:56Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new `Lorentz.Vector.rapidity` ships only the `_def` restatement and the exp/cosh/sinh consequences, but not its characteristic elimination `tanh (v.rapidity n) = v_\u2225 / v\u2070`, so consumers must unfold and rebuild the light-cone domain proof that is itself hidden as a private helper. Additivity of `spatialPart` is proved inline inside a private Photoproduction helper instead of living publicly next to the other Physlib extensions.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "31f47663217af988cfbadbae79c67a518e4215f75b7105ccb55a4b046d2a38ce",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 115029,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 115029,
+  "cache_read_input_tokens": 352371,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 162,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4425,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4425,
+    "cache_read_input_tokens": 96089,
+    "input_tokens": 32,
+    "output_tokens": 2696,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11744,
+  "output_tokens_details": {
+   "thinking_tokens": 6657
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

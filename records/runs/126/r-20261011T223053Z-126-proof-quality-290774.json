@@ -1,0 +1,206 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6418134999999996,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 157.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 94204,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 94204,
+    "cache_read_input_tokens": 218734,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 130,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1796,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1796,
+      "cache_read_input_tokens": 78648,
+      "input_tokens": 32,
+      "output_tokens": 2197,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14035,
+    "output_tokens_details": {
+     "thinking_tokens": 9928
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.641813,
+ "dedupe_key": "eic/EpsilonEridani|126|1af826569ca6e8887bb20efc80f95d42908025f2|proof-quality|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "60866d68524e8aab4418a41928cb20f166bc287c481f3f225ff1b9db56413423",
+ "diff_sha256": "60866d68524e8aab4418a41928cb20f166bc287c481f3f225ff1b9db56413423",
+ "duration_s": 157.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: Rapidity.lean:91 and InvariantMass.lean:138 contain the identical `rw [..., real_inner_smul_left, real_inner_self_eq_norm_sq, hn, one_pow, mul_one]`; InvariantMass.lean:127 has `simp only [real_inner_smul_left, real_inner_self_eq_norm_sq, hn]`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Add a lemma in Rapidity.lean, e.g. `inner_spatialPart_eq_of_spatialPart_eq_smul (hn : \u2016n\u2016 = 1) (hv : v.spatialPart = a \u2022 n) : \u27eav.spatialPart, n\u27eb_\u211d = a`, and use it at all three sites (it also removes the inline `hpar` in `exp_two_mul_rapidity_add_of_realPhoton`).",
+   "issue": "The chain `rw [hv, real_inner_smul_left, real_inner_self_eq_norm_sq, hn, one_pow, mul_one]` computing `\u27eaa \u2022 n, n\u27eb = a` for unit `n` is repeated verbatim at InvariantMass.lean:138 and as a variant at InvariantMass.lean:127.",
+   "line": 91
+  },
+  {
+   "evidence": "Lines 68-71 and 96-102: both proofs contain `exp_artanh hx` followed by a `field_simp` normalisation of `(1 + a/t)/(1 - a/t)`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "State once `exp_rapidity (h : |\u27eav.spatialPart, n\u27eb_\u211d| < v.timeComponent) : exp (v.rapidity n) = \u221a(v.timeComponent + \u27eav.spatialPart, n\u27eb_\u211d) / \u221a(v.timeComponent - \u27eav.spatialPart, n\u27eb_\u211d)`, then derive `exp_two_mul_rapidity` by `rw [two_mul, exp_add, exp_rapidity h]` and `timeComponent_add_eq_sqrt_mul_exp_rapidity` from it without `hratio`/`hy`.",
+   "issue": "`timeComponent_add_eq_sqrt_mul_exp_rapidity` re-derives `exp (rapidity) = \u221a((1 + r)/(1 - r))` and the ratio normalisation (`hratio`, `hy`) that `exp_two_mul_rapidity` (line 65) already performs via `exp_artanh` plus `field_simp`; the reusable fact is hidden inside two proofs.",
+   "line": 96
+  },
+  {
+   "evidence": "Lines 226-234 vs lines 239-241; Rapidity.lean:86 provides `timeComponent_add_eq_sqrt_mul_exp_rapidity` which is used nowhere in InvariantMass.lean.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add in the RealPhoton section `two_mul_add_sub_sqrt_eq_sqrt_mul_exp_rapidity : 2 * k + E - \u221a(E ^ 2 - M ^ 2) = \u221a\u27eaq + P, q + P\u27eb\u2098 * exp ((q + P).rapidity n)` (same proof shape as line 146-152 using `timeComponent_add_eq_sqrt_mul_exp_rapidity`), and derive the massless statement from it with `rwa [zero_pow two_ne_zero, sub_zero, Real.sqrt_sq hE0.le, ...] at h` exactly as line 240-241 does.",
+   "issue": "`two_mul_energy_eq_sqrt_mul_exp_rapidity_of_masslessTarget` is proved through the massive `two_mul_energy_eq_exp_rapidity_mul` with a `set`, an auxiliary `hsq`, and `field_simp`, while its backward twin (line 237) is a one-line `rwa`. The forward light-cone relation `2k + E - p = W e^{y}`, the mirror of `add_sqrt_eq_sqrt_mul_exp_neg_rapidity`, is never stated although it follows directly from `timeComponent_add_eq_sqrt_mul_exp_rapidity`.",
+   "line": 224
+  },
+  {
+   "evidence": "mathlib/Mathlib/Algebra/GroupWithZero/Units/Basic.lean:461 `lemma mul_div_mul_left (a b : G\u2080) (hc : c \u2260 0) : c * a / (c * b) = a / b`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Replace with `rw [PhotonKinematics.energyFraction_def, \u2190 mul_div_mul_left \u03b3.energy s.energy two_ne_zero, two_mul_energy_eq_exp_rapidity_mul hn hq hq' hP hP' hE hk hE0]; ring`, which rewrites the left side once and lets `ring` close the division identity.",
+   "issue": "`rw [PhotonKinematics.energyFraction_def, mul_comm 2, mul_assoc, \u2190 div_div, \u2190 two_mul_energy_eq_exp_rapidity_mul ...]` is a term-shaping chain whose success depends on which `2 * _` instance `mul_comm 2` picks and on the exact associativity of the denominator; a small change upstream or in the statement breaks it.",
+   "line": 196
+  }
+ ],
+ "head_sha": "1af826569ca6e8887bb20efc80f95d42908025f2",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 126,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "09a567dd7cc9e2d48e04de73a462df6342599cba7d325c554c7f95b5bd8ad26a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261011T223053Z-126-proof-quality-290774",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-11T22:30:53Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly robust (linear_combination, field_simp, positivity), but the same 6-lemma rewrite chain is repeated across both files, the rapidity file re-derives exp(rapidity) twice, and the massless forward relation takes a roundabout set/field_simp route because the massive forward light-cone lemma was never stated.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "84f03230e552df65101d37721c25fe101c177339ae5a73d7b633f59d5a5b27c5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 94204,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 94204,
+  "cache_read_input_tokens": 218734,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 130,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1796,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1796,
+    "cache_read_input_tokens": 78648,
+    "input_tokens": 32,
+    "output_tokens": 2197,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14035,
+  "output_tokens_details": {
+   "thinking_tokens": 9928
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
