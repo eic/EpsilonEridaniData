@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.935292,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 226.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 113889,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 113889,
+    "cache_read_input_tokens": 710004,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 650,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 650,
+      "cache_read_input_tokens": 99118,
+      "input_tokens": 2,
+      "output_tokens": 4057,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17652,
+    "output_tokens_details": {
+     "thinking_tokens": 13484
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.935292,
+ "dedupe_key": "eic/EpsilonEridani|105|7c5c9f4a19c868e6bfda965f4d2212c3d2051500|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "0e8ac8c16ca39d1f861aed64bf8861a9d63953f691f8ccff9d62823ee695b5a6",
+ "diff_sha256": "0e8ac8c16ca39d1f861aed64bf8861a9d63953f691f8ccff9d62823ee695b5a6",
+ "duration_s": 226.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 297-300 and 317-319: identical discrimination-tree key `effectiveCrossSection _ (gaussianProfile _) (gaussianProfile _)`, RHS `2 * \u03c0 * (w ^ 2 + w' ^ 2)` vs `4 * \u03c0 * w ^ 2`.",
+   "file": "EpsilonEridani/Particles/Parton/DoubleParton/PocketFormula.lean",
+   "fix": "Drop `@[simp]` from `effectiveCrossSection_gaussianProfile` (it carries the `w \u2260 0`, `w' \u2260 0` side conditions); keep it on the unconditional `_self` form.",
+   "issue": "`@[simp] effectiveCrossSection_gaussianProfile` and `@[simp] effectiveCrossSection_gaussianProfile_self` (line 317) both match `effectiveCrossSection volume (gaussianProfile w) (gaussianProfile w)` and give different normal forms: `2 * \u03c0 * (w ^ 2 + w ^ 2)` versus `4 * \u03c0 * w ^ 2`, which simp does not reconcile. Which one fires depends on whether simp can discharge the side condition `w \u2260 0`, so adding `hw : w \u2260 0` to the context silently changes the normal form.",
+   "line": 297
+  },
+  {
+   "evidence": "Gaussian.lean:33-58 contains only `gaussianProfile`, `gaussianProfile_def`, `gaussianProfile_nonneg`, `integral_gaussianProfile_eq_one`; `grep -n Integrable EpsilonEridani/Mathematics/Gaussian.lean` returns nothing.",
+   "file": "EpsilonEridani/Mathematics/Gaussian.lean",
+   "fix": "Add `theorem integrable_gaussianProfile {w : \u211d} (hw : w \u2260 0) : Integrable (gaussianProfile w) volume`, provable in one line from the normalisation via `Integrable.of_integral_ne_zero` (the same trick already used at PocketFormula.lean:244) or from `GaussianFourier.integrable_cexp_neg_mul_sq_norm_add`.",
+   "issue": "`gaussianProfile` is advertised as general infrastructure (\"from the transverse separation of two partons in a hadron to the transverse-momentum dependence of TMDs\") but its only API is `_def`, `_nonneg` and `\u222b = 1`. There is no `Integrable (gaussianProfile w) volume`, so no consumer can use it under `integral_add`, `integral_mono`, Fubini, or any `setIntegral` manipulation without rederiving it; `integral_gaussianProfile_eq_one` does not state it.",
+   "line": 47
+  },
+  {
+   "evidence": "Lines 180-189 give only `_def` and `_comm`; lines 273-276 prove `0 < \u222b y, G y * G y \u2202\u03bc` inside the bound proof and never state it.",
+   "file": "EpsilonEridani/Particles/Parton/DoubleParton/PocketFormula.lean",
+   "fix": "Expose `effectiveCrossSection_nonneg` (for `0 \u2264 G`, `0 \u2264 G'`, via `inv_nonneg` and `integral_nonneg`) and `effectiveCrossSection_pos {G} (h2 : MemLp G 2 \u03bc) (hnorm : \u222b y, G y \u2202\u03bc = 1) : 0 < effectiveCrossSection \u03bc G G`, the latter by extracting the `hpos` step (if `\u222b G ^ 2 = 0` with `G \u2208 L\u00b2` then `G = 0` a.e., contradicting `\u222b G = 1`).",
+   "issue": "`effectiveCrossSection` is defined as an inverse, so it is `0` whenever the overlap integral vanishes or `G * G'` is not integrable, yet no lemma characterises when that junk value is excluded. The proof of `effectiveCrossSection_le_measureReal` establishes exactly that fact (`hpos : 0 < \u222b y, G y * G y \u2202\u03bc`, line 273) and discards it. A consumer of `dpsCrossSection_eq_mul_div_effectiveCrossSection` therefore cannot distinguish a genuine division by \u03c3_eff from the degenerate `x / 0 = 0` reading, and has no sign information for \u03c3_eff.",
+   "line": 180
+  },
+  {
+   "evidence": "Gaussian.lean:28-29 `namespace EpsilonEridani` / `namespace Gaussian`; the sibling file EpsilonEridani/Mathematics/OrderedSimplexIntegral.lean:65-66 likewise uses `namespace EpsilonEridani` / `namespace OrderedSimplex` with no `Mathematics` component.",
+   "file": "EpsilonEridani/Particles/Parton/DoubleParton/PocketFormula.lean",
+   "fix": "Write `EpsilonEridani.Gaussian.gaussianProfile` (or `Gaussian.gaussianProfile`), matching the sibling reference `Particles.Parton.singleScatteringCrossSection` on line 32 which does resolve.",
+   "issue": "The module docstring points consumers at `Mathematics.Gaussian.gaussianProfile`, a name that does not resolve: the declaration is `EpsilonEridani.Gaussian.gaussianProfile` (`Mathematics` is a directory, not a namespace).",
+   "line": 33
+  }
+ ],
+ "head_sha": "7c5c9f4a19c868e6bfda965f4d2212c3d2051500",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 105,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0f0ce7046fe5faf09ba2ca60b6cbc6deea7b791207d3a1c75d8a0dcc93e06cc2",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261011T084049Z-105-api-design-f7c1d2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-11T08:40:49Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, bodies are unexposed, and the `_def` lemmas use `(rfl)` correctly, but the two Gaussian \u03c3_eff lemmas are a conflicting `@[simp]` pair, `gaussianProfile` ships without an integrability lemma, and `effectiveCrossSection` has no exposed non-vanishing lemma even though the proof of the bound derives one internally.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/DoubleParton/PocketFormula.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Gaussian.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/OrderedSimplexIntegral.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MultiPartonCorrelations/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Gaussian/FourierTransform.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Gaussian",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d476a414720f6b10b314856eed57753a0c9faa3f465c9864b70277bd502f581d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 113889,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 113889,
+  "cache_read_input_tokens": 710004,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 650,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 650,
+    "cache_read_input_tokens": 99118,
+    "input_tokens": 2,
+    "output_tokens": 4057,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17652,
+  "output_tokens_details": {
+   "thinking_tokens": 13484
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
