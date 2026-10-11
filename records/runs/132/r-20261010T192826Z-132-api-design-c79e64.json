@@ -1,0 +1,261 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.11306575,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 269.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 118409,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 118409,
+    "cache_read_input_tokens": 1190040,
+    "inference_geo": "",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4518,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4518,
+      "cache_read_input_tokens": 107190,
+      "input_tokens": 2,
+      "output_tokens": 3254,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19683,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.113066,
+ "dedupe_key": "eic/EpsilonEridani|132|61314a5fb78c4b8ec3cfaf9d46f9e04744de5d9c|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "01d646c095638f947357581ed976dfcb5359869367a2dc087f135c1710295bbb",
+ "diff_sha256": "01d646c095638f947357581ed976dfcb5359869367a2dc087f135c1710295bbb",
+ "duration_s": 269.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PlusFunctional.lean:141 `plusFunctional_congr_ae_left`, :149 `plusFunctional_congr_ae_right` exist upstream; NormalForm.lean has no analogue, and LeadingOrder.lean:173, 208, 252, 311 each redo the a.e. rewriting under the integral by hand with `intervalIntegral.integral_congr_ae` + `filter_upwards [Measure.ae_ne ...]`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "fix": "Add `KernelForm.pair_congr_ae` (a.e. equality of `regular` on `Ioc 0 1`), a right-hand version from `plusFunctional_congr_ae_right` plus `\u03c6 1 = \u03c8 1`, and `moment_congr_ae` as a corollary.",
+   "issue": "No congruence lemma for `pair`/`moment`: the module docstring (lines 66-68) claims only the a.e. class of `regular` on `(0,1)` enters the pairing, but no theorem exposes that. Since the derived `@[ext]` is pointwise-strict, a consumer has no way to replace `regular` (or the test function) by an a.e.-equal one \u2014 needed for the `1/z` kernels at `z = 0` and for the \u00a71.3 reflection relations.",
+   "line": "89"
+  },
+  {
+   "evidence": "LeadingOrder.lean:107-137 give all three field lemmas for each of the other four kernels; LeadingOrder.lean:296 must `rw [pqgSinglet_def, KernelForm.moment_smul, ...]` because no field/moment lemma fires directly.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "fix": "Add `@[simp] pqgSinglet_regular`, `pqgSinglet_plusCoeff`, `pqgSinglet_deltaCoeff` (keeping `pqgSinglet_def` as the unfolding lemma).",
+   "issue": "`pqgSinglet` has no `regular`/`plusCoeff`/`deltaCoeff` lemmas, and `pqgSinglet_def` is not `@[simp]`, so unlike `pqq`, `pgq`, `pqg`, `pgg` its fields are not reachable by `simp`. \u00a71.3's supersymmetric relation and \u00a71.5's singlet matrix both read those fields.",
+   "line": "139"
+  },
+  {
+   "evidence": "NormalForm.lean:129-155: the only lemmas accompanying the instance are `smul_regular`, `smul_plusCoeff`, `smul_deltaCoeff`, `pair_smul`, `moment_smul`; no lawfulness class is declared.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "fix": "Either prove the action laws (`one_smul`, `mul_smul`, i.e. `MulAction \u211d KernelForm`) or give the full `Module \u211d KernelForm` via the evident `(\u211d \u2192 \u211d) \u00d7 \u211d \u00d7 \u211d` structure; a bare `SMul` with only field-projection lemmas should not be an instance.",
+   "issue": "`instance : SMul \u211d KernelForm` is a lawless instance: no `one_smul`, `mul_smul`, and no `Zero`/`Add`, so the generic `smul` API (`smul_smul`, `one_smul`, `smul_zero`) is unavailable to any consumer while the instance advertises a scalar action.",
+   "line": "129"
+  },
+  {
+   "evidence": "LeadingOrder.lean:262 and :324 both need `rw [show ((2 + n : \u2115) : \u211d) = ((n + 1 : \u2115) : \u211d) + 1 by push_cast; ring, KernelForm.moment_natCast_add_one]`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "fix": "Add `moment_natCast {N : \u2115} (hN : N \u2260 0) : P.moment N = P.pair fun z => z ^ (N - 1)` (or state the bridge with the cast of `n + 1`), so natural-index moment statements need no `push_cast` detour.",
+   "issue": "`moment` is indexed by a real `N` but every exposed moment theorem is at a natural index, and the only bridge is `moment_natCast_add_one`, which forces callers to massage the cast by hand.",
+   "line": "107"
+  }
+ ],
+ "head_sha": "61314a5fb78c4b8ec3cfaf9d46f9e04744de5d9c",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 132,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4055850db1c7509984119b0c07db57a6531ae04cc67f6ca89dcd211dbc319066",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261010T192826Z-132-api-design-c79e64",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-10T19:28:26Z",
+ "submitted_by": "veprbl",
+ "summary": "The kernel surface is minimal and the characteristic lemmas for the four kernels are mostly there, but `KernelForm` ships without the a.e.-congruence lemma its own docstring promises, `pqgSinglet` lacks the field lemmas every other kernel has, and the `SMul` instance is lawless.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Distribution/PlusFunctional.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/QCDCore.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/CollinearForm.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/QCDCore.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 25,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4acd2885444e8927edf62dcf8b6d2826bf21759c5edd6a90e71716a7f857bde0",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 118409,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 118409,
+  "cache_read_input_tokens": 1190040,
+  "inference_geo": "",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4518,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4518,
+    "cache_read_input_tokens": 107190,
+    "input_tokens": 2,
+    "output_tokens": 3254,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19683,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
