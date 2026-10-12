@@ -1,0 +1,174 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8601942500000002,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 80.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 75655,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 75655,
+    "cache_read_input_tokens": 142657,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 98,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2658,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2658,
+      "cache_read_input_tokens": 69972,
+      "input_tokens": 32,
+      "output_tokens": 2529,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6209,
+    "output_tokens_details": {
+     "thinking_tokens": 3124
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.860194,
+ "dedupe_key": "eic/EpsilonEridani|122|713cf0e556e5ab9e9f54ef298624c12767d074db|correctness|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "e7e734bbaa3ae88352f9148c254b0d6e3451bd9b8268352459da5fe25ceaae6e",
+ "diff_sha256": "e7e734bbaa3ae88352f9148c254b0d6e3451bd9b8268352459da5fe25ceaae6e",
+ "duration_s": 80.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md:109 'x = \u03be \u03b2 is a proved identity, not a definition'; Suggested.lean:12-13 'so that x = \u03be \u03b2 is a theorem about definitions and not a definition that assumes itself'; PR line 55 proof is `rw [beta, mul_div_cancel\u2080 x hxi]`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Introduce the Layer 0.1 invariants (`Pq`, `Dq`, `Q2`, `t` with positivity/sign fields) and define `x`, `xi`, `beta` from them as in roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean:41-64; then prove `x = xi * beta` as a genuine cancellation of `Q2/(2 Pq) = (Dq/Pq) * (Q2/(2 Dq))`. Drop the `x / xi` definition.",
+   "issue": "`beta x xi := x / xi` makes `x = \u03be \u03b2` true by definition, so `x_eq_xi_beta` (line 55) is the tautology `x = \u03be * (x / \u03be)` with zero physics content. The roadmap forbids exactly this: Convention 1 says `x = \u03be \u03b2` is 'a proved identity, not a definition', and Suggested.lean defines `Invariants.xi := Dq / Pq`, `Invariants.beta := Q2 / (2 * Dq)` and proves `x_eq_xi_mul_beta` from them. No diffractive invariants structure exists on main (grep for `Invariants|Dq` in code/EpsilonEridani hits only QCD beta-function files).",
+   "line": 52
+  },
+  {
+   "evidence": "Suggested.lean:82 `theorem x_le_xi_of_beta_le_one (i : Invariants) (h : i.beta \u2264 1) : i.x \u2264 i.xi`; README.md:295 'Prove 0 < \u03b2 \u2264 1 and x \u2264 \u03be \u2264 1'. PR proof is bare `nlinarith` on abstract reals.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "State it as `theorem x_le_xi_of_beta_le_one (i : Invariants) (h : i.beta \u2264 1) : i.x \u2264 i.xi` over the invariants structure, deriving `x = \u03be \u03b2` from the proved identity rather than assuming it; rename or remove the shadowing variable.",
+   "issue": "`x_le_xi_of_beta_le_one` binds `beta` as a free real (shadowing the definition two lines above) and assumes `x = xi * beta`; it is the generic inequality `b \u2264 1 \u2192 0 \u2264 \u03be \u2192 \u03be * b \u2264 \u03be` labelled as a diffractive kinematic bound. All content is moved into hypotheses and the lemma is not connected to `Diffractive.beta` at all. The roadmap requires `x \u2264 \u03be` (and `0 < \u03b2 \u2264 1`) proved on the physical region from the invariants.",
+   "line": 62
+  },
+  {
+   "evidence": "README.md:299-301 'the accessible momentum transfers satisfy |t| \u2265 t_min(\u03be, M, M_Y) ... t_min = \u03be\u00b2 M\u00b2 / (1 - \u03be)'; README.md:112-116 Convention 2 on the sign of t.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Rewrite as: the target-elastic physical region is `t \u2264 tMinElastic M \u03be`, i.e. `|t| \u2265 \u03be\u00b2M\u00b2/(1-\u03be)`, with equality at forward scattering.",
+   "issue": "Docstring puts the physical region on the wrong side of the boundary: it says `t > tMinElastic M \u03be` is physical, but with `tMinElastic = -\u03be\u00b2M\u00b2/(1-\u03be) \u2264 0` and Convention 2 (`t \u2264 0`, `|t| \u2265 t_min`) the accessible region is `t \u2264 tMinElastic`. 'At t = tMinElastic the process is elastic' is also wrong: that point is the forward (minimum-|t|) configuration; 'elastic' refers to `M_Y = M`, which holds throughout. This is precisely the sign trap Convention 2 warns about.",
+   "line": 29
+  }
+ ],
+ "head_sha": "713cf0e556e5ab9e9f54ef298624c12767d074db",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 122,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "5ed7ab43999196128657ea81f91222553a33fdf4087f7719a248c9e2ca86f1fd",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261012T051945Z-122-correctness-15c8c2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-12T05:19:45Z",
+ "submitted_by": "wdconinc",
+ "summary": "`tMinElastic` and its sign lemma match the roadmap, but the \u03b2 material is vacuous: \u03b2 is defined as `x / \u03be` so the advertised 'fundamental relation' `x = \u03be \u03b2` is field cancellation with no kinematic content, and the bound `x \u2264 \u03be` takes `x = \u03be \u03b2` as a hypothesis on a free real. The Layer 0.1 prerequisite (an invariants structure with `\u03be = \u0394\u00b7q / P\u00b7q`, `\u03b2 = Q\u00b2 / (2 \u0394\u00b7q)`) does not exist on main and is faked here.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d07988205fb11abaf7a56c4a0a8b38b559670c11597efc708f7902a478a36f19",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 75655,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 75655,
+  "cache_read_input_tokens": 142657,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 98,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2658,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2658,
+    "cache_read_input_tokens": 69972,
+    "input_tokens": 32,
+    "output_tokens": 2529,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6209,
+  "output_tokens_details": {
+   "thinking_tokens": 3124
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "block"
+}
