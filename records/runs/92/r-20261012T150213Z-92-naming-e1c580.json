@@ -1,0 +1,164 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4337590000000002,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 76.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 105681,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 105681,
+    "cache_read_input_tokens": 89316,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 66,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2452,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2452,
+      "cache_read_input_tokens": 79823,
+      "input_tokens": 32,
+      "output_tokens": 2175,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5943,
+    "output_tokens_details": {
+     "thinking_tokens": 3768
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.433759,
+ "dedupe_key": "eic/EpsilonEridani|92|5942137b4157586a9c523e8165a9b58a8b88cb1f|naming|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "149faaca374977ff58e2d29bed40196a38027638881a239198c950b5e0f72d98",
+ "diff_sha256": "149faaca374977ff58e2d29bed40196a38027638881a239198c950b5e0f72d98",
+ "duration_s": 76.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "./mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean:60 `namespace Real`, :71 `lemma sigmoid_pos`, :83 `lemma sigmoid_le_one`, :147 `end Real`; grep for `sigmoid.*exp` in Mathlib finds no existing `sigmoid_le_exp`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Rename to `Real.sigmoid_le_exp` (declare inside `namespace Real` or as `theorem Real.sigmoid_le_exp`) so it sits beside `Real.sigmoid_le_one` and can be upstreamed without renaming.",
+   "issue": "`real_sigmoid_le_exp` is a general lemma about Mathlib's `Real.sigmoid` with a snake-cased namespace prefix baked into the name, placed in `EpsilonEridani` instead of `Real`; upstream sigmoid lemmas (`Real.sigmoid_pos`, `Real.sigmoid_le_one`) all live in `namespace Real`, and the naming guide drops a definition's namespace from lemma names when unambiguous (`sigmoid` is).",
+   "line": 175
+  },
+  {
+   "evidence": "Diff line 174\u2013175: docstring text versus statement `Real.sigmoid x \u2264 Real.exp x`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Replace with \"The logistic function is bounded by the exponential: `Real.sigmoid x \u2264 Real.exp x`.\"",
+   "issue": "Docstring of `real_sigmoid_le_exp` reads \"Every real number is bounded by its exponential\", which describes `x \u2264 exp x`, not the stated `Real.sigmoid x \u2264 Real.exp x`.",
+   "line": 174
+  },
+  {
+   "evidence": "Diff lines 181\u2013182: conclusion `woodsSaxonDensity \u03c1\u2080 R a r \u2264 \u03c1\u2080 * exp (-((r - R) / a))`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Rename to `woodsSaxonDensity_le_mul_exp` (or `woodsSaxonDensity_le_exp_neg`), following the `_le_<rhs>` pattern of e.g. `Real.sigmoid_le_one`.",
+   "issue": "`woodsSaxonDensity_le` is truncated so far that it no longer identifies the bound (`\u03c1\u2080 * exp (-((r - R) / a))`); a reader cannot distinguish it from any other upper bound on the profile.",
+   "line": 181
+  }
+ ],
+ "head_sha": "5942137b4157586a9c523e8165a9b58a8b88cb1f",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 92,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c7d777eec80aa2c45e3216a1fedc1d4eb4a497ffac00dfa5a4a4e52cf63d9530",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261012T150213Z-92-naming-e1c580",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-12T15:02:13Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names mostly describe conclusions in standard terms and no notation is introduced, but one general lemma about Mathlib's `Real.sigmoid` carries a nonstandard name, sits in the wrong namespace, and has a docstring describing a different statement.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "cac245ece784edbe302d92714e25c9d27bbf62011894a1a96a6878e6f8f66a27",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105681,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 105681,
+  "cache_read_input_tokens": 89316,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 66,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2452,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2452,
+    "cache_read_input_tokens": 79823,
+    "input_tokens": 32,
+    "output_tokens": 2175,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5943,
+  "output_tokens_details": {
+   "thinking_tokens": 3768
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

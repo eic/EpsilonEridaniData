@@ -1,0 +1,224 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.46626775,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 126.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 93852,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 93852,
+    "cache_read_input_tokens": 282231,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 162,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8598,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8598,
+      "cache_read_input_tokens": 71773,
+      "input_tokens": 32,
+      "output_tokens": 3179,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10341,
+    "output_tokens_details": {
+     "thinking_tokens": 6430
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.466268,
+ "dedupe_key": "eic/EpsilonEridani|92|5942137b4157586a9c523e8165a9b58a8b88cb1f|proof-quality|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "149faaca374977ff58e2d29bed40196a38027638881a239198c950b5e0f72d98",
+ "diff_sha256": "149faaca374977ff58e2d29bed40196a38027638881a239198c950b5e0f72d98",
+ "duration_s": 126.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `sigmoid.*exp` in mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean yields only `sigmoid_def` and `sigmoid_mul_rexp_neg`; repo convention: EpsilonEridani/Mathematics/Distribution/BasicExtensions.lean, KroneckerDelta/BasicExtensions.lean.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Rename to `Real.sigmoid_le_exp`, docstring 'The sigmoid is bounded above by the exponential, `sigmoid x \u2264 exp x`', and move it to the Mathlib-extension area (`EpsilonEridani/Mathematics/.../BasicExtensions.lean` convention).",
+   "issue": "`real_sigmoid_le_exp` is a general fact about `Real.sigmoid` (Mathlib has no such bound) hidden in a physics file with a wrong docstring ('Every real number is bounded by its exponential') and a non-namespaced name.",
+   "line": 190
+  },
+  {
+   "evidence": "Lines 158-161: `simp only [..., Space.finrank_eq_dim, div_inv_eq_mul]`, then bare `norm_num`, then `exact`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Add the needed cast lemma (e.g. `Nat.cast_ofNat`) to the `simp only` list and close with `exact div_mul_cancel\u2080 m hc.ne'`, or finish with `field_simp`.",
+   "issue": "Non-terminal `norm_num` followed by `exact div_mul_cancel\u2080 m hc.ne'`: the proof depends on the exact (undocumented) goal shape norm_num happens to leave after casting `(3 : \u2115)/2`.",
+   "line": 160
+  },
+  {
+   "evidence": "`integrable_fun_norm_addHaar` (HaarToSphere.lean:256) yields `y ^ (dim E - 1)`; line 209 rewrites to `3 - 1`, line 221 then uses `Nat.add_one_sub_one`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Reduce the exponent explicitly, e.g. `simp only [Space.finrank_eq_dim, Nat.reduceSub]` right after `integrable_fun_norm_addHaar`, or `norm_num` on that subterm with a comment. Also replace the unused `hr` binder with `_`.",
+   "issue": "`rw [Nat.add_one_sub_one]` on the exponent `3 - 1` (from `dim E - 1` after `Space.finrank_eq_dim`) works only because the unifier matches `?n + 1` against the literal `3`; a brittle, unexplained step.",
+   "line": 221
+  },
+  {
+   "evidence": "`@[simp] lemma woodsSaxonIntegral_def` (line 235-237) and `@[simp] lemma woodsSaxonCentralDensity_def` (line 261-263); every in-file use is `rw [..._def]`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Drop `@[simp]` from the `_def` lemmas; keep them as plain rfl-lemmas.",
+   "issue": "All five `*_def` lemmas (lines 110, 141, 172, 236, 262) are `@[simp]`, so `simp` unfolds `woodsSaxonIntegral` to a raw integral and `woodsSaxonCentralDensity` to a quotient, preventing `woodsSaxonIntegral_pos`/`woodsSaxonCentralDensity_pos` and the bundled `_density` simp lemmas from applying after simp in downstream proofs. The PR's own proofs only ever use `rw [X_def]`.",
+   "line": 110
+  },
+  {
+   "evidence": "Lines 128, 132: `:= (rfl)`; lines 136, 140, 144: `by decide`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Basic.lean",
+   "fix": "Use `by decide` for all five via the provided `DecidablePred` instance.",
+   "issue": "`isIsoscalar_deuteron` and `isIsoscalar_carbon12` are proved by `rfl`, relying on `IsIsoscalar` unfolding definitionally, while the three negations use `decide`; inconsistent and fragile if `IsIsoscalar` ever becomes irreducible or a structure.",
+   "line": 128
+  }
+ ],
+ "head_sha": "5942137b4157586a9c523e8165a9b58a8b88cb1f",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 92,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "75ea2264fe72a4c67cbc7b8ef461ef8db40daefb27b1b404a3bd3a547232f6dc",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261012T150437Z-92-proof-quality-f46b03",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-12T15:04:37Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly short and robust, but a general sigmoid bound is buried under a wrong docstring and off-convention name, and two steps (a non-terminal norm_num and a literal-arithmetic rw) rest on undocumented goal shapes. Also the @[simp] _def lemmas make simp unfold every definition in the file.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Gaussian/FourierTransform.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f511dadd4d1182d3a05090f458ff6670f76ad5a49b2071dad117549d583e1936",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 93852,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 93852,
+  "cache_read_input_tokens": 282231,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 162,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8598,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8598,
+    "cache_read_input_tokens": 71773,
+    "input_tokens": 32,
+    "output_tokens": 3179,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10341,
+  "output_tokens_details": {
+   "thinking_tokens": 6430
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
