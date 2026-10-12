@@ -1,0 +1,198 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8726945000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 220.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 119405,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 119405,
+    "cache_read_input_tokens": 471799,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1638,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1638,
+      "cache_read_input_tokens": 102225,
+      "input_tokens": 2,
+      "output_tokens": 4605,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17707,
+    "output_tokens_details": {
+     "thinking_tokens": 13841
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.872695,
+ "dedupe_key": "eic/EpsilonEridani|126|8ca0f2cfb8837acf934be2a04985a5d891aa0d5f|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "07fa7ba5ccb6f54980dd35881b769a54b8c0e280a6561e4f6cfc790cd68f84a7",
+ "diff_sha256": "07fa7ba5ccb6f54980dd35881b769a54b8c0e280a6561e4f6cfc790cd68f84a7",
+ "duration_s": 220.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Rapidity.lean:131-140; contrast the direct proof of `timeComponent_add_eq_sqrt_mul_exp_rapidity` at Rapidity.lean:112-122.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Derive it directly and symmetrically with the `+` case: `exp (-y) = \u221a(v\u2070 - a) / \u221a(v\u2070 + a)` from `exp_rapidity` via `Real.exp_neg`/`one_div_div`, then the same `Real.sqrt_mul` computation. If the cancellation route is kept, add a comment stating why the direct route is unavailable.",
+   "issue": "`timeComponent_sub_eq_sqrt_mul_exp_neg_rapidity` is closed by `apply mul_left_cancel\u2080 hA.ne'` followed by a three-term `linear_combination` over `hW`, `hplus` and an inline `hexp : exp y * exp (-y) = 1`. Nothing in the script or a comment says why multiplying by `v\u2070 + a` and cancelling is needed, and the backward component is not derived the same way as the forward one directly above it.",
+   "line": 139
+  },
+  {
+   "evidence": "InvariantMass.lean:170-174 and Rapidity.lean:137-138 contain the identical two-line `rw [exp_neg, mul_inv_cancel\u2080 (exp_pos _).ne']` proof.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Factor the fact once (one line, `by simp [\u2190 Real.exp_add]`) as a reusable lemma next to `rapidity`, or restructure the proof to eliminate `exp (-y)` by rewriting with `add_sqrt_eq_sqrt_mul_exp_neg_rapidity` and `Real.exp_neg` before the algebra. Add a comment naming the identity the `linear_combination` encodes.",
+   "issue": "`two_mul_energy_eq_exp_rapidity_mul` repeats the same opaque pattern: an inline `hexp : exp ((q+P).rapidity n) * exp (-(q+P).rapidity n) = 1` plus a three-term `linear_combination` whose coefficients are unexplained. `hexp` is a verbatim copy of the helper at Rapidity.lean:137-138.",
+   "line": 170
+  },
+  {
+   "evidence": "InvariantMass.lean:167; `positivity` resolves atoms `k` and `E` from context hypotheses via `compareHyp` (mathlib/Mathlib/Tactic/Positivity/Core.lean:459) and `\u221a_` via its own extension, so line 169 does not need `hBpos`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Delete `hBpos`.",
+   "issue": "`have hBpos : 0 < E + \u221a(E ^ 2 - M ^ 2) := by positivity` is never referenced. The only candidate implicit consumer is the `positivity` call on line 169, which closes `0 < M ^ 2 + 2 * k * (E + \u221a(E ^ 2 - M ^ 2))` structurally from `hk` and `hE0` in context anyway; `linear_combination` ends in `ring1` and uses no hypotheses.",
+   "line": 167
+  },
+  {
+   "evidence": "InvariantMass.lean:213 (`spatialPart_eq_of_massless`), 225-226, 234, 241 \u2014 same three rewrites each time.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add one private lemma `sqrt_sq_sub_zero_sq (hE0 : 0 \u2264 E) : \u221a(E ^ 2 - 0 ^ 2) = E` (or state it as `\u221a(E ^ 2 - (0:\u211d) ^ 2) = E`) and rewrite with it at all four sites.",
+   "issue": "The three-step chain `zero_pow two_ne_zero, sub_zero, Real.sqrt_sq hE0.le` encoding `\u221a(E ^ 2 - 0 ^ 2) = E` is written out four times: lines 213, 225-226, 234 and 241. This is repeated reasoning that also makes the massless section brittle against any change in `zero_pow`'s signature.",
+   "line": 213
+  },
+  {
+   "evidence": "Rapidity.lean:118-122; `hB : 0 < \u221a(v.timeComponent - a)` is never named again and only reaches `field_simp` through its order-aware default discharger (mathlib/Mathlib/Tactic/FieldSimp.lean:678-682).",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Replace the finisher with something insensitive to the normal form, e.g. `field_simp [Real.sq_sqrt hA.le, Real.mul_self_sqrt hA.le]`, or avoid `field_simp` by rewriting `\u221a(v\u2070+a) * \u221a(v\u2070-a) * (\u221a(v\u2070+a)/\u221a(v\u2070-a))` with `mul_div_assoc`, `div_self hB.ne'` and `Real.mul_self_sqrt hA.le`.",
+   "issue": "`timeComponent_add_eq_sqrt_mul_exp_rapidity` finishes with `field_simp` followed by a bare `rw [Real.sq_sqrt hA.le]`. The final `rw` only fires if `field_simp` leaves `\u221a(v\u2070 + a) ^ 2` in exactly that form; `field_simp`'s normal form is not a stable interface, and `hB` is load-bearing only through the discharger, invisibly.",
+   "line": 121
+  }
+ ],
+ "head_sha": "8ca0f2cfb8837acf934be2a04985a5d891aa0d5f",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "93d9864256a61b302867de45fc6ca38887bad2c0b6bb39176fdc245ac5993003",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261012T201655Z-126-proof-quality-56850f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-12T20:16:55Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs compile but two of them reach their goal by an unexplained cancellation trick with an inline duplicated `exp y * exp (-y) = 1` helper, the massless section repeats the same three-step `\u221a(E\u00b2-0\u00b2) = E` rewrite four times instead of naming it, and there is one dead `have` plus a `field_simp`-shape-dependent finisher.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Tactic/Positivity/Core.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Tactic/FieldSimp.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Tactic/FieldSimp.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "07d139cceaba4671e0708a054099b377c88091940e735024eea041b1d450bf8d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 119405,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 119405,
+  "cache_read_input_tokens": 471799,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1638,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1638,
+    "cache_read_input_tokens": 102225,
+    "input_tokens": 2,
+    "output_tokens": 4605,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17707,
+  "output_tokens_details": {
+   "thinking_tokens": 13841
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

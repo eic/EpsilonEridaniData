@@ -1,0 +1,217 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4994350000000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 296.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 148663,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 148663,
+    "cache_read_input_tokens": 870820,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3516,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3516,
+      "cache_read_input_tokens": 113962,
+      "input_tokens": 2,
+      "output_tokens": 3013,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23091,
+    "output_tokens_details": {
+     "thinking_tokens": 18461
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.499435,
+ "dedupe_key": "eic/EpsilonEridani|126|8ca0f2cfb8837acf934be2a04985a5d891aa0d5f|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "07fa7ba5ccb6f54980dd35881b769a54b8c0e280a6561e4f6cfc790cd68f84a7",
+ "diff_sha256": "07fa7ba5ccb6f54980dd35881b769a54b8c0e280a6561e4f6cfc790cd68f84a7",
+ "duration_s": 296.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "InvariantMass.lean:182-185 declares `{\u03b3 : PhotonKinematics}` with hypotheses only on `q.timeComponent`/`q.spatialPart`; `grep virtuality InvariantMass.lean` returns no hit. Kinematics/Basic.lean:69-71 states the convention being broken: the virtuality is 'carried explicitly so that a photoproduction statement is a statement about `Q\u00b2 \u2192 0` rather than about an implicit `Q\u00b2 = 0`'; the roadmap \u00a70.1 likewise asks that the photon be 'described by its energy in the collider frame and its virtuality, both explicit' (roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md:309-313).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Tie `q` to `\u03b3` as a whole: add `h\u03b3 : \u03b3.virtuality = -\u27eaq, q\u27eb\u2098` to the `EnergyFraction` section variables (this is what `PhotonKinematics.ofEmission` already sets definitionally), expose the resulting `\u03b3.IsReal` as a lemma derived from `hn`/`hq`/`hq'`, and give the energy-fraction form of the general `W\u00b2 = M\u00b2 + q\u00b2 + 2(q\u2070E + p q_\u2225)` in terms of `\u03b3.virtuality` so the virtuality stays explicit.",
+   "issue": "`minkowskiProduct_add_self_of_realPhoton_energyFraction` and `energyFraction_eq_exp_rapidity_mul` (line 199) take `\u03b3 : PhotonKinematics` but use only `\u03b3.energy`; `\u03b3.virtuality` is never mentioned or constrained. The names and docstrings say 'real photon', yet realness is smuggled in through the shape of `q` (`hq`/`hq'` force `\u27eaq,q\u27eb\u2098 = 0`) while the record may carry `\u03b3.virtuality \u2260 0`. Nothing in the file ever links `\u03b3.virtuality` to `\u27eaq,q\u27eb\u2098`, so the virtuality-explicit `minkowskiProduct_add_self_of_target` cannot be stated through the `PhotonKinematics` API at all.",
+   "line": 190
+  },
+  {
+   "evidence": "Rapidity.lean:47-48 takes an arbitrary `n : EuclideanSpace \u211d (Fin d)` with no `\u2016n\u2016 = 1`; every collinear lemma in the file (lines 95, 102, 112, 127, 143, 151) and every downstream use in InvariantMass.lean (lines 112, 182, 217) carries `hn : \u2016n\u2016 = 1`, so unit `n` is the intended convention. `real_inner_smul_right` (used at InvariantMass.lean:87) gives the scaling identity.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "State in the `rapidity` docstring (and the module docstring) that it is the rapidity along `n` only when `\u2016n\u2016 = 1`, and add the public scaling lemma `rapidity v (c \u2022 n) = artanh (c * \u27eav.spatialPart, n\u27eb_\u211d / v.timeComponent)` so the dependence is part of the interface rather than an unstated convention.",
+   "issue": "`rapidity v n = artanh (\u27eav.spatialPart, n\u27eb / v\u2070)` is documented as the rapidity 'along the spatial direction `n`' (line 46, and module docstring line 14), but it is the physical rapidity only for `\u2016n\u2016 = 1`: by linearity of the real inner product, `rapidity v (c \u2022 n) = artanh (c * \u27eav.spatialPart, n\u27eb / v\u2070) \u2260 rapidity v n`. The definition carries no normalization hypothesis and the file has no lemma recording the scaling, so a consumer passing an unnormalized axis gets a silently wrong number.",
+   "line": 47
+  }
+ ],
+ "head_sha": "8ca0f2cfb8837acf934be2a04985a5d891aa0d5f",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d7e2b68e8dfefbfd05ae684e1cc1d5ade2358d8c86c11ed37793c8ca313108c6",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261012T200021Z-126-api-design-35bf5b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-12T20:00:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "The characteristic API for the new `rapidity` definition is complete and bodies stay hidden, but two public statements are misleading: the `PhotonKinematics` bridge lemmas silently assume the photon is real while leaving `\u03b3.virtuality` entirely unconstrained, and `rapidity` is documented as a quantity 'along a direction' though its value scales with `\u2016n\u2016` with no lemma or hypothesis recording that.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "tool": "Bash"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/CollinsSoper.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "311e2cb5fc348a8d34675c93247a6c7c6809fc9cba90db7f02d7f6fce63f44b4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 148663,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 148663,
+  "cache_read_input_tokens": 870820,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3516,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3516,
+    "cache_read_input_tokens": 113962,
+    "input_tokens": 2,
+    "output_tokens": 3013,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23091,
+  "output_tokens_details": {
+   "thinking_tokens": 18461
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,193 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8292565000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 159.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 131040,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 131040,
+    "cache_read_input_tokens": 377193,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1673,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1673,
+      "cache_read_input_tokens": 104080,
+      "input_tokens": 2,
+      "output_tokens": 6280,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13208,
+    "output_tokens_details": {
+     "thinking_tokens": 9545
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.829257,
+ "dedupe_key": "eic/EpsilonEridani|126|8ca0f2cfb8837acf934be2a04985a5d891aa0d5f|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "07fa7ba5ccb6f54980dd35881b769a54b8c0e280a6561e4f6cfc790cd68f84a7",
+ "diff_sha256": "07fa7ba5ccb6f54980dd35881b769a54b8c0e280a6561e4f6cfc790cd68f84a7",
+ "duration_s": 159.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Rapidity.lean:112-115 `v.timeComponent + a = \u221a\u27eav, v\u27eb\u2098 * exp (v.rapidity n)` vs MinkowskiProductExtensions.lean:40-41 `(u + v).spatialPart = u.spatialPart + v.spatialPart`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Name the second summand: `timeComponent_add_inner_spatialPart_eq_sqrt_mul_exp_rapidity` / `timeComponent_sub_inner_spatialPart_eq_sqrt_mul_exp_neg_rapidity` (the `a` is fixed to `\u27eav.spatialPart, n\u27eb_\u211d` by `hv`, cf. `inner_spatialPart_eq_of_spatialPart_eq_smul`, line 95).",
+   "issue": "`timeComponent_add_eq_sqrt_mul_exp_rapidity` (and `timeComponent_sub_eq_sqrt_mul_exp_neg_rapidity`, line 127) state `v.timeComponent \u00b1 a = \u2026`, but in this namespace `X_add` means \"X of a sum\": this PR adds `spatialPart_add : (u + v).spatialPart = \u2026` (MinkowskiProductExtensions.lean:40) and builds on `minkowskiProduct_add_self`, and uses `_add` in that sense again in `exp_two_mul_rapidity_add_of_realPhoton`. The same suffix carries two meanings inside one PR.",
+   "line": "112"
+  },
+  {
+   "evidence": "Rapidity.lean:151-153; the hypothesis `hv : v.spatialPart = a \u2022 n` plus line 95 fix `a = \u27eav.spatialPart, n\u27eb_\u211d`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Rename to `inner_spatialPart_eq_sqrt_mul_sinh_rapidity`, matching `inner_spatialPart_eq_of_spatialPart_eq_smul` in the same file.",
+   "issue": "`eq_sqrt_mul_sinh_rapidity` describes nothing about its left-hand side; the conclusion is `a = \u221a\u27eav, v\u27eb\u2098 * sinh (v.rapidity n)`, where `a` is the component of the spatial part along `n`. Its companion `timeComponent_eq_sqrt_mul_cosh_rapidity` (line 143) does name its subject.",
+   "line": "151"
+  },
+  {
+   "evidence": "InvariantMass.lean:230-231 `2 * k = \u221a\u27eaq + P, q + P\u27eb\u2098 * exp \u2026` vs 237-238 `2 * E = \u221a\u27eaq + P, q + P\u27eb\u2098 * exp \u2026`; 152-153 `E + \u221a(E ^ 2 - M ^ 2) = \u221a\u27eaq + P, q + P\u27eb\u2098 * exp (-(q + P).rapidity n)`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Disambiguate the subjects, e.g. `two_mul_photonEnergy_\u2026` vs `two_mul_targetEnergy_\u2026` for the massless pair and line 163, and `targetEnergy_add_momentum_eq_sqrt_mul_exp_neg_rapidity` for line 152.",
+   "issue": "Sibling lemmas name the same kind of quantity inconsistently: `two_mul_energy_eq_sqrt_mul_exp_rapidity_of_masslessTarget` is about `2 * k` (photon energy) while `two_mul_eq_sqrt_mul_exp_neg_rapidity_of_masslessTarget` (line 237) is about `2 * E` (target energy) and drops the subject entirely; `two_mul_energy_eq_exp_rapidity_mul` (line 163) likewise uses bare `energy` for `k` in a statement where `E` is also an energy. `add_sqrt_eq_sqrt_mul_exp_neg_rapidity` (line 152) states `E + \u221a(E\u00b2 - M\u00b2) = \u2026` where `sqrt` in the name denotes the target momentum on the left but `\u221a\u27eaq+P, q+P\u27eb\u2098` on the right.",
+   "line": "230"
+  },
+  {
+   "evidence": "InvariantMass.lean:163-164 `2 * k = exp (\u2026) * (\u27eaq + P, q + P\u27eb\u2098 - M ^ 2) / \u221a\u27eaq + P, q + P\u27eb\u2098`; 199-201 same shape divided by `2 * \u221a\u2026 * s.energy`; naming-conventions Algebra table: `/` \u2192 `div`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "End the names with the division, e.g. `two_mul_energy_eq_exp_rapidity_mul_sub_div_sqrt` and `energyFraction_eq_exp_rapidity_mul_sub_div_sqrt` (or any form containing `div_sqrt`).",
+   "issue": "`two_mul_energy_eq_exp_rapidity_mul` and `energyFraction_eq_exp_rapidity_mul` (line 199) end in `_mul`, but the outermost operation of both conclusions is a division by `\u221a\u27eaq+P, q+P\u27eb\u2098`; the naming dictionary renders `/` as `div`. The trailing `mul` advertises a product and omits the division that makes the statement non-trivial.",
+   "line": "163"
+  }
+ ],
+ "head_sha": "8ca0f2cfb8837acf934be2a04985a5d891aa0d5f",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d80448a3443194d567aea8e5db1901fbce919b9f06aa07d71087220af484bd5a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261012T201103Z-126-naming-04733c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-12T20:11:03Z",
+ "submitted_by": "wdconinc",
+ "summary": "Namespacing and notation are fine, but several names misdescribe their conclusions: `timeComponent_add`/`timeComponent_sub` read as \"of a sum\" against the `spatialPart_add` convention introduced in this same PR, `eq_sqrt_mul_sinh_rapidity` names no subject at all, `_mul` is used where the outermost operation is `/`, and the photon/target energies are named inconsistently across the massless pair.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/CollinsSoper.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "716d241bc1c2aee8deb10877bdf01d5d40326c84fed444b9f84dcfc5a6faa828",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 131040,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 131040,
+  "cache_read_input_tokens": 377193,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1673,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1673,
+    "cache_read_input_tokens": 104080,
+    "input_tokens": 2,
+    "output_tokens": 6280,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13208,
+  "output_tokens_details": {
+   "thinking_tokens": 9545
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
