@@ -1,0 +1,192 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0372575,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 226.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 127824,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 127824,
+    "cache_read_input_tokens": 661655,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3207,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3207,
+      "cache_read_input_tokens": 105315,
+      "input_tokens": 2,
+      "output_tokens": 2539,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17124,
+    "output_tokens_details": {
+     "thinking_tokens": 13608
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "fe627d6347274d5771d56cd52017155e88fc2265",
+ "cost_usd": 2.037257,
+ "dedupe_key": "eic/EpsilonEridani|137|718aeefa3b66bf3c9ace7b883fc53248474f726c|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "0e454ee25241bc3a48a978d91eb8e717956e4f60f0d9b733932440cf7b6e4e67",
+ "diff_sha256": "0e454ee25241bc3a48a978d91eb8e717956e4f60f0d9b733932440cf7b6e4e67",
+ "duration_s": 226.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:158 `def relabel (\u03c3 : \u03ba \u2192 \u03b9) (f : Pdf \u03b9) : Pdf \u03ba := fun k => f (\u03c3 k)`; Species.lean:159 `relabel conj f`. Mathlib grep: `Mathlib/ModelTheory/Syntax.lean:117: def relabel (g : \u03b1 \u2192 \u03b2) : L.Term \u03b1 \u2192 L.Term \u03b2` (covariant); `Mathlib/Probability/Kernel/Composition/MapComap.lean:152: def comap (\u03ba : Kernel \u03b1 \u03b2) (g : \u03b3 \u2192 \u03b1)` (contravariant, named comap).",
+   "file": "EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "fix": "Rename to the Mathlib word for precomposition: `PDF.comap` (cf. `ProbabilityTheory.Kernel.comap (\u03ba : Kernel \u03b1 \u03b2) (g : \u03b3 \u2192 \u03b1) : Kernel \u03b3 \u03b2`, Mathlib/Probability/Kernel/Composition/MapComap.lean:152; `Finsupp.comapDomain`), with `comap_apply`, `mellinMoment_comap`, `sum_mellinMoment_comap`, `IsPartonDensity.comap`, `Regularity.comap`, `Assumptions.comap`, `SumRuleAssumptions.comap`, `comap_valenceTarget`, and `chargeConj_eq_comap` in Species.lean:161; alternatively keep `relabel` but take \u03c3 in the covariant direction (`\u03c3 : \u03b9 \u2192 \u03ba` bijective / an `Equiv`, pulling back along its inverse).",
+   "issue": "`relabel (\u03c3 : \u03ba \u2192 \u03b9) (f : Pdf \u03b9) : Pdf \u03ba := fun k => f (\u03c3 k)` is contravariant precomposition, but `relabel` in Mathlib is the covariant pushforward (`FirstOrder.Language.Term.relabel (g : \u03b1 \u2192 \u03b2) : L.Term \u03b1 \u2192 L.Term \u03b2`, Mathlib/ModelTheory/Syntax.lean:117). Since the intended uses are endomorphisms of `Species Flavor` (charge conjugation now, isospin/flavour permutations per the PR description), a non-involutive \u03c3 type-checks and silently gives the opposite relabelling from the one the name suggests \u2014 no error warns the caller.",
+   "line": 158
+  },
+  {
+   "evidence": "Species.lean:240-242 `theorem valenceNumber_eq_zero_of_eq {f : Pdf (Species Flavor)} {i : Flavor} (h : f (.quark i) = f (.antiquark i)) (Q2 : \u211d) : valenceNumber f i Q2 = 0`.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/Species.lean",
+   "fix": "Rename to `valenceNumber_eq_zero_of_quark_eq_antiquark` (the naming doc: \"it is necessary to describe some of the hypotheses. The word 'of' is used to separate these\").",
+   "issue": "`valenceNumber_eq_zero_of_eq` names its hypothesis only `eq`, but that hypothesis (`f (.quark i) = f (.antiquark i)`) is the whole mathematical content, not an auxiliary alignment equation as in Mathlib's `_of_eq` lemmas (e.g. `mfderiv_comp_of_eq (hy : f x = y)`). The name is unguessable and does not describe which equality is assumed.",
+   "line": 240
+  }
+ ],
+ "head_sha": "718aeefa3b66bf3c9ace7b883fc53248474f726c",
+ "merge_base_sha": "74f99fc7671738951b67f376ec39f1fc6a8f24ae",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 137,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "404a68677a742030010379fce9173b0082bed2b4f72a8fd46a3149b98c1861b6",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261012T203812Z-137-naming-f89257",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-12T20:38:12Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names mostly follow upstream patterns, but `PDF.relabel` uses Mathlib's covariant word for a contravariant (precomposition) operation, which is a live footgun for the endomorphism case this API is built for; `valenceNumber_eq_zero_of_eq` also hides its substantive hypothesis.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "af15a601260a5cd613141ef3d95ad6fd75005de6a78d1fc174d098b8076ffe0e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 127824,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 127824,
+  "cache_read_input_tokens": 661655,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3207,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3207,
+    "cache_read_input_tokens": 105315,
+    "input_tokens": 2,
+    "output_tokens": 2539,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17124,
+  "output_tokens_details": {
+   "thinking_tokens": 13608
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
