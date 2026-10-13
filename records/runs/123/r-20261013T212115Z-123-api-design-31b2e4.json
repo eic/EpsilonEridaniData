@@ -1,0 +1,245 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8324450000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 191.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 108654,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 108654,
+    "cache_read_input_tokens": 732940,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4321,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4321,
+      "cache_read_input_tokens": 98804,
+      "input_tokens": 2,
+      "output_tokens": 2879,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15173,
+    "output_tokens_details": {
+     "thinking_tokens": 9753
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.832445,
+ "dedupe_key": "eic/EpsilonEridani|123|d6bf292716f98da663e6943db9714d6a224d15ad|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "da7d18d9b5ff648e5da2c3dc1c32f5ef8b672c178e17fd4c7181788f019bab43",
+ "diff_sha256": "da7d18d9b5ff648e5da2c3dc1c32f5ef8b672c178e17fd4c7181788f019bab43",
+ "duration_s": 191.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 82 passes `x Q2 \u03b6` straight into `f`; line 112 must write `fun w _ _ _ => o.areaForm w v` and supply three unused reals; line 136 eta-reshuffles `fun v x Q2 \u03b6 => \u03a6 v i x Q2 \u03b6`.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Export `azimuthalAverage (f : TransversePlane \u2192 \u211d) (kT : \u211d) : \u211d := Real.circleAverage (f \u2218 Complex.orthonormalBasisOneI.repr) 0 kT`, restate `azimuthalAverage_eq_integral`, `_eq_zero_of_odd`, `_areaForm_eq_zero`, `_nonneg` in that form, and apply it pointwise in `(i, x, Q2, \u03b6)` inside `azimuthalTmd`.",
+   "issue": "`azimuthalAverage` takes `f : TransversePlane \u2192 \u211d \u2192 \u211d \u2192 \u211d \u2192 \u211d` plus `x Q2 \u03b6`, but the operation touches only the vector argument: `x Q2 \u03b6` are passed through untouched. The 4-ary TMD shape is hardwired into a general plane operation, so every consumer must pad or reshuffle.",
+   "line": 79
+  },
+  {
+   "evidence": "Mathlib `Real.circleAverage_nonneg_of_nonneg` (Mathlib/MeasureTheory/Integral/CircleAverage.lean:304) assumes only `\u2200 x \u2208 Metric.sphere c |R|, 0 \u2264 f x`; the sibling lemma at line 96 already localises its hypothesis to the fixed `(x, Q2, \u03b6)`.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Weaken to `(hf : \u2200 v, \u2016v\u2016 = |kT| \u2192 0 \u2264 f v x Q2 \u03b6)`, matching the upstream hypothesis; the proof is unchanged modulo `radialVector_norm`.",
+   "issue": "`azimuthalAverage_nonneg` requires `\u2200 v x Q2 \u03b6, 0 \u2264 f v x Q2 \u03b6` \u2014 global in all four arguments \u2014 although only the circle `\u2016v\u2016 = |kT|` at the fixed `(x, Q2, \u03b6)` is integrated. A caller holding nonnegativity only on the physical region cannot apply it.",
+   "line": 119
+  },
+  {
+   "evidence": "`IsTmdDensity.nonneg` in TMD/Basic.lean:62 reads `\u2200 i x kT Q2 \u03b6, 0 \u2264 x \u2192 x \u2264 1 \u2192 0 \u2264 kT \u2192 0 \u2264 f ...`; the WignerDistributions roadmap 2.4 asks for `IsTmdDensity` \"whenever the vector-argument object satisfies the corresponding vector-valued conditions\".",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Weaken `h\u03a6` to `\u2200 v i x Q2 \u03b6, 0 \u2264 x \u2192 x \u2264 1 \u2192 0 \u2264 \u03a6 v i x Q2 \u03b6` and bundle both hypotheses as a structure (e.g. `IsVectorTmdDensity`) mirroring `TMD.IsTmdDensity`, so later layers carry one predicate instead of re-stating these two \u2200-forms.",
+   "issue": "`azimuthalTmd_isTmdDensity` assumes `h\u03a6 : \u2200 v i x Q2 \u03b6, 0 \u2264 \u03a6 v i x Q2 \u03b6`, strictly stronger than the vector analogue of `IsTmdDensity.nonneg`, which is guarded by `0 \u2264 x \u2192 x \u2264 1`; the hypotheses are also loose \u2200-statements with no predicate mirroring the bundled `IsTmdDensity`.",
+   "line": 140
+  },
+  {
+   "evidence": "Lines 146\u2013150 prove the fields by `simp [azimuthalTmd, azimuthalAverage, \u2026, Real.circleAverage_def]` and `simp only [azimuthalTmd, not_lt.mpr hkT, ite_false]`; the remaining 2.4 item (`integrateTransverse \u2218 azimuthalTmd`) must rewrite this under an integral over `kT \u2265 0`.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Add `@[simp] azimuthalTmd_of_neg (h : kT < 0) : azimuthalTmd \u03a6 i x kT Q2 \u03b6 = 0` and `azimuthalTmd_of_nonneg (h : 0 \u2264 kT) : azimuthalTmd \u03a6 i x kT Q2 \u03b6 = azimuthalAverage \u2026 `, and use them in `azimuthalTmd_isTmdDensity`.",
+   "issue": "`azimuthalTmd` has no characteristic lemmas: nothing discharges the `if kT < 0` branch, so consumers must unfold the definition (the file's own proof does).",
+   "line": 133
+  },
+  {
+   "evidence": "Line 101 `have hneg : \u2200 \u03b8, circleMap 0 (-kT) \u03b8 = -circleMap 0 kT \u03b8` is local to the proof; `Complex.orthonormalBasisOneI_repr_apply : repr z = ![z.re, z.im]` (Mathlib/Analysis/InnerProductSpace/PiL2.lean:883) makes the component lemma immediate.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Export `radialVector_neg : radialVector (-kT) \u03b8 = -radialVector kT \u03b8` (the inline `hneg`), a component lemma `radialVector kT \u03b8 = ![kT * Real.cos \u03b8, kT * Real.sin \u03b8]` via `Complex.orthonormalBasisOneI_repr_apply`, and `radialVector_zero`.",
+   "issue": "`radialVector` exports only the two norm lemmas; nothing lets a user compute it or relate it to negation without unfolding `Complex.orthonormalBasisOneI`. The negation fact is proved inline and thrown away.",
+   "line": 62
+  },
+  {
+   "evidence": "Mathlib marks `circleAverage_zero`, `circleAverage_neg_radius` (line 130) and `circleAverage_abs_radius` (line 136) `@[simp]`; the corresponding facts about `azimuthalAverage` are neither stated nor annotated here.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Mark `radialVector_norm` and the new `azimuthalTmd_of_neg` `@[simp]`, and add the evenness lemmas `azimuthalAverage_neg_radius` / `azimuthalAverage_abs_radius` as `@[simp]`, mirroring their upstream counterparts.",
+   "issue": "No `@[simp]` (or `@[grind]`) annotation anywhere in the file, including on lemmas that are plainly normal forms.",
+   "line": 0
+  }
+ ],
+ "head_sha": "d6bf292716f98da663e6943db9714d6a224d15ad",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e8d2cdf5b0a23add77235174b94a05f043e40ecb70b2f5adc2060e551e76b283",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T212115Z-123-api-design-31b2e4",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T21:21:15Z",
+ "submitted_by": "wdconinc",
+ "summary": "The azimuthal average is exported with three spectator arguments baked into its type, its nonnegativity lemma and the density theorem assume strictly more than the TMD-side conditions they are meant to consume, and neither `azimuthalTmd` nor `radialVector` carries the characteristic lemmas (or any `@[simp]`) needed to use them without unfolding.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/TransverseMomentumDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Reduction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace/EuclideanDist.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3757184e79d4718dbdb00be7de2349782797549493cc6fcfc82adea7f712ea56",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 108654,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 108654,
+  "cache_read_input_tokens": 732940,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4321,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4321,
+    "cache_read_input_tokens": 98804,
+    "input_tokens": 2,
+    "output_tokens": 2879,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15173,
+  "output_tokens_details": {
+   "thinking_tokens": 9753
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,175 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.091491,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 106.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 80882,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 80882,
+    "cache_read_input_tokens": 137562,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6650,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6650,
+      "cache_read_input_tokens": 69193,
+      "input_tokens": 2,
+      "output_tokens": 4236,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8554,
+    "output_tokens_details": {
+     "thinking_tokens": 5613
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.091491,
+ "dedupe_key": "eic/EpsilonEridani|123|d6bf292716f98da663e6943db9714d6a224d15ad|documentation|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "da7d18d9b5ff648e5da2c3dc1c32f5ef8b672c178e17fd4c7181788f019bab43",
+ "diff_sha256": "da7d18d9b5ff648e5da2c3dc1c32f5ef8b672c178e17fd4c7181788f019bab43",
+ "duration_s": 106.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 19-25. A grep for `Layer [0-9]|roadmap` over `EpsilonEridani/` returns only lines 21 and 33 of this file plus unrelated 'proof roadmap' prose in `QFT/Scattering/DIS/Inference/Conjectures.lean`; no other module docstring in the repo cites a roadmap layer.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Replace with the mathematical why: a `Tmd` carries only the magnitude `k_T`, so a vector-argument transverse distribution reduces to it by averaging over the polar angle; the average is `Real.circleAverage` transported along `Complex.orthonormalBasisOneI.repr`.",
+   "issue": "The whole `## Motivation` section is roadmap process (\"Layer 2.4 of the `WignerDistributions` roadmap asks for...\"); this dates badly and nothing updates it when the roadmap is reorganised. Roadmap attribution belongs in the PR description's `Roadmap:` line.",
+   "line": 19
+  },
+  {
+   "evidence": "Lines 31-34. `F\u2081\u2084` appears nowhere in `EpsilonEridani/`; the only definition is `Sector.F14` in the roadmap's own `WignerDistributions/Suggested.lean`, which is a `sorry`-ed sketch outside this repo.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Cut the roadmap sentence. If `F\u2081\u2084` is worth naming, give a literature reference for the spin-orbit GTMD amplitude in the file instead of a roadmap pointer.",
+   "issue": "The `azimuthalAverage_areaForm_eq_zero` bullet appends \"This is the area-form ingredient of the `F\u2081\u2084` annihilation in Layer 2.4 of the `WignerDistributions` roadmap; the `F\u2081\u2084` amplitude itself is not defined here\" \u2014 layer numbering plus coordination status with work not in the repo, and `F\u2081\u2084` is named with no definition or citation a reader can follow.",
+   "line": 31
+  },
+  {
+   "evidence": "`Average.lean:121` `(hf : \u2200 v x Q2 \u03b6, 0 \u2264 f v x Q2 \u03b6)` vs `Basic.lean:62` `nonneg : \u2200 i x kT Q2 \u03b6, 0 \u2264 x \u2192 x \u2264 1 \u2192 0 \u2264 kT \u2192 0 \u2264 f i x kT Q2 \u03b6`.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "In both places state what is proved: nonnegativity everywhere on the plane passes to the circle average. Drop the reference to the `IsTmdDensity` condition, or say explicitly that the hypothesis is stronger than it.",
+   "issue": "Overclaim: \"The azimuthal average preserves the positive-density condition\" (and the module bullet at lines 35-36, \"preserves the nonnegativity condition of `TMD.IsTmdDensity`\"). The lemma's hypothesis `hf : \u2200 v x Q2 \u03b6, 0 \u2264 f v x Q2 \u03b6` is global nonnegativity, strictly stronger than `IsTmdDensity.nonneg`, which is restricted to `0 \u2264 x \u2264 1` and `0 \u2264 kT`. A reader holding only the `IsTmdDensity` condition cannot apply this lemma.",
+   "line": 117
+  },
+  {
+   "evidence": "`Average.lean:79-82` `azimuthalAverage ... (x kT Q2 \u03b6 : \u211d) : \u211d` vs `Average.lean:133-136` `azimuthalTmd ... : Tmd Flavor`; the roadmap's sketch `azimuthalAverage (f : VectorTmd Flavor) : TMD.Tmd Flavor` (`WignerDistributions/Suggested.lean:229`) is the signature the sentence actually describes.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Say that `azimuthalAverage` is the scalar circle average of a vector-argument function and that `azimuthalTmd` is the per-flavor map into `Tmd` built from it. Also name `TransversePlane` and `radialVector` as material introduced here.",
+   "issue": "The opening sentence \u2014 \"the azimuthal average \u2014 the circle average that maps a vector-argument function on `TransversePlane` to a scalar-magnitude `Tmd`\" \u2014 describes a `Tmd`-valued `azimuthalAverage` that this file does not define: `azimuthalAverage` returns `\u211d` and takes no `Flavor`; the `Tmd`-valued map is `azimuthalTmd`.",
+   "line": 16
+  }
+ ],
+ "head_sha": "d6bf292716f98da663e6943db9714d6a224d15ad",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "01efc6072f2a1e4209c9762affa6b491aa676e1b5b0687bee19a52e1bb30fe55",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T213134Z-123-documentation-e45905",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T21:31:34Z",
+ "submitted_by": "wdconinc",
+ "summary": "The module docstring's \"Motivation\" is roadmap/layer narrative rather than mathematics, and one key-results bullet carries layer numbering plus in-flight-scope commentary about an undefined `F\u2081\u2084`. Two docstrings overclaim preservation of the `IsTmdDensity` nonnegativity condition when the lemma in fact requires global nonnegativity, and the opening sentence describes a `Tmd`-valued `azimuthalAverage` that this file does not define.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0e5c522d538d8c802484567fca41e672307045623250a8e1d804538cbdfdf703",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 80882,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 80882,
+  "cache_read_input_tokens": 137562,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6650,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6650,
+    "cache_read_input_tokens": 69193,
+    "input_tokens": 2,
+    "output_tokens": 4236,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8554,
+  "output_tokens_details": {
+   "thinking_tokens": 5613
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

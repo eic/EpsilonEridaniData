@@ -1,0 +1,248 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.518419,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 244.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 130830,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 130830,
+    "cache_read_input_tokens": 1488478,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 36,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 862,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 862,
+      "cache_read_input_tokens": 124481,
+      "input_tokens": 2,
+      "output_tokens": 5608,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18628,
+    "output_tokens_details": {
+     "thinking_tokens": 12939
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.518419,
+ "dedupe_key": "eic/EpsilonEridani|123|d6bf292716f98da663e6943db9714d6a224d15ad|reuse|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "da7d18d9b5ff648e5da2c3dc1c32f5ef8b672c178e17fd4c7181788f019bab43",
+ "diff_sha256": "da7d18d9b5ff648e5da2c3dc1c32f5ef8b672c178e17fd4c7181788f019bab43",
+ "duration_s": 244.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean:58 `lemma circleAverage_def : circleAverage f c R = (2 * \u03c0)\u207b\u00b9 \u2022 \u222b \u03b8 in 0..2 * \u03c0, f (circleMap c R \u03b8)`; line 304 `theorem circleAverage_nonneg_of_nonneg {f : \u2102 \u2192 \u211d} (h\u2082f : \u2200 x \u2208 Metric.sphere c |R|, 0 \u2264 f x) : 0 \u2264 circleAverage f c R`. Average.lean:90 is the bare term `Real.circleAverage_def`; Average.lean:124 is the bare term `Real.circleAverage_nonneg_of_nonneg fun _ _ => hf _ _ _ _`.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Make the wrapper unary: `def azimuthalAverage (g : TransversePlane \u2192 \u211d) (kT : \u211d) : \u211d := Real.circleAverage (g \u2218 Complex.orthonormalBasisOneI.repr) 0 kT`. Then `azimuthalTmd` becomes `fun i x kT Q2 \u03b6 => if kT < 0 then 0 else azimuthalAverage (fun v => \u03a6 v i x Q2 \u03b6) kT`, `azimuthalAverage_nonneg` can be dropped in favour of `Real.circleAverage_nonneg_of_nonneg` applied at the one call site in `azimuthalTmd_isTmdDensity`, and `azimuthalAverage_eq_zero_of_odd` generalises to `(hf : \u2200 w, g (-w) = -g w) : azimuthalAverage g kT = 0`, which still gives `azimuthalAverage_areaForm_eq_zero` in one line.",
+   "issue": "`azimuthalAverage` threads three spectator arguments (`x`, `Q2`, `\u03b6`) that no part of the definition touches, so two of the six new declarations are Mathlib lemmas re-exported through the wrapper: `azimuthalAverage_eq_integral` (lines 86-90) is proved by the term `Real.circleAverage_def` itself, and `azimuthalAverage_nonneg` (lines 119-124) is `Real.circleAverage_nonneg_of_nonneg` with the spectators appended \u2014 and with a hypothesis strengthened to global nonnegativity in all four arguments, where upstream only needs `\u2200 x \u2208 Metric.sphere 0 |kT|, 0 \u2264 f x`.",
+   "line": "79"
+  },
+  {
+   "evidence": "Average.lean:70-72 `lemma radialVector_norm_of_nonneg ... := by rw [radialVector_norm, abs_of_nonneg hkT]`; repo-wide grep for `radialVector` matches only EpsilonEridani/Particles/Parton/TMD/Average.lean.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Delete `radialVector_norm_of_nonneg`; any future caller gets it from `by rw [radialVector_norm, abs_of_nonneg hkT]`, which is exactly its current two-step proof.",
+   "issue": "`radialVector_norm_of_nonneg` re-derives the immediately preceding `radialVector_norm` (line 66) composed with `abs_of_nonneg`, and has no consumer anywhere in the repository (grep for `radialVector` returns hits only inside this file: lines 62, 63, 66, 67, 71, 72, 89).",
+   "line": "70"
+  }
+ ],
+ "head_sha": "d6bf292716f98da663e6943db9714d6a224d15ad",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b15416613186f340c2fbad1a91c865eaebaac2713f28cd675da75e1f9002821f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T211403Z-123-reuse-885089",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T21:14:03Z",
+ "submitted_by": "wdconinc",
+ "summary": "The circle-average content genuinely reuses Mathlib, but `azimuthalAverage` carries three spectator arguments that exist only to re-export `Real.circleAverage_def` and `Real.circleAverage_nonneg_of_nonneg` as a parallel TMD-namespace API, and `radialVector_norm_of_nonneg` is a consumer-less one-step specialization of the preceding lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/SIDIS/Asymmetries/Harmonics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Reduction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/CircleIntegral.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Complex/CircleMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Polynomiality.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 24,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1ece7a5e13931d0cb310599059b17f78db68997af4ded32657378f291d9cc533",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 130830,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 130830,
+  "cache_read_input_tokens": 1488478,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 36,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 862,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 862,
+    "cache_read_input_tokens": 124481,
+    "input_tokens": 2,
+    "output_tokens": 5608,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18628,
+  "output_tokens_details": {
+   "thinking_tokens": 12939
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

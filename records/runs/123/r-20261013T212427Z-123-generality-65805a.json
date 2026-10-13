@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4248105,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 151.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 87803,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 87803,
+    "cache_read_input_tokens": 503031,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2751,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2751,
+      "cache_read_input_tokens": 80357,
+      "input_tokens": 2,
+      "output_tokens": 2706,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11807,
+    "output_tokens_details": {
+     "thinking_tokens": 7162
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.42481,
+ "dedupe_key": "eic/EpsilonEridani|123|d6bf292716f98da663e6943db9714d6a224d15ad|generality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "da7d18d9b5ff648e5da2c3dc1c32f5ef8b672c178e17fd4c7181788f019bab43",
+ "diff_sha256": "da7d18d9b5ff648e5da2c3dc1c32f5ef8b672c178e17fd4c7181788f019bab43",
+ "duration_s": 151.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 82 uses `f (\u2026repr z) x Q2 \u03b6` with `x Q2 \u03b6` passed through untouched; line 112 instantiates with a constant-in-the-last-three-arguments function. Roadmap `Suggested.lean:226` types the vector slot as a bare `Transverse` argument.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Define `azimuthalAverage (f : TransversePlane \u2192 \u211d) (kT : \u211d) : \u211d := Real.circleAverage (fun z => f (Complex.orthonormalBasisOneI.repr z)) 0 kT` and drop `x Q2 \u03b6` from all four lemmas; in `azimuthalTmd` apply it to `fun v => \u03a6 v i x Q2 \u03b6`.",
+   "issue": "`azimuthalAverage` carries three inert parameters: `f : TransversePlane \u2192 \u211d \u2192 \u211d \u2192 \u211d \u2192 \u211d` is only ever used as `f \u00b7 x Q2 \u03b6`, so the operator is specialized to the TMD argument shape for no gain. The same three dummies propagate to `azimuthalAverage_eq_integral` (86), `azimuthalAverage_eq_zero_of_odd` (95), `azimuthalAverage_areaForm_eq_zero` (109) and `azimuthalAverage_nonneg` (119), and force the padding `fun w _ _ _ => o.areaForm w v` plus three junk reals at line 112. It also cannot be applied to the roadmap's `area bT kT`-style weights, which are plain `Transverse \u2192 \u211d`.",
+   "line": 79
+  },
+  {
+   "evidence": "Line 124 discharges the goal with `Real.circleAverage_nonneg_of_nonneg`, whose own hypothesis is `(h\u2082f : \u2200 x \u2208 Metric.sphere c |R|, 0 \u2264 f x)` (mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean:304-306) \u2014 upstream already states this at the sphere-restricted level. The sibling lemma at line 97 fixes `x Q2 \u03b6`, so the global quantification at 121 is not even internally consistent.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Weaken to `(hf : \u2200 v, \u2016v\u2016 = |kT| \u2192 0 \u2264 f v x Q2 \u03b6)` (or at minimum `\u2200 v, 0 \u2264 f v x Q2 \u03b6`), and correspondingly restrict `hf` in `azimuthalAverage_eq_zero_of_odd` to `\u2016w\u2016 = |kT|`.",
+   "issue": "`azimuthalAverage_nonneg` assumes `hf : \u2200 v x Q2 \u03b6, 0 \u2264 f v x Q2 \u03b6` although the conclusion is at one fixed `(x, Q2, \u03b6)` and only values on the circle `\u2016v\u2016 = |kT|` enter. Same over-quantification in `azimuthalAverage_eq_zero_of_odd` (line 97), which demands oddness at every `w` rather than on that circle.",
+   "line": 121
+  },
+  {
+   "evidence": "`IsTmdDensity.nonneg : \u2200 i x kT Q2 \u03b6, 0 \u2264 x \u2192 x \u2264 1 \u2192 0 \u2264 kT \u2192 0 \u2264 f i x kT Q2 \u03b6` (TMD/Basic.lean:62); the roadmap's target signature also restricts the hypothesis this way: `(_ : \u2200 i x kT Q2 \u03b6, 0 \u2264 x \u2192 x \u2264 1 \u2192 0 \u2264 f i x kT Q2 \u03b6)` (roadmap Suggested.lean:234).",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Weaken to `h\u03a6 : \u2200 v i x Q2 \u03b6, 0 \u2264 x \u2192 x \u2264 1 \u2192 0 \u2264 \u03a6 v i x Q2 \u03b6` and pass the bound `hx0 hx1` through to the weakened `azimuthalAverage_nonneg`.",
+   "issue": "`azimuthalTmd_isTmdDensity` assumes `h\u03a6 : \u2200 v i x Q2 \u03b6, 0 \u2264 \u03a6 v i x Q2 \u03b6` everywhere, but `IsTmdDensity.nonneg` only claims nonnegativity for `0 \u2264 x`, `x \u2264 1`, `0 \u2264 kT`; the proof at line 149 binds those three hypotheses as `_ _ hkT` and throws two of them away.",
+   "line": 142
+  },
+  {
+   "evidence": "Roadmap Suggested.lean:15 and :51 \u2014 orbital weight `area bT kT`, `area u v = u 0 * v 1 - u 1 * v 0`; Mathlib has `Orientation.areaForm : E \u2192\u2097[\u211d] E \u2192\u2097[\u211d] \u211d` (TwoDim.lean:91) and `areaForm_swap` (TwoDim.lean:109).",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "State the corollary for a linear functional, `azimuthalAverage (fun w => L w) \u2026 = 0` for `L : TransversePlane \u2192\u2097[\u211d] \u211d` (linear \u21d2 odd, so the existing proof applies), and derive both `o.areaForm \u00b7 v` and `o.areaForm v \u00b7` from it; or add the companion second-slot lemma via `Orientation.areaForm_swap`.",
+   "issue": "`azimuthalAverage_areaForm_eq_zero` covers only `w \u21a6 \u03c9(w, v)`; the roadmap's orbital weight is `area bT kT`, i.e. the averaged variable in the second slot, which this corollary does not give. Picking one slot of an antisymmetric form is arbitrary under-generalization.",
+   "line": 109
+  },
+  {
+   "evidence": "grep for `radialVector` across `code/` returns hits only at Average.lean:62,66,67,70,71,72,89 \u2014 the `_of_nonneg` variant is never applied.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "fix": "Delete it; callers can use `radialVector_norm` with `abs_of_nonneg`.",
+   "issue": "`radialVector_norm_of_nonneg` is a one-step specialization of `radialVector_norm` by `abs_of_nonneg` with no use anywhere in the repository and no roadmap need.",
+   "line": 70
+  }
+ ],
+ "head_sha": "d6bf292716f98da663e6943db9714d6a224d15ad",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d7da400d85244308bab40445b41086da7c1401eb8742bb15bf2e5cf698e9a5cc",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T212427Z-123-generality-65805a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T21:24:27Z",
+ "submitted_by": "wdconinc",
+ "summary": "The averaging operator is hard-wired to the TMD parameter shape (three inert `x Q2 \u03b6` arguments) instead of acting on a plain function `TransversePlane \u2192 \u211d`, and two nonnegativity hypotheses are quantified far more broadly than the conclusions need. The area-form corollary also covers only one slot of `\u03c9`, not the slot the roadmap's orbital weight uses.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Average.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace/TwoDim.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ffe7db5ddc18c58f0a8df3df58794adad414a1a02f82d0632d145ab2140b137d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 87803,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 87803,
+  "cache_read_input_tokens": 503031,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2751,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2751,
+    "cache_read_input_tokens": 80357,
+    "input_tokens": 2,
+    "output_tokens": 2706,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11807,
+  "output_tokens_details": {
+   "thinking_tokens": 7162
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
