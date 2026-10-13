@@ -1,0 +1,238 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0346680000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 274.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 122374,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 122374,
+    "cache_read_input_tokens": 552696,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4424,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4424,
+      "cache_read_input_tokens": 102188,
+      "input_tokens": 2,
+      "output_tokens": 6901,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21380,
+    "output_tokens_details": {
+     "thinking_tokens": 16157
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.034668,
+ "dedupe_key": "eic/EpsilonEridani|116|ebfbb64416b29d37a0de0b6a4d37441f0180bed9|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "ce3ece8c0a27f313572dcd3da95922640bb7269c2a39516146842d4b0645f049",
+ "diff_sha256": "ce3ece8c0a27f313572dcd3da95922640bb7269c2a39516146842d4b0645f049",
+ "duration_s": 274.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:244-290 contains only `covarianceForm_def`, `covarianceForm_comm`, `covarianceForm_self`, `variance_def`, `variance_add`, `variance_nonneg`, `variance_eq_zero_iff`, `comp_variance`. Mathlib/Probability/Moments/CovarianceBilin.lean:50 bundles the same object as a continuous bilinear map; Mathlib/Probability/Moments/Variance.lean:216 has `variance_smul`.",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Either define `covarianceForm` via `Matrix.toLinearMap\u2082' \u211d D.covariance` (Mathlib/LinearAlgebra/Matrix/SesquilinearForm.lean:163), mirroring Mathlib's bundled `ProbabilityTheory.covarianceBilin : E \u2192L[\u211d] E \u2192L[\u211d] \u211d`, so bilinearity comes with the definition, or add the missing lemmas explicitly, at least `variance_smul : D.variance (r \u2022 c) = r ^ 2 * D.variance c`, `variance_zero`, and additivity/homogeneity in each argument of `covarianceForm`.",
+   "issue": "`covarianceForm` and `variance` are bare functions with no linearity API: only `variance_add` exists. There is no `covarianceForm_add_left/right`, `covarianceForm_smul_left/right`, `variance_smul`, `variance_zero`, `covarianceForm_zero_left/right`. A consumer combining coefficient vectors (\u00a75.4 states the variance of a determined functional \"as the quadratic form of 0.1 in the coefficients\", \u00a75.5(iii) combines quadratic forms) cannot evaluate `D.variance (r \u2022 c)` or `D.covarianceForm (c + c'') c'` without unfolding through `variance_def` into `dotProduct`/`mulVec`.",
+   "line": 244
+  },
+  {
+   "evidence": "Basic.lean:131-157: `ofTendsto` takes no hypothesis about `(F a).value`; `hasContinuumLimit_ofTendsto` supplies `hv` only at the theorem, so the definition itself admits any `v`.",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Make `v` implicit and take the value-convergence hypothesis as an argument: `def ofTendsto {v} (hv : Tendsto (fun a => (F a).value) (\ud835\udcdd[>] 0) (\ud835\udcdd v)) (hS : ...)`, updating `ofTendsto_value`, `ofTendsto_covariance` and `hasContinuumLimit_ofTendsto`; or drop the definition in favour of the existence statement `exists_hasContinuumLimit (hv) (hS) : \u2203 D, HasContinuumLimit F D` together with `HasContinuumLimit.unique`.",
+   "issue": "`ofTendsto (v : \u03b9 \u2192 \u211d) (hS : Tendsto (fun a => (F a).covariance) (\ud835\udcdd[>] 0) (\ud835\udcdd S))` leaves `v` completely unconstrained by `F`: `ofTendsto 0 hS` typechecks and is named/documented as the continuum limit of the family while having nothing to do with its central values. The interface promises more than the signature enforces.",
+   "line": 131
+  },
+  {
+   "evidence": "Mathlib/Probability/Moments/Variance.lean:203-204 `@[simp] theorem variance_nonneg`; Basic.lean:96-99 `@[simp] theorem comp_covariance` vs CovarianceMatrix.lean:57-61 unannotated `covarianceMatrix_comp`.",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Add `@[simp]` to `EuclideanDataset.variance_nonneg` and to `EpsilonEridani.ProbabilityTheory.covarianceMatrix_comp`.",
+   "issue": "Missing automation annotations on two characteristic lemmas. `EuclideanDataset.variance_nonneg` is not `@[simp]` although its Mathlib counterpart is, and `covarianceMatrix_comp` (CovarianceMatrix.lean:58) is not `@[simp]` although its dataset-level mirror `comp_covariance` (Basic.lean:96) is.",
+   "line": 279
+  },
+  {
+   "evidence": "Basic.lean:315-323 is the only functional-level limit lemma; `IsNoiseModel.integral_dotProduct` (Basic.lean:335) shows `c \u2b1d\u1d65 D.value` is the file's central-value functional.",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Add `HasContinuumLimit.tendsto_dotProduct_value (h : HasContinuumLimit F D) (c : \u03b9 \u2192 \u211d) : Tendsto (fun a => c \u2b1d\u1d65 (F a).value) (\ud835\udcdd[>] 0) (\ud835\udcdd (c \u2b1d\u1d65 D.value))`, proved like `tendsto_variance` from `continuous_const.dotProduct continuous_id`.",
+   "issue": "The continuum-limit API develops both halves of a dataset everywhere (`tendsto_value`/`tendsto_covariance`, `comp_value`/`comp_covariance`, `ofTendsto_value`/`ofTendsto_covariance`) except at the level of a linear functional: `HasContinuumLimit.tendsto_variance` has no central-value counterpart, so a consumer of \u00a71.4/\u00a75.4 must redo the continuity argument to get convergence of `c \u2b1d\u1d65 (F a).value`.",
+   "line": 317
+  },
+  {
+   "evidence": "grep for `exists_hasContinuumLimit|exactSubspace|restrict` in code/EpsilonEridani/QFT/Lattice: no matches.",
+   "file": "",
+   "fix": "Update the description to the names actually exported (it becomes the merge commit message and is how downstream work will look the API up).",
+   "issue": "The PR description advertises a public API that does not exist: `EuclideanDataset.restrict`, `mem_exactSubspace_iff_variance_eq_zero`, `IsNoiseModel.ae_eq_integral_iff_mem_exactSubspace`, and `exists_hasContinuumLimit`. The shipped names are `comp`, `mem_determinedSubspace_iff_variance_eq_zero`, `IsNoiseModel.ae_eq_dotProduct_value_iff_mem_determinedSubspace`, and `hasContinuumLimit_ofTendsto`.",
+   "line": 0
+  }
+ ],
+ "head_sha": "ebfbb64416b29d37a0de0b6a4d37441f0180bed9",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 116,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2936dcdbf8522ffe31097901acfe7079d3602ad73349f64bfd3f528407af0b29",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T163030Z-116-api-design-447511",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T16:30:30Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and bodies are unexposed, but the characteristic API of `covarianceForm`/`variance` stops at `variance_add`: no scaling or bilinearity lemmas, so consumers must unfold to `dotProduct`/`mulVec`. `ofTendsto` also names a \"limit\" whose central values are unconstrained, and two annotations are missing relative to their Mathlib/in-file counterparts.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Moments/CovarianceMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/Extend.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Moments",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Moments/Variance.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Moments/CovarianceBilin.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4526488d1af3b87b46958145e082e3f21e8769a77536573f2bd63df20bbc0f4b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 122374,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 122374,
+  "cache_read_input_tokens": 552696,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4424,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4424,
+    "cache_read_input_tokens": 102188,
+    "input_tokens": 2,
+    "output_tokens": 6901,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21380,
+  "output_tokens_details": {
+   "thinking_tokens": 16157
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
