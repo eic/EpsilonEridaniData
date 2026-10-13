@@ -1,0 +1,185 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7790545000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 178.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 123116,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 123116,
+    "cache_read_input_tokens": 379719,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5203,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5203,
+      "cache_read_input_tokens": 101496,
+      "input_tokens": 2,
+      "output_tokens": 3024,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14319,
+    "output_tokens_details": {
+     "thinking_tokens": 10286
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.779055,
+ "dedupe_key": "eic/EpsilonEridani|104|dfacc2910facb12d961ff15d5bf4d07548d6951b|generality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "c868e0d329149d582101c1625be21d3f8046a720f825956d3c7c86de8f736bc4",
+ "diff_sha256": "c868e0d329149d582101c1625be21d3f8046a720f825956d3c7c86de8f736bc4",
+ "duration_s": 178.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Side-by-side of the two files; e.g. `soffer_bound` is `rw [f1_add_g1]; exact two_mul_abs_h1_le_diag \u03c1` (Positivity.lean:210-212) vs `rw [f1_add_deltaQ]; exact \u03c1.two_mul_norm_transversity_le_diag` (ComplexSpinDensity.lean:159-161).",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Parameterise one structure over `RCLike \ud835\udd5c` (`f1 : \u211d := (re (mat idxPP idxPP) + \u2026)/2`, `h1 : \ud835\udd5c`, `soffer_bound : 2 * \u2016h1\u2016 \u2264 f1 + g1`; at `\ud835\udd5c = \u211d`, `re = id` and `\u2016\u00b7\u2016 = |\u00b7|`, so both targets are specialisations), or at minimum derive the real `soffer_bound`/`two_mul_abs_h1_le_diag` from the complex ones through the transfer lemmas this PR already provides (`transversity_toSpinDensityC`, `f1_toSpinDensityC`, `deltaQ_toSpinDensityC`), rather than keeping two independent proofs.",
+   "issue": "Special-case duplication: ten declarations are restated and re-proved with the same proof scripts as their real counterparts in Positivity.lean \u2014 `f1` (96 / Positivity:130), `deltaQ` (101 / `g1`:135), `transversity` (108 / `h1`:140), `f1_add_deltaQ` (139 / `f1_add_g1`:157, both `rw;ring`), `f1_sub_deltaQ` (143 / 162), `two_mul_norm_transversity_le_diag` (150 / `two_mul_abs_h1_le_diag`:196), `soffer_bound` (159 / 210, both `rw [f1_add_*]; exact ...`), `IsParityInvariant` (173 / 227), `f1_eq_of_parityInvariant` (188 / 232), `deltaQ_eq_of_parityInvariant` (194 / `g1_eq_of_parityInvariant`:238). The complex case is the general one, so the real API is now a specialisation proved separately.",
+   "line": 96
+  },
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean:139 `lemma diag_nonneg {A : Matrix n n R} (hA : A.PosSemidef) {i : n} : 0 \u2264 A i i`, stated before the `variable [Fintype n]` at line 294 and over `[Ring R] [PartialOrder R] [StarRing R]`. Lines 147-148 of the PR's file already use `hM.diag_nonneg` + `RCLike.nonneg_iff` to get exactly the `RCLike` statement.",
+   "file": "EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "fix": "Expose the diagonal bound at the same level as `two_mul_norm_apply_le` (`lemma PosSemidef.re_apply_self_nonneg {M : Matrix n n \ud835\udd5c} (hM : M.PosSemidef) (i : n) : 0 \u2264 re (M i i)`), make `apply_self_nonneg` its `\ud835\udd5c = \u211d` specialisation (or just `hM.diag_nonneg`) and drop its `[Finite n]`, exactly as was done for `two_mul_abs_apply_le`; then drop the now-unused `psdTestVector` machinery.",
+   "issue": "The docstring now claims (lines 33-35) that *both* bounds hold over `RCLike` with `re` on the diagonal, but only `two_mul_norm_apply_le` is given. The `RCLike` diagonal bound `0 \u2264 re (M i i)` is derived inline at lines 147-148 and thrown away, while `apply_self_nonneg` stays real-only and keeps a `[Finite n]` that Mathlib's strictly more general `Matrix.PosSemidef.diag_nonneg` does not require. That `[Finite n]` is the only remaining consumer of the real-only `psdTestVector` / `sum_*_psdTestVector` / `quadraticForm_nonneg` / `quadraticForm_psdTestVector` scaffolding, which after this PR has no other use.",
+   "line": 127
+  },
+  {
+   "evidence": "grep of ComplexSpinDensity.lean finds only `soffer_bound` / `two_mul_norm_transversity_le_diag`; no `nonneg` or `le_f1` statement exists in the new file.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Add `SpinDensityC.f1_nonneg : 0 \u2264 \u03c1.f1` and `SpinDensityC.abs_deltaQ_le_f1 : |\u03c1.deltaQ| \u2264 \u03c1.f1`, each a few lines from the `RCLike` diagonal bound requested above (`\u03c1.posSemidef.diag_nonneg` + `RCLike.nonneg_iff`), mirroring the real proofs.",
+   "issue": "Under-generalisation: `f1_nonneg` and `abs_g1_le_f1` (Positivity.lean:168, 179) have no `SpinDensityC` analogue, so two of the three positivity bounds exist only in the specialisation while the PR's stated point is that `SpinDensityC` is the general object and the Soffer bound needs no discrete symmetry.",
+   "line": 159
+  },
+  {
+   "evidence": "ComplexSpinDensity.lean:190 `rw [f1, h.mat_idxMM_idxMM, h.mat_idxMP_idxMP]; ring` \u2014 the only uses of `h` are the two diagonal projections at lines 177-184; Positivity.lean:227 `def IsParityInvariant (\u03c1 : SpinDensity) : Prop := \u03c1.mat idxMM idxMM = \u03c1.mat idxPP idxPP \u2227 \u03c1.mat idxMP idxMP = \u03c1.mat idxPM idxPM`.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "State the two reduction lemmas from the diagonal hypotheses only (`(h\u2081 : \u03c1.mat idxMM idxMM = \u03c1.mat idxPP idxPP) (h\u2082 : \u03c1.mat idxMP idxMP = \u03c1.mat idxPM idxPM)`), keeping `IsParityInvariant` for the off-diagonal consequence `IsParityInvariant.im_transversity`, and add the transfer lemma `\u03c1.toSpinDensityC.IsParityInvariant \u2192 PDF.IsParityInvariant \u03c1` so the relation between the two predicates is on record.",
+   "issue": "`f1_eq_of_parityInvariant` and `deltaQ_eq_of_parityInvariant` (188, 194) take the full `IsParityInvariant` (`\u2200 i j`, including every off-diagonal entry) but use only its two diagonal consequences `h.mat_idxMM_idxMM` and `h.mat_idxMP_idxMP` \u2014 a hypothesis strictly stronger than the one the identical nearby real lemmas assume (Positivity.lean:227-240, where `IsParityInvariant` is just the two diagonal equalities). Compounding this, the two same-named predicates are not related by `timeReversalInvariantEquiv` in either direction and no transfer lemma is provided, so `SpinDensityC.IsParityInvariant` silently means something stronger than `SpinDensity.IsParityInvariant`.",
+   "line": 188
+  }
+ ],
+ "head_sha": "dfacc2910facb12d961ff15d5bf4d07548d6951b",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 104,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fa498f21c6d346c8a8a936c15beb66091eb0906d85065df7cc3b44ff6b80778c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T003946Z-104-generality-550278",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T00:39:46Z",
+ "submitted_by": "wdconinc",
+ "summary": "The matrix-level generalisation to `RCLike` is right, but it is left half-done (the diagonal bound is proved inline and discarded, `apply_self_nonneg` keeps a `[Finite n]` that Mathlib's more general `diag_nonneg` does not need), and `SpinDensityC` re-declares and re-proves ten declarations that already exist for the real `SpinDensity` instead of either parameterising the structure over `RCLike` or deriving the real results from the complex ones.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "aa64585d52d68887ad224395f5c52f8358a443ded906b042cf68b903517c093d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 123116,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 123116,
+  "cache_read_input_tokens": 379719,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5203,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5203,
+    "cache_read_input_tokens": 101496,
+    "input_tokens": 2,
+    "output_tokens": 3024,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14319,
+  "output_tokens_details": {
+   "thinking_tokens": 10286
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

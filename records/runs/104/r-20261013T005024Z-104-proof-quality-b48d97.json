@@ -1,0 +1,166 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4984425000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 100.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 116261,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 116261,
+    "cache_read_input_tokens": 277765,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5279,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5279,
+      "cache_read_input_tokens": 94310,
+      "input_tokens": 2,
+      "output_tokens": 1754,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 7876,
+    "output_tokens_details": {
+     "thinking_tokens": 5482
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.498443,
+ "dedupe_key": "eic/EpsilonEridani|104|dfacc2910facb12d961ff15d5bf4d07548d6951b|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "c868e0d329149d582101c1625be21d3f8046a720f825956d3c7c86de8f736bc4",
+ "diff_sha256": "c868e0d329149d582101c1625be21d3f8046a720f825956d3c7c86de8f736bc4",
+ "duration_s": 100.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 340-342: `rw [hI, f1_add_deltaQ]` / `simp [\u03c1, v, idxPP, idxMM, vecMulVec_apply]` / `norm_num`. It is the only non-terminal `simp` in the diff; every other example proof (lines 337, 354, 356, 357) ends in a terminal `simp`.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Merge into one terminal call, e.g. `norm_num [\u03c1, v, idxPP, idxMM, vecMulVec_apply, Complex.ext_iff]`, or make the residual goal explicit with a `have` before discharging it.",
+   "issue": "Non-terminal `simp` followed by `norm_num` in `exists_not_isTimeReversalInvariant`: the `norm_num` depends on the exact residual goal shape `simp [\u03c1, v, idxPP, idxMM, vecMulVec_apply]` happens to leave. Any simp-set change upstream either closes the goal (making `norm_num` error on no goals) or leaves a different shape.",
+   "line": 341
+  },
+  {
+   "evidence": "`f1_def` at ComplexSpinDensity.lean:111-113 and `deltaQ_def` at :116-118 have no occurrence anywhere in the file; grep for `f1_def` in ComplexSpinDensity.lean only hits `PDF.f1_def` (the real one, lines 253, 291).",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Use `f1_def` / `deltaQ_def` in those rewrites and simp sets, matching `Positivity.lean`; `transversity_def` is already used at lines 337 and 357.",
+   "issue": "`f1_def`, `deltaQ_def` and `transversity_def` are introduced but `f1`/`deltaQ` are unfolded through their auto-generated equation lemmas instead: `rw [f1, deltaQ]` (lines 140, 144), `rw [f1, \u2026]` (190), `rw [deltaQ, \u2026]` (196), `simp [\u2026 , f1]` (253), `simp [\u2026 , deltaQ]` (259, 291, 295). This relies on equation-lemma generation rather than the stated API, and is inconsistent with the sibling real proofs, which use the `_def` lemmas (`Positivity.lean:159` `rw [f1_def, g1_def]`, `:234`, `:240`).",
+   "line": 111
+  }
+ ],
+ "head_sha": "dfacc2910facb12d961ff15d5bf4d07548d6951b",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 104,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9c0a0d2fdf94dac3892fe85e8713d306a1fe7ba48cae89e935a4f4f083673c21",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T005024Z-104-proof-quality-b48d97",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T00:50:24Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are generally robust (nlinarith/simp rather than named-lemma chains, no change/show, no defeq abuse), but one proof ends with a non-terminal simp followed by norm_num, and the newly added f1_def/deltaQ_def lemmas are bypassed in favour of equation-lemma unfolding.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "028298296dbcd927a365263f7abc64f5828f91e1910da42e25fb02039e7a85a5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 116261,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 116261,
+  "cache_read_input_tokens": 277765,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5279,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5279,
+    "cache_read_input_tokens": 94310,
+    "input_tokens": 2,
+    "output_tokens": 1754,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 7876,
+  "output_tokens_details": {
+   "thinking_tokens": 5482
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

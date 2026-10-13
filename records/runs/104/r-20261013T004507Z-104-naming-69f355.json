@@ -1,0 +1,213 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2767595000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 183.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 147215,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 147215,
+    "cache_read_input_tokens": 879869,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1263,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1263,
+      "cache_read_input_tokens": 119531,
+      "input_tokens": 2,
+      "output_tokens": 4699,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14583,
+    "output_tokens_details": {
+     "thinking_tokens": 10611
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.27676,
+ "dedupe_key": "eic/EpsilonEridani|104|dfacc2910facb12d961ff15d5bf4d07548d6951b|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "c868e0d329149d582101c1625be21d3f8046a720f825956d3c7c86de8f736bc4",
+ "diff_sha256": "c868e0d329149d582101c1625be21d3f8046a720f825956d3c7c86de8f736bc4",
+ "duration_s": 183.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/Matrix/Symmetric.lean:33-35 `/-- A matrix `A : Matrix n n \u03b1` is \"symmetric\" if `A\u1d40 = A`. -/ ... def IsSymm (A : Matrix n n \u03b1) : Prop :=`. The PR's own docstring at line 221-222 uses the word \"symmetry\".",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "State it as `\u03c1.IsTimeReversalInvariant \u2194 \u03c1.mat.IsSymm` and rename to `isTimeReversalInvariant_iff_isSymm` (import `Mathlib.LinearAlgebra.Matrix.Symmetric` if not already transitive).",
+   "issue": "`isTimeReversalInvariant_iff_transpose_eq` states `\u03c1.mat\u1d40 = \u03c1.mat` spelled out, when that is exactly Mathlib's `Matrix.IsSymm`. The name describes the expression rather than the standard term, and consumers lose the `IsSymm` API.",
+   "line": 223
+  },
+  {
+   "evidence": "ComplexSpinDensity.lean:173-174 `def IsParityInvariant : Prop := \u2200 i j, \u03c1.mat i.rev j.rev = \u03c1.mat i j` vs Positivity.lean:227-228 `def IsParityInvariant (\u03c1 : SpinDensity) : Prop := \u03c1.mat idxMM idxMM = \u03c1.mat idxPP idxPP \u2227 \u03c1.mat idxMP idxMP = \u03c1.mat idxPM idxPM`; the PR's docstring at line 170-171 acknowledges the discrepancy.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Either strengthen the real `PDF.IsParityInvariant` to the same full-helicity-reversal condition (the compat policy permits changing it in-repo), or give the complex predicate a name that marks the difference, e.g. `IsFullyParityInvariant`, and keep `IsParityInvariant` for the diagonal content.",
+   "issue": "`SpinDensityC.IsParityInvariant` (\u2200 i j, full `Fin.rev` on both indices) and `PDF.IsParityInvariant` (two diagonal equalities, Positivity.lean:227-228) share a base name but are not the same condition: the complex one is strictly stronger and does not transport back and forth along `timeReversalInvariantEquiv`. A reader who sees `IsParityInvariant` on both sides of an equivalence the PR itself establishes will assume they correspond.",
+   "line": 173
+  },
+  {
+   "evidence": "`lemma IsParityInvariant.mat_idxMM_idxMM ... : \u03c1.mat idxMM idxMM = \u03c1.mat idxPP idxPP`; naming conventions: \"Often the name of theorem simply describes the conclusion\" \u2014 here the RHS is not a canonical normal form, so omitting it is not disambiguating.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Name after the full conclusion, e.g. `mat_idxMM_eq_mat_idxPP` and `mat_idxMP_eq_mat_idxPM`.",
+   "issue": "`IsParityInvariant.mat_idxMM_idxMM` (line 177) and `IsParityInvariant.mat_idxMP_idxMP` (line 182) name only the left-hand entry; the conclusion is an equality to a different entry, which the name does not record. The two names are near-identical in shape yet assert different facts.",
+   "line": 177
+  }
+ ],
+ "head_sha": "dfacc2910facb12d961ff15d5bf4d07548d6951b",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 104,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0a777c981bebb9302068d3d2cc3c32cd383b20e16b84aa2ac36cb55ce162c6e6",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T004507Z-104-naming-69f355",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T00:45:07Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names mostly follow the roadmap's binding conventions, but one lemma restates Mathlib's `Matrix.IsSymm` as a raw `\u1d40 = ` equation, and `IsParityInvariant` names two inequivalent predicates on the two types the PR declares equivalent.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/Hermitian.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "60768bf5a43c6f4aed5b1b0d0ff0cb14cb8bee395a582e5dbfff41e5ac5f2ad2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 147215,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 147215,
+  "cache_read_input_tokens": 879869,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1263,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1263,
+    "cache_read_input_tokens": 119531,
+    "input_tokens": 2,
+    "output_tokens": 4699,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14583,
+  "output_tokens_details": {
+   "thinking_tokens": 10611
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
