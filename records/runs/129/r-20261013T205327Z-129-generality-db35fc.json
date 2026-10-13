@@ -1,0 +1,190 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.986679,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 193.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 126843,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 126843,
+    "cache_read_input_tokens": 723898,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2105,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2105,
+      "cache_read_input_tokens": 113236,
+      "input_tokens": 2,
+      "output_tokens": 4262,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14248,
+    "output_tokens_details": {
+     "thinking_tokens": 10516
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.986679,
+ "dedupe_key": "eic/EpsilonEridani|129|7cc089f9ea65d8551315811dfb0af373b3b9e365|generality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "657faa3fcd5bc8c1abb0b448764d1c138f698e75770a93b9858c9af88e0bd115",
+ "diff_sha256": "657faa3fcd5bc8c1abb0b448764d1c138f698e75770a93b9858c9af88e0bd115",
+ "duration_s": 193.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `xBj_pos|xBj_le_one|yInel_le_one` over `EpsilonEridani/` returns only Bounds.lean:40,46,57 and their two uses at Bounds.lean:64,68 \u2014 no external callers. Bounds.lean:43-44 uses `h.p_dot_q_pos`, `h.q2_pos`; Bounds.lean:49-50 uses `h.p_dot_q_pos`, `h.q2_le_two_p_dot_q`; Bounds.lean:59-60 uses `h.p_dot_k_pos`, `h.p_dot_q_le_p_dot_k`. Domain.lean:186-189 and 201-202 reconstruct exactly these from the weaker hypotheses.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Domain.lean",
+   "fix": "Restate the three Bounds lemmas at the hypotheses they actually use \u2014 `xBj_pos (hQ : 0 < K.Q2 g) (hpq : 0 < g K.p K.q)`, `xBj_le_one (hpq : 0 < g K.p K.q) (h : K.Q2 g \u2264 2 * g K.p K.q)`, `yInel_le_one (hpk : 0 < g K.p K.k) (h : g K.p K.q \u2264 g K.p K.k)` \u2014 and call them from `invariants_mem_kinematicDomain_iff'`/`invariants_mem_kinematicDomain_iff` instead of the inline `div_pos`/`div_le_one` steps. The two in-file callers (`xBj_in_unitInterval`, `yInel_in_unitInterval`, Bounds.lean:62,66) are the only uses in the repository, so the signature change is local.",
+   "issue": "`invariants_mem_kinematicDomain_iff'` reproves inline, under the minimal hypotheses, the content of three existing lemmas that are stated with the strictly stronger `BasicAssumptions` bundle: line 188 `div_pos hQ h2pq` duplicates `DisKinematics.xBj_pos` (Bounds.lean:40, which uses only `q2_pos` and `p_dot_q_pos` of the five fields), line 188 `(div_le_one h2pq).2 h1` duplicates `xBj_le_one` (Bounds.lean:46, which uses only `p_dot_q_pos` and `q2_le_two_p_dot_q`), and line 202 `(div_le_one hpk).symm` subsumes `yInel_le_one` (Bounds.lean:57, which uses only `p_dot_k_pos` and `p_dot_q_le_p_dot_k`). The general statement is proved here while the over-assuming special case stays in the repo as the public API.",
+   "line": 188
+  }
+ ],
+ "head_sha": "7cc089f9ea65d8551315811dfb0af373b3b9e365",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 129,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c23253397fabfa046ee851a595032646490b5fdf33d2789ac4096843b3c8df9b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T205327Z-129-generality-db35fc",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T20:53:27Z",
+ "submitted_by": "wdconinc",
+ "summary": "The domain and its interior/frontier results sit at the right level, and the symmetry- and positivity-free `invariants_mem_kinematicDomain_iff'` is correctly the general result from which the other two are derived. The one generality defect is that the PR reproves `0 < xBj`, `xBj \u2264 1` and `yInel \u2264 1` inline under minimal hypotheses while `Kinematics/Bounds.lean` keeps the same facts under the full `BasicAssumptions` bundle.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Domain.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/CrossSection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6a0fac7672777f16e955ebfd97948231835c4062318659cf9e7cfe6f766a35b9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 126843,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 126843,
+  "cache_read_input_tokens": 723898,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2105,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2105,
+    "cache_read_input_tokens": 113236,
+    "input_tokens": 2,
+    "output_tokens": 4262,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14248,
+  "output_tokens_details": {
+   "thinking_tokens": 10516
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
