@@ -1,0 +1,222 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.728937,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 131.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 101524,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 101524,
+    "cache_read_input_tokens": 828188,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 386,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1037,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1037,
+      "cache_read_input_tokens": 85082,
+      "input_tokens": 32,
+      "output_tokens": 1307,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9751,
+    "output_tokens_details": {
+     "thinking_tokens": 5370
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.728937,
+ "dedupe_key": "eic/EpsilonEridani|105|42e44fdc2ab25928d0bb253f8c9eaa600807eca8|api-design|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "38924e69a4dd06e9bddeaa1e3d037fedfe20bfcc3d0b2345744e785429a7113b",
+ "diff_sha256": "38924e69a4dd06e9bddeaa1e3d037fedfe20bfcc3d0b2345744e785429a7113b",
+ "duration_s": 131.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 95, 115, 156, 210 each read `open scoped Classical in` before a def/theorem whose statement contains `{(A, B), (B, A)}` or `if A = B`. The rest of the repo takes decidability as an argument: `Mathematics/DataStructures/Matrix/PosSemidef.lean:59 def psdTestVector [DecidableEq n] ...`, `Mathematics/LieAlgebra/SpecialUnitary.lean:83 variable (n : Type*) [DecidableEq n]`.",
+   "file": "EpsilonEridani/Particles/Parton/DoubleParton/PocketFormula.lean",
+   "fix": "Add `[DecidableEq Proc]` to the `variable` line (or to `dpsCrossSection` and the four statements) and drop all four `open scoped Classical in`; use `classical` only inside proofs (as `dpsCrossSection_comm` already does).",
+   "issue": "`dpsCrossSection` is defined under `open scoped Classical in`, so the `Finset {(A, B), (B, A)}` is built with `Classical.propDecidable`. Any consumer whose `Proc` carries its own `DecidableEq` (every concrete process enum) gets a `Decidable` instance mismatch when it tries to match `dpsCrossSection_def`, `Finset.sum_pair`, or the `if A = B` in `dpsCrossSection_eq_mul_orderedDPSIntegral` / `dpsCrossSection_eq_mul_div_effectiveCrossSection` against its own `ite`. Same pattern at lines 115, 156, 210.",
+   "line": 95
+  },
+  {
+   "evidence": "Gaussian.lean:16 docstring: \"for `w = 0` the profile is identically zero\"; PocketFormula.lean:328 `simp [effectiveCrossSection, gaussianProfile_def]` unfolds the definition to discharge that case. No `gaussianProfile_zero` exists (grep over `code/EpsilonEridani`).",
+   "file": "EpsilonEridani/Mathematics/Gaussian.lean",
+   "fix": "Add `@[simp] theorem gaussianProfile_zero : gaussianProfile 0 = 0` (pointwise `(2 * \u03c0 * 0 ^ 2)\u207b\u00b9 * _ = 0`), and use it in the `w = 0` branch of `effectiveCrossSection_gaussianProfile_self`.",
+   "issue": "The docstring states the profile is identically zero for `w = 0`, but no lemma says so; `effectiveCrossSection_gaussianProfile_self` has to `simp [effectiveCrossSection, gaussianProfile_def]` to see it. A consumer handling the degenerate width has to unfold the body the same way.",
+   "line": 39
+  }
+ ],
+ "head_sha": "42e44fdc2ab25928d0bb253f8c9eaa600807eca8",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 105,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "22544e0b8310f6733e8dfefc844187fbd0b88a57bc7a2ce2279d892bb059e0b3",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T163606Z-105-api-design-ce6018",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T16:36:06Z",
+ "submitted_by": "wdconinc",
+ "summary": "The exported surface is minimal and bodies are hidden, but `dpsCrossSection` and its three characteristic statements fix `Classical.propDecidable` on `Proc` instead of taking `[DecidableEq Proc]`, and the documented `w = 0` degenerate case of `gaussianProfile` has no lemma so even this PR unfolds the body to use it.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MultiPartonCorrelations/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MultiPartonCorrelations/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inference/Identifiability.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/CrossSection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Convolution/Collinear.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Gaussian",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Distributions/Gaussian/Multivariate.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/OrderedSimplexIntegral.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ceb17c4c5282fe2b3f113092f39e42678a22ee9f2a295ddff31d71c9c1b35c5e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 101524,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 101524,
+  "cache_read_input_tokens": 828188,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 386,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1037,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1037,
+    "cache_read_input_tokens": 85082,
+    "input_tokens": 32,
+    "output_tokens": 1307,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9751,
+  "output_tokens_details": {
+   "thinking_tokens": 5370
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
