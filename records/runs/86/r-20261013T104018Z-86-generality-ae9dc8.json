@@ -1,0 +1,162 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4458825000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 153.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 108464,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 108464,
+    "cache_read_input_tokens": 138505,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 30441,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 30441,
+      "cache_read_input_tokens": 68275,
+      "input_tokens": 2,
+      "output_tokens": 11027,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11678,
+    "output_tokens_details": {
+     "thinking_tokens": 9716
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "55b2e8fed32ae1fca799fc8cb1670d38573f2066",
+ "cost_usd": 1.445883,
+ "dedupe_key": "eic/EpsilonEridani|86|306277f14d569920a9156f3c019101e2342fe82b|generality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "af8a7dbc5d21e14daca65da09954d01227b5d902e022be70f27c0db023819c06",
+ "diff_sha256": "af8a7dbc5d21e14daca65da09954d01227b5d902e022be70f27c0db023819c06",
+ "duration_s": 153.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap README Layer 0 Examples line 449 asks for `(n+1) z\u207f`, and Layers 1-3 Examples (lines 537, 673, 797) each cite `(n+1) z\u207f` as \"the Layer 0 example\"; with the coefficient baked in as `n + 2` none of those can reuse `zMoment_powerFrag`. `zMoment_one_twoSpeciesFrag` lines 123-125 compute `\u222b\u2080\u00b9 z * (2 * z)` inline, the `c = 2, n = 1` case of the same lemma.",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "Prove the moment lemma for a general coefficient (e.g. `monomialFrag c n := extendByZero fun _ _ z _ => c * z ^ n` with `zMoment_monomialFrag : zMoment (monomialFrag c n) k () () Q2 = c / (k + n + 1)`), then define `powerFrag n := monomialFrag (n + 2) n` and derive `zMoment_powerFrag`, `momentumSumRule_powerFrag` and the species-`0` case of `zMoment_one_twoSpeciesFrag` from it.",
+   "issue": "`zMoment_powerFrag` proves the monomial moment only for the coefficient `n + 2` (`powerFrag n := extendByZero fun _ _ z _ => (n + 2) * z ^ n`, line 204). The general statement is `zMoment (extendByZero fun _ _ z _ => c * z ^ n) k = c / (k + n + 1)`; the current form cannot serve the roadmap's other monomial instances, so the same integral is recomputed by hand for `2 * z` in `zMoment_one_twoSpeciesFrag` (lines 122-125) and will have to be recomputed again for `(n+1) z\u207f`.",
+   "line": 216
+  },
+  {
+   "evidence": "Line 96-97: `((momentumSumRule_iff D).1 hsum i Q2).2 \u25b8 Finset.single_le_sum (fun h' _ => hD h') (Finset.mem_univ h)` \u2014 the `\u2200 h, IntegrableOn ...` conjunct never appears in the term.",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "State it from the identity alone: `(hsum : \u2211 h, zMoment D 1 h i Q2 = 1) (hD : \u2200 h', 0 \u2264 zMoment D 1 h' i Q2) : zMoment D 1 h i Q2 \u2264 1`, and let callers apply `((momentumSumRule_iff D).1 h).2`.",
+   "issue": "`MomentumSumRule.zMoment_one_le_one` takes the full `MomentumSumRule D`, but the proof uses only the `.2` component; the integrability conjunct is visibly unused and excludes families where the identity holds while some other species' first-moment integrand is not integrable on `[0,1]` \u2014 the very case the module docstring (lines 20-23) singles out.",
+   "line": 93
+  }
+ ],
+ "head_sha": "306277f14d569920a9156f3c019101e2342fe82b",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 86,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "babc9b54d9235d5eaf46054b3aebf2116d69a50c9992973adaa03007c641c6ef",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T104018Z-86-generality-ae9dc8",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T10:40:18Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two generality defects: the monomial moment computation is locked to the normalisation `n + 2` instead of being proved for a general coefficient (forcing the roadmap's recurring `(n+1) z\u207f` example and the `2z` member of `twoSpeciesFrag` to redo it), and `MomentumSumRule.zMoment_one_le_one` carries the integrability half of `MomentumSumRule`, which its proof never uses.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/Suggested.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "740c9525612b91c52b10d40a4c30a781aa35487a2459d1b8073e8c2007ee8ffb",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 108464,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 108464,
+  "cache_read_input_tokens": 138505,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 30441,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 30441,
+    "cache_read_input_tokens": 68275,
+    "input_tokens": 2,
+    "output_tokens": 11027,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11678,
+  "output_tokens_details": {
+   "thinking_tokens": 9716
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

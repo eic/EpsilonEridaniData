@@ -1,0 +1,194 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8158094999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 154.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 120495,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 120495,
+    "cache_read_input_tokens": 638189,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 396,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 396,
+      "cache_read_input_tokens": 100345,
+      "input_tokens": 2,
+      "output_tokens": 1956,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11667,
+    "output_tokens_details": {
+     "thinking_tokens": 8474
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "55b2e8fed32ae1fca799fc8cb1670d38573f2066",
+ "cost_usd": 1.815809,
+ "dedupe_key": "eic/EpsilonEridani|86|306277f14d569920a9156f3c019101e2342fe82b|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "af8a7dbc5d21e14daca65da09954d01227b5d902e022be70f27c0db023819c06",
+ "diff_sha256": "af8a7dbc5d21e14daca65da09954d01227b5d902e022be70f27c0db023819c06",
+ "duration_s": 154.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib's only `ExtendByZero` is `Function.ExtendByZero.linearMap := Function.extend s f 0` (mathlib/Mathlib/LinearAlgebra/Pi.lean:652), extension along an injection from a smaller domain; `grep -r extendByZero ./mathlib` returns nothing else. The upstream name for the operation here is `Set.indicator` (Basic.lean:65).",
+   "file": "EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "fix": "Rename to the operation actually performed, e.g. `indicatorUnitInterval` (with `indicatorUnitInterval_apply/_of_mem/_of_notMem`, `zMoment_indicatorUnitInterval`, `integrableOn_indicatorUnitInterval_iff`, `assumptions_indicatorUnitInterval`), and update the uses in `MomentumSumRule.lean` (lines 104, 163, 205 and the `rw`s at 120, 140, 173, 177, 188, 218, 228).",
+   "issue": "`extendByZero f` does not extend anything: `f : Frag Hadron Flavor` is already total in `z`, and the definition is `(Icc 0 1).indicator (fun z => f h i z Q2) z`, i.e. it *discards* the values of `f` outside `[0,1]` (`extendByZero_of_notMem` holds even when `f h i z Q2 \u2260 0`). Upstream `extend by zero` means extension of a function defined on a subdomain.",
+   "line": 64
+  },
+  {
+   "evidence": "Addendum: `_def` restates a definition, `_apply` evaluates at an argument. Repo precedent both ways: `twoSpeciesFrag_def` (line 107, family-level equality) vs `extendByZero_apply` (Basic.lean:68) and `modelPdf_apply` (Particles/Parton/PDF/Model.lean:87), which do take point arguments.",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "Rename to `powerFrag_def`, matching `twoSpeciesFrag_def` at line 107, and update the `rw`s at lines 218 and 228.",
+   "issue": "`powerFrag_apply` states `powerFrag n = extendByZero fun \u2026`, an equality of whole families, not an evaluation at an argument; `_apply` is reserved for `foo x = \u2026`.",
+   "line": 208
+  },
+  {
+   "evidence": "Line 75 `(\u2200 h, IntegrableOn (fun z => z * D h i z Q2) (Icc 0 1)) \u2227 \u2026` versus lines 196-197 `MomentumSumRule D \u2227 \u2200 Q2, \u00ac IntegrableOn (fun z => D () () z Q2) (Icc 0 1)`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "Name the integrand, e.g. `exists_momentumSumRule_not_integrableOn_zeroMoment` (and likewise the private `not_integrableOn_invFrag`, line 186).",
+   "issue": "`exists_momentumSumRule_not_integrableOn` does not say which integrand fails to be integrable, and `MomentumSumRule` (line 75) itself asserts `IntegrableOn (fun z => z * D h i z Q2) (Icc 0 1)`, so the name reads as self-contradictory; the statement is about the zeroth-moment integrand `D` itself.",
+   "line": 195
+  }
+ ],
+ "head_sha": "306277f14d569920a9156f3c019101e2342fe82b",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 86,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ad363b678eb8bba0f4a19be828c83fa049efd4bd9cb8524f6d8306e348c6f96d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T104555Z-86-naming-1f76d0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T10:45:55Z",
+ "submitted_by": "wdconinc",
+ "summary": "Three naming defects: `extendByZero` names an indicator restriction of a total family, `powerFrag_apply` carries `_apply` for a definitional equality of whole families (the adjacent `twoSpeciesFrag_def` gets this right), and `exists_momentumSumRule_not_integrableOn` names an integrability failure that reads as contradicting the integrability `MomentumSumRule` itself asserts.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Unified/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Pi.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "694c643d72af67271c33093f7d8fe8068aa6a9cf46028be4ad5923ef85791a62",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 120495,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 120495,
+  "cache_read_input_tokens": 638189,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 396,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 396,
+    "cache_read_input_tokens": 100345,
+    "input_tokens": 2,
+    "output_tokens": 1956,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11667,
+  "output_tokens_details": {
+   "thinking_tokens": 8474
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

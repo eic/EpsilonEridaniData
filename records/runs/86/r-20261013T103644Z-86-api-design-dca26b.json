@@ -1,0 +1,203 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9122475,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 214.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 126783,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 126783,
+    "cache_read_input_tokens": 490095,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 878,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 878,
+      "cache_read_input_tokens": 115322,
+      "input_tokens": 2,
+      "output_tokens": 4577,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15972,
+    "output_tokens_details": {
+     "thinking_tokens": 11668
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "55b2e8fed32ae1fca799fc8cb1670d38573f2066",
+ "cost_usd": 1.912248,
+ "dedupe_key": "eic/EpsilonEridani|86|306277f14d569920a9156f3c019101e2342fe82b|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "af8a7dbc5d21e14daca65da09954d01227b5d902e022be70f27c0db023819c06",
+ "diff_sha256": "af8a7dbc5d21e14daca65da09954d01227b5d902e022be70f27c0db023819c06",
+ "duration_s": 214.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -r zMoment_nonneg code/` \u2192 no hits. `Mathlib/MeasureTheory/Integral/Bochner/Set.lean:817: theorem setIntegral_nonneg (hs : MeasurableSet s) (hf : \u2200 x, x \u2208 s \u2192 0 \u2264 f x) : 0 \u2264 \u222b x in s, f x \u2202\u03bc`. Roadmap 0.3: 'bounds the first moment of each individual species ... from non-negativity of the other terms'; `Suggested.lean:88` gives the signature with `Assumptions D`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "fix": "Add a public `zMoment_nonneg (hD : Assumptions D) : 0 \u2264 zMoment D n h i Q2` next to `zMoment`, proved by `setIntegral_nonneg measurableSet_Icc fun z hz => mul_nonneg (pow_nonneg hz.1 n) (hD.nonneg _ _ _ _ hz.1 hz.2)`, and correct the `zMoment_one_le_one` docstring to state the hypothesis it actually has (or restate it to take `Assumptions D`).",
+   "issue": "No lemma connects `Assumptions D` (or pointwise non-negativity on `[0,1]`) to `0 \u2264 zMoment D n h i Q2`. The PR description claims `zMoment_nonneg` was added here; grep over the repo finds no such declaration. Consequently `MomentumSumRule.zMoment_one_le_one` (MomentumSumRule.lean:93), whose hypothesis is `\u2200 h', 0 \u2264 zMoment D 1 h' i Q2`, cannot be discharged by any public API \u2014 including for the file's own `assumptions_twoSpeciesFrag` family \u2014 without the user reproving a set-integral bound by hand. Its docstring (line 91) further says 'for a family that is non-negative on the unit interval', which is not the hypothesis it takes.",
+   "line": 46
+  },
+  {
+   "evidence": "MomentumSumRule.lean:78-82; uses at lines 96, 139 are explicit `rw`/projection, none rely on the simp set.",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "Drop `@[simp]` from `momentumSumRule_iff`; keep it as the explicit intro/elim lemma (the file's own proofs already invoke it by name via `rw`/`.1`/`.2`).",
+   "issue": "`momentumSumRule_iff` is `Iff.rfl` unfolding `MomentumSumRule` into its full conjunction and is marked `@[simp]`. Every `simp` call in downstream proofs will blow open any `MomentumSumRule` hypothesis or goal into the raw `IntegrableOn \u2227 Finset.sum ... = 1` form, after which `MomentumSumRule.zMoment_one_le_one` and the other API no longer apply. The RHS is strictly more complex than the LHS, so it is not a normal form.",
+   "line": 78
+  },
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/Hadronization/README.md Examples: 'The family `D(z) = c / z` cut off at the endpoints, as the explicit divergent-multiplicity witness required by the last target of 0.3.' Compare the public `twoSpeciesFrag` (line 103) and `powerFrag` (line 204) from the same Examples list.",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "Make `invFrag`, `assumptions_invFrag`, `momentumSumRule_invFrag` and `not_integrableOn_invFrag` public (keeping `exists_momentumSumRule_not_integrableOn` as the packaged form), and list `invFrag` in the module's Main definitions.",
+   "issue": "`invFrag` and its characterisations (`assumptions_invFrag` 166, `momentumSumRule_invFrag` 170, `not_integrableOn_invFrag` 186) are `private`, so only the existential survives. The roadmap's Layer 0 Examples list names this family as a product of the layer, on the same footing as `twoSpeciesFrag` and `powerFrag`, which are public here; nothing about these lemmas is specific to the surrounding argument.",
+   "line": 162
+  },
+  {
+   "evidence": "Basic.lean:92-96; MomentumSumRule.lean:188 `rw [invFrag, integrableOn_extendByZero_iff (F := fun _ y => y), ...]`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "fix": "Replace it with the integrand shape the moments actually use, e.g. `IntegrableOn (fun z => z ^ n * extendByZero f h i z Q2) (Icc 0 1) \u2194 IntegrableOn (fun z => z ^ n * f h i z Q2) (Icc 0 1)` (covering `n = 0` and `n = 1`), proved by the same `integrableOn_congr_fun`.",
+   "issue": "`integrableOn_extendByZero_iff` is stated over an arbitrary `F : \u211d \u2192 \u211d \u2192 \u211d` applied as `F z (extendByZero f h i z Q2)`. The name advertises a characterisation of integrability of `extendByZero f`, but using it requires higher-order unification to invent `F`, which is fragile \u2014 the file's own consumer must pass it explicitly at MomentumSumRule.lean:188 (`(F := fun _ y => y)`).",
+   "line": 92
+  },
+  {
+   "evidence": "Mathlib/Data/Fintype/Basic.lean:116 `instance Unique.fintype {\u03b1 : Type*} [Unique \u03b1] : Fintype \u03b1`; Mathlib/Data/Finset/BooleanAlgebra.lean:77 `theorem univ_unique [Unique \u03b1] : (univ : Finset \u03b1) = {default}` (under the section's `[Fintype \u03b1]`).",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "State it as `[Fintype Hadron] [Unique Hadron]`; the proof goes through since `Finset.univ_unique` is stated for an arbitrary `Fintype`.",
+   "issue": "`momentumSumRule_iff_of_unique` declares only `[Unique Hadron]`, so the `Fintype Hadron` in `MomentumSumRule D` is pinned to the derived `Unique.fintype` instance. It then fails to rewrite a goal whose species type carries a different `Fintype` instance, even though the two are propositionally equal.",
+   "line": 86
+  }
+ ],
+ "head_sha": "306277f14d569920a9156f3c019101e2342fe82b",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 86,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "21618f429f1f3c588b126b7c06847746eeb20a064ebb64b1c9d917bcb7071429",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T103644Z-86-api-design-dca26b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T10:36:44Z",
+ "submitted_by": "wdconinc",
+ "summary": "The sum-rule module's headline consequence `MomentumSumRule.zMoment_one_le_one` cannot be applied from `Assumptions` because the bridging lemma `zMoment_nonneg` (claimed in the PR description) is absent, and its docstring misdescribes the hypothesis it actually takes. Also: `@[simp]` on the full unfolding `momentumSumRule_iff` destroys the new abstraction, the divergent-multiplicity example the roadmap names is hidden as `private`, and `integrableOn_extendByZero_iff` has a fragile higher-order shape.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Finset/BooleanAlgebra.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "bdbe9bd9144a48c2df5e55224da6821be8bbd41ffd82b32e703761ff91ded10a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 126783,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 126783,
+  "cache_read_input_tokens": 490095,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 878,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 878,
+    "cache_read_input_tokens": 115322,
+    "input_tokens": 2,
+    "output_tokens": 4577,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15972,
+  "output_tokens_details": {
+   "thinking_tokens": 11668
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
