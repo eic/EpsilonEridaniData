@@ -1,0 +1,211 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7687705,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 132.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 118172,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 118172,
+    "cache_read_input_tokens": 674121,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1869,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1869,
+      "cache_read_input_tokens": 111575,
+      "input_tokens": 2,
+      "output_tokens": 2453,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9996,
+    "output_tokens_details": {
+     "thinking_tokens": 6519
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.768771,
+ "dedupe_key": "eic/EpsilonEridani|122|7f6e7c51f720614ce6005dd789d6130aa90b91bc|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "86308001c3a5fb00068d88fedaa3d75434385d6ff2842eb783be47a2e81371e0",
+ "diff_sha256": "86308001c3a5fb00068d88fedaa3d75434385d6ff2842eb783be47a2e81371e0",
+ "duration_s": 132.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 23 vs. the house pattern in `QFT/Scattering/Photoproduction/Kinematics/Basic.lean:41` (`public section`) with `energy_def`/`energyFraction_def`/`photonVirtuality_def` `:= (rfl)` (lines 85, 102-104, 141-143); same in `DIS/Polarized/Kinematics.lean:48,117-119`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Use plain `public section` (plus `noncomputable section`) and add `x_def`, `xi_def`, `beta_def`, `tMinElastic_def` stated as `\u2026 := (rfl)`.",
+   "issue": "`@[expose] public section` exposes the bodies of `x`, `xi`, `beta` and `tMinElastic`, and the file provides no defining lemmas, so every downstream use must unfold the definitions (defeq reliance).",
+   "line": "23"
+  },
+  {
+   "evidence": "`DIS/Polarized/Kinematics.lean:65-72` carries `@[ext]` on `PolarizedKinematics`, which has the Prop fields `spin_orthogonal`/`spin_normalized`, and `reverse_reverse` (line 93) discharges by `ext <;> simp`; `Photoproduction/Kinematics/Basic.lean:58,72` likewise.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Add `@[ext]` to `structure Invariants`; the four Prop fields are proof-irrelevant and do not obstruct it.",
+   "issue": "`Invariants` is a bundled definition with no `@[ext]`, so consumers cannot prove two invariant records equal from agreement on `Pq`, `Dq`, `Q2`, `t`; equality and uniqueness reasoning is blocked.",
+   "line": "37"
+  },
+  {
+   "evidence": "Line 83 inlines `div_nonneg i.Dq_pos.le i.Pq_pos.le`, i.e. re-derives `0 \u2264 i.xi` by unfolding; no occurrence of `xi_pos`/`beta_pos`/`x_pos` in the file (lines 55-85).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Add `xi_pos`, `beta_pos`, `x_pos` (and the `_nonneg` corollaries needed downstream), and use `xi_nonneg` in place of the inlined `div_nonneg i.Dq_pos.le i.Pq_pos.le`.",
+   "issue": "No positivity API for the derived fractions. The structure carries `Pq_pos`, `Dq_pos`, `Q2_pos` precisely to pin the signs of `x`, `xi`, `beta`, but no `x_pos`/`xi_pos`/`beta_pos` (or `_nonneg`) is exposed; `Q2_pos` is used by nothing at all.",
+   "line": "58"
+  },
+  {
+   "evidence": "Lines 102-110 are the whole `tMinElastic` surface; `grep -c '@\\[simp\\]'` on the new file yields 0, whereas comparable files annotate their characteristic lemmas (`Photoproduction/Kinematics/Basic.lean:95,118,124`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Add `tMinElastic_def` (`:= (rfl)`) and `@[simp] theorem tMinElastic_zero (M : \u211d) : tMinElastic M 0 = 0`.",
+   "issue": "`tMinElastic` ships only the sign lemma; its characteristic API is missing, including the normal-form value at the forward end `tMinElastic M 0 = 0`, and the file contains no `@[simp]` lemma at all.",
+   "line": "102"
+  }
+ ],
+ "head_sha": "7f6e7c51f720614ce6005dd789d6130aa90b91bc",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 122,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c01ffc533122697868e6e93ab263e350b7b45b2e35d0c7e589921b734bc547b3",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T062646Z-122-api-design-0bca8f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T06:26:46Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new module exposes every definition body via `@[expose] public section` while supplying no defining lemmas, no `@[ext]` on the bundled `Invariants`, and no positivity API for the derived momentum fractions, so consumers must unfold `x`, `xi`, `beta` and `tMinElastic` to do anything with them.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d51ac0002f75d3a5cc5f640c29e7a50a3f350726bc0d3a984545442b74adeec3",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 118172,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 118172,
+  "cache_read_input_tokens": 674121,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1869,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1869,
+    "cache_read_input_tokens": 111575,
+    "input_tokens": 2,
+    "output_tokens": 2453,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9996,
+  "output_tokens_details": {
+   "thinking_tokens": 6519
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
