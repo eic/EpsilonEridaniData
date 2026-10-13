@@ -1,0 +1,237 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.43590425,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 140.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 135528,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 135528,
+    "cache_read_input_tokens": 620537,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 226,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 679,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 679,
+      "cache_read_input_tokens": 112467,
+      "input_tokens": 32,
+      "output_tokens": 1357,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11359,
+    "output_tokens_details": {
+     "thinking_tokens": 6257
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 3.435904,
+ "dedupe_key": "eic/EpsilonEridani|104|321aaa027581cb0ba817022b3dd73af1f21f0032|api-design|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "87fa77f82083633bf5347c0e0a4e69d306fa810a0ba5a606487b92a09136c4e3",
+ "diff_sha256": "87fa77f82083633bf5347c0e0a4e69d306fa810a0ba5a606487b92a09136c4e3",
+ "duration_s": 140.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 392: `let \u03c1 : SpinDensityC := \u27e8vecMulVec v (star v), posSemidef_vecMulVec_self_star v\u27e9` is local to the proof; roadmap README.md lines 626-629 list both explicit objects as deliverables.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Expose the witness as a named `def` (e.g. `sofferSaturating : SpinDensityC := \u27e8vecMulVec ![1,0,0,-I] (star _), posSemidef_vecMulVec_self_star _\u27e9`) with `@[simp] transversity_sofferSaturating : transversity _ = I`, `not_isTimeReversalInvariant_sofferSaturating`, and `two_mul_norm_transversity_sofferSaturating : 2 * \u2016_\u2016 = f1 _ + deltaQ _`; keep the existential as a one-line corollary if desired.",
+   "issue": "The roadmap's Examples ask for an explicit non-T-invariant `SpinDensityC` and an explicit rank-one matrix saturating the Soffer bound. Both are packaged only as `exists_not_isTimeReversalInvariant`, so the witness `vecMulVec v (star v)` is unreachable by any consumer (e.g. the \u00a71.4 saturation example) and its properties cannot be used without re-proving them.",
+   "line": 388
+  },
+  {
+   "evidence": "Lines 291-307: `f1_toSpinDensity` and `g1_toSpinDensity` are stated on the bare real values, but the `h1` analogue exists only in coerced form; `h1 (toSpinDensity \u03c1 h) = (\u03c1.mat idxPP idxMM).re` holds by `rfl` via `mat_toSpinDensity`.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Add `@[simp] lemma h1_toSpinDensity (h : \u03c1.IsTimeReversalInvariant) : PDF.h1 (\u03c1.toSpinDensity h) = \u03c1.transversity.re := rfl` alongside the existing `f1_toSpinDensity`/`g1_toSpinDensity`, and derive `ofReal_h1_toSpinDensity` from it.",
+   "issue": "The only `h1` compatibility lemma for `toSpinDensity` is `ofReal_h1_toSpinDensity`, whose LHS is the coercion `((h1 (toSpinDensity \u03c1 h) : \u211d) : \u2102)`. A goal containing the bare real `h1 (\u03c1.toSpinDensity h)` (the form the roadmap's 'commutes with h1' needs and the form `f1_toSpinDensity`/`g1_toSpinDensity` use) has no simp lemma to fire and forces the consumer to unfold `h1_def` and `mat_toSpinDensity`.",
+   "line": 305
+  }
+ ],
+ "head_sha": "321aaa027581cb0ba817022b3dd73af1f21f0032",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 104,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1cd792d30b9b1068e83c44c2924163f534a778616c754197815d0f395c29b65d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T065715Z-104-api-design-b4f81b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T06:57:15Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal with no compatibility artifacts, the general PSD lemmas are correctly public in the Matrix file, and both bundled structures are extensional. Two gaps: the explicit roadmap example matrix is hidden inside an existential instead of being a reusable named object, and `toSpinDensity` lacks the direct real-valued `h1` compatibility lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Model.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1b08334882204fcd62e8e884c55b808da08c6ee38be07a1a22fad534a2f0aab1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 135528,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 135528,
+  "cache_read_input_tokens": 620537,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 226,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 679,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 679,
+    "cache_read_input_tokens": 112467,
+    "input_tokens": 32,
+    "output_tokens": 1357,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11359,
+  "output_tokens_details": {
+   "thinking_tokens": 6257
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,195 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.35111975,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 157.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 130045,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 130045,
+    "cache_read_input_tokens": 580639,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 226,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3698,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3698,
+      "cache_read_input_tokens": 104364,
+      "input_tokens": 32,
+      "output_tokens": 1959,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12056,
+    "output_tokens_details": {
+     "thinking_tokens": 7736
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 3.35112,
+ "dedupe_key": "eic/EpsilonEridani|104|321aaa027581cb0ba817022b3dd73af1f21f0032|proof-quality|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "87fa77f82083633bf5347c0e0a4e69d306fa810a0ba5a606487b92a09136c4e3",
+ "diff_sha256": "87fa77f82083633bf5347c0e0a4e69d306fa810a0ba5a606487b92a09136c4e3",
+ "duration_s": 157.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PosSemidef.lean:97-112: `simp only [dotProduct, mulVec, map_apply, Pi.star_apply, star_trivial, RCLike.star_def, map_sum, Finset.mul_sum, mul_re, mul_im, conj_re, conj_im, ofReal_re, ofReal_im, zero_mul, sub_zero, add_zero] at hq hq' \u22a2` followed by `convert add_nonneg hq hq' using 1` and `have hswap : \u2211 i, \u2211 j, im (x i) * (M i j * re (x j)) = \u2211 i, \u2211 j, re (x i) * (M i j * im (x j))`, whose shape is the post-simp form rather than a stated mathematical identity. Mathlib has no `PosSemidef`/`map` lemma at this pin (grep `PosSemidef\\.map|posSemidef_map` in Mathlib/LinearAlgebra/Matrix: no hits), so this lemma will be the reusable one and deserves a robust proof.",
+   "file": "EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "fix": "Factor the identity as its own lemma, e.g. `lemma dotProduct_mulVec_map_ofReal (hM : M.IsSymm) (x : n \u2192 \ud835\udd5c) : star x \u2b1d\u1d65 (M.map ((\u2191) : \u211d \u2192 \ud835\udd5c) *\u1d65 x) = (((fun i => re (x i)) \u2b1d\u1d65 (M *\u1d65 fun i => re (x i)) + (fun i => im (x i)) \u2b1d\u1d65 (M *\u1d65 fun i => im (x i)) : \u211d) : \ud835\udd5c)`, proved by `RCLike.ext` with the symmetry step explicit; then the `mpr` branch is `rw [this]; exact_mod_cast add_nonneg (h _) (h _)`. The `mp` branch can likewise avoid unfolding to sums by rewriting with `RingHom.map_dotProduct` and `Matrix.map_mulVec` (Mathlib/Data/Matrix/Mul.lean:1275, :1283) for `algebraMap \u211d \ud835\udd5c`.",
+   "issue": "The `mpr` branch unfolds `dotProduct`/`mulVec` into double sums with a 15-lemma `simp only` (`map_sum, Finset.mul_sum, mul_re, mul_im, conj_re, ...`), then relies on `convert add_nonneg hq hq' using 1` and an `hswap` whose statement is hand-written against the exact simp normal form. Any change to that normal form (lemma renames, simp-set changes to `mul_re`/`Finset.mul_sum`) breaks it, and the actual reason the proof works (the cross term `a\u1d40Mb - b\u1d40Ma` vanishes by symmetry of `M`) is hidden inside the `convert` goal.",
+   "line": 92
+  }
+ ],
+ "head_sha": "321aaa027581cb0ba817022b3dd73af1f21f0032",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 104,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8d3c78cb2ec5f14117964658c8bd3fe95eb95ab18ed23c26009474d2c184e4a5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T070631Z-104-proof-quality-f9d7a7",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T07:06:31Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs in ComplexSpinDensity.lean are short, automation-based and readable. The `mpr` branch of `Matrix.posSemidef_map_ofReal_iff` is a 20-line sum computation whose correctness hinges on the exact normal form of a 15-lemma `simp only` list, closed by `convert ... using 1` and an `hswap` statement written against that post-simp shape; the reusable identity it proves (x*Mx = a\u1d40Ma + b\u1d40Mb for real symmetric M) should be a standalone lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Matrix/PosDef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "abb7f7196a9ade420be6be28a31cfea7970dcacb4300b17e4396d1031a3e8886",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 130045,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 130045,
+  "cache_read_input_tokens": 580639,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 226,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3698,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3698,
+    "cache_read_input_tokens": 104364,
+    "input_tokens": 32,
+    "output_tokens": 1959,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12056,
+  "output_tokens_details": {
+   "thinking_tokens": 7736
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
