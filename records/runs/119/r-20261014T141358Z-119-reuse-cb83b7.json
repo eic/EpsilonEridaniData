@@ -1,0 +1,214 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4245685,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 125.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 87172,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 87172,
+    "cache_read_input_tokens": 635727,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6320,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6320,
+      "cache_read_input_tokens": 76693,
+      "input_tokens": 2,
+      "output_tokens": 4479,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9395,
+    "output_tokens_details": {
+     "thinking_tokens": 5539
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.424568,
+ "dedupe_key": "eic/EpsilonEridani|119|be160e4e6b7b5b8ece5bef882926c3ac13a30800|reuse|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "f85375d7706f50199307bbc98827eef321ce1888a7c38aa11396ea3a6bd970d8",
+ "diff_sha256": "f85375d7706f50199307bbc98827eef321ce1888a7c38aa11396ea3a6bd970d8",
+ "duration_s": 125.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Exclusive/Kinematics/Basic.lean:64-69, 91-105; roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md:177-179: 'Exclusive.Kinematics.Basic for the kinematics of a final state with an identified hadron and hence a momentum transfer `t`, which diffraction reuses rather than re-deriving.'",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Build `DiffractiveKinematics` on `ExclKinematics V` (its `hMomentum : p + q = pPrime + qPrime` makes `qPrime` the momentum of `X`), drop `t` in favour of `tMom`, and define `Delta := -K.delta` with a lemma `Delta = K.q - K.qPrime` obtained from the existing `delta_eq_q_sub_qPrime`. That also makes `tMom_eq_photon_transfer_sq` available for the Layer 0.2 `\u03b2 = Q\u00b2/(Q\u00b2 + M_X\u00b2 - t)` work.",
+   "issue": "`t D g = g D.Delta D.Delta` re-derives `ExclKinematics.tMom` (`def tMom (g) (K) : \u211d := g K.delta K.delta`, Exclusive/Kinematics/Basic.lean:68-69), and `Delta = K.p - K.pPrime` (line 74) is `ExclKinematics.delta = K.pPrime - K.p` (line 64-65) up to sign \u2014 so `t` and `tMom` are the same real number by bilinearity. The file imports only `Kinematics.Basic`.",
+   "line": 80
+  },
+  {
+   "evidence": "Diff lines 66-67 (`/-- The invariant mass squared ... i.e. `(q + P - P')\u00b2`. -/ MX2 : \u211d`); roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md:279 `M_X\u00b2 = (q + \u0394)\u00b2`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Remove the field and define `def MX2 (D : DiffractiveKinematics V) (g : Bilin V) : \u211d := g (D.K.q + D.Delta) (D.K.q + D.Delta)` (or `g K.qPrime K.qPrime` if the record is rebased on `ExclKinematics`, matching `tMom`'s shape).",
+   "issue": "`MX2 : \u211d` is an unconstrained structure field, but its own docstring says it is `(q + P - P')\u00b2`, which the other fields plus `g` already determine. Nothing ties the field to that value, so the roadmap's `\u03b2 = Q\u00b2/(Q\u00b2 + M_X\u00b2 - t)` cannot be stated without a further consistency hypothesis.",
+   "line": 67
+  },
+  {
+   "evidence": "Polarized/Kinematics.lean:66; Diffractive/Basic.lean:62-67.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Use `extends` (on `ExclKinematics V` per the first finding) so the inclusive accessors and all existing `DisKinematics` lemmas apply without the `.K` indirection.",
+   "issue": "The record wraps the inclusive kinematics in a field `K` rather than extending it, unlike the existing extension point in the same tree (`structure PolarizedKinematics (g : Bilin V) extends DisKinematics V`, Polarized/Kinematics.lean:66), giving a second, parallel access path (`D.K.p` vs `K.p`) to the same inclusive API.",
+   "line": 62
+  }
+ ],
+ "head_sha": "be160e4e6b7b5b8ece5bef882926c3ac13a30800",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 119,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "846c6341810ad1544e43e2429175fa596bf4bbda545338e4e4c834d468d9d078",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "2e7506c28bcd0591a3e9ab75c3312073664ce21f",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T141358Z-119-reuse-cb83b7",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T14:13:58Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new `Delta`/`t` re-derive `ExclKinematics.delta`/`tMom`, and the record is built on `DisKinematics` instead of the off-forward record the roadmap names as the thing diffraction reuses; `MX2` is carried as a free field although it is determined by `K` and `g`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/docs",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "820f844f096ed2ad31b74d2e1eba6bc44f29b7fd26ceaccf035b3da7584b0717",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 87172,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 87172,
+  "cache_read_input_tokens": 635727,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6320,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6320,
+    "cache_read_input_tokens": 76693,
+    "input_tokens": 2,
+    "output_tokens": 4479,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9395,
+  "output_tokens_details": {
+   "thinking_tokens": 5539
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
