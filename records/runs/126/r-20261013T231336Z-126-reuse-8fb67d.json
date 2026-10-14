@@ -1,0 +1,261 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6590149999999992,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 262.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 142044,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 142044,
+    "cache_read_input_tokens": 1483190,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 36,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2035,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2035,
+      "cache_read_input_tokens": 121506,
+      "input_tokens": 2,
+      "output_tokens": 3516,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19872,
+    "output_tokens_details": {
+     "thinking_tokens": 14036
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.659015,
+ "dedupe_key": "eic/EpsilonEridani|126|10cce3c35aca82a33eccd2b9b9ef42cd0c4c1d63|reuse|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "fdbcfc4952365e1ce3caff513b983e1cd1dcc7d8982bcf359864fc9b8289c138",
+ "diff_sha256": "fdbcfc4952365e1ce3caff513b983e1cd1dcc7d8982bcf359864fc9b8289c138",
+ "duration_s": 262.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib gives only `real_inner_smul_self_left (x : F) (r : \u211d) : \u27ear \u2022 x, x\u27eb_\u211d = r * (\u2016x\u2016 * \u2016x\u2016)` (mathlib/Mathlib/Analysis/InnerProductSpace/Basic.lean:624), so the `\u2016n\u2016 = 1` cleanup is not in the library; grep for `real_inner_smul_self_left` in the diff returns Rapidity.lean:117,131 and InvariantMass.lean:126,138,228.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Add one lemma next to `minkowskiProduct_self_eq_mul_of_spatialPart_eq_smul` in MinkowskiProductExtensions.lean, with the same hypothesis shape: `lemma inner_spatialPart_eq_of_spatialPart_eq_smul {d} {v : Vector d} {n} (hn : \u2016n\u2016 = 1) {a : \u211d} (hv : v.spatialPart = a \u2022 n) : \u27eav.spatialPart, n\u27eb_\u211d = a := by rw [hv, real_inner_smul_self_left, hn]; ring`, and use it at all five sites. It is also the bridge a downstream user needs to get from a collinear hypothesis to the `|\u27eav.spatialPart, n\u27eb_\u211d| < v.timeComponent` hypothesis of `exp_rapidity`/`exp_two_mul_rapidity`, which InvariantMass.lean currently redoes by hand each time.",
+   "issue": "The projection `\u27eaa \u2022 n, n\u27eb_\u211d = a` for `\u2016n\u2016 = 1` is re-derived five times by the same `rw [..., real_inner_smul_self_left, hn]` + `ring`/`linear_combination` step: Rapidity.lean:117 and :131 are verbatim identical (`have hpar : \u27eav.spatialPart, n\u27eb_\u211d = a := by rw [hv, real_inner_smul_self_left, hn]; ring`), and InvariantMass.lean:126-128, :137-138 and :227-229 repeat it for `q`, `q + P` and `\u03b3.energy \u2022 n`.",
+   "line": 117
+  },
+  {
+   "evidence": "Kinematics/Basic.lean:107-109 already hosts the companion `one_sub_energyFraction_mul_energy`, proved with the same `div_mul_cancel\u2080 _ hs`, so the simpler identity belongs there rather than being re-derived in the downstream file.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Name it once in Kinematics/Basic.lean beside its existing companion: `theorem PhotonKinematics.energyFraction_mul_energy (k : PhotonKinematics) {s : ChargedSource} (hs : s.energy \u2260 0) : k.energyFraction s * s.energy = k.energy := div_mul_cancel\u2080 _ hs`, and use it at both sites (it also shortens `one_sub_energyFraction_mul_energy`).",
+   "issue": "`\u03b3.energyFraction s * s.energy = \u03b3.energy` is derived inline twice by the identical two-step proof: line 213-214 (`rw [..., PhotonKinematics.energyFraction_def, div_mul_cancel\u2080 _ hs]`) and lines 224-225 (`have hx : \u03b3.energyFraction s * s.energy = \u03b3.energy := by rw [PhotonKinematics.energyFraction_def, div_mul_cancel\u2080 _ hs]`).",
+   "line": 214
+  }
+ ],
+ "head_sha": "10cce3c35aca82a33eccd2b9b9ef42cd0c4c1d63",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3b8c58be9c330914276222f9848172ea127f5afb7f717f9ca050d2bdf6c5d621",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261013T231336Z-126-reuse-8fb67d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-13T23:13:36Z",
+ "submitted_by": "wdconinc",
+ "summary": "The rapidity definition and the invariant-mass relations are genuinely new and reuse Mathlib's artanh API correctly. Two computations are re-derived instead of being named once: the unit-axis projection \u27eaa \u2022 n, n\u27eb = a (five sites across both files) and x\u00b7E_s = \u03b3.energy (two sites), the latter despite an existing companion lemma in Kinematics/Basic.lean.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/CollinsSoper.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "paths.z",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/PerturbationTheory/FeynmanDiagrams/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 26,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f5bdb9bbf340941131545241b27fe8a394c4ffa44822dbf558aa6ba257d66414",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 142044,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 142044,
+  "cache_read_input_tokens": 1483190,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 36,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2035,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2035,
+    "cache_read_input_tokens": 121506,
+    "input_tokens": 2,
+    "output_tokens": 3516,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19872,
+  "output_tokens_details": {
+   "thinking_tokens": 14036
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

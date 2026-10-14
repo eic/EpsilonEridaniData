@@ -1,0 +1,200 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2544674999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 267.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 131556,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 131556,
+    "cache_read_input_tokens": 817165,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4610,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4610,
+      "cache_read_input_tokens": 107943,
+      "input_tokens": 2,
+      "output_tokens": 8310,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21209,
+    "output_tokens_details": {
+     "thinking_tokens": 17378
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.254467,
+ "dedupe_key": "eic/EpsilonEridani|98|d9240e8699e7753ed8a26a7645e313ba4e120a5b|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "b1a401756dd83efc2a57d673642b2c41701a1711f99fe71040e55b16d5b884e0",
+ "diff_sha256": "b1a401756dd83efc2a57d673642b2c41701a1711f99fe71040e55b16d5b884e0",
+ "duration_s": 267.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 124-197 define 15 linearity lemmas for the three components; lines 210-228 (`ofLightFront` plus only `_def` and four `_inl`/`_inr_*` apply lemmas) and lines 321-341 plus 460-466, 552-556 (`relativeTransverse` and its lemmas) contain no `_add`/`_smul`/`_zero` statement, and no `\u2192\u2097`/`\u2243\u2097` bundling of the components exists anywhere in the file.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Expose the universal property as a bundled equivalence, e.g. `lightFrontEquiv : Lorentz.Vector 3 \u2243\u2097[\u211d] \u211d \u00d7 \u211d \u00d7 EuclideanSpace \u211d (Fin 2)` (or three `Lorentz.Vector 3 \u2192\u2097[\u211d] _` maps), derive the existing component lemmas from it, and add the missing `ofLightFront_add`/`_smul`/`_zero` and `relativeTransverse_add`/`_smul` (linear in `k` for fixed `P`).",
+   "issue": "`ofLightFront` (line 210) and `relativeTransverse` (line 321) are listed as main definitions but have no interaction with the operations the file otherwise develops in full: `plusComponent`/`minusComponent`/`transversePart` each get `_add`, `_smul`, `_zero`, `_neg`, `_sub` (lines 124-197), while `ofLightFront` and `relativeTransverse` get none. Nothing is bundled either, so a consumer cannot get `plusComponent (\u2211 i, p i) = \u2211 i, plusComponent (p i)` from this API at all \u2014 the twelve unbundled lemmas do not yield `map_sum` without a manual `Finset` induction.",
+   "line": 210
+  },
+  {
+   "evidence": "Lines 476 and 487-489 rewrite only with `relativeTransverse_transverseBoost` / `relativeTransverse_of_plusComponent_eq_zero`; lines 565-566 and 576-577 use `Orientation.areaForm_comp_linearIsometryEquiv _ R hR`, which in mathlib/Mathlib/Analysis/InnerProductSpace/TwoDim.lean:157 is stated for the section variable `o : Orientation \u211d E (Fin 2)`, i.e. an arbitrary orientation.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Take `(o : Orientation \u211d (EuclideanSpace \u211d (Fin 2)) (Fin 2))` as a parameter in all four and state them as `o.areaForm ... = o.areaForm ...`; the proofs are unchanged.",
+   "issue": "`areaForm_relativeTransverse_transverseBoost` (470), `areaForm_transversePart_relativeTransverse_transverseBoost` (480), `areaForm_transversePart_relativeTransverse_transverseIsometry` (560) and `areaForm_relativeTransverse_transverseIsometry` (570) are stated only for `(orientation (Fin 2))`, but none of their proofs uses anything about the standard orientation, so consumers working with another orientation of the plane (e.g. `-orientation (Fin 2)`, which the \u00a70.4 parity statement will reach via reflection of `kT`) cannot apply them.",
+   "line": 470
+  }
+ ],
+ "head_sha": "d9240e8699e7753ed8a26a7645e313ba4e120a5b",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 98,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "78c4c4e4cbe4cf3e8b135b0b0887ce90e3df21c706a8c2479a0f83a5c396abbf",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T015948Z-98-api-design-7e39d3",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T01:59:48Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two of the five advertised main definitions, `ofLightFront` and `relativeTransverse`, ship with no interaction lemmas for the linear operations the rest of the file develops exhaustively, and nothing is bundled, so `map_sum` and friends are unreachable. The four `areaForm_*` invariance lemmas are also pinned to `EuclideanSpace.orientation` although their proofs never use it.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/InnerProductSpace/Orientation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "tool": "Bash"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1bf160dc9be71bf811ae0b972b81eb240463b1ce89550fecb28f4cc199717e43",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 131556,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 131556,
+  "cache_read_input_tokens": 817165,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4610,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4610,
+    "cache_read_input_tokens": 107943,
+    "input_tokens": 2,
+    "output_tokens": 8310,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21209,
+  "output_tokens_details": {
+   "thinking_tokens": 17378
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
