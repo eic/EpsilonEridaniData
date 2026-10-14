@@ -1,0 +1,211 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.071095,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 242.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 118944,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 118944,
+    "cache_read_input_tokens": 822790,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1159,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1159,
+      "cache_read_input_tokens": 105330,
+      "input_tokens": 2,
+      "output_tokens": 3096,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18806,
+    "output_tokens_details": {
+     "thinking_tokens": 14602
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.071095,
+ "dedupe_key": "eic/EpsilonEridani|130|342ef49c6a0d9f83ecc99e51bd68a625e16d886a|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "b7dcfc613cbab35a9553120e49345e8d7d533ce3f2371bcd49553994f9a7336e",
+ "diff_sha256": "b7dcfc613cbab35a9553120e49345e8d7d533ce3f2371bcd49553994f9a7336e",
+ "duration_s": 242.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 76-84 of the new file vs `theorem Convex.affine_preimage (f : E \u2192\u1d43[\ud835\udd5c] F) {s : Set F} (hs : Convex \ud835\udd5c s) : Convex \ud835\udd5c (f \u207b\u00b9' s)` at mathlib/Mathlib/Analysis/Convex/Basic.lean:455.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "fix": "Replace the hand proof by `((convex_ball z\u2080 \u03b5).translate_preimage_left _).linear_preimage ((LinearMap.toSpanSingleton \u2102 _ b).restrictScalars \u211d)` (or build the line as an `AffineMap` and apply `Convex.affine_preimage`), so the step is one library invocation rather than a re-derivation.",
+   "issue": "`hS : Convex \u211d S` re-proves, by hand over nine lines (`intro a ha b hb s t ...`, `funext`, `simp only [p, Pi.add_apply, Pi.smul_apply, smul_eq_mul, real_smul]`, `linear_combination`), the fact that the preimage of a convex set under the affine line `c \u21a6 u + c \u2022 v` is convex. Mathlib already has it (`Convex.affine_preimage`, Mathlib/Analysis/Convex/Basic.lean:455; `Convex.linear_preimage` :184; `Convex.translate_preimage_left` :239), and the explicit simp-lemma list (`real_smul`, `Pi.smul_apply`, \u2026) is exactly the kind of chain that breaks on upstream renames.",
+   "line": 76
+  },
+  {
+   "evidence": "Lines 98-100; the statement mentions only `Complex.ofReal` and `\ud835\udcdd[\u2260]`, no reference to `f`, `p`, `S` or the ball.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "fix": "Lift it to a `private` lemma next to the aux theorem (e.g. `Tendsto (ofReal : \u211d \u2192 \u2102) (\ud835\udcdd[\u2260] x) (\ud835\udcdd[\u2260] (x : \u2102))`), proved once from injectivity of `ofReal` plus continuity, and apply it here. Pulling this and the convexity step out also brings the aux proof under the 50-line mark.",
+   "issue": "Same pattern, second instance: `ht : Tendsto (fun s : \u211d => (s : \u2102)) (\ud835\udcdd[\u2260] 0) (\ud835\udcdd[\u2260] 0)` is a general, reusable statement about `Complex.ofReal` and punctured neighbourhoods, proved inline inside the 54-line proof via an unfolding-heavy `simpa using continuous_ofReal.continuousWithinAt.tendsto_nhdsWithin \u2026 (by simpa using hs)`; it has nothing to do with the analytic argument around it.",
+   "line": 98
+  }
+ ],
+ "head_sha": "342ef49c6a0d9f83ecc99e51bd68a625e16d886a",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 130,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "41726e87387180e44c23bf2ad8e703687dd33e88e991c182fcb080e8447b2143",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T020429Z-130-proof-quality-67ba5c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T02:04:29Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are generally readable and automation-based, with no change/show and no undocumented defeq. The one >50-line proof (`eventuallyEq_zero_of_eventuallyEq_zero_ofReal_aux`, 54 lines) buries two self-contained general facts inline, one of which re-derives an existing Mathlib lemma through a brittle named-lemma list.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Uniqueness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/AffineSpace",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Convex/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Complex",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9b3e63793ebc5be996ecc5056ced56834b8e1b128b70f1a3b9cbaa2ff2796293",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 118944,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 118944,
+  "cache_read_input_tokens": 822790,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1159,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1159,
+    "cache_read_input_tokens": 105330,
+    "input_tokens": 2,
+    "output_tokens": 3096,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18806,
+  "output_tokens_details": {
+   "thinking_tokens": 14602
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
