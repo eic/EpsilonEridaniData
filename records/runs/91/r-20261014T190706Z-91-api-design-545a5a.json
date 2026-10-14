@@ -1,0 +1,204 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.719056,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 128.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 107587,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 107587,
+    "cache_read_input_tokens": 246064,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 130,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2733,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2733,
+      "cache_read_input_tokens": 93436,
+      "input_tokens": 32,
+      "output_tokens": 3230,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10090,
+    "output_tokens_details": {
+     "thinking_tokens": 6120
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.719056,
+ "dedupe_key": "eic/EpsilonEridani|91|25c483f4a6442c9855e952d56dd04d36d2f18b8e|api-design|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "ae83dd869cdf8ec4dfc55c8ee8ef8132aca5b92155b229d25c69fbc1e07e5b4c",
+ "diff_sha256": "ae83dd869cdf8ec4dfc55c8ee8ef8132aca5b92155b229d25c69fbc1e07e5b4c",
+ "duration_s": 128.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap RadiativeCorrections/README.md:420 and :1095 write `\u2113\u00b7J(\u2113)`; Eikonal.lean docstring says nothing uses the signature or symmetry of `g`; Tensors/Basic.lean:437 `fromF1F2_conserved_left` and :445 `fromF1F2_conserved_right (hSymm : g.IsSymm)` show the repo develops both slots for non-symmetric `g`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "fix": "Add `apply_eikonalCurrent_right (g L \u2113 v) : g v (eikonalCurrent g L \u2113) = \u2211 i, (L i).signedCharge / g (L i).momentum \u2113 * g v (L i).momentum` (holds by linearity, no symmetry needed) and `eikonalCurrent_conserved_right` : `g.IsSymm \u2192 (\u2200 i, g (L i).momentum \u2113 \u2260 0) \u2192 g \u2113 (eikonalCurrent g L \u2113) = netCharge L`, mirroring the repo pattern; state the `chargedLine`/`chargedLegs` conservation in the roadmap's slot as well (or via `IsSymm`).",
+   "issue": "Only the first-slot contraction `g (J \u2113) v` is provided. The roadmap lemma `eikonalCurrent_conserved` is stated as `\u2113\u00b7J(\u2113)` (photon first) and `g` is an arbitrary `Bilin V`, so `g \u2113 (J \u2113)` is not covered; every consumer wanting the roadmap's form must unfold.",
+   "line": 85
+  },
+  {
+   "evidence": "roadmap README.md:423-425: `yfsFactor` is built from `|J|\u00b2` integrated over the soft region; the lemma's RHS is a double `Finset.sum` over `\u03b9 \u00d7 \u03ba`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "fix": "Remove `@[simp]` from `apply_eikonalCurrent_eikonalCurrent`; keep it as an explicit rewrite.",
+   "issue": "`@[simp]` on `apply_eikonalCurrent_eikonalCurrent` expands the compact contraction `J_L\u00b7J_M` into a double sum whenever simp sees it. The YFS exponent `B`, `B\u0303` of \u00a70.5 is defined from exactly `g (J \u2113) (J \u2113)`, so this fires wrongly on the quantity downstream most needs to keep intact; it is a computation lemma, not a normal form.",
+   "line": 120
+  },
+  {
+   "evidence": "Statement `eikonalCurrent g L (c \u2022 \u2113) = c\u207b\u00b9 \u2022 eikonalCurrent g L \u2113`; LHS strictly larger than RHS in the argument, no simp lemma rewrites back.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "fix": "Annotate `eikonalCurrent_smul` with `@[simp]`.",
+   "issue": "`eikonalCurrent_smul` (`J (c \u2022 \u2113) = c\u207b\u00b9 \u2022 J \u2113`) is the normal-form lemma that pulls a scalar out of the photon momentum, and it cannot loop, yet it is not `@[simp]` while the expansion lemma above is.",
+   "line": 110
+  }
+ ],
+ "head_sha": "25c483f4a6442c9855e952d56dd04d36d2f18b8e",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 91,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "48cbc9048ad9eae2848d76ecf91b235a931147deada031d0761092badffbbbb9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T190706Z-91-api-design-545a5a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T19:07:06Z",
+ "submitted_by": "wdconinc",
+ "summary": "The current's API covers only the slot with J on the left, while the roadmap target and the repo's existing `_left`/`_right` convention for a non-symmetric `Bilin` need the photon-first form `g \u2113 (J \u2113)`; the simp annotations are also inverted, with the double-sum expansion marked simp and the homogeneity lemma not.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4154fe307f832910890ba23f07e117f4a9ab1e276e1a58624e86a6bb95eb8b87",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 107587,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 107587,
+  "cache_read_input_tokens": 246064,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 130,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2733,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2733,
+    "cache_read_input_tokens": 93436,
+    "input_tokens": 32,
+    "output_tokens": 3230,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10090,
+  "output_tokens_details": {
+   "thinking_tokens": 6120
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
