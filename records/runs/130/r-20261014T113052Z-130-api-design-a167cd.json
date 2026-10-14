@@ -1,0 +1,202 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5810295,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 117.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 102144,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 102144,
+    "cache_read_input_tokens": 244798,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 130,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2863,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2863,
+      "cache_read_input_tokens": 86113,
+      "input_tokens": 32,
+      "output_tokens": 2259,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9513,
+    "output_tokens_details": {
+     "thinking_tokens": 6008
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.58103,
+ "dedupe_key": "eic/EpsilonEridani|130|d4d4f1972eee6d1e9d88191b377effbcd64972f9|api-design|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "b27fe9974757d779d5af4f4f91db26515beb928be147f59a7bcbff320a8688b0",
+ "diff_sha256": "b27fe9974757d779d5af4f4f91db26515beb928be147f59a7bcbff320a8688b0",
+ "duration_s": 117.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib has no named form: it inlines `continuous_ofReal.continuousWithinAt.tendsto_nhdsWithin fun _ _ \u21a6 by simp_all` at `Mathlib/NumberTheory/LSeries/RiemannZeta.lean:259` and `Mathlib/Analysis/Complex/Asymptotics.lean:58`; grep for `tendsto_ofReal.*nhdsNE|ofReal.*nhdsWithin` in Mathlib returns no declaration.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "fix": "Make it public (e.g. `Complex.tendsto_ofReal_nhdsNE`), either in this file or a `Mathematics/Analysis/Complex/Basic.lean`, so later files can reuse it instead of re-inlining the `continuousWithinAt.tendsto_nhdsWithin` argument.",
+   "issue": "`private theorem tendsto_ofReal_nhdsNE` states a fact purely about Mathlib types (`Tendsto ((\u2191) : \u211d \u2192 \u2102) (\ud835\udcdd[\u2260] x) (\ud835\udcdd[\u2260] (x : \u2102))`) whose proof does not touch analyticity; it is general infrastructure hidden as private.",
+   "line": 51
+  },
+  {
+   "evidence": "`code/EpsilonEridani/QFT/Lattice/Continuation/Uniqueness.lean:120-126` defines `w` and proves `hw` inline; `MinkowskiProductExtensions.lean:24-43` is the repo's `Lorentz.Vector` extension namespace and already carries `norm_spatialPart_eq_sqrt_sq_sub_minkowskiProduct_self`; `Continuation/Basic.lean:306` already exposes the Euclidean-section route to spacelike-ness that this proof bypasses.",
+   "file": "EpsilonEridani/QFT/Lattice/Continuation/Uniqueness.lean",
+   "fix": "Extract it as a public lemma in `EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean` (e.g. a vector with zero time component and nonzero spatial part is spacelike, or the equal-time projection of a spacelike vector is spacelike) and call it here; alternatively derive `hw` from the existing `causalCharacter_eq_spaceLike_of_ofMinkowski_mem_euclideanSection` using `hwE` and `w \u2260 0`.",
+   "issue": "The step `hw : causalCharacter w = .spaceLike` for the equal-time projection `w = Sum.elim (fun _ => 0) fun i => v (Sum.inr i)` of a spacelike `v` is a statement about `Lorentz.Vector d` alone, proved inline via `spaceLike_iff_norm_sq_neg` and `nlinarith`; it is reusable Lorentz infrastructure with no public home.",
+   "line": 121
+  }
+ ],
+ "head_sha": "d4d4f1972eee6d1e9d88191b377effbcd64972f9",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 130,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3cc5d6873b058641117ec1929a2c088a20f7e189ab0f9f5565e84664fe449bf6",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T113052Z-130-api-design-a167cd",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T11:30:52Z",
+ "submitted_by": "wdconinc",
+ "summary": "The timeRotation API and the three uniqueness theorems are well scoped and annotated, with no compatibility layer or exposed bodies. Two general facts are hidden where consumers cannot reach them: a Mathlib-only punctured-neighbourhood lemma marked private, and a pure Lorentz.Vector fact proved inline inside the acceptance theorem.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5848238160622736992f3ea62aa338e9268e0b7fc4f809d275b6d5ea5c667586",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 102144,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 102144,
+  "cache_read_input_tokens": 244798,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 130,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2863,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2863,
+    "cache_read_input_tokens": 86113,
+    "input_tokens": 32,
+    "output_tokens": 2259,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9513,
+  "output_tokens_details": {
+   "thinking_tokens": 6008
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
