@@ -1,0 +1,192 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.6889295000000004,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 153.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 150646,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 150646,
+    "cache_read_input_tokens": 282638,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 130,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8783,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8783,
+      "cache_read_input_tokens": 123803,
+      "input_tokens": 32,
+      "output_tokens": 1998,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12081,
+    "output_tokens_details": {
+     "thinking_tokens": 9118
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 3.68893,
+ "dedupe_key": "eic/EpsilonEridani|92|98ac4fc3ea8259cdde01006d592e236df10318ac|api-design|claude-fable-5-1|a04d8ed758f03dbb|production|2",
+ "diff_blob": "d62b8bd34b234ba11b8694b47604fcbfd54a124d7b4b30e8d495a393bc9a7eae",
+ "diff_sha256": "d62b8bd34b234ba11b8694b47604fcbfd54a124d7b4b30e8d495a393bc9a7eae",
+ "duration_s": 153.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diff: `def woodsSaxon ... integral_density := (integral_woodsSaxonDensity_eq_iff ha).2 rfl` \u2014 even the file's own bundled profile has to go through the iff; the hard-sphere and Gaussian cases have direct lemmas `integral_hardSphereDensity` and `integral_gaussianDensity`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Add `@[simp] theorem integral_woodsSaxonDensity_woodsSaxonCentralDensity (m R : \u211d) {a : \u211d} (ha : 0 < a) : \u222b x : Space, woodsSaxonDensity (woodsSaxonCentralDensity m R a) R a \u2016x\u2016 = m` (and optionally `woodsSaxonCentralDensity_mul_woodsSaxonIntegral`), and use it for `DensityProfile.woodsSaxon.integral_density` and in `existsUnique_integral_woodsSaxonDensity_eq`.",
+   "issue": "`woodsSaxonCentralDensity` lacks its characteristic introduction lemma: the fact that the profile with this central density integrates to `m` is only reachable as `(integral_woodsSaxonDensity_eq_iff ha).2 rfl`, with no parallel to `integral_hardSphereDensity` / `integral_gaussianDensity`.",
+   "line": 294
+  },
+  {
+   "evidence": "Author reply on 98ac4fc3: \"For the bundled profiles the `*_density` projections rewrite the integrand first, so their normalisations are reached through the law ... or `rw [integral_hardSphereDensity _ hR]`\"; grep shows `@[simp]` only on lines 105, 123, 130, 328, 331, 334 and none of the `integral_*Density` theorems.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Mark `integral_hardSphereDensity`, `integral_gaussianDensity` and the new Woods\u2013Saxon normalisation lemma `@[simp]` (their side conditions `0 < R`, `R \u2260 0`, `0 < a` are discharged from context), so the simp set reaches the normal form `\u2191nuc.massNumber` for bundled profiles too.",
+   "issue": "The `@[simp]` projection lemmas `hardSphere_density`, `gaussian_density`, `woodsSaxon_density` rewrite under the integral binder before `integral_density` (made simp at line 105) can match, so `simp` closes `\u222b x, \u03c1.density x = \u2191nuc.massNumber` for an abstract profile but not for any of the three bundled ones; the normalisation lemmas that would finish the job carry no annotation.",
+   "line": 328
+  }
+ ],
+ "head_sha": "98ac4fc3ea8259cdde01006d592e236df10318ac",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 92,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "1dbd35ba112c36b21369428338b5bf9172bb6cf2a7f431c61250adceb0930c84",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "2e7506c28bcd0591a3e9ab75c3312073664ce21f",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T140457Z-92-api-design-8908bd",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T14:04:57Z",
+ "submitted_by": "wdconinc",
+ "summary": "Surface is minimal, bodies are hidden behind (rfl) restatements, and both structures are extensional; the gap is the Woods\u2013Saxon normalisation API, which has no direct introduction lemma and is unreachable by simp for the bundled profiles.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/KroneckerDelta/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/NuclearPartonDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/NuclearPartonDistributions/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "28f53a0b5c00c56dc7f0a2d1fc72aac924c1a8e21a78b513cc29c7af0a4b8603",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 150646,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 150646,
+  "cache_read_input_tokens": 282638,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 130,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8783,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8783,
+    "cache_read_input_tokens": 123803,
+    "input_tokens": 32,
+    "output_tokens": 1998,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12081,
+  "output_tokens_details": {
+   "thinking_tokens": 9118
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
