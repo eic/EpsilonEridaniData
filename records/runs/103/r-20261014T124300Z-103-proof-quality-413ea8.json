@@ -1,0 +1,175 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6309280000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 152.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 108069,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 108069,
+    "cache_read_input_tokens": 503216,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3249,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3249,
+      "cache_read_input_tokens": 88202,
+      "input_tokens": 2,
+      "output_tokens": 4231,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11942,
+    "output_tokens_details": {
+     "thinking_tokens": 8933
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.630928,
+ "dedupe_key": "eic/EpsilonEridani|103|986cd4e09f7c69406b12806e8af40711a33562d7|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|3",
+ "diff_blob": "458e2dafdaf5d41c36bf72a33d350df5e339cff7e086279583cc721216d82583",
+ "diff_sha256": "458e2dafdaf5d41c36bf72a33d350df5e339cff7e086279583cc721216d82583",
+ "duration_s": 152.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/BilinearForm/Hom.lean:62-63: `/-- Auxiliary definition to define `toLinHom`; see below. -/ def toLinHomAux\u2081 (A : BilinForm R M) (x : M) : M \u2192\u2097[R] R := A x` \u2014 no API lemma exists for it; `mathlib/Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean:150-152` gives the public `@[simp] mem_orthogonal_iff` alternative. The supplied terms `g.projOrthogonal_orthogonal hu w : g (projOrthogonal u w) u = 0` and `hv` are never converted to/from the `ker` form by any rewrite.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "fix": "Bridge explicitly instead of relying on defeq: either `simp only [LinearMap.mem_ker, LinearMap.flip_apply]` (plus whatever unfolds `toLinHomAux\u2081`) before the `exact`s, or avoid the aux def entirely by going through the public `LinearMap.BilinForm.mem_orthogonal_iff` + `Submodule.mem_span_singleton` characterisation of `g.flip.orthogonal (\u211d \u2219 u)`.",
+   "issue": "Both branches of `range_projOrthogonal` rely on an undocumented defeq chain: after `rw [LinearMap.BilinForm.orthogonal_span_singleton_eq_toLin_ker]` the goal side is `v \u2208 LinearMap.ker (toLinHomAux\u2081 g.flip u)`, and `exact g.projOrthogonal_orthogonal hu w` / `intro hv; exact \u27e8v, (g.projOrthogonal_eq_self_iff hu).mpr hv\u27e9` type-check only by unfolding `LinearMap.mem_ker`, `toLinHomAux\u2081` and `LinearMap.flip`. `toLinHomAux\u2081` is an explicitly auxiliary Mathlib def with no `_apply` simp lemma, and it sits in a file currently being deprecated, so the step is brittle and invisible to the reader.",
+   "line": 99
+  }
+ ],
+ "head_sha": "986cd4e09f7c69406b12806e8af40711a33562d7",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "0d2b7b452066163abb9164a98c7012bff46fb0fd62de30a0168fbd13f7515417",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T124300Z-103-proof-quality-413ea8",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T12:43:00Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are generally robust and readable (field_simp/ring, simp with explicit lemmas, no change/show, nothing over 50 lines). One new lemma, Bilin.range_projOrthogonal, closes both directions by undocumented definitional equality through Mathlib's auxiliary def toLinHomAux\u2081 and LinearMap.flip.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Witness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Longitudinal.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "59947ae40a31ab4a15c41e235aa9b9c676b14110bb5c852a3c214258303f7e22",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 108069,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 108069,
+  "cache_read_input_tokens": 503216,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3249,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3249,
+    "cache_read_input_tokens": 88202,
+    "input_tokens": 2,
+    "output_tokens": 4231,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11942,
+  "output_tokens_details": {
+   "thinking_tokens": 8933
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
