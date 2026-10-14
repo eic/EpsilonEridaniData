@@ -1,0 +1,182 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.5257584999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 152.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 101374,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 101374,
+    "cache_read_input_tokens": 470477,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8295,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8295,
+      "cache_read_input_tokens": 87270,
+      "input_tokens": 2,
+      "output_tokens": 5200,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11068,
+    "output_tokens_details": {
+     "thinking_tokens": 8167
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.525758,
+ "dedupe_key": "eic/EpsilonEridani|120|ebc61352bcbb23d640f823749dceca5a5846108c|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "9bc04cae588d3508634883400dea531df254cef6ef89ce173a76d7d8412a636d",
+ "diff_sha256": "9bc04cae588d3508634883400dea531df254cef6ef89ce173a76d7d8412a636d",
+ "duration_s": 152.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "BilinMap.lean:70-72 `bilinMap_apply_left_eq_zero (f) (m) (i : Fin n) (w) : f.bilinMap m (m i) w = 0`; Spin.lean:89-90 `structureOne ... := EPS.bilinMap ![K.q, K.S]`; the goal at l.119 is `structureOne EPS K K.q w = 0`, so `![K.q, K.S] 0 =?= K.q` must be discharged by unification.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Go through the explicit lemma, e.g. `by simpa [structureOne] using EPS.bilinMap_apply_left_eq_zero ![K.q, K.S] 0 w` (and likewise for the other three), so `Matrix.cons_val_zero` is invoked by name rather than by reduction.",
+   "issue": "`structureOne_q_left` (l.118-120), `structureOne_q_right` (l.123-125), `structureTwo_q_left` (l.128-130) and `structureTwo_q_right` (l.133-135) are bare term applications of `bilinMap_apply_left/right_eq_zero`, whose conclusion is `f.bilinMap m (m i) w = 0`. With `i = 0` they typecheck only because `Matrix.vecCons K.q ![K.S] 0` iota-reduces to `K.q`; the defeq is undocumented and uncited, and a failure would surface as an opaque type mismatch.",
+   "line": 118
+  },
+  {
+   "evidence": "Spin.lean:183-185 is prose only; `grep -n 'sorryful\\|theorem' Spin.lean` yields no uniqueness declaration, and the file ends at l.187 with `end Polarized`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Either state the theorem the prose describes, or rewrite l.181-185 as a forward-looking note (\"not yet formalised; the intended argument is \u2026\") so no reader takes it for a description of code in the file.",
+   "issue": "The closing section `## Uniqueness of the decomposition` describes how \"the proof of the existence part ... constructs `c\u2081`, `c\u2082` explicitly by projecting `A` onto the two basis vectors\", but no such theorem or proof exists anywhere in the file \u2014 the last declaration is `fromAlternatingCoefficients_isDecomposition` at l.173. The PR description likewise claims a `@[sorryful]` uniqueness theorem that is absent from the diff.",
+   "line": 181
+  }
+ ],
+ "head_sha": "ebc61352bcbb23d640f823749dceca5a5846108c",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0c078247556bb597578b82e8f59e1756060286959a4c8eea06f30b1f0a3f4095",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T133843Z-120-proof-quality-baf839",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T13:38:43Z",
+ "submitted_by": "wdconinc",
+ "summary": "The four conservation lemmas close their goals only through an uncited definitional reduction of `![K.q, K.S] 0` to `K.q`, and the file ends with a prose section narrating an existence proof that is not present (the PR description claims a `@[sorryful]` uniqueness theorem that does not exist in the diff).",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "<outside-workspace>",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b6df153cfd5855d3aba712f8a2991eebdc72b63f79d2ba4c6f64c100b754b40d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 101374,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 101374,
+  "cache_read_input_tokens": 470477,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8295,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8295,
+    "cache_read_input_tokens": 87270,
+    "input_tokens": 2,
+    "output_tokens": 5200,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11068,
+  "output_tokens_details": {
+   "thinking_tokens": 8167
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

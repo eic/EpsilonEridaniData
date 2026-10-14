@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.006038,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 151.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 127490,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 127490,
+    "cache_read_input_tokens": 884156,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2278,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2278,
+      "cache_read_input_tokens": 109654,
+      "input_tokens": 2,
+      "output_tokens": 2149,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11558,
+    "output_tokens_details": {
+     "thinking_tokens": 7217
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.006038,
+ "dedupe_key": "eic/EpsilonEridani|120|ebc61352bcbb23d640f823749dceca5a5846108c|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "9bc04cae588d3508634883400dea531df254cef6ef89ce173a76d7d8412a636d",
+ "diff_sha256": "9bc04cae588d3508634883400dea531df254cef6ef89ce173a76d7d8412a636d",
+ "duration_s": 151.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md:392-401 'Define `IsG1G2Decomposition g K G W` \u2026 define `fromG1G2` \u2026 with `fromG1G2_isDecomposition` \u2026 should be named and shaped to match them'; README.md:408-411 keeps `IsPolarizedDecomposition` explicitly separate. Precedent: `IsF1F2Decomposition` / `fromF1F2` / `fromF1F2_isDecomposition` at Tensors/Basic.lean:613,620,632; the collision target is Polarized/Basic.lean:178.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Rename to `IsG1G2Decomposition`, `fromG1G2`, `fromG1G2_isDecomposition` (the `Polarized.` prefix is redundant inside `namespace Polarized` anyway).",
+   "issue": "`IsPolarizedAlternatingDecomposition` (155), `fromAlternatingCoefficients` (167) and `fromAlternatingCoefficients_isDecomposition` (173) do not match the API they are declared to be the analogue of, and `IsPolarizedAlternatingDecomposition` is confusable with the distinct, already-existing `Polarized.IsPolarizedDecomposition` (`\u2200 x Q2, A = (g1 + g2) \u2022 A`) in the same namespace; `fromAlternatingCoefficients` also reads as if the coefficients were alternating, when it is the structures that are.",
+   "line": 155
+  },
+  {
+   "evidence": "Same conclusion shape named `fromF1F2_conserved_left`/`fromF1F2_conserved_right` at Tensors/Basic.lean:639,647; the proof terms are `AlternatingMap.bilinMap_apply_left_eq_zero`/`_right_eq_zero` (Mathematics/LinearAlgebra/Alternating/BilinMap.lean:70,76), both of which carry `_eq_zero`. Naming conventions: 'the name of theorem simply describes the conclusion'.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Use `structureOne_conserved_left` / `_conserved_right` (etc.), matching the in-repo analogue, or `structureOne_apply_q_left_eq_zero` matching the lemma each proof invokes.",
+   "issue": "`structureOne_q_left` (118), `structureOne_q_right` (123), `structureTwo_q_left` (128), `structureTwo_q_right` (133) name only the argument `q`, not the conclusion `= 0`; a reader cannot tell the statement from the name.",
+   "line": 118
+  },
+  {
+   "evidence": "Polarized/Kinematics.lean:66-72 already declares `S` in `PolarizedKinematics`; Spin.lean:89,97,108,118,\u2026 all take a free `EPS` parameter and the field `EPS` (line 78) has no use site. Roadmap \u00a70.2 (README.md:364-365) asks only for 'a chosen alternating four-form \u03b5', not a new kinematics record.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Rename to `OrientedPolarizedKinematics` (or drop the record and keep passing `EPS : V [\u22c0^Fin 4]\u2192\u2097[\u211d] \u211d` alongside `PolarizedKinematics g`, which is what every declaration already does).",
+   "issue": "`SpinKinematics` advertises spin, but the spin vector `S` is already a field of `PolarizedKinematics`; the only thing this record adds is the orientation four-form. The name tells a reader nothing about what distinguishes it, and no declaration in the file ever reads `K.EPS` (each takes its own `EPS` argument), so the name promises data the API does not use.",
+   "line": 75
+  },
+  {
+   "evidence": "`StructureFunctions` with fields `g1`, `g2` is declared in the same namespace `EpsilonEridani.QFT.Scattering.DIS.Polarized` at Polarized/Basic.lean:28,35,38,41; descriptive precedent `transverseMetric`/`pTransverse` at Tensors/Basic.lean:615-616.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Rename to `spinStructureOne` / `spinStructureTwo` (or `alternatingStructureOne`/`Two`), updating `_apply`, `_isAlt` and the conservation lemmas; the unpolarised analogues are named descriptively (`transverseMetric`, `pTransverse`).",
+   "issue": "`structureOne` / `structureTwo` (89, 97) are ambiguous with the *structure functions* `StructureFunctions.g1`/`g2` of the same namespace \u2014 'the first structure' in polarised DIS prose normally means `g\u2081`, not the covariant tensor `E\u2081`.",
+   "line": 89
+  }
+ ],
+ "head_sha": "ebc61352bcbb23d640f823749dceca5a5846108c",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "34d225a1d97aed0e90d4af5de735a1b444595899ca37e5c35747e38abea1d0f6",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T133317Z-120-naming-a6f7af",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T13:33:17Z",
+ "submitted_by": "wdconinc",
+ "summary": "The decomposition predicate and constructor ignore both the roadmap-prescribed names and the `IsF1F2Decomposition`/`fromF1F2` precedent they claim to mirror, and `IsPolarizedAlternatingDecomposition` sits one word away from the unrelated existing `IsPolarizedDecomposition` in the same namespace. The conservation lemmas also name the argument instead of the conclusion, and `SpinKinematics` misdescribes what it adds.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "afa0473b1bdff07563146e3c102679d0b4d56a733f8f8a2aa9b9cea903fe2c0b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 127490,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 127490,
+  "cache_read_input_tokens": 884156,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2278,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2278,
+    "cache_read_input_tokens": 109654,
+    "input_tokens": 2,
+    "output_tokens": 2149,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11558,
+  "output_tokens_details": {
+   "thinking_tokens": 7217
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

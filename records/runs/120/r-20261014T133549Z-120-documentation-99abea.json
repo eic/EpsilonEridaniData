@@ -1,0 +1,220 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.5650184999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 174.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 94925,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 94925,
+    "cache_read_input_tokens": 553107,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2033,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2033,
+      "cache_read_input_tokens": 87167,
+      "input_tokens": 2,
+      "output_tokens": 2803,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13565,
+    "output_tokens_details": {
+     "thinking_tokens": 8998
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.565018,
+ "dedupe_key": "eic/EpsilonEridani|120|ebc61352bcbb23d640f823749dceca5a5846108c|documentation|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "9bc04cae588d3508634883400dea531df254cef6ef89ce173a76d7d8412a636d",
+ "diff_sha256": "9bc04cae588d3508634883400dea531df254cef6ef89ce173a76d7d8412a636d",
+ "duration_s": 174.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 181-185 are followed immediately by `end Polarized` (line 187); the file contains no theorem about uniqueness or spanning \u2014 the last declaration is `fromAlternatingCoefficients_isDecomposition` (line 173).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Delete the section, or add the theorem it describes and document the statement, not the proof technique.",
+   "issue": "Section docstring \"## Uniqueness of the decomposition\" describes how the existence part of a uniqueness theorem is proved, but no such theorem exists in the file (the PR description's `@[sorryful]` main theorem is not present). It also documents a proof rather than an object.",
+   "line": 181
+  },
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md:383-385: \"the space of alternating bilinear forms on `V` that are conserved in both slots **and linear in `S`** is exactly two dimensional\"; Spin.lean has no `FiniteDimensional`/`finrank` hypothesis anywhere.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Restrict the sentence to alternating forms conserved in both slots *and linear in `S`*, and say plainly that this is not proved here (no dimension hypothesis appears in the file). Line 17 ('span the space of alternating, spin-linear bilinear forms vanishing on `q`') is the same unproved claim.",
+   "issue": "\"Together they span the space of alternating bilinear forms that vanish on `q`. In four dimensions this space is two-dimensional, so `E\u2081` and `E\u2082` form a basis\" is false as written: alternating forms on a 4-dimensional `V` with \u03c9(q,\u00b7)=0 form \u039b\u00b2((V/\u27e8q\u27e9)*), which is 3-dimensional. Two-dimensionality needs the extra restriction to forms linear in `S`. Nothing in the file assumes `dim V = 4` or proves any spanning statement.",
+   "line": 33
+  },
+  {
+   "evidence": "grep for `\\.EPS` across `EpsilonEridani/` returns no hit; every use is the bound parameter `(EPS : V [\u22c0^Fin 4]\u2192\u2097[\u211d] \u211d)` at lines 89, 97, 155, 167.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Either define the structures from `K.EPS` (dropping the parameter), or document the field honestly as currently unconsumed data.",
+   "issue": "The `SpinKinematics` docstring and the section intro present the `EPS` field as the orientation used by the antisymmetric decomposition, but no declaration in the repository reads `K.EPS`: `structureOne`, `structureTwo`, `IsPolarizedAlternatingDecomposition`, and `fromAlternatingCoefficients` all take an independent `EPS` parameter. The documentation claims a role the field does not have.",
+   "line": 68
+  },
+  {
+   "evidence": "Tensors/Basic.lean:59-67 describes `Hadronic.Witness` as the audit of `IsLorentzCovariant`; Polarized/Kinematics.lean:286 opens it as `Tensors.Hadronic.Witness`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Replace with the actual reason, already stated accurately in Tensors/Basic.lean:69-75 (an abstract `V` with only a bilinear form has no volume form, so a parity-odd structure needs the four-form as data), and cite that file rather than `Witness`.",
+   "issue": "\"This convention is necessary because `Tensors.Basic.Witness` for the parity-even decomposition has no equivalent in the antisymmetric case without an orientation\" misdescribes that section and names it wrongly: the namespace is `Tensors.Hadronic.Witness` (Tensors/Basic.lean:957), and it audits `IsLorentzCovariant` on explicit witness kinematics \u2014 it is not an orientation-fixing device for the parity-even decomposition.",
+   "line": 42
+  },
+  {
+   "evidence": "Definitions at lines 89 and 97 both contract the same `EPS`; roadmap README.md:142-143 speaks of \"the relative sign of the `g\u2081` and `g\u2082` structures and the overall sign of the asymmetries\".",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "State that the overall sign of both coefficients (and of the asymmetries built from them) depends on the chosen orientation.",
+   "issue": "\"Fixing it once fixes the sign of `g\u2082` and the overall sign of the asymmetries\" (repeated in the field docstring, line 77) is wrong: both `E\u2081` and `E\u2082` are linear in `EPS`, so `EPS \u21a6 -EPS` flips `g\u2081` and `g\u2082` alike; the orientation cannot fix `g\u2082`'s sign alone. It is an unadapted paraphrase of the roadmap sentence about the relative sign of the two structures.",
+   "line": 43
+  },
+  {
+   "evidence": "Lines 16, 42, 63-64, 70 of the file; the numbering tracks roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md section 0.2 and Convention 4, which renumber when the roadmap is reorganised.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Remove the layer and convention numbers and the roadmap URL; keep the mathematical content (the orientation must be supplied as data). Roadmap attribution belongs in the PR description's `Roadmap:` line.",
+   "issue": "Roadmap layer numbering and convention numbering appear in docstrings: line 16 (\"Layer 0.2 of the SpinStructure roadmap\" + URL), line 42 (\"Convention 4 (orientation)\"), line 63 (\"Layer 0 needs both ... (Convention 4)\"), line 70 (\"the kinematic record ... of Layer 0.2\").",
+   "line": 16
+  }
+ ],
+ "head_sha": "ebc61352bcbb23d640f823749dceca5a5846108c",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f15a50a1fc888cc5a46208b2f0ba9b74e0a72953ac5a8884142bca18d38000c5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T133549Z-120-documentation-99abea",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T13:35:49Z",
+ "submitted_by": "wdconinc",
+ "summary": "The module docstring states a spanning/basis result the file neither states nor can state (and drops the S-linearity qualifier that makes it true), a trailing section docstring describes the proof of a uniqueness theorem that is absent from the file, and several docstrings carry roadmap layer/convention numbering, a wrong cross-reference, and a garbled orientation-sign claim.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "be428604ac6c306d263257a47a9c535283f7a8d472cafc00ba5ef293b9003e9e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 94925,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 94925,
+  "cache_read_input_tokens": 553107,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2033,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2033,
+    "cache_read_input_tokens": 87167,
+    "input_tokens": 2,
+    "output_tokens": 2803,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13565,
+  "output_tokens_details": {
+   "thinking_tokens": 8998
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

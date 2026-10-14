@@ -1,0 +1,235 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9435984999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 165.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 126293,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 126293,
+    "cache_read_input_tokens": 743337,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2264,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2264,
+      "cache_read_input_tokens": 117637,
+      "input_tokens": 2,
+      "output_tokens": 3934,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12356,
+    "output_tokens_details": {
+     "thinking_tokens": 7662
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.943598,
+ "dedupe_key": "eic/EpsilonEridani|120|ebc61352bcbb23d640f823749dceca5a5846108c|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "9bc04cae588d3508634883400dea531df254cef6ef89ce173a76d7d8412a636d",
+ "diff_sha256": "9bc04cae588d3508634883400dea531df254cef6ef89ce173a76d7d8412a636d",
+ "duration_s": 165.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -n '\\.EPS' code/` matches only the field declaration at line 78; lines 89, 97, 155, 167 all re-introduce `EPS` as a parameter.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Define `structureOne K`, `structureTwo K`, `IsPolarizedAlternatingDecomposition K G A` and the constructor from `K.EPS` and drop the explicit `EPS` parameter (this also matches the roadmap signature `fromG1G2 g K c\u2081 c\u2082`); or, if the form is to stay a free parameter, delete the `EPS` field and the `SpinKinematics` structure and take `PolarizedKinematics g`.",
+   "issue": "`SpinKinematics.EPS` is free data: no declaration anywhere uses `K.EPS`. Every structure/predicate/constructor takes a separate `EPS : V [\u22c0^Fin 4]\u2192\u2097[\u211d] \u211d` argument, so `structureOne EPS K` may be applied with `EPS \u2260 K.EPS`, the field is unconstrained by any law, and `SpinKinematics` adds nothing over `PolarizedKinematics` for every result in the file.",
+   "line": 75
+  },
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md:392-400; code/.../Polarized/Basic.lean:178 `IsPolarizedDecomposition`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Rename to `IsG1G2Decomposition`, `fromG1G2`, `fromG1G2_isDecomposition`.",
+   "issue": "The roadmap's explicit Layer 0.2 products are `IsG1G2Decomposition g K G W`, `fromG1G2` and `fromG1G2_isDecomposition`, \"named and shaped to match\" `IsF1F2Decomposition`/`fromF1F2`; later layers consume `fromG1G2 g K c\u2081 c\u2082` (0.3 Examples). The PR exports `IsPolarizedAlternatingDecomposition` / `fromAlternatingCoefficients` instead, and `IsPolarizedAlternatingDecomposition` sits in the same namespace as the unrelated `IsPolarizedDecomposition` of `Polarized/Basic.lean`.",
+   "line": 155
+  },
+  {
+   "evidence": "code/.../Tensors/Basic.lean:625-680; the only constructor lemma here is line 173.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Add `fromAlternatingCoefficients_apply`, `..._isAlt` (hence `TensorAssumptions` via `tensorAssumptions_iff_isAlt`), and `..._q_left`/`..._q_right`, derived from the corresponding `structureOne_*`/`structureTwo_*` lemmas.",
+   "issue": "The constructor has only `_isDecomposition`. There is no `fromAlternatingCoefficients_apply` (pointwise value), no `_isAlt`, and no `_q_left`/`_q_right`, so nothing can be proved about a constructed tensor without unfolding \u2014 the analogue `fromF1F2` carries `fromF1F2_apply`, `_conserved_left`, `_conserved_right`, `_isSymm`, `assumptions_fromF1F2`.",
+   "line": 167
+  },
+  {
+   "evidence": "Lines 155-158 define the predicate; no further lemma mentions it (grep `IsPolarizedAlternatingDecomposition` matches only lines 155 and 175).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Add `IsPolarizedAlternatingDecomposition_def` (or `_iff`) plus the consequences `A.IsAlt`, `A K.q v = 0`, `A v K.q = 0`, and the pointwise-apply form, so the predicate is usable without unfolding.",
+   "issue": "`IsPolarizedAlternatingDecomposition` has no elimination API: no `_def`/`_iff` restatement and no consequence lemmas, so a consumer holding the hypothesis can get `A.IsAlt`, `A K.q v = 0`, or a pointwise value only by unfolding the body, which works solely because the whole file is `@[expose]`.",
+   "line": 155
+  },
+  {
+   "evidence": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean:69,75 carry `@[simp]` on `bilinMap_apply_left_eq_zero`/`_right_eq_zero`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Mark all four `@[simp]` (and `@[grind]` if these are expected to drive `grind` in Layer 0.3).",
+   "issue": "The four conservation lemmas `structureOne_q_left`, `structureOne_q_right`, `structureTwo_q_left`, `structureTwo_q_right` (lines 118, 123, 128, 133) are normal-form rewrites to `0` but carry no `@[simp]`; simp will not unfold `structureOne`/`structureTwo` to reach the underlying `bilinMap` lemmas, which are themselves `@[simp]`.",
+   "line": 118
+  },
+  {
+   "evidence": "code/.../Polarized/Kinematics.lean:87,90,119 and Mathematics/.../BilinMap.lean:54 all use `(rfl)`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Use `:= (rfl)`.",
+   "issue": "`fromAlternatingCoefficients_isDecomposition` is proved with bare `:= rfl`, leaking the defeq to consumers; sibling files use the `(rfl)` idiom.",
+   "line": 179
+  },
+  {
+   "evidence": "Lines 181-185 contain only prose; `grep -rn sorryful` matches other modules but not this file.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "fix": "Either add the declaration (roadmap 0.2 uniqueness / coefficient extraction) or rewrite the section as a stated gap and drop the description of a nonexistent proof; same for the module-header claim that `E\u2081`, `E\u2082` \"form a basis\".",
+   "issue": "The closing doc section \"## Uniqueness of the decomposition\" describes the proof of an existence statement (\"constructs `c\u2081`, `c\u2082` explicitly by projecting `A` onto the two basis vectors\") that no declaration in the file provides; the PR description likewise advertises a `@[sorryful]` main uniqueness theorem that is absent. Readers of the module header are told the file contains a result it does not export.",
+   "line": 181
+  }
+ ],
+ "head_sha": "ebc61352bcbb23d640f823749dceca5a5846108c",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "34ac3628026e195a8bdddd3c5e149034cd747eef9ad3ed8003edc4e005786cc5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T132503Z-120-api-design-ab0458",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T13:25:03Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new `SpinKinematics` carries an `EPS` field that no declaration in the file ever reads, while every operation takes a redundant explicit `EPS` parameter, so the kinematic record and the structures it is supposed to orient are disconnected. The exported surface also misses the roadmap's named products (`IsG1G2Decomposition`, `fromG1G2`) and almost all of the characteristic API the analogous `fromF1F2` carries.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Spin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0ecadc8a8295be66cb2b90126b459cc36e706550942cdc687ba1115263446003",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 126293,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 126293,
+  "cache_read_input_tokens": 743337,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2264,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2264,
+    "cache_read_input_tokens": 117637,
+    "input_tokens": 2,
+    "output_tokens": 3934,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12356,
+  "output_tokens_details": {
+   "thinking_tokens": 7662
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
