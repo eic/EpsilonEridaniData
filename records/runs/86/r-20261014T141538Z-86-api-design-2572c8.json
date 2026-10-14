@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.93858775,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 163.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 114529,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 114529,
+    "cache_read_input_tokens": 245431,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 130,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 11510,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 11510,
+      "cache_read_input_tokens": 89296,
+      "input_tokens": 32,
+      "output_tokens": 3516,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11707,
+    "output_tokens_details": {
+     "thinking_tokens": 8203
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "55b2e8fed32ae1fca799fc8cb1670d38573f2066",
+ "cost_usd": 2.938588,
+ "dedupe_key": "eic/EpsilonEridani|86|895e6dbda26ce912f241c4b18d32c201795ddac7|api-design|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "82527142a4e71b97e0efeb660dd30ea6b9ec276e959ec9f07cce527f8dbb891f",
+ "diff_sha256": "82527142a4e71b97e0efeb660dd30ea6b9ec276e959ec9f07cce527f8dbb891f",
+ "duration_s": 163.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "MomentumSumRule.lean:78-86 defines the conjunction and only `momentumSumRule_iff := (Iff.rfl)`; line 109 shows the nested destructuring; grep for `MomentumSumRule\\.` finds only `zMoment_one_le_one` as a dot-notation lemma.",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "Add projections `MomentumSumRule.sum_zMoment_one_eq_one (h : MomentumSumRule D) (i) (Q2) : \u2211 h, zMoment D 1 h i Q2 = 1` and `MomentumSumRule.integrableOn (h : MomentumSumRule D) (hd) (i) (Q2) : IntegrableOn (fun z => z * D hd i z Q2) (Icc 0 1)` (or make `MomentumSumRule` a `structure` with these fields), and use them in `MomentumSumRule.zMoment_one_le_one`. Mathlib precedent: `Integrable` is a conjunction def with `Integrable.aestronglyMeasurable` / `Integrable.hasFiniteIntegral`.",
+   "issue": "`MomentumSumRule` is a conjunction (integrability of every first-moment integrand, and the species sum equals one) whose only API is the unfolding `momentumSumRule_iff`. Every consumer must destructure as the PR itself does at line 109: `((momentumSumRule_iff D).1 hsum i Q2).2`. Downstream targets (Layer 2.4 `momentumSumRule_of_timelikeEvolution`, the `zMoment D 1 h i Q2 \u2264 1` bound) need the sum identity and the integrability separately.",
+   "line": 78
+  },
+  {
+   "evidence": "MomentumSumRule.lean:249-255 docstring says \"finite\" with no integrability hypothesis or lemma; Basic.lean:123-127 is the only integrability lemma and fixes the multiplier to `z *`; grep `integrableOn.*powerFrag` returns nothing.",
+   "file": "EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "fix": "In `Basic.lean`, generalise `integrableOn_mul_indicatorUnitInterval` to `integrableOn_pow_mul_indicatorUnitInterval (n : \u2115) (hf : ContinuousOn ...) : IntegrableOn (fun z => z ^ n * indicatorUnitInterval f h i z Q2) (Icc 0 1)` (proof: `(continuousOn_pow n).mul hf`), keep the `n = 1` form only if still needed by `MomentumSumRule`, and add `integrableOn_zeroMoment_powerFrag (n) (Q2) : IntegrableOn (fun z => powerFrag n () () z Q2) (Icc 0 1)` next to `zMoment_zero_powerFrag`.",
+   "issue": "`zMoment_zero_powerFrag` (and `zMoment_powerFrag` for general `k`) is documented as a *finite* multiplicity, but no exposed lemma records integrability of `fun z => powerFrag n () () z Q2` (or of `z ^ k * _`) on `[0, 1]`. By the file's own caveat (lines 20-23) a Bochner value alone does not certify finiteness, and the divergent counterpart `not_integrableOn_zeroMoment_invFrag` is stated explicitly, so the interface is asymmetric and misleading. The only integrability helper, `integrableOn_mul_indicatorUnitInterval`, is specialised to the `z * _` integrand.",
+   "line": 251
+  }
+ ],
+ "head_sha": "895e6dbda26ce912f241c4b18d32c201795ddac7",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 86,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "0889af82ed8a47ef035fb2cefd40ccebf88c4946e7d299edb2195429b1f44719",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "2e7506c28bcd0591a3e9ab75c3312073664ce21f",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T141538Z-86-api-design-2572c8",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T14:15:38Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and bodies are hidden, but `MomentumSumRule` bundles two conjuncts with no named elimination lemmas, and the zeroth-moment statements for `powerFrag` advertise finiteness that no exposed lemma records.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/SIDIS/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d6d78974e5f37be2883862d34036ed6e7ba828116ff182fb81e75c03e43c93da",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 114529,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 114529,
+  "cache_read_input_tokens": 245431,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 130,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 11510,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 11510,
+    "cache_read_input_tokens": 89296,
+    "input_tokens": 32,
+    "output_tokens": 3516,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11707,
+  "output_tokens_details": {
+   "thinking_tokens": 8203
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
