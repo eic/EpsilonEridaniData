@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.651065,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 127.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 135250,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 135250,
+    "cache_read_input_tokens": 103320,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 11151,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 11151,
+      "cache_read_input_tokens": 94685,
+      "input_tokens": 2,
+      "output_tokens": 7096,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9875,
+    "output_tokens_details": {
+     "thinking_tokens": 8423
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.651065,
+ "dedupe_key": "eic/EpsilonEridani|126|10cce3c35aca82a33eccd2b9b9ef42cd0c4c1d63|naming|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "fdbcfc4952365e1ce3caff513b983e1cd1dcc7d8982bcf359864fc9b8289c138",
+ "diff_sha256": "fdbcfc4952365e1ce3caff513b983e1cd1dcc7d8982bcf359864fc9b8289c138",
+ "duration_s": 127.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "InvariantMass.lean:145-146 `2 * k + E - \u221a(E ^ 2 - M ^ 2) = \u221a\u27eaq + P, q + P\u27eb\u2098 * exp ((q + P).rapidity n)` vs 156-157 `E + \u221a(E ^ 2 - M ^ 2) = \u221a\u27eaq + P, q + P\u27eb\u2098 * exp (-(q + P).rapidity n)` named `targetEnergy_add_momentum_\u2026`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Rename to `two_mul_photonEnergy_add_targetEnergy_sub_momentum_eq_sqrt_mul_exp_rapidity`, matching line 156.",
+   "issue": "`two_mul_add_sub_sqrt_eq_sqrt_mul_exp_rapidity` leaves its left-hand side subjectless (`2 * k + E - \u221a(E\u00b2-M\u00b2)`) and uses the token `sqrt` for the target momentum on the left and for the invariant mass on the right of the same name; its direct sibling for the backward component names the quantities (`targetEnergy_add_momentum_eq_sqrt_mul_exp_neg_rapidity`, line 156), as does the massless pair (`two_mul_photonEnergy_\u2026`, line 275).",
+   "line": 145
+  },
+  {
+   "evidence": "Rapidity.lean:50-51 `def rapidity (v : Vector d) (n : EuclideanSpace \u211d (Fin d))`; Rapidity.lean:60-62 `v.rapidity (c \u2022 n) = artanh (c * \u27eav.spatialPart, n\u27eb_\u211d / v.timeComponent)`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Rename to `rapidity_smul_right` (or `rapidity_smul_direction`), following Mathlib's `real_inner_smul_right` pattern for scaling the second argument.",
+   "issue": "`rapidity_smul` states `v.rapidity (c \u2022 n) = \u2026`, i.e. the scalar acts on the second (direction) argument, but the bare `_smul` suffix reads as acting on the head argument `v`; `(c \u2022 v).rapidity n = v.rapidity n` (for `c > 0`) is a different true statement that would want this name.",
+   "line": 60
+  }
+ ],
+ "head_sha": "10cce3c35aca82a33eccd2b9b9ef42cd0c4c1d63",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "8dbc19c6b404411aa77acbd142fc6e8092a1682b6f0663932b8355b9a5690306",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T013038Z-126-naming-6b09e0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T01:30:38Z",
+ "submitted_by": "wdconinc",
+ "summary": "The prior round's findings are fixed. Two names remain: `two_mul_add_sub_sqrt_eq_sqrt_mul_exp_rapidity` names no subject and uses `sqrt` for two different quantities, against the convention of its own sibling; `rapidity_smul` scales the direction argument, not the vector.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ee10e0608b9f5a77442f6e3413a330fa6bf1ad38cbd5d3b86711d382b7f787e8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 135250,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 135250,
+  "cache_read_input_tokens": 103320,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 11151,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 11151,
+    "cache_read_input_tokens": 94685,
+    "input_tokens": 2,
+    "output_tokens": 7096,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9875,
+  "output_tokens_details": {
+   "thinking_tokens": 8423
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

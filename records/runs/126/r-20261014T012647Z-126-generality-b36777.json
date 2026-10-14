@@ -1,0 +1,155 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.5517615,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 119.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 122687,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 122687,
+    "cache_read_input_tokens": 189753,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6624,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6624,
+      "cache_read_input_tokens": 97911,
+      "input_tokens": 2,
+      "output_tokens": 3645,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9199,
+    "output_tokens_details": {
+     "thinking_tokens": 6934
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.551762,
+ "dedupe_key": "eic/EpsilonEridani|126|10cce3c35aca82a33eccd2b9b9ef42cd0c4c1d63|generality|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "fdbcfc4952365e1ce3caff513b983e1cd1dcc7d8982bcf359864fc9b8289c138",
+ "diff_sha256": "fdbcfc4952365e1ce3caff513b983e1cd1dcc7d8982bcf359864fc9b8289c138",
+ "duration_s": 119.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Statement at line 223 is `\u27eaq + P, q + P\u27eb\u2098 = M ^ 2 + 2 * \u03b3.energyFraction s * s.energy * (E + \u221a(E ^ 2 - M ^ 2))` and at lines 237\u2013238 `\u03b3.energyFraction s = exp (\u2026) * (\u27eaq + P, q + P\u27eb\u2098 - M ^ 2) / (2 * \u221a\u27eaq + P, q + P\u27eb\u2098 * s.energy)` \u2014 neither mentions `\u03b3.virtuality`. `minkowskiProduct_add_self_of_realPhoton` (line 122) proves the same conclusion for a bare `k` without any virtuality hypothesis, using only `hn hq hq' hP hP' hE`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Move the two lemmas out of the `include h\u03b3` scope (own section with `include hn hE hq hP hP'` only) and derive them from the already-proved general forms at `k := \u03b3.energy`: `minkowskiProduct_add_self_of_realPhoton hn hq hq' hP hP' hE` plus `hx : \u03b3.energyFraction s * s.energy = \u03b3.energy` gives the first; dividing `two_mul_photonEnergy_eq_exp_rapidity_mul_sub_div_sqrt hn hq hq' hP hP' hE hk hE0` by `2 * s.energy` gives the second. This also removes the duplicated `rw [eq_div_iff \u2026]; linear_combination \u2026` argument at lines 244\u2013246, which repeats lines 180\u2013182 verbatim up to the `x E_s` \u2194 `k` substitution.",
+   "issue": "`include hn hE hq h\u03b3 hP hP'` forces `h\u03b3 : \u03b3.virtuality = -\u27eaq, q\u27eb\u2098` onto `minkowskiProduct_add_self_of_realPhoton_energyFraction` (line 221) and `energyFraction_eq_exp_rapidity_mul_sub_div_sqrt` (line 235), whose statements mention no virtuality. `hq' : q.spatialPart = \u03b3.energy \u2022 n` with `hq : q.timeComponent = \u03b3.energy` already forces `\u27eaq, q\u27eb\u2098 = 0`, so `h\u03b3` is logically idle: it is consumed in the proof only to rewrite `\u27eaq, q\u27eb\u2098 \u21a6 -\u03b3.virtuality` and then back to `0` via `isReal_of_spatialPart_eq_smul`. Only `minkowskiProduct_add_self_of_target_energyFraction` (line 210) genuinely needs it. As stated, a caller whose `PhotonKinematics.virtuality` field is not definitionally tied to this `q` cannot apply either lemma.",
+   "line": 201
+  }
+ ],
+ "head_sha": "10cce3c35aca82a33eccd2b9b9ef42cd0c4c1d63",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "8f46e5625bbdee7625a296da5feb738a8f09705a904cb09c58a213c8526964cf",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T012647Z-126-generality-b36777",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T01:26:47Z",
+ "submitted_by": "wdconinc",
+ "summary": "The photoproduction results are correctly layered \u2014 the general target lemma comes first and the real-photon and massless cases are instantiated from it. Two lemmas in the `EnergyFraction` section carry a hypothesis tying `\u03b3.virtuality` to `q` that appears in neither conclusion and is not needed, and they re-run the algebra the `k`-versions already prove.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e8dddacae87d34ee8252d34bb053781d5eafd84b7791d607303baec381a32d1f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 122687,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 122687,
+  "cache_read_input_tokens": 189753,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6624,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6624,
+    "cache_read_input_tokens": 97911,
+    "input_tokens": 2,
+    "output_tokens": 3645,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9199,
+  "output_tokens_details": {
+   "thinking_tokens": 6934
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
