@@ -1,0 +1,215 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2509265000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 214.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 133977,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 133977,
+    "cache_read_input_tokens": 931843,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3485,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3485,
+      "cache_read_input_tokens": 110732,
+      "input_tokens": 2,
+      "output_tokens": 3574,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17805,
+    "output_tokens_details": {
+     "thinking_tokens": 13146
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.250927,
+ "dedupe_key": "eic/EpsilonEridani|132|9ee717690f7f234ca6b99babaef2da3c6b1cdc52|documentation|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "28a4f5b7e8b1c38e9853262542b902f0f4cf00d743b8cdb423872015f0aef865",
+ "diff_sha256": "28a4f5b7e8b1c38e9853262542b902f0f4cf00d743b8cdb423872015f0aef865",
+ "duration_s": 214.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`PlusFunctional.lean:133` `theorem intervalIntegrable_plusOneMinus_integrand {\u03c6 : \u211d \u2192 \u211d} {L : \u211d} (h\u03c6m : \u2026) (h\u03c6 : \u2200\u1d50 z \u2026, |\u03c6 z - \u03c6 1| \u2264 L * (1 - z)) : IntervalIntegrable \u2026` \u2014 a one-directional sufficiency lemma. `pair_pqq`/`pair_pgg` in this PR instead assume raw `IntervalIntegrable (fun z => (1 - z)\u207b\u00b9 * (\u03c6 z - \u03c6 1))`, a hypothesis outside that lemma's form under which the pairing still converges.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "fix": "Say the junk value is taken where the integrals fail to converge, and cite `intervalIntegrable_plusOneMinus_integrand` only as a sufficient condition.",
+   "issue": "`pair`'s docstring says the pairing converges under the hypotheses of `intervalIntegrable_plusOneMinus_integrand` and that \"outside them it takes the junk value of the Bochner integral\". Those hypotheses are only sufficient, so the converse is false.",
+   "line": 93
+  },
+  {
+   "evidence": "`NormalForm.lean:111` `noncomputable def moment (P : KernelForm) (N : \u211d) : \u211d := P.pair fun z => z ^ (N - 1)` with `regular : \u211d \u2192 \u211d` unconstrained (`NormalForm.lean:82`).",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "fix": "Restrict the claim to regular parts that are integrable away from `0`, or drop the \"half-line\" assertion and just state that convergence depends on `r` and must be hypothesised.",
+   "issue": "`moment`'s docstring claims the regular contribution \"converges only for `N` in a half-line determined by the behaviour of `r` at `z = 0`\". `regular : \u211d \u2192 \u211d` is arbitrary, so the convergence set need be neither a half-line nor controlled by the behaviour at 0 (e.g. an `r` non-integrable at an interior point never converges).",
+   "line": 107
+  },
+  {
+   "evidence": "`LeadingOrder.lean:106-110` vs `LeadingOrder.lean:169-173`; `pqg`/`pqgSinglet_plusCoeff` (line 153) correctly record that quark-pair emission has no soft singularity.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "fix": "Write \"the soft singularity of gluon emission off a quark is weighted by the colour charge of the quark\"; adjust line 169 to \"gluon emission off a gluon\" for the parallel.",
+   "issue": "`pqq_plusCoeff`'s docstring explains the `2 C_F` as \"the soft singularity of quark emission\". The `z \u2192 1` singularity of `P_qq` is soft *gluon* emission off a quark; under the standard reading of \"quark emission\" the sentence is wrong, and it reads inconsistently with `pgg_plusCoeff` (line 169), where \"gluon emission\" does mean emission of a gluon.",
+   "line": 106
+  },
+  {
+   "evidence": "`Evolution/Basic.lean:56-58` \"\u2026which `Convolution.convolveAt` cannot represent\u2026 the distributional case needs a distributional kernel type and is an open gap.\"; `Evolution/QCDCore.lean:58-60` \"a positivity contract for QCD kernels needs the distributional kernel type that does not yet exist here.\" vs new `NormalForm.lean:80` `structure KernelForm`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "fix": "Update both to point at `EpsilonEridani.QFT.Factorization.Evolution.KernelForm` and state the gap that actually remains: no bridge from `KernelForm` to `SplittingKernel`/`Convolution.convolveAt`.",
+   "issue": "This PR adds the distributional kernel type, making two existing docs stale: `Evolution/Basic.lean:57-58` (\"the distributional case needs a distributional kernel type and is an open gap\") and `Evolution/QCDCore.lean:59-60` (\"the distributional kernel type that does not yet exist here\"). The latter is now literally false at the PR head.",
+   "line": 54
+  }
+ ],
+ "head_sha": "9ee717690f7f234ca6b99babaef2da3c6b1cdc52",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 132,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "24a3d360878739d6c003507214a7f7feace072e1f61b1f511e5ec86e51604879",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T084053Z-132-documentation-6fa75e",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T08:40:53Z",
+ "submitted_by": "wdconinc",
+ "summary": "Module docstrings and most declaration docstrings are accurate and match their statements, but two convergence claims in NormalForm.lean assert more than is true, one P_qq docstring misstates which parton is emitted, and the PR leaves two existing Evolution docstrings asserting that the distributional kernel type it adds does not exist.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Distribution/PlusFunctional.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/QCDCore.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/CollinearForm.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Distribution/PlusFunctional.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b4c915de227687bccce93c3fb737e730a64ed47f8d8a208b6b3b0a99bde2f255",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 133977,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 133977,
+  "cache_read_input_tokens": 931843,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3485,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3485,
+    "cache_read_input_tokens": 110732,
+    "input_tokens": 2,
+    "output_tokens": 3574,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17805,
+  "output_tokens_details": {
+   "thinking_tokens": 13146
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
