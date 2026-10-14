@@ -1,0 +1,223 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.180785,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 188.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 122808,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 122808,
+    "cache_read_input_tokens": 1223860,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1033,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1033,
+      "cache_read_input_tokens": 104599,
+      "input_tokens": 2,
+      "output_tokens": 3936,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13625,
+    "output_tokens_details": {
+     "thinking_tokens": 8900
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.180785,
+ "dedupe_key": "eic/EpsilonEridani|103|1c4045fb719437c8e275a777e6faa29aca1e79c1|reuse|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "b83ebc7a7896748f6ef425b1a1f6df0ed61d44332974af2eaba80b82d5ebf4b9",
+ "diff_sha256": "b83ebc7a7896748f6ef425b1a1f6df0ed61d44332974af2eaba80b82d5ebf4b9",
+ "duration_s": 188.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Frame/Basic.lean:167-173 vs Longitudinal.lean:181-198; with v=w=p, u=q the latter divided by `g q q` is `g p_T p_T = g p p - (p\u00b7q)^2/(q\u00b7q)`, and with a=b the former is `g p\u20d7 p\u20d7 = g p p - (g p n)^2/(g n n)` after `energy_apply`.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Add `Bilin.projOrthogonal_pairing (hg : g.IsSymm) (hu : g u u \u2260 0) (v w : V) : g (g.projOrthogonal u v) (g.projOrthogonal u w) = g v w - g v u * g u w / g u u` to `Kinematics/Basic.lean` beside the other `projOrthogonal` lemmas; prove `spatial_pairing_spatial` from it by rewriting `energy_apply` twice and `Real.mul_self_sqrt F.timelike.le`, and reprove `q_sq_mul_pTransverse_self` from it via `pTransverse_eq_projOrthogonal` plus `field_simp`/`linear_combination`.",
+   "issue": "`spatial_pairing_spatial` re-derives the generic identity `g (P v) (P w) = g v w - g v u * g u w / g u u` for `P = projOrthogonal g u` from `apply_sub_smul_pair`, but that identity is already derived once in-repo for `u = K.q` in `Longitudinal.lean:181-198` (`q_sq_mul_pTransverse_self : g q q * g p_T p_T = g q q * g p p - (p\u00b7q)^2`, i.e. the same statement cleared of denominators). Two hand-derivations of one identity, in a PR whose point is to state the projection once.",
+   "line": 167
+  },
+  {
+   "evidence": "Tensors/Basic.lean:280-281 `K.p - (g K.p K.q / g K.q K.q) \u2022 K.q` vs Kinematics/Basic.lean:59-61 `g.projOrthogonal u v = v - (g v u / g u u) \u2022 u`; Tensors/Basic.lean:291-293 asserts they are equal, and Longitudinal.lean:190 `simp only [pTransverse, map_sub, map_smul, smul_eq_mul]`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Define `pTransverse g K := g.projOrthogonal K.q K.p`; then `pTransverse_eq_projOrthogonal` becomes `rfl`, and update the two unfolding proofs (`pTransverse_pairing`, `Tensors/Basic.lean:284-287`, and `Longitudinal.lean:188-190`) to rewrite with `pTransverse_eq_projOrthogonal, Bilin.projOrthogonal_apply` first.",
+   "issue": "After this PR `pTransverse g K` still has the hand-rolled body `K.p - (g K.p K.q / g K.q K.q) \u2022 K.q`, which is literally `projOrthogonal_apply`'s RHS; `pTransverse_eq_projOrthogonal` bridges the two but leaves two definitional bodies for one notion, and the old path is actively used (`Longitudinal.lean:190` unfolds `pTransverse` directly rather than going through the projection API).",
+   "line": 280
+  }
+ ],
+ "head_sha": "1c4045fb719437c8e275a777e6faa29aca1e79c1",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "759c09062a0c",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "fa8ef4f67cf3a8c6c9cb26271c3ebc8de77347a2f4a1a88d3773cc50f4cdb9d7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "11818532110e43b9029fe628291e786621232900",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T083205Z-103-reuse-a9a0ca",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T08:32:05Z",
+ "submitted_by": "wdconinc",
+ "summary": "The prior two findings are resolved: the projection is now stated once as Bilin.projOrthogonal and reused by both Frame.spatial and pTransverse, and range_projOrthogonal goes through Mathlib's orthogonal_span_singleton_eq_toLin_ker. Two residual duplications remain in the family the PR itself factored out: the projection-pairing identity is derived twice, and pTransverse still carries a hand-rolled body.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Reflection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "tool": "Bash"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/PerturbationTheory/FeynmanDiagrams/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/PerturbationTheory/FeynmanDiagrams/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Longitudinal.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c13355b076069421081b4c6218d639c57fd246808433b7c34b65335de350a062",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 122808,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 122808,
+  "cache_read_input_tokens": 1223860,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1033,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1033,
+    "cache_read_input_tokens": 104599,
+    "input_tokens": 2,
+    "output_tokens": 3936,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13625,
+  "output_tokens_details": {
+   "thinking_tokens": 8900
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
