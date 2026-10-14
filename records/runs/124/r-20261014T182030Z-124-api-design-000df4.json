@@ -1,0 +1,202 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1894500000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 200.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 138995,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 138995,
+    "cache_read_input_tokens": 833750,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3495,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3495,
+      "cache_read_input_tokens": 119849,
+      "input_tokens": 2,
+      "output_tokens": 1562,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15301,
+    "output_tokens_details": {
+     "thinking_tokens": 11747
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.18945,
+ "dedupe_key": "eic/EpsilonEridani|124|b4b47612afced64bf2f7d16cd0d275bd2dcf0cb3|api-design|claude-opus-5|a04d8ed758f03dbb|production|9",
+ "diff_blob": "9209a071ded7862d0bc96fff650196c9952c3a0c9fc82b5732f25a0686ab74ae",
+ "diff_sha256": "9209a071ded7862d0bc96fff650196c9952c3a0c9fc82b5732f25a0686ab74ae",
+ "duration_s": 200.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean:59` `def \u03b3 : Fin 4 \u2192 Matrix (Fin 4) (Fin 4) \u2102 := ![\u03b30, \u03b31, \u03b32, \u03b33]` and `:75` `def \u03b3Down (\u03bc : Fin 4) : Matrix (Fin 4) (Fin 4) \u2102`, with `\u03b30_eq` giving the literal; grep for `IsHermitian` in `EpsilonEridani/` returns no lemma about these matrices.",
+   "file": "EpsilonEridani/QFT/QCD/EnergyMomentumTensor/QuarkPart.lean",
+   "fix": "Add the introduction lemma `\u2200 \u03bc, (spaceTime.\u03b30 * spaceTime.\u03b3Down \u03bc).IsHermitian` \u2014 in a small instantiation file under `EnergyMomentumTensor/` if importing `EpsilonEridani.Relativity.CliffordAlgebraExtensions` into the abstract `QuarkPart.lean` is unwanted.",
+   "issue": "`(\u03b2 * \u03b3 \u03bc).IsHermitian` is a hypothesis of `ofReal_quarkKinetic_apply`, `quarkKinetic_apply_of_isHermitian`, `trace_quarkKinetic`, `trace_quarkPart`, `trace_quarkPart_of_diracEq`, and (via re-export) `Total.lean`'s `trace_total` and `trace_total_of_diracEq`, but no lemma in the repo discharges it for the Dirac gamma matrices the library already has. The module docstring asserts the fact (\"The physical case has each `\u03b2 * \u03b3 \u03bc` Hermitian, as `\u03b3\u2070 \u03b3_\u03bc` is\") without proving it, so every trace theorem in the PR is unusable at a concrete instance.",
+   "line": 0
+  },
+  {
+   "evidence": "`QuarkPart.lean:160` `theorem quarkKinetic_mulVec {U : Matrix m m \u2102} (hU : \u2200 \u03bc, U\u1d34 * (\u03b2 * \u03b3 \u03bc) * U = \u03b2 * \u03b3 \u03bc)`; grep for `unitaryGroup` in `EpsilonEridani/` yields only a comment in `Mathematics/LieAlgebra/SpecialUnitary.lean:58`.",
+   "file": "EpsilonEridani/QFT/QCD/EnergyMomentumTensor/QuarkPart.lean",
+   "fix": "Add the one-line introduction lemma: for `U \u2208 Matrix.unitaryGroup m \u2102` with `Commute U \u03b2` and `\u2200 \u03bc, Commute U (\u03b3 \u03bc)`, derive `U\u1d34 * (\u03b2 * \u03b3 \u03bc) * U = \u03b2 * \u03b3 \u03bc`, and state the gauge-invariance corollary in those terms. `Mathlib.LinearAlgebra.UnitaryGroup` is already in scope through `Isometry.lean`.",
+   "issue": "`quarkKinetic_mulVec`/`quarkPart_mulVec` (and `Total.lean:65` `total_mulVec_gaugeRotate`) take `hU : \u2200 \u03bc, U\u1d34 * (\u03b2 * \u03b3 \u03bc) * U = \u03b2 * \u03b3 \u03bc` with no lemma producing such a `U`. The docstring claims \"A colour gauge transformation, unitary and commuting with `\u03b2` and with the gamma matrices, is such a transformation\", and roadmap \u00a70.2 theorem 2 asks for gauge invariance \"proved by exhibiting the transformation\" \u2014 neither is in the diff. Contrast the gluon side, whose hypothesis `hR : R \u2208 orthogonalGroup \u03b9 \u211d` is directly checkable (`GluonPart.lean:142`).",
+   "line": 160
+  }
+ ],
+ "head_sha": "b4b47612afced64bf2f7d16cd0d275bd2dcf0cb3",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 124,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3c05d1d04f9b541188e3467a0e15f6896fc532598dc051b6983f04ccd7a92c3c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 9,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261014T182030Z-124-api-design-000df4",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-14T18:20:30Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, bodies are unexposed, and the `(rfl)` idiom is used throughout, but two hypotheses carried by nearly every public theorem have no introduction lemma anywhere in the repository, so the API cannot be instantiated at the physical case the docstrings claim it covers.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/EnergyMomentumTensor/GluonPart.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Matrix/Isometry.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Electromagnetism/EnergyMomentumTensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/HadronMassAndEnergyMomentumTensor/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6e347cf3a7f8022675203c1ebeb155ce3ffc8c46234369291da80e3abe52134d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 138995,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 138995,
+  "cache_read_input_tokens": 833750,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3495,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3495,
+    "cache_read_input_tokens": 119849,
+    "input_tokens": 2,
+    "output_tokens": 1562,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15301,
+  "output_tokens_details": {
+   "thinking_tokens": 11747
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
