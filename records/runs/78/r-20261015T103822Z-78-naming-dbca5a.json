@@ -1,0 +1,171 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3909885000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 138.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 96566,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 96566,
+    "cache_read_input_tokens": 307557,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6167,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6167,
+      "cache_read_input_tokens": 90399,
+      "input_tokens": 2,
+      "output_tokens": 3281,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10860,
+    "output_tokens_details": {
+     "thinking_tokens": 8087
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "765d66a3b8b088d76f898e3758d111ccdd82bbd1",
+ "cost_usd": 1.390989,
+ "dedupe_key": "eic/EpsilonEridani|78|bbd6f9895aa35420de28d7ad05b4b9d2c2ea29c6|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "2f89d817f5118bc1db0e9792c0b769ac03234077d6ca3888f57a3efe4cadb2d4",
+ "diff_sha256": "2f89d817f5118bc1db0e9792c0b769ac03234077d6ca3888f57a3efe4cadb2d4",
+ "duration_s": 138.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diffractive/Kinematics/Basic.lean:63 `def delta (K : DisKinematics V) : V := K.p - K.pPrime` vs Exclusive/Kinematics/Basic.lean:64 `def delta (K : ExclKinematics V) : V := K.pPrime - K.p`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "fix": "Keep the sign (the roadmap fixes it) but give it a distinguishing name, e.g. `deltaTarget` (and `deltaTarget_def`, `deltaTarget_congr`), so neither `delta` silently reads as the other convention.",
+   "issue": "`delta K = K.p - K.pPrime`, but the sibling `DIS.Exclusive.Kinematics.ExclKinematics.delta` is `K.pPrime - K.p`. Same name, same physical quantity, opposite sign, in two namespaces of the same DIS subtree; the sign is invisible in `xi`'s and `MX2`'s statements, where it matters (`tMom` is sign-blind, hence the author's own `tMom_eq_pPrime_sub_p_sq`).",
+   "line": 63
+  },
+  {
+   "evidence": "Lines 87/167: `xi_def : xi g K = g (delta K) K.q / g K.p K.q` and `xi_eq_div : xi g K = (...) / (...)`; lines 100/120 and 106/134 for the `MX2`/`MY2` `_def` vs `_eq` pairs; `beta_eq_Q2_div` (line 154) shows the author's own more descriptive pattern.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "fix": "Name from the conclusion: `xi_eq_Q2_add_MX2_sub_tMom_div_Q2_add_W2_sub_p_sq` (or shorter but RHS-bearing), `MX2_eq_two_mul_apply_delta_q_sub_Q2_add_tMom`, `MY2_eq_p_sq_sub_two_mul_apply_p_delta_add_tMom`, `two_mul_apply_delta_q_eq_Q2_add_MX2_sub_tMom`. Note the repo spells `g a b` as `apply` in names (`ExclKinematics.neg_delta_apply_q_add_qPrime`, `Tensors/Longitudinal.lean:220 apply_pTransverse_self`), which `two_mul_delta_q_eq` drops \u2014 the PR description itself calls it `two_mul_apply_delta_q`.",
+   "issue": "`xi_eq_div` names no part of its conclusion \u2014 `xi_def` (line 87) is already an equation with a division, so `_div` distinguishes nothing. Same defect at lines 120 (`MX2_eq`) and 134 (`MY2_eq`), each of which is the non-trivial expansion while the bare-`_def` lemma (lines 100, 106) is the actual definitional equation, and at line 128 (`two_mul_delta_q_eq`).",
+   "line": 167
+  }
+ ],
+ "head_sha": "bbd6f9895aa35420de28d7ad05b4b9d2c2ea29c6",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 78,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "edbba8e5bdd5c4e533f4e63aaf3ae4f60873d311517ea565a619268315c675c0",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261015T103822Z-78-naming-dbca5a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-15T10:38:22Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two naming problems: `delta` duplicates the name of the sibling exclusive-kinematics `delta` with the opposite sign, and several lemmas carry bare `_eq`/`_div` suffixes that do not describe their conclusion and collide conceptually with the `_def` lemma for the same quantity.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8dd488305f6cce5b69fccfb4479a3a4bf80a09057f80a894d55ee06b9f039723",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 96566,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 96566,
+  "cache_read_input_tokens": 307557,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6167,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6167,
+    "cache_read_input_tokens": 90399,
+    "input_tokens": 2,
+    "output_tokens": 3281,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10860,
+  "output_tokens_details": {
+   "thinking_tokens": 8087
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
