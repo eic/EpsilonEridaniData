@@ -1,0 +1,194 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.9756315,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 111.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 124601,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 124601,
+    "cache_read_input_tokens": 272646,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 130,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3128,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3128,
+      "cache_read_input_tokens": 115261,
+      "input_tokens": 32,
+      "output_tokens": 2088,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8283,
+    "output_tokens_details": {
+     "thinking_tokens": 5131
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.975631,
+ "dedupe_key": "eic/EpsilonEridani|119|82b5923d2d91fc5a650255afb56a5fb6b005cf9d|reuse|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "0e050b33fe3657bec61022ed816baa27fe25eff948fb8b1d8a17f032ca2e31bf",
+ "diff_sha256": "0e050b33fe3657bec61022ed816baa27fe25eff948fb8b1d8a17f032ca2e31bf",
+ "duration_s": 111.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Exclusive/Kinematics/Basic.lean:32 `structure ExclKinematics` already carries p, pPrime, k, kPrime, q, qPrime, hqLepton, hMomentum; the PR's own module docstring (line 60-61) states 'No data beyond the exclusive record is needed at this layer.'",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Delete the structure. Define `xi`, `beta`, `MX2` and `x_eq_xi_mul_beta` on `K : ExclKinematics V` (e.g. `namespace ExclKinematics` with a `Diffractive`-flavoured section, or `namespace Diffractive` taking `ExclKinematics V`), so the statement becomes `K.toDisKinematics.xBj g = K.xi g * K.beta g`. Add fields only when a later layer actually needs data beyond the exclusive record.",
+   "issue": "`structure DiffractiveKinematics (V) ... extends ExclKinematics V` adds no fields; it is a thin wrapper type identical to `ExclKinematics V`, forcing every inherited lemma and `toDisKinematics` to go through `D.toExclKinematics` (see the theorem statement `D.toExclKinematics.toDisKinematics.xBj g`).",
+   "line": 73
+  },
+  {
+   "evidence": "Exclusive/Kinematics/Basic.lean:64 `def delta (K : ExclKinematics V) : V := K.pPrime - K.p`; line 91 `lemma delta_eq_q_sub_qPrime (K) : K.delta = K.q - K.qPrime`; Diffractive/Basic.lean:92 `rw [Delta_def, ExclKinematics.delta_eq_q_sub_qPrime, neg_sub]`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Drop all three declarations. Write `xi g K := -g K.delta K.q / g K.p K.q` and `beta g K := K.Q2 g / (2 * -g K.delta K.q)` (or `-(K.Q2 g) / (2 * g K.delta K.q)`), and where `q' - q` is needed use `K.delta_eq_q_sub_qPrime` with `neg_sub` inline.",
+   "issue": "`Delta := -D.delta`, `Delta_def`, and `Delta_eq_qPrime_sub_q` duplicate the existing `ExclKinematics.delta` and `ExclKinematics.delta_eq_q_sub_qPrime` up to a sign; the new lemma's proof is exactly `delta_eq_q_sub_qPrime` followed by `neg_sub`. The record now exposes two names (`D.delta`, `D.Delta`) for \u00b1 the same vector.",
+   "line": 83
+  },
+  {
+   "evidence": "Kinematics/Basic.lean:45 `hq : q = k - kPrime` is Prop-valued, so `Subsingleton.elim _ _` (or `rfl`) closes the goal independently of the definition.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "fix": "Delete the lemma; the five `@[simp]` projection lemmas above it are the complete interface.",
+   "issue": "`toDisKinematics_hq : K.toDisKinematics.hq = K.hqLepton` equates two proofs of the Prop `q = k - kPrime`; by proof irrelevance it holds for any definition of `toDisKinematics` and states nothing.",
+   "line": 200
+  }
+ ],
+ "head_sha": "82b5923d2d91fc5a650255afb56a5fb6b005cf9d",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 119,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "136b49768826ed02037441d2afcc2a8be8367d8075c0cfa6022bac26cf13b453",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261015T172731Z-119-reuse-d31423",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-15T17:27:31Z",
+ "submitted_by": "wdconinc",
+ "summary": "`DiffractiveKinematics V` is a field-free `extends ExclKinematics V`, so the existing `ExclKinematics V` directly replaces it; `Delta` and its two lemmas are a sign-flipped parallel of the existing `ExclKinematics.delta` API. The genuinely new material (`xi`, `beta`, `MX2`, `x_eq_xi_mul_beta`, `toDisKinematics`) should be stated directly on `ExclKinematics`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "da18172d045ed4ffe8ae288e8015d2729bba6ae6fb761226f6ba1813da0c8393",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 124601,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 124601,
+  "cache_read_input_tokens": 272646,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 130,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3128,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3128,
+    "cache_read_input_tokens": 115261,
+    "input_tokens": 32,
+    "output_tokens": 2088,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8283,
+  "output_tokens_details": {
+   "thinking_tokens": 5131
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "block"
+}
