@@ -1,0 +1,169 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2986350000000004,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 118.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 90630,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 90630,
+    "cache_read_input_tokens": 150020,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 98,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6520,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6520,
+      "cache_read_input_tokens": 71937,
+      "input_tokens": 32,
+      "output_tokens": 4052,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8951,
+    "output_tokens_details": {
+     "thinking_tokens": 5893
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60fb876058d080b58e095b9014075db480385012",
+ "cost_usd": 2.298635,
+ "dedupe_key": "eic/EpsilonEridani|82|4735cdc51f71ad198fb87d4c2a0a0a304f8dfb10|proof-quality|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "aecf2f5a00e635ca888d5c87b20be15188f8e4ed39b4764d07de9c7478359adc",
+ "diff_sha256": "aecf2f5a00e635ca888d5c87b20be15188f8e4ed39b4764d07de9c7478359adc",
+ "duration_s": 118.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 231 and 248-249 both contain `rw [tan_eq_sin_div_cos, ...] at ht` on `ht := tan_weakMixingAngle g g'` followed by `linear_combination ht`; line 274 is `((mul_sin_eq_mul_cos_iff_eq_weakMixingAngle hg (weakMixingAngle_mem_Ioo g g')).mpr rfl)`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "fix": "Add `theorem mul_sin_weakMixingAngle_eq_mul_cos {g : \u211d} (hg : g \u2260 0) (g') : g * sin (weakMixingAngle g g') = g' * cos (weakMixingAngle g g')` (one proof via `tan_weakMixingAngle`, `tan_eq_sin_div_cos`, `div_eq_div_iff`), then use it for the `.mpr` direction (`rintro rfl; exact mul_sin_weakMixingAngle_eq_mul_cos hg g'`), for `sin_weakMixingAngle`, and directly as the argument in `rotation_weakMixingAngle_conj_neutralMassMatrix_eq_diagonal`.",
+   "issue": "The reverse direction of `mul_sin_eq_mul_cos_iff_eq_weakMixingAngle` (lines 246-250) and the body of `sin_weakMixingAngle` (lines 230-233) both re-derive `g * sin \u03b8_W = g' * cos \u03b8_W` from `tan_weakMixingAngle` via `tan_eq_sin_div_cos` + `div_eq_div_iff`/`field_simp`; `rotation_weakMixingAngle_conj_neutralMassMatrix_eq_diagonal` (line 274) then recovers the same fact as `(... iff ...).mpr rfl`. The reusable fact is hidden inside an iff.",
+   "line": 246
+  },
+  {
+   "evidence": "Mathlib has `Real.tan_mul_cos {x : \u211d} (hx : cos x \u2260 0) : tan x * cos x = sin x` at mathlib/Mathlib/Analysis/Complex/Trigonometric.lean:645; current lines 229-233 instead go through `hs`, `ht`, `field_simp at ht \u22a2`, `linear_combination ht`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "fix": "Prove `sin \u03b8_W = tan \u03b8_W * cos \u03b8_W` directly: `rw [\u2190 tan_mul_cos (cos_pos_of_mem_Ioo (weakMixingAngle_mem_Ioo g g')).ne', tan_weakMixingAngle, cos_weakMixingAngle hg]; field_simp` (or derive from the factored lemma of the previous finding).",
+   "issue": "`field_simp at ht \u22a2` followed by `linear_combination ht` only closes if `field_simp` produces matching normal forms on the hypothesis and the goal; a change in `field_simp`'s output shape silently changes the required coefficient. Short but brittle.",
+   "line": 232
+  },
+  {
+   "evidence": "Lines 110, 113, 136, 138 each begin a bullet with `simp only [Fin.zero_eta, \u2026]` or `simp only [Fin.mk_one, \u2026]` followed by `ring` or `field_simp; linear_combination`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "fix": "Collapse to `fin_cases i <;> simp <;> ring` (lines 136-139, where `rotation_mulVec` is already `@[simp]` so the preceding `rw` is also redundant) and `fin_cases i <;> simp <;> field_simp <;> linear_combination ...` with the two coefficients given via `<;> [linear_combination g * h; linear_combination -g' * h]`, or state the coordinate equalities as one `funext`-free `Matrix.cons_eq_cons`-style equality.",
+   "issue": "Four `fin_cases` bullets (lines 110-115 and 136-139) each spell out a `simp only [Fin.zero_eta, ...]` / `simp only [Fin.mk_one, ...]` set tied to the exact index representation `fin_cases` produces, with near-identical follow-up tactics. This is the repeated-pattern form of a brittle chain.",
+   "line": 110
+  }
+ ],
+ "head_sha": "4735cdc51f71ad198fb87d4c2a0a0a304f8dfb10",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 82,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "eb157323bfe4bd6e155b1d20d438e8ecc1f0f64f976e3c8b83037238a21bafef",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261015T174559Z-82-proof-quality-0d1dff",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-15T17:45:59Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are short and use robust automation, but the central fact `g * sin \u03b8_W = g' * cos \u03b8_W` is re-derived inline in two places and reached via `.mpr rfl` in a third instead of being stated once; one proof also pairs `field_simp at ht \u22a2` with `linear_combination ht`, which is tied to `field_simp`'s normal form.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b006b77dd6f4751ad4ec5efd32118537ff26f69d071f11f090d7471a7ced1b2e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 90630,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 90630,
+  "cache_read_input_tokens": 150020,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 98,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6520,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6520,
+    "cache_read_input_tokens": 71937,
+    "input_tokens": 32,
+    "output_tokens": 4052,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8951,
+  "output_tokens_details": {
+   "thinking_tokens": 5893
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
