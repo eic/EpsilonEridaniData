@@ -1,0 +1,160 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0669375,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 256.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 142404,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 142404,
+    "cache_read_input_tokens": 280445,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 21024,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 21024,
+      "cache_read_input_tokens": 110207,
+      "input_tokens": 2,
+      "output_tokens": 4640,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20105,
+    "output_tokens_details": {
+     "thinking_tokens": 17449
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.066937,
+ "dedupe_key": "eic/EpsilonEridani|120|adcfc5bcdb5dbb301565bec995ad5cd3d0be367c|correctness|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "e1890721bda00ad337266cd543b991cefa9f7d5f793b02638d4be80b63b6cbae",
+ "diff_sha256": "e1890721bda00ad337266cd543b991cefa9f7d5f793b02638d4be80b63b6cbae",
+ "duration_s": 256.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Contract `W^A_{\u03bc\u03bd}=\u03b5_{\u03bc\u03bd\u03b1\u03b2}q^\u03b1(c\u2081S^\u03b2+c\u2082((p\u00b7q)S^\u03b2\u2212(S\u00b7q)p^\u03b2))` with the massless-lepton antisymmetric leptonic tensor `\u03b5^{\u03bc\u03bd\u03b1\u03b2}k_\u03b1q_\u03b2`, using `\u03b5^{\u03bc\u03bd\u03b1\u03b2}\u03b5_{\u03bc\u03bd\u03b3\u03b4}=\u22122(\u03b4^\u03b1_\u03b3\u03b4^\u03b2_\u03b4\u2212\u03b4^\u03b1_\u03b4\u03b4^\u03b2_\u03b3)` and `S\u00b7p=0`, `S\u00b7k=\u2212(p\u00b7k)/M`, `S\u00b7q=\u2212MQ\u00b2/(2p\u00b7k)\u2212(p\u00b7q)/M` for the repo's own `longitudinalSpin` (Polarized/Kinematics.lean:114). The result is `y\u00b7B = c\u2081(p\u00b7q)/M\u00b7[1\u2212y/2\u2212\u03b3\u00b2y\u00b2/4] \u2212 c\u2082(p\u00b7q)\u00b2\u03b3\u00b2y/(2M)` with `\u03b3\u00b2 = M\u00b2Q\u00b2/(p\u00b7q)\u00b2` (matching `DisKinematics.gammaSq`, TargetMass.lean:69). The PR's `c\u2081 = M g\u2081/(p\u00b7q)` reproduces the standard longitudinal weight `(1\u2212y/2\u2212\u03b3\u00b2y\u00b2/4) g\u2081` exactly, which fixes the normalisation; the standard companion term `\u2212(\u03b3\u00b2y/2) g\u2082` then forces `c\u2082 = M g\u2082/(p\u00b7q)\u00b2`, not `g\u2082/(M(p\u00b7q))`. Consistency check against roadmap \u00a70.3's `A\u2081=(g\u2081\u2212\u03b3\u00b2g\u2082)/F\u2081`, `A\u2082=\u03b3(g\u2081+g\u2082)/F\u2081`: with the PR's `c\u2082` these acquire a spurious `(p\u00b7q)/M\u00b2`. Note `exists_fromG1G2_ne_zero` cannot detect the error: its witness has `p\u00b7q = 1 = M\u00b2`, the one point where the two prefactors coincide.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Use `\u221a(K.M2 g) / g K.p K.q ^ 2 * G.g2 (K.xBj g) (K.Q2 g)` in `IsG1G2Decomposition` and in `fromG1G2_isDecomposition`, and update the three docstrings to `M/(p\u00b7q)\u00b2`. This contradicts roadmap \u00a70.2 / Convention 4, which states `1/(M (p\u00b7q))`; raise the convention with the humans rather than keeping the current coefficient, since the roadmap's own \u00a70.3 relations are the standard ones and are incompatible with it.",
+   "issue": "The second coefficient `(\u221a(K.M2 g))\u207b\u00b9 / g K.p K.q * G.g2 \u2026` is `g\u2082/(M(p\u00b7q))`; the correct prefactor for `E\u2082 = \u03b5(v,w,q,(p\u00b7q)S\u2212(S\u00b7q)p)` with `S\u00b7S = \u22121` is `M g\u2082/(p\u00b7q)\u00b2`. The two differ by the dimensionless kinematic factor `(p\u00b7q)/M\u00b2 = \u03bd/M`, so dimensional analysis (the justification given) does not fix the choice and the definition silently redefines `g\u2082`. Same wrong prefactor appears at lines 29 (module docstring), 171 (def docstring) and 186 (`fromG1G2_isDecomposition`).",
+   "line": 178
+  }
+ ],
+ "head_sha": "adcfc5bcdb5dbb301565bec995ad5cd3d0be367c",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "ee05f8932b5daa6d070a81ae6e73cea600a707cbf9cdfca42e8c1bc4506b9587",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "correctness",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261015T095212Z-120-correctness-79c3a7",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-15T09:52:12Z",
+ "submitted_by": "wdconinc",
+ "summary": "The two covariant structures, their alternation/conservation lemmas, the non-degeneracy witness and `isPolarizedDecomposition_iff` are faithful, but the `E\u2082` coefficient in `IsG1G2Decomposition` is `1/(M(p\u00b7q))` where the standard decomposition requires `M/(p\u00b7q)\u00b2`; as defined, the `g\u2082` of the predicate is off by the dimensionless factor `(p\u00b7q)/M\u00b2` and is not the literature's `g\u2082`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "698633d7ac6508faa01eb8bc931ecc17c2d0e2468170489232e152e14f2e2414",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 142404,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 142404,
+  "cache_read_input_tokens": 280445,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 21024,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 21024,
+    "cache_read_input_tokens": 110207,
+    "input_tokens": 2,
+    "output_tokens": 4640,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20105,
+  "output_tokens_details": {
+   "thinking_tokens": 17449
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

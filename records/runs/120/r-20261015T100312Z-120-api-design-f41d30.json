@@ -1,0 +1,220 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0766574999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 181.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 131913,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 131913,
+    "cache_read_input_tokens": 796355,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4814,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4814,
+      "cache_read_input_tokens": 115178,
+      "input_tokens": 2,
+      "output_tokens": 3814,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14370,
+    "output_tokens_details": {
+     "thinking_tokens": 9717
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.076657,
+ "dedupe_key": "eic/EpsilonEridani|120|adcfc5bcdb5dbb301565bec995ad5cd3d0be367c|api-design|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "e1890721bda00ad337266cd543b991cefa9f7d5f793b02638d4be80b63b6cbae",
+ "diff_sha256": "e1890721bda00ad337266cd543b991cefa9f7d5f793b02638d4be80b63b6cbae",
+ "duration_s": 181.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "code/.../Tensors/Basic.lean:685 `structure UniquenessAssumptions`, :706 `fromF1F2_ne_zero \u2026 (hU : UniquenessAssumptions g K)`, :962/:982/:1035 named `gWit`/`kWit`/`uniquenessWit`; code/.../Polarized/Kinematics.lean:284-345 `namespace Witness` with `kPol : DisKinematics (\u211d \u00d7 \u211d \u00d7 \u211d)`, `longitudinalPol`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Mirror the symmetric case: name the witness data publicly in a `Witness` namespace (`\u03b7Wit`, the four-form, `kWit4 : PolarizedKinematics \u03b7Wit`) with `@[simp]` accessors, and state a general `fromG1G2_ne_zero (hU : \u2026) (h : c\u2081 \u2260 0 \u2228 c\u2082 \u2260 0) : fromG1G2 \u03b5 K c\u2081 c\u2082 \u2260 0` against an explicit probe-pair hypothesis structure, with the witness instantiating it.",
+   "issue": "`exists_fromG1G2_ne_zero` wraps both the non-degeneracy statement and its witness in one existential: no consumer can conclude `fromG1G2 \u03b5 K c\u2081 c\u2082 \u2260 0` for their own `K`, and the Minkowski metric, four-form and `PolarizedKinematics` built in the proof are unreachable \u2014 yet they are the repo's only 4-dimensional polarized kinematics (the existing `Polarized.Witness.kPol` lives on `\u211d \u00d7 \u211d \u00d7 \u211d`, where every `[\u22c0^Fin 4]\u2192\u2097` form is zero), so roadmap 0.3's `fromG1G2 g K c\u2081 c\u2082` examples must rebuild them.",
+   "line": 213
+  },
+  {
+   "evidence": "Lines 175-178 define the predicate; the only lemmas mentioning it are 182 (intro) and 195/199/203 (isAlt, conserved), all of which go through `h \u25b8`. The analogue `IsF1F2Decomposition` (Tensors/Basic.lean:613) is itself a `\u2200 v w` equation, so `hW v w` is directly usable (Tensors/Longitudinal.lean:271,291).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Add `theorem IsG1G2Decomposition.eq (h) : W = fromG1G2 \u03b5 K (\u221a(K.M2 g) / g K.p K.q * G.g1 \u2026) (\u2026) := h` and `theorem IsG1G2Decomposition.apply (h) (v w) : W v w = \u2026 * spinStructureOne \u03b5 K v w + \u2026 * spinStructureTwo \u03b5 K v w`.",
+   "issue": "`IsG1G2Decomposition` has no `_def`/`eq`/`apply` restatement. A consumer holding `h` can get only `.isAlt` and `.conserved_left/right`; to obtain the actual tensor \u2014 what Layer 0.3 contracts to form \u03c3_TT\u2032, \u03c3_LT\u2032 \u2014 it must unfold the `def`, which works only because the whole file is `@[expose]`.",
+   "line": 175
+  },
+  {
+   "evidence": "code/.../Polarized/Kinematics.lean:79 `def reverse`, :90 `@[simp] reverse_S : K.reverse.S = -K.S`, module docstring lines 20-23 (\"reversing the target spin (`PolarizedKinematics.reverse`) is what a measured cross-section difference compares\"); `grep reverse` in Tensor.lean has no hit.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Add `@[simp] spinStructureOne_reverse : spinStructureOne \u03b5 K.reverse = -spinStructureOne \u03b5 K`, the `spinStructureTwo_reverse` and `fromG1G2_reverse` analogues, and either a lemma for the `\u03b5 \u21a6 -\u03b5` behaviour or drop that claim from the docstring.",
+   "issue": "No interaction with the operation in scope on the argument: `PolarizedKinematics.reverse` (S \u21a6 \u2212S). `spinStructureOne/Two` and `fromG1G2` are odd under it, which is the defining property of the spin-dependent tensor and what a cross-section difference compares, but no lemma states it, so consumers must unfold to `\u03b5`. The same gap applies to the \u03b5-linearity the module docstring asserts (lines 38-40: `\u03b5 \u21a6 -\u03b5` flips both signs) with no corresponding lemma.",
+   "line": 79
+  },
+  {
+   "evidence": "code/.../Tensors/Basic.lean:275 `@[simp] lemma lMuNuOdd_apply_self \u2026 := \u03b5.bilinMap_apply_self _ v` alongside :270 `isAlt_lMuNuOdd`; code/.../Alternating/BilinMap.lean:57-59 `@[simp] bilinMap_apply_self`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Add `@[simp] spinStructureOne_apply_self`, `spinStructureTwo_apply_self` and `fromG1G2_apply_self`, as the parallel odd-leptonic API does.",
+   "issue": "The diagonal-vanishing normal forms are missing as `@[simp]` lemmas: `simp` cannot close `spinStructureOne \u03b5 K v v = 0`, `spinStructureTwo \u03b5 K v v = 0` or `fromG1G2 \u03b5 K c\u2081 c\u2082 v v = 0`, because the upstream `@[simp] bilinMap_apply_self` cannot see through `spinStructureOne`. The `_isAlt` lemmas (100, 105, 146) package the fact but do not fire; the conservation lemmas were given `@[simp]` for exactly this reason.",
+   "line": 100
+  }
+ ],
+ "head_sha": "adcfc5bcdb5dbb301565bec995ad5cd3d0be367c",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "5742487c6729699c51bf8398779e3bec928ade9459d5b86773c1f0d2f5f9d595",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261015T100312Z-120-api-design-f41d30",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-15T10:03:12Z",
+ "submitted_by": "wdconinc",
+ "summary": "The roadmap's named products (`fromG1G2`, `IsG1G2Decomposition`, `fromG1G2_isDecomposition`, `isPolarizedDecomposition_iff`) are present and the structure-level alternation/conservation API is annotated, but the characteristic API is incomplete: the decomposition predicate has no `_def`/pointwise restatement, the 4D witness data is locked inside an existential instead of being named as the sibling `Witness` namespaces do, there is no interaction with the in-scope `PolarizedKinematics.reverse`, and the diagonal-vanishing simp lemmas of the parallel `lMuNuOdd` API are missing.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "59b406bc683d963d6f311b497028e85e193321cd7c23ba5c00c513145e4d830c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 131913,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 131913,
+  "cache_read_input_tokens": 796355,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4814,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4814,
+    "cache_read_input_tokens": 115178,
+    "input_tokens": 2,
+    "output_tokens": 3814,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14370,
+  "output_tokens_details": {
+   "thinking_tokens": 9717
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

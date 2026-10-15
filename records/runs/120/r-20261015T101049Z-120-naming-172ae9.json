@@ -1,0 +1,182 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8312655,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 155.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 132829,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 132829,
+    "cache_read_input_tokens": 386831,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8733,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8733,
+      "cache_read_input_tokens": 103589,
+      "input_tokens": 2,
+      "output_tokens": 4240,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12380,
+    "output_tokens_details": {
+     "thinking_tokens": 8871
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.831265,
+ "dedupe_key": "eic/EpsilonEridani|120|adcfc5bcdb5dbb301565bec995ad5cd3d0be367c|naming|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "e1890721bda00ad337266cd543b991cefa9f7d5f793b02638d4be80b63b6cbae",
+ "diff_sha256": "e1890721bda00ad337266cd543b991cefa9f7d5f793b02638d4be80b63b6cbae",
+ "duration_s": 155.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Tensor.lean:136-137 vs 177-178; roadmap README.md:392-400 defines `fromG1G2` as producing the displayed `(M/(p\u00b7q))\u00b7g1\u00b7E\u2081 + (1/(M(p\u00b7q)))\u00b7g2\u00b7E\u2082` from two reals and says it 'should be named and shaped to match' `IsF1F2Decomposition`/`fromF1F2`; README.md:478 expects the 0.3 inversion applied to `fromG1G2 g K c\u2081 c\u2082` to return `c\u2081`, `c\u2082`, which holds only if those reals are g\u2081, g\u2082.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Fold the kinematic prefactors into `fromG1G2` so its two reals are the g\u2081, g\u2082 values (`fromG1G2 \u03b5 K g1 g2 = (\u221a(M2)/(p\u00b7q) * g1) \u2022 E\u2081 + ((\u221a(M2))\u207b\u00b9/(p\u00b7q) * g2) \u2022 E\u2082`), letting `IsG1G2Decomposition` read `W = fromG1G2 \u03b5 K (G.g1 (K.xBj g) (K.Q2 g)) (G.g2 \u2026)`; or keep the plain combination under a coefficient-neutral name (e.g. `spinCombination`) and reserve `fromG1G2` for the prefactored constructor.",
+   "issue": "`fromG1G2 \u03b5 K c\u2081 c\u2082 = c\u2081 \u2022 E\u2081 + c\u2082 \u2022 E\u2082` takes the bare coefficients of E\u2081, E\u2082, not g\u2081 and g\u2082: `IsG1G2Decomposition` (177-178) must itself insert `\u221a(K.M2 g)/g K.p K.q *` and `(\u221a(K.M2 g))\u207b\u00b9/g K.p K.q *`. The name promises the structure functions, so `fromG1G2 \u03b5 K (G.g1 x Q2) (G.g2 x Q2)` silently yields a tensor off by `M/(p\u00b7q)` \u2014 unlike `fromF1F2 g K F1 F2` (Tensors/Basic.lean:620), whose arguments are the structure functions and which `IsF1F2Decomposition g K W F1 F2` consumes unchanged. Same name applies to `fromG1G2_apply` (140), `fromG1G2_isAlt` (146), `tensorAssumptions_fromG1G2` (152), `fromG1G2_conserved_left/right` (157, 162) and `fromG1G2_isDecomposition` (182), which for this reason has to spell the prefactors out instead of being the characterising lemma `fromF1F2_isDecomposition` (Tensors/Basic.lean:632) is.",
+   "line": 136
+  },
+  {
+   "evidence": "Tensor.lean:213-215 statement; Tensor.lean:32-33 'exhibits Minkowski kinematics on \u211d\u2074 on which E\u2081 and E\u2082 are linearly independent'; contrast Tensors/Basic.lean:312-314.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Name it for the conclusion it proves, e.g. `exists_spinStructure_linearIndependent` (optionally restating as `LinearIndependent \u211d ![spinStructureOne \u03b5 K, spinStructureTwo \u03b5 K]`), or at minimum `exists_fromG1G2_ne_zero_of_coeff_ne_zero`.",
+   "issue": "`exists_fromG1G2_ne_zero` names the conclusion of the much weaker `exists_lMuNuOdd_ne_zero` pattern (Tensors/Basic.lean:312, `\u2203 \u03b5 K, lMuNuOdd \u03b5 K \u2260 0`), while the statement is the linear independence of E\u2081 and E\u2082 (`\u2200 c\u2081 c\u2082, (c\u2081 \u2260 0 \u2228 c\u2082 \u2260 0) \u2192 fromG1G2 \u03b5 K c\u2081 c\u2082 \u2260 0`), which is what the docstring and module header advertise as the non-degeneracy witness.",
+   "line": 213
+  }
+ ],
+ "head_sha": "adcfc5bcdb5dbb301565bec995ad5cd3d0be367c",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "43c7229626d4d44c78a25783386fd6c34f9b8e7130aeff7793fc5f6ce99933c9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261015T101049Z-120-naming-172ae9",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-15T10:10:49Z",
+ "submitted_by": "wdconinc",
+ "summary": "`fromG1G2` is named for g\u2081/g\u2082 but takes the raw coefficients of E\u2081/E\u2082, so `fromG1G2 \u03b5 K (G.g1 x Q2) (G.g2 x Q2)` is not the decomposed tensor; `exists_fromG1G2_ne_zero` names a weaker conclusion than it proves. Everything else matches the `fromF1F2`/`lMuNuOdd` precedent and the roadmap names.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9ef7361a5898bac42e6cca2b772533e4531ba99909cada97b79637836d5b44fd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 132829,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 132829,
+  "cache_read_input_tokens": 386831,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8733,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8733,
+    "cache_read_input_tokens": 103589,
+    "input_tokens": 2,
+    "output_tokens": 4240,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12380,
+  "output_tokens_details": {
+   "thinking_tokens": 8871
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
