@@ -1,0 +1,192 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2513955,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 274.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 143570,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 143570,
+    "cache_read_input_tokens": 636031,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5908,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5908,
+      "cache_read_input_tokens": 111055,
+      "input_tokens": 2,
+      "output_tokens": 4690,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19904,
+    "output_tokens_details": {
+     "thinking_tokens": 16594
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.251396,
+ "dedupe_key": "eic/EpsilonEridani|117|b436e90e6f809ba50192f5f678c9b92451b1ac55|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "b0dda60ccde8a8a2c624af9acdf54976547458905b00c2b60c807da959705b56",
+ "diff_sha256": "b0dda60ccde8a8a2c624af9acdf54976547458905b00c2b60c807da959705b56",
+ "duration_s": 274.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 192/254 use `_two` for the index `2`; lines 306-310 state `\u2200 n`, with `two` coming from `Units.mk0 2 h2`, and the proof term is literally `betaCoeff_transformBeta_rescale_mk0 h2 \u03b2 n`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "fix": "Rename so the numeral cannot be read as the index (e.g. `betaCoeff_transformBeta_rescale_mk0_unit_two`), or drop the lemma: its body is `betaCoeff_transformBeta_rescale_mk0 h2 \u03b2 n` verbatim with no instantiation of `n`.",
+   "issue": "`betaCoeff_transformBeta_rescale_mk0_two` uses `_two` for the rescaling unit `u = 2`, but the same suffix means the coefficient index in `betaCoeff_transformBeta_two` (line 192) and `betaCoeff_transformBeta_cubicSchemeChange_two` (line 254); the statement here is for all `n`, so the name reads as the three-loop case and is not.",
+   "line": 306
+  },
+  {
+   "evidence": "Substitution.lean:169 `lemma coeff_one_toPowerSeries_inv (F) : coeff 1 F\u207b\u00b9.toPowerSeries = \u2026` versus BetaFunction.lean:239 `coeff 1 (cubicSchemeChange c\u2081 c\u2082).toPowerSeries = 1`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "fix": "Rename to `coeff_one_toPowerSeries_cubicSchemeChange`, `coeff_two_\u2026`, `coeff_three_\u2026`, matching `toPowerSeries_cubicSchemeChange` (line 234) and `SubstGroup.coeff_one_toPowerSeries_inv`.",
+   "issue": "`coeff_one_cubicSchemeChange`, `coeff_two_cubicSchemeChange` (243) and `coeff_three_cubicSchemeChange` (248) name a `SubstGroup R` element, but the LHS is `coeff k (cubicSchemeChange c\u2081 c\u2082).toPowerSeries` \u2014 `coeff` is not applied to a `cubicSchemeChange`. The PR's own sibling lemmas keep the projection in the name.",
+   "line": 238
+  }
+ ],
+ "head_sha": "b436e90e6f809ba50192f5f678c9b92451b1ac55",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 117,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fd54635ee66172bf6cfb51ca63cfe220dbf88f1c89dd8be58a5c4c2d7bf33cd1",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261016T145219Z-117-naming-431b90",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-16T14:52:19Z",
+ "submitted_by": "wdconinc",
+ "summary": "Namespaces and most names are conventional, but one lemma's `_two` suffix denotes the rescaling factor while the same suffix means the coefficient index everywhere else in the file, and three coefficient lemmas name a `SubstGroup` element where the statement is about its `toPowerSeries`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Units",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries/Derivative.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b9357a0cae22001ef3382a6c3f44dd63a3c18930236191e9c4f9594715e7af11",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 143570,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 143570,
+  "cache_read_input_tokens": 636031,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5908,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5908,
+    "cache_read_input_tokens": 111055,
+    "input_tokens": 2,
+    "output_tokens": 4690,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19904,
+  "output_tokens_details": {
+   "thinking_tokens": 16594
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

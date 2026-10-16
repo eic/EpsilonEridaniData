@@ -1,0 +1,193 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.804784,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 226.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 117635,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 117635,
+    "cache_read_input_tokens": 451678,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7824,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7824,
+      "cache_read_input_tokens": 93126,
+      "input_tokens": 2,
+      "output_tokens": 4037,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16101,
+    "output_tokens_details": {
+     "thinking_tokens": 12469
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.804784,
+ "dedupe_key": "eic/EpsilonEridani|117|b436e90e6f809ba50192f5f678c9b92451b1ac55|proof-quality|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "b0dda60ccde8a8a2c624af9acdf54976547458905b00c2b60c807da959705b56",
+ "diff_sha256": "b0dda60ccde8a8a2c624af9acdf54976547458905b00c2b60c807da959705b56",
+ "duration_s": 226.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 164-170: `simp [...] at h\u2082 h\u2083 h\u2084` then `refine \u27e8?_, ?_, ?_\u27e9` / `linear_combination h\u2082` etc. \u2014 the tactic consuming the hypotheses depends on their post-simp form.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "fix": "Make it `simp only [...]` with the (already explicit) lemma list, extended with whatever arithmetic/zero-clearing lemmas the expansion needs, so only named rewrites are used; keep the explanatory comment.",
+   "issue": "`simp [coeff_subst_eq_sum_range \u2026, Finset.sum_range_succ, coeff_mul, \u2026] at h\u2082 h\u2083 h\u2084` is a non-terminal call with the *full* default simp set; the three following `linear_combination h\u2082 / h\u2083 / h\u2084` only close their goals if simp leaves h\u2082/h\u2083/h\u2084 in a ring-equivalent shape. Any change to the ambient simp set silently breaks the lemma, and nothing in the proof pins the normal form.",
+   "line": 164
+  },
+  {
+   "evidence": "`Mathlib/Algebra/Group/Units/Defs.lean:503  theorem unit_spec (h : IsUnit a) : \u2191h.unit = a := rfl` (`@[simp]`); `Mathlib/RingTheory/PowerSeries/Substitution.lean:583  lemma coeff_one_substInvOfIsUnit : (P.substInvOfIsUnit hP').coeff 1 = hP'.unit\u207b\u00b9`.",
+   "file": "EpsilonEridani/Mathematics/RingTheory/PowerSeries/Substitution.lean",
+   "fix": "Prove `coe_linearCoeff` with `F.isUnit_coeff_one_toPowerSeries.unit_spec`, and derive line 169-172 by `rw [toPowerSeries_inv, coeff_one_substInvOfIsUnit]` plus a congruence through `coe_linearCoeff`/`Units.ext` rather than letting `exact` do it up to defeq.",
+   "issue": "`coe_linearCoeff` is proved `(rfl)`, relying on defeq through two wrappers: `DFunLike.coe` of the `MonoidHom` structure literal and `IsUnit.unit`'s `Units.copy`. The same undocumented defeq is used at line 172, where `exact coeff_one_substInvOfIsUnit _ _` closes `coeff 1 F\u207b\u00b9.toPowerSeries = ((linearCoeff F)\u207b\u00b9 : R\u02e3)` only because `linearCoeff F` unfolds to `F.isUnit_coeff_one_toPowerSeries.unit`.",
+   "line": 164
+  },
+  {
+   "evidence": "grep `:= \\(rfl\\)` \u2192 only the two new files (8 hits); grep `:= rfl$` \u2192 58 hits in 19 pre-existing files; no script in `scripts/` or `.github/` matches on `rfl`.",
+   "file": "",
+   "fix": "Write `:= rfl`, matching the rest of the repo (and, for the two sites crossing a wrapper, the named lemmas requested above).",
+   "issue": "All eight pure-unfolding lemmas in the PR are written `:= (rfl)` (Substitution.lean:113, 117, 121, 164, 183; BetaFunction.lean:91, 101, 235). The parenthesised form appears nowhere else in the repo, which uses `:= rfl` in 58 places across 19 files, and nothing documents the deviation.",
+   "line": 0
+  }
+ ],
+ "head_sha": "b436e90e6f809ba50192f5f678c9b92451b1ac55",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 117,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9b2198aad21efb13245c5bee4900f09e42ae0c3e43a5337f409ba2011d7c3f48",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261016T145934Z-117-proof-quality-7fa5d7",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-16T14:59:34Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two proof-robustness issues: a non-terminal default-simp-set call whose output shape three subsequent `linear_combination`s depend on, and rfl/`exact` proofs that cross the `IsUnit.unit` and `MonoidHom` coercion wrappers by definitional equality where named lemmas exist. Everything else (linear_combination usage, proof lengths, factoring) is fine.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Units",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/.github",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "cdaae4a5b65271778f85a893bd34e3e79c65ad81320e6653055c307a95a6e5fa",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 117635,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 117635,
+  "cache_read_input_tokens": 451678,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7824,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7824,
+    "cache_read_input_tokens": 93126,
+    "input_tokens": 2,
+    "output_tokens": 4037,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16101,
+  "output_tokens_details": {
+   "thinking_tokens": 12469
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,186 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7358280000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 212.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 115806,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 115806,
+    "cache_read_input_tokens": 367716,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4292,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4292,
+      "cache_read_input_tokens": 94249,
+      "input_tokens": 2,
+      "output_tokens": 8895,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15754,
+    "output_tokens_details": {
+     "thinking_tokens": 11986
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.735828,
+ "dedupe_key": "eic/EpsilonEridani|117|b436e90e6f809ba50192f5f678c9b92451b1ac55|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "b0dda60ccde8a8a2c624af9acdf54976547458905b00c2b60c807da959705b56",
+ "diff_sha256": "b0dda60ccde8a8a2c624af9acdf54976547458905b00c2b60c807da959705b56",
+ "duration_s": 212.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 306-310: statement identical to lines 297-300 under `u := 2`, `hu := h2`; proof term is the general lemma applied with no specialisation.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "fix": "State the \u00a72.1 conversion lemma over `\u211d` (roadmap line 593: \"The beta function is `PowerSeries \u211d`\") or over `[Field K] [CharZero K]`, so `two_ne_zero` is discharged internally and the lemma is hypothesis-free \u2014 that is the content the general lemma does not already give. Otherwise delete it.",
+   "issue": "`betaCoeff_transformBeta_rescale_mk0_two` is a definitional alias: its statement is `betaCoeff_transformBeta_rescale_mk0` with `u := 2`, its proof is `betaCoeff_transformBeta_rescale_mk0 h2 \u03b2 n` verbatim, and the caller must still supply `h2 : (2 : K) \u2260 0`. It adds no API over the general lemma.",
+   "line": 306
+  },
+  {
+   "evidence": "Lines 174-204 all conclude `coeff 1 F.toPowerSeries ^ k * betaCoeff \u2026 = \u2026`; Substitution.lean:153 defines `linearCoeff : SubstGroup R \u2192* R\u02e3` and Substitution.lean:174 `mem_ker_linearCoeff_iff`, neither referenced in BetaFunction.lean.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "fix": "Add solved forms phrased with the accessor, e.g. `betaCoeff (transformBeta F \u03b2) 0 = \u2191(linearCoeff F)\u207b\u00b9 * betaCoeff \u03b2 0` (and the `u\u207b\u00b9\u00b2`, `u\u207b\u00b9\u2075` analogues), derived from the existing lemmas by `Units.inv_mul_cancel_left`. This also gives `linearCoeff`, `coe_linearCoeff` and `mem_ker_linearCoeff_iff` a consumer.",
+   "issue": "`betaCoeff_transformBeta_zero/_one/_two` are exposed only as `u^k * \u03b2\u2099' = \u2026`, never solved for `\u03b2\u2099'`. Since `u` is a unit this is always solvable, but a consumer cannot get `\u03b2\u2099'` by `ring`/`field_simp` \u2014 they must redo the `IsUnit.mul_left_cancel` step the proofs already perform internally. The canonical accessor for `u`, `SubstGroup.linearCoeff`, has zero consumers (grep: `linearCoeff` appears only in Substitution.lean), so the public API spells the same quantity two ways: `linearCoeff F` and `coeff 1 F.toPowerSeries`.",
+   "line": 174
+  },
+  {
+   "evidence": "Lines 34-35 and 117-128: `transformBeta_one` and `transformBeta_mul` are the two action axioms; no `MulAction`, `transformBeta_inv`, or injectivity declaration exists in either file.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "fix": "Either register the `MulAction` so `inv_smul_smul`/`smul_left_cancel` come for free, or add `transformBeta_inv_transformBeta : transformBeta F\u207b\u00b9 (transformBeta F \u03b2) = \u03b2` and the injectivity of `transformBeta F`.",
+   "issue": "The module docstring states `transformBeta` \"is an action of the substitution group\" and the file proves exactly `one_smul` (`transformBeta_one`) and `mul_smul` (`transformBeta_mul`), but neither a `MulAction (SubstGroup R) R\u27e6X\u27e7` instance nor the cancellation consequences are exposed. A consumer who has `\u03b2' = transformBeta F \u03b2` and needs `\u03b2 = transformBeta F\u207b\u00b9 \u03b2'` \u2014 which the remaining \u00a72.4 corollary comparing two schemes' `\u039b` will need \u2014 has to re-derive it.",
+   "line": 124
+  },
+  {
+   "evidence": "Lines 179-204: `def rescale (u : R\u02e3) : SubstGroup R` plus `rescale_one` (191), `rescale_mul` (196), `rescale_inv` (203) proved by hand; `linearCoeff_rescale` (186) is the retraction half of a splitting that is never stated as such.",
+   "file": "EpsilonEridani/Mathematics/RingTheory/PowerSeries/Substitution.lean",
+   "fix": "Define `rescale : R\u02e3 \u2192* SubstGroup R` with `rescale_one`/`rescale_mul` as its hom fields; `rescale_inv` then becomes `map_inv` and `map_pow`/`map_zpow` come free, and `linearCoeff_rescale` reads as the splitting `linearCoeff.comp rescale = .id`.",
+   "issue": "`SubstGroup.rescale` is characterised by three loose lemmas (`rescale_one`, `rescale_mul`, `rescale_inv`) rather than bundled as the monoid hom `R\u02e3 \u2192* SubstGroup R` splitting `linearCoeff`. Consumers iterating a normalisation change (`rescale (u ^ n)`) have no `rescale_pow`/`rescale_zpow` and must reprove them.",
+   "line": 179
+  }
+ ],
+ "head_sha": "b436e90e6f809ba50192f5f678c9b92451b1ac55",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 117,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5740143f9d71bd53a756701c94f320f245dfc90ccd68dabe94bab3b43f13f61d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261016T144109Z-117-api-design-71e0eb",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-16T14:41:09Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and extensional, but the coefficient-transformation theorems are exposed only in un-solved form (`u^k * \u03b2\u2099' = \u2026`), the `linearCoeff` accessor the file defines for exactly that purpose has no consumer, and `betaCoeff_transformBeta_rescale_mk0_two` is a verbatim instance of the general lemma. The group action `transformBeta` is also missing its cancellation lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a3e45f4d682150e689bdced4bb936faad31691650d3603ee10bb0013d5c9a655",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 115806,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 115806,
+  "cache_read_input_tokens": 367716,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4292,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4292,
+    "cache_read_input_tokens": 94249,
+    "input_tokens": 2,
+    "output_tokens": 8895,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15754,
+  "output_tokens_details": {
+   "thinking_tokens": 11986
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
