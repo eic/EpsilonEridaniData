@@ -1,0 +1,200 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1554375,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 197.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 150744,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 150744,
+    "cache_read_input_tokens": 554755,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6424,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6424,
+      "cache_read_input_tokens": 115914,
+      "input_tokens": 2,
+      "output_tokens": 6174,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14822,
+    "output_tokens_details": {
+     "thinking_tokens": 11161
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.155438,
+ "dedupe_key": "eic/EpsilonEridani|126|3d008f4248daa78413ed5c46ff296f0ce912ee90|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "e2c09e1985e6dae4c5363b93c909acf8492e750aeabe9992ee6e366b308d8bab",
+ "diff_sha256": "e2c09e1985e6dae4c5363b93c909acf8492e750aeabe9992ee6e366b308d8bab",
+ "duration_s": 197.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Analysis/InnerProductSpace/Basic.lean:120 `real_inner_smul_right (x y : F) (r : \u211d) : \u27eax, r \u2022 y\u27eb_\u211d = r * \u27eax, y\u27eb_\u211d`; in-repo precedent EpsilonEridani/QFT/Factorization/Convolution/Algebra.lean:138 `mellinConv_smul_right : mellinConv f (c \u2022 g) = c \u2022 mellinConv f g`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Rename to something naming the conclusion, e.g. `rapidity_smul_right_eq_artanh` (mirroring Mathlib's `inner_smul_right_eq_smul`), or `rapidity_smul_eq_artanh_mul_div`.",
+   "issue": "`rapidity_smul_right` states `v.rapidity (c \u2022 n) = artanh (c * \u27eav.spatialPart, n\u27eb_\u211d / v.timeComponent)`, not the pull-out `= c * v.rapidity n` that the `_smul_right` suffix advertises (and which is false here). The name promises homogeneity the statement does not have.",
+   "line": 61
+  },
+  {
+   "evidence": "Declaration at MinkowskiProductExtensions.lean:68-73 takes `(ht : v.timeComponent = a) (hv : v.spatialPart = a \u2022 n)`; naming-conventions \"the word 'of' is used to separate these hypotheses\u2026 listed in the order they appear\".",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "fix": "Rename to `minkowskiProduct_self_eq_zero_of_timeComponent_eq_of_spatialPart_eq_smul`, listing the hypotheses in argument order.",
+   "issue": "`minkowskiProduct_self_eq_zero_of_spatialPart_eq_smul` omits the hypothesis that carries the content, `ht : v.timeComponent = a`. Read as written, it claims any vector with spatial part `a \u2022 n` is null, which is false; and it is indistinguishable from the sibling `minkowskiProduct_self_eq_mul_of_spatialPart_eq_smul` (line 53), which genuinely needs only `hv`.",
+   "line": 68
+  },
+  {
+   "evidence": "InvariantMass.lean:134-136 vs `targetEnergy_add_momentum_eq_sqrt_mul_exp_neg_rapidity` (line 157) and `exp_rapidity_mul_targetEnergy_add_momentum` (line 167), where `add` denotes an actual sum in the statement.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Drop the token: `exp_two_mul_rapidity_of_realPhoton`.",
+   "issue": "`exp_two_mul_rapidity_add_of_realPhoton` has a dangling `add`: the conclusion is `exp (2 * (q + P).rapidity n) = \u2026`, with nothing added to the rapidity. In a relativity file `rapidity_add` reads as the rapidity-addition law for composed boosts. Sibling lemmas about the same `(q + P)` carry no `add` (lines 157, 167).",
+   "line": 134
+  },
+  {
+   "evidence": "Rapidity.lean:67-69 states `\u27eav.spatialPart, n\u27eb_\u211d / v.timeComponent \u2208 Set.Ioo (-1) 1`; cf. Rapidity.lean:149 and MinkowskiProductExtensions.lean:61.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Rename to `inner_spatialPart_div_timeComponent_mem_Ioo`.",
+   "issue": "`inner_div_timeComponent_mem_Ioo` drops `spatialPart`; in the `Lorentz.Vector` namespace a bare `inner_` does not say which product or which argument is meant, and the file's own lemmas spell it out (`inner_spatialPart_eq_of_spatialPart_eq_smul`, `inner_spatialPart_eq_sqrt_mul_sinh_rapidity`).",
+   "line": 67
+  }
+ ],
+ "head_sha": "3d008f4248daa78413ed5c46ff296f0ce912ee90",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "335409e7c6bb3e5898596cb8104e87049cd8b9143b3e250963e45f0b039a373f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261016T144336Z-126-naming-7b3e1c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-16T14:43:36Z",
+ "submitted_by": "wdconinc",
+ "summary": "No notation is introduced and the `Lorentz.Vector` namespacing for dot notation on Physlib's type is right, but four names misdescribe their statements: a `_smul_right` that is not a homogeneity lemma, an `_of_` clause that drops the hypothesis the lemma actually needs, a dangling `add` that reads as the rapidity-addition law, and an `inner_` that omits which quantity is meant.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Convolution/Algebra.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "189461ab4d5b95de6b6fb209fd0d333cf5e01fa3e8f6f2693397394a0a2f9d7b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 150744,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 150744,
+  "cache_read_input_tokens": 554755,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6424,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6424,
+    "cache_read_input_tokens": 115914,
+    "input_tokens": 2,
+    "output_tokens": 6174,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14822,
+  "output_tokens_details": {
+   "thinking_tokens": 11161
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

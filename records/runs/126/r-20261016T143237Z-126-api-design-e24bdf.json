@@ -1,0 +1,208 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4466289999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 282.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 149077,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 149077,
+    "cache_read_input_tokens": 863968,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6278,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6278,
+      "cache_read_input_tokens": 123373,
+      "input_tokens": 2,
+      "output_tokens": 8319,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20951,
+    "output_tokens_details": {
+     "thinking_tokens": 16964
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.446629,
+ "dedupe_key": "eic/EpsilonEridani|126|3d008f4248daa78413ed5c46ff296f0ce912ee90|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "e2c09e1985e6dae4c5363b93c909acf8492e750aeabe9992ee6e366b308d8bab",
+ "diff_sha256": "e2c09e1985e6dae4c5363b93c909acf8492e750aeabe9992ee6e366b308d8bab",
+ "duration_s": 282.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 247-275 contain exactly three massless lemmas; `exp_two_mul_rapidity_add_of_realPhoton` (line 134) has no `_of_masslessTarget` counterpart. With `M = 0`, `p = E`, the general form gives `(2k + E - E)/(E + E) = k/E`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add `theorem exp_two_mul_rapidity_of_masslessTarget ... : exp (2 * (q + P).rapidity n) = k / E`, proved from `exp_two_mul_rapidity_add_of_realPhoton (M := 0) hn hq hq' hP (spatialPart_eq_of_massless hP' hE0.le)` plus `sqrt_sq_sub_zero_sq`.",
+   "issue": "The `Massless` section mirrors three of the four massive-target relations (`W\u00b2 = 4kE`, `2k = W e^{y}`, `2E = W e^{-y}`) but omits the massless specialisation of `exp_two_mul_rapidity_add_of_realPhoton`, i.e. `e^{2y} = k / E` \u2014 the standard UPC form `y = \u00bd log(k/E)`, and the relation the \u00a71.4 change of variables to invariant mass and rapidity needs. A consumer holding `P.spatialPart = -E \u2022 n` cannot reach it from the general lemma either, since `spatialPart_eq_of_massless` (line 243) is `private`.",
+   "line": 275
+  },
+  {
+   "evidence": "`grep -rn isReal_of_minkowskiProduct_self_eq_zero code/` returns only the declaration (Basic.lean:102) and four docstring mentions; no proof term uses it.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "fix": "Either add the corollary that makes the prose a theorem and gives the new lemma its consumer \u2014 `theorem isReal_of_spatialPart_eq_smul (hn : \u2016n\u2016 = 1) (hq : q.timeComponent = \u03b3.energy) (hq' : q.spatialPart = \u03b3.energy \u2022 n) (h\u03b3 : \u03b3.virtuality = -\u27eaq, q\u27eb\u2098) : \u03b3.IsReal := PhotonKinematics.isReal_of_minkowskiProduct_self_eq_zero (minkowskiProduct_self_eq_zero_of_spatialPart_eq_smul hn hq hq') h\u03b3` \u2014 or drop `isReal_of_minkowskiProduct_self_eq_zero` and the realness claims from those two docstrings.",
+   "issue": "`PhotonKinematics.isReal_of_minkowskiProduct_self_eq_zero` is public but has no consumer anywhere in the repo \u2014 it appears only inside docstrings (InvariantMass.lean:40,212,223; Basic.lean:21). Correspondingly, the docstrings of `minkowskiProduct_add_self_of_realPhoton_energyFraction` (line 215) and `energyFraction_eq_exp_rapidity_mul_sub_div_sqrt` (line 226) claim the photon is real, but neither statement constrains `\u03b3.virtuality` at all, so nothing in the post-PR API ever derives `\u03b3.IsReal` from a collinear four-momentum.",
+   "line": 102
+  },
+  {
+   "evidence": "Line 180 `have hWpos : 0 < \u221a\u27eaq + P, q + P\u27eb\u2098 := hB \u25b8 by positivity`, where `hB` comes from the `private theorem exp_rapidity_mul_targetEnergy_add_momentum` at line 167; no public declaration states `0 < \u221a\u27eaq + P, q + P\u27eb\u2098`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Expose it as a public lemma (e.g. `sqrt_minkowskiProduct_add_self_pos`, with the same `hn hq hq' hP hP' hk hE0` hypotheses) next to the division forms, and use it in the two division lemmas.",
+   "issue": "Positivity of the invariant mass, `0 < \u221a\u27eaq + P, q + P\u27eb\u2098`, is established only inside `two_mul_photonEnergy_eq_exp_rapidity_mul_sub_div_sqrt` via the `private` lemma `exp_rapidity_mul_targetEnergy_add_momentum`. Every consumer that inverts `2k = e^{y}(W\u00b2 - M\u00b2)/W` or `x = e^{y}(W\u00b2 - M\u00b2)/(2 W E_s)` for `W` needs the same fact and must re-derive it.",
+   "line": 180
+  }
+ ],
+ "head_sha": "3d008f4248daa78413ed5c46ff296f0ce912ee90",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7a993ff9c73ada927c1704fee9d6bccb89da31e0c85a356f5265ce582c4ecb21",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261016T143237Z-126-api-design-e24bdf",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-16T14:32:37Z",
+ "submitted_by": "wdconinc",
+ "summary": "The rapidity surface is clean (body unexposed, `rapidity_def`/`tanh_rapidity`/`exp_rapidity`/`exp_two_mul_rapidity` plus both light-cone components and the cosh/sinh forms), but the massless-target section omits the one textbook relation it otherwise mirrors, and the `IsReal` lemma added to `Basic.lean` has no consumer while two docstrings assert realness that no statement establishes.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6043be73754f8c6ed8869c38aeaff908a51174ad3f0eb8b49986b7b0a5acacd4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 149077,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 149077,
+  "cache_read_input_tokens": 863968,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6278,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6278,
+    "cache_read_input_tokens": 123373,
+    "input_tokens": 2,
+    "output_tokens": 8319,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20951,
+  "output_tokens_details": {
+   "thinking_tokens": 16964
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
