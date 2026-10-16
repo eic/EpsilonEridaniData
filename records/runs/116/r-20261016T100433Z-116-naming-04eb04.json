@@ -1,0 +1,251 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.850850500000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 298.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 150493,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 150493,
+    "cache_read_input_tokens": 1593651,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3124,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3124,
+      "cache_read_input_tokens": 122058,
+      "input_tokens": 2,
+      "output_tokens": 1508,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21957,
+    "output_tokens_details": {
+     "thinking_tokens": 17131
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.850851,
+ "dedupe_key": "eic/EpsilonEridani|116|473f116dbd58add533158896fdf6fda19c1964ed|naming|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "d8bc5c216db7f602a28e6d1a0ae42e6fcf3d7d2f12234330258628b14e3a9241",
+ "diff_sha256": "d8bc5c216db7f602a28e6d1a0ae42e6fcf3d7d2f12234330258628b14e3a9241",
+ "duration_s": 298.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Data/Matrix/Mul.lean:65-282 is `section DotProduct` *outside* `namespace Matrix` (which opens only at line 286): `dotProduct_comm` (84), `dotProduct_one` (95), `one_dotProduct` (97) are root names. mathlib/Mathlib/Logic/Function/Basic.lean:858 `theorem Injective.extend_apply (hf : Injective f) \u2026`, used at Extend.lean:41,48 as `he.extend_apply`.",
+   "file": "EpsilonEridani/Mathematics/DataStructures/Matrix/Extend.lean",
+   "fix": "Put them in `Function.Injective` (`he.extend_dotProduct c f`, `he.dotProduct_extend f c`, `he.extend_dotProduct_mulVec_extend M c`), matching `Function.Injective.extend_apply` which these very proofs use as `he.extend_apply`; update the two call sites in `QFT/Lattice/Data/Basic.lean:290` and `Extend.lean:55,58` and the module docstring (21-24).",
+   "issue": "`Matrix.extend_dotProduct` (36), `Matrix.dotProduct_extend` (44) and `Matrix.extend_dotProduct_mulVec_extend` (53) sit in the `Matrix` namespace, but the first explicit argument of all three is `he : Function.Injective e`, so none is dot notation on `Matrix`, and the first two mention no matrix at all. Mathlib's `dotProduct` API is root-level, not `Matrix.*`.",
+   "line": 29
+  },
+  {
+   "evidence": "Basic.lean:131-136 `def ofTendsto (v : \u03b9 \u2192 \u211d) (hS : Tendsto (fun a => (F a).covariance) (\ud835\udcdd[>] 0) (\ud835\udcdd S))` with `value := v`; the value limit `hv` appears only later, as a separate hypothesis of `hasContinuumLimit_ofTendsto` (153-157).",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Rename to `ofTendstoCovariance` (naming the component actually obtained from the limit), or take the value hypothesis too \u2014 `ofTendsto (hv : Tendsto (fun a => (F a).value) (\ud835\udcdd[>] 0) (\ud835\udcdd v)) (hS : \u2026)` \u2014 and adjust `ofTendsto_value`, `ofTendsto_covariance`, `hasContinuumLimit_ofTendsto` accordingly.",
+   "issue": "`EuclideanDataset.ofTendsto v hS` names itself after a limit, but only the covariance comes from one: `v : \u03b9 \u2192 \u211d` is an unconstrained parameter (`ofTendsto_value : (ofTendsto v hS).value = v`), so `ofTendsto v hS` elaborates for any `v` whatsoever and reads as the continuum limit when it need not be.",
+   "line": 131
+  }
+ ],
+ "head_sha": "473f116dbd58add533158896fdf6fda19c1964ed",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 116,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "86caa3857486ff688e58785a40238cd12ac22428d715945986fde67d41ca5d4a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261016T100433Z-116-naming-04eb04",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-16T10:04:33Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names are mostly conclusion-describing and match the roadmap's terminology, but the three `Extend.lean` lemmas are filed in the `Matrix` namespace although they are dot-notation lemmas on `Function.Injective` and Mathlib's `dotProduct` API is root-level, and `ofTendsto` advertises a limit construction for a field that is a free parameter.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Moments/CovarianceMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Logic/Function/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/Extend.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 24,
+  "trace_truncated": false
+ },
+ "transcript_blob": "42c259ac7785a763dbb6c2cd3d6d3437928b13c2b70d18900f9ed05c36848c99",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 150493,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 150493,
+  "cache_read_input_tokens": 1593651,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3124,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3124,
+    "cache_read_input_tokens": 122058,
+    "input_tokens": 2,
+    "output_tokens": 1508,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21957,
+  "output_tokens_details": {
+   "thinking_tokens": 17131
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

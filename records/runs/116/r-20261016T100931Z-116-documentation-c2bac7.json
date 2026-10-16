@@ -1,0 +1,186 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6368075,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 164.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 107444,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 107444,
+    "cache_read_input_tokens": 523325,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2030,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2030,
+      "cache_read_input_tokens": 90260,
+      "input_tokens": 2,
+      "output_tokens": 5360,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12025,
+    "output_tokens_details": {
+     "thinking_tokens": 9099
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.636807,
+ "dedupe_key": "eic/EpsilonEridani|116|473f116dbd58add533158896fdf6fda19c1964ed|documentation|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "d8bc5c216db7f602a28e6d1a0ae42e6fcf3d7d2f12234330258628b14e3a9241",
+ "diff_sha256": "d8bc5c216db7f602a28e6d1a0ae42e6fcf3d7d2f12234330258628b14e3a9241",
+ "duration_s": 164.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 242-245 and 256-259: `def covarianceForm (c c' : \u03b9 \u2192 \u211d) : \u211d := c \u2b1d\u1d65 D.covariance *\u1d65 c'` and `def variance (c : \u03b9 \u2192 \u211d) : \u211d := D.covarianceForm c c` \u2014 neither mentions `D.value`, while `IsNoiseModel.variance_dotProduct` (line 349) is the statement that makes the random reading true.",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Describe them as the covariance/variance of the measured value of the functional `c`, i.e. of `c \u2b1d\u1d65 X` for any noise model, pointing at `IsNoiseModel.covariance_dotProduct` / `IsNoiseModel.variance_dotProduct`; drop `c \u2b1d\u1d65 value` from both docstrings.",
+   "issue": "`covarianceForm` is documented as \"the covariance of the linear functionals `c \u2b1d\u1d65 value` and `c' \u2b1d\u1d65 value`\" and `variance` (line 256) as \"the variance of the linear functional `c \u2b1d\u1d65 value`\". `value : \u03b9 \u2192 \u211d` is the central-value vector, so `c \u2b1d\u1d65 value` is a fixed real number whose variance and covariance are zero; the quantity actually described is the (co)variance of `c \u2b1d\u1d65 X` under a noise model, and neither definition depends on `value` at all.",
+   "line": 242
+  },
+  {
+   "evidence": "Structure field at line 195: `integral_eq_value : \u2200 i, \u03bc[X i] = D.value i`.",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Replace \"the noise\" with \"the random data `X`\" (or \"the noise model `X`\") in all four docstrings; reserve \"noise\" for the fluctuation `X - value` if it is ever introduced.",
+   "issue": "Four `IsNoiseModel` lemma docstrings call `c \u2b1d\u1d65 X` \"a linear combination of the noise\": lines 333-334, 341-342, 347-348 and 354-356. `X` is not noise \u2014 `IsNoiseModel.integral_eq_value` fixes `\u03bc[X i] = D.value i`, so `X` is the random realisation of the data and its mean is the central values, not zero. The phrasing contradicts the very lemma stated at line 335 (\"the mean of a linear combination of the noise is the corresponding functional of the central values\").",
+   "line": 333
+  }
+ ],
+ "head_sha": "473f116dbd58add533158896fdf6fda19c1964ed",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 116,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a1184f6ea2a196980f0e5bb7cab0b15e619a3c04b5bf5cea86255a69b38c6d74",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261016T100931Z-116-documentation-c2bac7",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-16T10:09:31Z",
+ "submitted_by": "wdconinc",
+ "summary": "Module docstrings and declaration docs are present, accurate in their Mathlib citations, and free of process narrative. Two docstring groups misdescribe their objects: the variance/covariance forms are documented as the (co)variance of deterministic numbers, and four noise-model lemmas call the random data `X` \"the noise\" although its mean is the central values.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/Extend.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Moments/CovarianceMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Moments/CovarianceBilin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4683333be68b7e7e2e041cff75e90c3e0e55fc2f88ec31e5340956a7c5ffa238",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 107444,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 107444,
+  "cache_read_input_tokens": 523325,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2030,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2030,
+    "cache_read_input_tokens": 90260,
+    "input_tokens": 2,
+    "output_tokens": 5360,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12025,
+  "output_tokens_details": {
+   "thinking_tokens": 9099
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
