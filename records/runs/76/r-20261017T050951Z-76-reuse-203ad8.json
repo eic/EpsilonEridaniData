@@ -1,0 +1,262 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4803400000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 237.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 128796,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 128796,
+    "cache_read_input_tokens": 1516280,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 38,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2624,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2624,
+      "cache_read_input_tokens": 110879,
+      "input_tokens": 2,
+      "output_tokens": 2555,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17362,
+    "output_tokens_details": {
+     "thinking_tokens": 11388
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "aee9dda17fd4f54d0e36f2e9e29b74f70a8c6192",
+ "cost_usd": 2.48034,
+ "dedupe_key": "eic/EpsilonEridani|76|8ace76782e356d275e34c7da16a96603f582bf2b|reuse|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "c19d5df4536c357c1a541fb552bb644aa2aa8a14d51d0b9e6510b92bbe30602c",
+ "diff_sha256": "c19d5df4536c357c1a541fb552bb644aa2aa8a14d51d0b9e6510b92bbe30602c",
+ "duration_s": 237.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Data/Multiset/Fold.lean:66 `theorem fold_add (b\u2081 b\u2082 : \u03b1) (s\u2081 s\u2082 : Multiset \u03b1) : (s\u2081 + s\u2082).fold op (b\u2081 * b\u2082) = s\u2081.fold op b\u2081 * s\u2082.fold op b\u2082`, applicable to `max` via mathlib/Mathlib/Order/MinMax.lean:152-153 (`instCommutativeMax`, `instAssociativeMax`); mathlib/Mathlib/Data/Multiset/MapFold.lean:89 `theorem map_add (f : \u03b1 \u2192 \u03b2) (s t) : map f (s + t) = map f s + map f t`.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Counterexamples.lean",
+   "fix": "Prove it from the located lemmas: `Multiset.map_add` rewrites `(s + t).map E` to `s.map E + t.map E`, and `Multiset.fold_add max 0 0 (s.map E) (t.map E) : (s.map E + t.map E).fold max (max 0 0) = max ((s.map E).fold max 0) ((t.map E).fold max 0)`; close with `max_self (0 : \u211d)`. Two lines instead of eleven.",
+   "issue": "`leadingEnergy_add` is proved by an 11-line `le_antisymm`/`leadingEnergy_le_iff` bash, re-deriving `Multiset.fold_add` for `op = max`.",
+   "line": 120
+  },
+  {
+   "evidence": "Basic.lean:204 `def IsInfraredSafe (O : Multiset V \u2192 X) : Prop := \u2200 s : Multiset V, Tendsto (fun p : V => O (p ::\u2098 s)) (\ud835\udcdd 0) (\ud835\udcdd (O s))` vs Basic.lean:207-209, same statement, proof `Iff.rfl`. Only uses: Counterexamples.lean:79,136.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Basic.lean",
+   "fix": "Delete it; at its two use sites apply the hypothesis directly: `isInfraredSafe_iff.1 h 0` \u2192 `h 0` (Counterexamples.lean:79) and `refine isInfraredSafe_iff.2 fun s => ?_` \u2192 `intro s` (Counterexamples.lean:136).",
+   "issue": "`isInfraredSafe_iff` is `Iff.rfl` whose right-hand side is character-for-character the definiens of `IsInfraredSafe` (line 204-205) \u2014 a public restatement of the definition adding nothing.",
+   "line": 207
+  },
+  {
+   "evidence": "Basic.lean:170-173 (body is literally `isCollinearSafe_iff_cons.1 hO s p z hz`); grep for `apply_cons` across `code/EpsilonEridani/QFT/Jets` returns only the declaration itself (plus the unrelated `apply_zero_cons` at Basic.lean:177).",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Basic.lean",
+   "fix": "Delete `IsCollinearSafe.apply_cons`; callers use `isCollinearSafe_iff_cons.1 hO`.",
+   "issue": "`IsCollinearSafe.apply_cons` is `isCollinearSafe_iff_cons.1 hO s p z hz` \u2014 a parallel API for the iff at line 155, and it has no consumer anywhere in the repository.",
+   "line": 170
+  }
+ ],
+ "head_sha": "8ace76782e356d275e34c7da16a96603f582bf2b",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 76,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8c034876b89796a2ec1b83eaf72bbbdb80ce371052d1320650c19fc709ad5a01",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261017T050951Z-76-reuse-203ad8",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-17T05:09:51Z",
+ "submitted_by": "wdconinc",
+ "summary": "Mostly good reuse of Mathlib, but `leadingEnergy_add` re-derives `Multiset.fold_add` by hand, and two declarations (`isInfraredSafe_iff`, `IsCollinearSafe.apply_cons`) are definitional restatements of declarations introduced a few lines earlier.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Multiset",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Finset/Fold.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Multiset/Fold.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Order",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Observable/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Multiset",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 25,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5c919d4ad9058d23459da72c22c9a6eb3b8dae9d12d503b10d9061f413e5bca6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 128796,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 128796,
+  "cache_read_input_tokens": 1516280,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 38,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2624,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2624,
+    "cache_read_input_tokens": 110879,
+    "input_tokens": 2,
+    "output_tokens": 2555,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17362,
+  "output_tokens_details": {
+   "thinking_tokens": 11388
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
