@@ -1,0 +1,184 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.6435802499999994,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 214.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 136570,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 136570,
+    "cache_read_input_tokens": 298121,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 130,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4633,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4633,
+      "cache_read_input_tokens": 108245,
+      "input_tokens": 32,
+      "output_tokens": 2956,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16727,
+    "output_tokens_details": {
+     "thinking_tokens": 13151
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f58523289271df354713e9980571e9aaff7bb2ea",
+ "cost_usd": 3.64358,
+ "dedupe_key": "eic/EpsilonEridani|71|aa7ecd4659f79a200de4ec04184547361704c31c|correctness|claude-fable-5-1|a04d8ed758f03dbb|production|1",
+ "diff_blob": "cb9ed9d480d0a11277075bd5aac3f843771ceec2aa2f116a6fd202372d22f404",
+ "diff_sha256": "cb9ed9d480d0a11277075bd5aac3f843771ceec2aa2f116a6fd202372d22f404",
+ "duration_s": 214.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `lMuNuOdd` over `code/EpsilonEridani` hits only this docstring line; the only Leptonic definition is `def lMuNu` at Tensors/Basic.lean:211.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Remove the reference, or replace it with the actual declaration once the leptonic parity-odd tensor (roadmap Layer 0.1) is added.",
+   "issue": "Docstring states the leptonic side supplies an alternating four-form in `Leptonic.lMuNuOdd`, but no such declaration exists anywhere in the repository.",
+   "line": 69
+  },
+  {
+   "evidence": "grep `SpectatorPartners` shows no witness and no lemma deriving it from `SpectatorPlane`; only `SpectatorPlane.spectatorSplitting` (line 221) exists, which yields the weaker `SpectatorSplitting`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Add `SpectatorPlane` versions (immediate from `apply_eq_mul_apply_e\u2081_e\u2082` with `c\u2081 = c\u2082 = 0`), or delete the clause 'the same holds under a `SpectatorPlane`'.",
+   "issue": "Module doc claims `apply_pTransverse_eq_zero` / `apply_p_eq_zero` also hold under a `SpectatorPlane`, but no lemma proves it, and `SpectatorPlane` does not imply `SpectatorPartners`: `SpectatorPair` allows `g e\u2081 e\u2081` and `g e\u2082 e\u2082` of opposite sign, giving null spectators such as `e\u2081 + e\u2082` when `|g e\u2081 e\u2081| = |g e\u2082 e\u2082|`.",
+   "line": 55
+  },
+  {
+   "evidence": "Mathlib `LinearMap.det_eq_one_of_not_module_finite` (LinearAlgebra/Determinant.lean:281); `exists_half_turn` in ParityOdd.lean explicitly uses this lemma in its non-finite branch.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Either add `[FiniteDimensional \u211d V]` to the definition, or state in the docstring that outside finite dimension it reduces to full covariance.",
+   "issue": "`IsProperLorentzCovariant` is defined via `LinearMap.det f = 1`, which holds for every `f` when `V` is not `Module.Finite`; there the definition coincides with `IsLorentzCovariant`, contrary to the docstring's 'determinant one' reading.",
+   "line": 353
+  }
+ ],
+ "head_sha": "aa7ecd4659f79a200de4ec04184547361704c31c",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 71,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "ea41b901bd7e9121bce3230adf2d8bef9b8cd4d30135e34461c854e8c8580622",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261015T174946Z-71-correctness-bd2faf",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-15T17:49:46Z",
+ "submitted_by": "wdconinc",
+ "summary": "The parity-odd uniqueness theorem, the half-turn construction, `det_reflect`, and the \u211d\u2074 witness are faithful, and the move from `IsLorentzCovariant` to proper covariance is mathematically forced and proven. Remaining issues are a docstring citing a declaration that does not exist, an unproven docstring claim, and an undocumented collapse of `IsProperLorentzCovariant` outside finite dimension.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a54a4b416b7998aa3ff9c82abce405e2d36e22294b9a5881dc673c72c20002f5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 136570,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 136570,
+  "cache_read_input_tokens": 298121,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 130,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4633,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4633,
+    "cache_read_input_tokens": 108245,
+    "input_tokens": 32,
+    "output_tokens": 2956,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16727,
+  "output_tokens_details": {
+   "thinking_tokens": 13151
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

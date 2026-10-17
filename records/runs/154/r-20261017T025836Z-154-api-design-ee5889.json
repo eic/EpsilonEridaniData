@@ -1,0 +1,193 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9506970000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 236.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 120212,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 120212,
+    "cache_read_input_tokens": 669274,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2092,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2092,
+      "cache_read_input_tokens": 108404,
+      "input_tokens": 2,
+      "output_tokens": 7159,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16554,
+    "output_tokens_details": {
+     "thinking_tokens": 13105
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7094dfe8b0e20bdd6d152b78d77186ea8094a382",
+ "cost_usd": 1.950697,
+ "dedupe_key": "eic/EpsilonEridani|154|0787e1b5ec37a68010e9eb6a8ed624504b6d9b2a|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "240390f8c8283e3a5c07f63eee0c8dfc54b408679eeecf7d2331a366ba098cfd",
+ "diff_sha256": "240390f8c8283e3a5c07f63eee0c8dfc54b408679eeecf7d2331a366ba098cfd",
+ "duration_s": 236.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -n 'golecBiernatWusthoff' Amplitude.lean` yields only the definition (154), `golecBiernatWusthoff_apply_self` (159-161), and the admissibility theorem, which unfolds the constant at lines 179 and 181. By contrast `blackDisc` is fully characterised by `blackDisc_apply_self` (132) and `blackDisc_apply_ne` (136), so no consumer of it needs the body.",
+   "file": "EpsilonEridani/QFT/SmallX/Dipole/Amplitude.lean",
+   "fix": "Add `golecBiernatWusthoff_def` (or `_apply`) stating `golecBiernatWusthoff Qs x y = 1 - Real.exp (-(Qs ^ 2 / 4 * \u2016x - y\u2016 ^ 2))`, with `:= (rfl)` so consumers do not depend on defeq, plus `@[simp] one_sub_golecBiernatWusthoff : 1 - golecBiernatWusthoff Qs x y = Real.exp (-(Qs ^ 2 / 4 * \u2016x - y\u2016 ^ 2))`, and use them in `isAdmissible_golecBiernatWusthoff` instead of unfolding.",
+   "issue": "`golecBiernatWusthoff` has only `golecBiernatWusthoff_apply_self` (line 159). There is no `golecBiernatWusthoff_def`/`_apply` giving the value, and no lemma for its S-matrix `1 - golecBiernatWusthoff Qs x y = Real.exp (-(Qs ^ 2 / 4 * \u2016x - y\u2016 ^ 2))` \u2014 the identity the module docstring advertises as the point of the definition and that the admissibility proof derives inline (lines 176-182, via `simp only [... golecBiernatWusthoff]` and `simp only [golecBiernatWusthoff]`). Any downstream use (the roadmap makes it the standard test initial condition for Layers 2 and 4) must unfold the body or rely on defeq.",
+   "line": 154
+  }
+ ],
+ "head_sha": "0787e1b5ec37a68010e9eb6a8ed624504b6d9b2a",
+ "merge_base_sha": "74f99fc7671738951b67f376ec39f1fc6a8f24ae",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 154,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3fa8c00b1a6ecbe7b7bee1fc7426a3f642d75cd34a4142e1ce8f62d166a944a1",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261017T025836Z-154-api-design-ee5889",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-17T02:58:36Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and free of compatibility artifacts, but `golecBiernatWusthoff` ships with no value lemma, so every consumer must unfold the (exposed) body to learn anything about it beyond `apply_self`; the `blackDisc` witness in the same file shows the complete pattern.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/Amplitude.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SmallXAndSaturation/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "102f8c996db740d33f1911b7da8af3777fc7efe06d4e37efb12cbd3764b2f0dd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 120212,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 120212,
+  "cache_read_input_tokens": 669274,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2092,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2092,
+    "cache_read_input_tokens": 108404,
+    "input_tokens": 2,
+    "output_tokens": 7159,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16554,
+  "output_tokens_details": {
+   "thinking_tokens": 13105
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
