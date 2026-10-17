@@ -1,0 +1,239 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.594032,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 240.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 141974,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 141974,
+    "cache_read_input_tokens": 1482664,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 829,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 829,
+      "cache_read_input_tokens": 132136,
+      "input_tokens": 2,
+      "output_tokens": 2954,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17312,
+    "output_tokens_details": {
+     "thinking_tokens": 12442
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.594032,
+ "dedupe_key": "eic/EpsilonEridani|123|6321834bf3412bc210db08c84e330e74282c1a13|api-design|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "9d44ef78d1e93cfbb1043e3e1095c07f6cf87e7e2694a02beb91a016c6f3eb71",
+ "diff_sha256": "9d44ef78d1e93cfbb1043e3e1095c07f6cf87e7e2694a02beb91a016c6f3eb71",
+ "duration_s": 240.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep of `EpsilonEridani.lean` for `Parton` returns 16 modules, none under `GTMD/`; `grep -rn GTMD code/EpsilonEridani` returns hits only inside the two new files. Roadmap README:92-94: material under this roadmap \"belongs in `EpsilonEridani/Particles/Parton/GTMD/` ... and is exported through `EpsilonEridani.Particles.Parton.Basic` in the same way they are.\"",
+   "file": "EpsilonEridani.lean",
+   "fix": "Add `import EpsilonEridani.Particles.Parton.GTMD.Average` and `...GTMD.Transverse` to `EpsilonEridani.lean` in alphabetical position, and `public import EpsilonEridani.Particles.Parton.GTMD.Average` to `EpsilonEridani/Particles/Parton/Basic.lean`.",
+   "issue": "Neither `EpsilonEridani/Particles/Parton/GTMD/Transverse.lean` nor `.../GTMD/Average.lean` is imported anywhere: the root module lists every other module (`EpsilonEridani.lean:23-38` covers all of `PDF/`, `TMD/`, `GPD/`, `Unified/`) but not the two new ones, and `Particles/Parton/Basic.lean:8-12` exports PDF/TMD/GPD/Unified only. `import EpsilonEridani` therefore does not bring `Transverse`, `radialVector`, `circleAverageTransverse`, `VectorTmd`, `IsVectorTmdDensity`, `azimuthalAverage` or `isTmdDensity_azimuthalAverage` into scope, and `lake build` stays green because it globs the directory.",
+   "line": "0"
+  },
+  {
+   "evidence": "Mathlib/MeasureTheory/Integral/CircleAverage.lean:74 `@[simp] lemma circleAverage_zero [CompleteSpace E] : circleAverage f c 0 = f c`; Average.lean:83 `@[simp] lemma circleAverageTransverse_zero (kT : \u211d) : circleAverageTransverse 0 kT = 0`.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Add `@[simp] lemma circleAverageTransverse_zero_radius (g) : circleAverageTransverse g 0 = g 0 := by simp [circleAverageTransverse]` (plus the `azimuthalAverage` corollary at `0 \u2264 kT`), and rename the existing lemma to something that names the zero function (e.g. `circleAverageTransverse_zero_fun`).",
+   "issue": "No zero-radius lemma: nothing gives `circleAverageTransverse g 0 = g 0` (hence `azimuthalAverage f i x 0 Q2 \u03b6 = f i x 0 Q2 \u03b6`), although `kT = 0` is inside the physical region and Mathlib marks the corresponding fact `@[simp]`. Worse, the natural name is already taken: `circleAverageTransverse_zero` here means the *zero function*, while Mathlib's `Real.circleAverage_zero` means *zero radius*, so the two read identically and mean different things.",
+   "line": "83"
+  },
+  {
+   "evidence": "Mathlib/MeasureTheory/Integral/CircleAverage.lean:153 `theorem circleAverage_congr_sphere {f\u2081 f\u2082 : \u2102 \u2192 E} (hf : Set.EqOn f\u2081 f\u2082 (sphere c |R|))` and :136 `@[simp] theorem circleAverage_abs_radius`; no counterpart in Average.lean, whose only circle-restricted statement is `circleAverageTransverse_eq_zero_of_odd` (line 87).",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Transport `Real.circleAverage_congr_sphere` as `circleAverageTransverse_congr_sphere {g\u2081 g\u2082} (h : \u2200 w, \u2016w\u2016 = |kT| \u2192 g\u2081 w = g\u2082 w) : circleAverageTransverse g\u2081 kT = circleAverageTransverse g\u2082 kT`, and `Real.circleAverage_abs_radius` as `@[simp] circleAverageTransverse_abs_radius : circleAverageTransverse g |kT| = circleAverageTransverse g kT`.",
+   "issue": "The characteristic property of a circle average \u2014 that it depends only on `g` restricted to the circle `{w | \u2016w\u2016 = |kT|}` \u2014 is not exported, and neither is the abs-radius normalisation. A consumer must unfold `circleAverageTransverse` and work with Mathlib's \u2102-sided `Metric.sphere (0 : \u2102) |R|` statements; the file's own density proof already relies on that defeq unfolding (line 142 applies `Real.circleAverage_nonneg_of_nonneg` straight through the exposed body).",
+   "line": "64"
+  }
+ ],
+ "head_sha": "6321834bf3412bc210db08c84e330e74282c1a13",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "ffb29155403f545672d5889be641c922403ee209c6f744f93f8dd613d89ea943",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261017T050818Z-123-api-design-64d63f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-17T05:08:18Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new GTMD modules are not reachable from the library root or from `Parton.Basic`, so none of the declared surface is importable the way the roadmap specifies. The transported circle-average API is also incomplete: no zero-radius value, no abs-radius, no sphere-congruence, and the natural zero-radius name is taken by a lemma about the zero function.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Transverse.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/.github",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pr-build.yml",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3499529ecf31aaa9692dc2c930322066fc6fd3e223edbbee5a6a9b30a98c6446",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 141974,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 141974,
+  "cache_read_input_tokens": 1482664,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 829,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 829,
+    "cache_read_input_tokens": 132136,
+    "input_tokens": 2,
+    "output_tokens": 2954,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17312,
+  "output_tokens_details": {
+   "thinking_tokens": 12442
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

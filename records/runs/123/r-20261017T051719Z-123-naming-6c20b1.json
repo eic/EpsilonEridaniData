@@ -1,0 +1,200 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8311380000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 158.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 120665,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 120665,
+    "cache_read_input_tokens": 619896,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2618,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2618,
+      "cache_read_input_tokens": 100617,
+      "input_tokens": 2,
+      "output_tokens": 1729,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12578,
+    "output_tokens_details": {
+     "thinking_tokens": 9258
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.831138,
+ "dedupe_key": "eic/EpsilonEridani|123|6321834bf3412bc210db08c84e330e74282c1a13|naming|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "9d44ef78d1e93cfbb1043e3e1095c07f6cf87e7e2694a02beb91a016c6f3eb71",
+ "diff_sha256": "9d44ef78d1e93cfbb1043e3e1095c07f6cf87e7e2694a02beb91a016c6f3eb71",
+ "duration_s": 158.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib CircleAverage.lean:74 `@[simp] lemma circleAverage_zero [CompleteSpace E] : circleAverage f c 0 = f c`; Average.lean:83 `lemma circleAverageTransverse_zero (kT : \u211d) : circleAverageTransverse 0 kT = 0`.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Rename to `circleAverageTransverse_zero_fun` (or state it via `circleAverage_const` as `\u2026_const`), leaving the `_zero` slot for the radius, consistent with the sibling `circleAverageTransverse_neg_radius` at line 77.",
+   "issue": "`circleAverageTransverse_zero : circleAverageTransverse 0 kT = 0` puts the zero in the *function* slot, but Mathlib's lemma of that name for the wrapped object is the radius statement: `Real.circleAverage_zero : circleAverage f c 0 = f c` (mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean:74). A reader of this simp lemma will expect `circleAverageTransverse g 0 = g 0`.",
+   "line": "83"
+  },
+  {
+   "evidence": "mathlib CircleMap.lean:87 `@[simp] theorem circleMap_zero_radius (c : \u2102) : circleMap c 0 = const \u211d c`; mathlib CircleIntegral.lean:163 `theorem circleMap_neg_radius`; Transverse.lean:69 proof is `simp [radialVector, circleMap_zero_radius]`; Average.lean:77 `circleAverageTransverse_neg_radius`.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Transverse.lean",
+   "fix": "Rename to `radialVector_zero_radius` and `radialVector_neg_radius`.",
+   "issue": "`radialVector_zero` (line 68, radius `0`) and `radialVector_neg` (line 72, radius `-kT`) omit the `_radius` qualifier that Mathlib uses for exactly these facts about `circleMap` \u2014 the very lemmas cited in their proofs (`circleMap_zero_radius`, and `circleMap_neg_radius` at mathlib CircleIntegral.lean:163) \u2014 and that this PR itself uses in `circleAverageTransverse_neg_radius`. `radialVector_zero` is additionally ambiguous with `radialVector kT 0` given `radialVector_apply_zero` (line 53) uses `_zero` for the Fin-2 index.",
+   "line": "68"
+  }
+ ],
+ "head_sha": "6321834bf3412bc210db08c84e330e74282c1a13",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "8a4901a31dc883477b6bf6643f5a56ca7516a81f05f46e8bf45c873eb6150116",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261017T051719Z-123-naming-6c20b1",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-17T05:17:19Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names and the (absent) notation are otherwise in line with the roadmap and Mathlib, but two lemma names use a bare `_zero`/`_neg` suffix where Mathlib's circleMap/circleAverage API disambiguates the radius slot, so they read as statements about a different argument than they prove.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Complex/CircleMap.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Complex/CircleMap.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/SumRules.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Transverse.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b53d54dd9ec9858c3002c73c276773c476045e77a5fc6bdffc0659a8d0585432",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 120665,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 120665,
+  "cache_read_input_tokens": 619896,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2618,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2618,
+    "cache_read_input_tokens": 100617,
+    "input_tokens": 2,
+    "output_tokens": 1729,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12578,
+  "output_tokens_details": {
+   "thinking_tokens": 9258
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
