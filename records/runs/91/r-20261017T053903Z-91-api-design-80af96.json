@@ -1,0 +1,194 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8975964999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 239.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 118658,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 118658,
+    "cache_read_input_tokens": 523473,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7264,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7264,
+      "cache_read_input_tokens": 94325,
+      "input_tokens": 2,
+      "output_tokens": 10132,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17968,
+    "output_tokens_details": {
+     "thinking_tokens": 14148
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.897596,
+ "dedupe_key": "eic/EpsilonEridani|91|9c077866f38e22d7b3fc0bf9544e8afc0bb18bf8|api-design|claude-opus-5|a04d8ed758f03dbb|production|3",
+ "diff_blob": "c7a5833b9da8f8bf6c8abde53f7e07892a4a1e49d84fe44fe6ae1a41950d7042",
+ "diff_sha256": "c7a5833b9da8f8bf6c8abde53f7e07892a4a1e49d84fe44fe6ae1a41950d7042",
+ "duration_s": 239.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `_def` in the two new files returns nothing; the only reductions available are `netCharge_sumElim`, `netCharge_chargedLine`, `eikonalCurrent_sumElim`, `eikonalCurrent_chargedLine`, all of which require the argument to already be a `Sum.elim` or a `chargedLine`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "fix": "Add untagged `eikonalCurrent_def (g L \u2113) : eikonalCurrent g L \u2113 = \u2211 i, ((L i).signedCharge / g (L i).momentum \u2113) \u2022 (L i).momentum := (rfl)`, `netCharge_def (L) : netCharge L = \u2211 i, (L i).signedCharge := (rfl)` and `ChargedLeg.signedCharge_eq (L) : L.signedCharge = L.direction.sign * L.charge := (rfl)`, and use them in place of the by-name unfolds above. Leave them untagged: as `@[simp]` they would pre-empt `netCharge_sumElim`/`eikonalCurrent_sumElim` at the root, the same conflict already documented for `chargedLegs_eq_sumElim`.",
+   "issue": "`eikonalCurrent` and `netCharge` (ChargedLegs.lean:95) have no `*_def` restatement, so a consumer holding `eikonalCurrent g L \u2113` or `netCharge L` for a general family `L` has no lemma to reduce it and must unfold the definition by name. The files themselves demonstrate this: `rw [apply_eikonalCurrent_left, netCharge]` (Eikonal.lean:106), `simp only [eikonalCurrent, ...]` (Eikonal.lean:91, 99, 135, 149, 157, 162), `simp [netCharge, ...]` (ChargedLegs.lean:100, 115). `ChargedLeg.signedCharge` (ChargedLegs.lean:84) likewise only has `signedCharge_mk`, which does not fire on a projection `(L i).signedCharge`.",
+   "line": 83
+  },
+  {
+   "evidence": "Eikonal.lean:42-59 lists only `apply_eikonalCurrent_*`, `eikonalCurrent_conserved_*`, `eikonalCurrent_smul`, `apply_eikonalCurrent_eikonalCurrent`, `eikonalCurrent_sumElim`, `eikonalCurrent_chargedLegs*`; the three `chargedLine` theorems at L160/168/177 appear nowhere in the docstring.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "fix": "Add the three `eikonalCurrent_chargedLine*` entries to the Main statements list.",
+   "issue": "The \"Main statements\" block (L40-59) omits three public theorems the file exports: `eikonalCurrent_chargedLine` (L160), `eikonalCurrent_chargedLine_conserved_left` (L168) and `eikonalCurrent_chargedLine_conserved_right` (L177). They are the per-line building blocks used to prove the advertised `eikonalCurrent_chargedLegs_conserved_*`, and the PR description lists them as deliverables.",
+   "line": 40
+  },
+  {
+   "evidence": "ChargedLegs.lean:32-34 names only `netCharge_sumElim`, `netCharge_chargedLine`, `DisKinematics.netCharge_chargedLegs`; `chargedLegs_eq_sumElim` at L128 is absent.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/ChargedLegs.lean",
+   "fix": "List `DisKinematics.chargedLegs_eq_sumElim` under Main statements, noting that it is the reduction that lets `netCharge_sumElim` and `eikonalCurrent_sumElim` apply.",
+   "issue": "The \"Main statements\" block (L32-34) omits `DisKinematics.chargedLegs_eq_sumElim` (L128), which is the `@[simp]` lemma that makes the whole `*_sumElim` API fire on `chargedLegs` \u2014 the central characteristic lemma of the file's headline definition, hidden from the module documentation.",
+   "line": 30
+  }
+ ],
+ "head_sha": "9c077866f38e22d7b3fc0bf9544e8afc0bb18bf8",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 91,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "a87a3674ea7b4d535d40d70447c0bf11d80c0dee5685bdbe63c5c4d2e3720c12",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261017T053903Z-91-api-design-80af96",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-17T05:39:03Z",
+ "submitted_by": "wdconinc",
+ "summary": "The compatibility surface is clean, the characteristic lemmas for `chargedLegs`/`chargedLine` are now present, and the simp annotations are coherent; two gaps remain: the two main definitions ship with no `*_def` restatement, so every consumer (including these files) must unfold them by name, and both module docstrings omit public results they expose.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/ChargedLegs.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "add37d6a779d81bc90f24409dbdc9e47637c14f100e670136cc200c4fc5ff3d5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 118658,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 118658,
+  "cache_read_input_tokens": 523473,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7264,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7264,
+    "cache_read_input_tokens": 94325,
+    "input_tokens": 2,
+    "output_tokens": 10132,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17968,
+  "output_tokens_details": {
+   "thinking_tokens": 14148
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
