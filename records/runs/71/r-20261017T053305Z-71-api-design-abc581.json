@@ -1,0 +1,174 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2031025000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 227.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 152356,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 152356,
+    "cache_read_input_tokens": 500115,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2149,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2149,
+      "cache_read_input_tokens": 126559,
+      "input_tokens": 2,
+      "output_tokens": 11202,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17177,
+    "output_tokens_details": {
+     "thinking_tokens": 13597
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f58523289271df354713e9980571e9aaff7bb2ea",
+ "cost_usd": 2.203103,
+ "dedupe_key": "eic/EpsilonEridani|71|aa7ecd4659f79a200de4ec04184547361704c31c|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "cb9ed9d480d0a11277075bd5aac3f843771ceec2aa2f116a6fd202372d22f404",
+ "diff_sha256": "cb9ed9d480d0a11277075bd5aac3f843771ceec2aa2f116a6fd202372d22f404",
+ "duration_s": 227.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`SpectatorAssumptions.span : \u2200 v : V, \u2203 (a b : \u211d) (u : V), g K.q u = 0 \u2227 g (pTransverse g K) u = 0 \u2227 v = a \u2022 pTransverse g K + b \u2022 K.q + u` (Tensors/Basic.lean:645-646) is character-for-character `SpectatorSplitting.span` (ParityOdd.lean:206-207).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Move `SpectatorSplitting` to `Tensors/Basic.lean` and declare `structure SpectatorAssumptions ... extends SpectatorSplitting`, so `span` is declared once; otherwise add `SpectatorAssumptions.spectatorSplitting` plus `SpectatorAssumptions.self_ne_zero_of_spectator := fun u hq hT hu => (hS.definite u hq hT hu).ne` to bridge both hypotheses of `eq_zero_of_isLorentzCovariant`.",
+   "issue": "`SpectatorSplitting.span` is a verbatim copy of `SpectatorAssumptions.span` (Tensors/Basic.lean:645), and the file's own docstring says so (\"This is the `span` field of `SpectatorAssumptions`\"). No conversion exists either way, so a consumer holding `SpectatorAssumptions` \u2014 e.g. `Witness.spectatorAssumptions_kWit` (Tensors/Basic.lean:909) \u2014 cannot apply `eq_zero_of_isLorentzCovariant`, which is exactly the statement that would show the parity-odd sector vanishes on the 3-dimensional witness.",
+   "line": 203
+  },
+  {
+   "evidence": "grep for `SpectatorPartners` in the repo returns only the declaration (ParityOdd.lean:212) and the four hypothesis positions (lines 262, 287, 295, 303); no term of that type is constructed. Contrast `Witness.spectatorAssumptions_kWit`, `Witness.uniquenessWit`, `Witness.spectatorPlaneFour`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Add `Witness.spectatorPartners_kFour : SpectatorPartners gFour kFour`; the pieces are already present (`spectatorPlaneFour.spectatorSplitting` and `spectatorPlaneFour_self_ne_zero_of_spectator`), and for `u = c\u2081\u2022e\u2081 + c\u2082\u2022e\u2082` the partner `u' = (-c\u2082)\u2022e\u2081 + c\u2081\u2022e\u2082` is orthogonal and non-null since `g e\u2081 e\u2081 = g e\u2082 e\u2082 = -1`. Also add a `SpectatorPartners.self_ne_zero` accessor so holders need not eta-expand `(hS.partner u hq hT hu).1` to feed `eq_zero_of_isLorentzCovariant`'s loose `hnull` argument (line 353).",
+   "issue": "`SpectatorPartners` is exposed but never inhabited anywhere in the repo, so its four dependent public lemmas (`apply_pTransverse_eq_zero`, `apply_p_eq_zero`, `apply_pTransverse_eq_zero_right`, `apply_p_eq_zero_right`, lines 261-306) are unusable by any consumer, unlike every other assumption bundle in this area, which the `Witness` namespaces instantiate.",
+   "line": 212
+  },
+  {
+   "evidence": "`SpectatorPlane` (line 196) constrains `e\u2081_self_ne_zero`/`e\u2082_self_ne_zero` only as `\u2260 0`, not by sign; the witness proof `spectatorPlaneFour_self_ne_zero_of_spectator` (line 523) needs the concrete `-1, -1` signature via `nlinarith`, which is exactly the input a general `SpectatorPlane` lacks.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Drop the \"the same holds under a `SpectatorPlane`\" clause (the sentence is also garbled), or add a definite-plane hypothesis and the corresponding `SpectatorPlane.spectatorPartners` lemma it names.",
+   "issue": "The `Main results` bullet claims `apply_pTransverse_eq_zero` / `apply_p_eq_zero` hold \"under a `SpectatorPlane`\". No such lemma exists, and the implication is not derivable: for a spectator `u = c\u2081\u2022e\u2081 + c\u2082\u2022e\u2082` one gets `g u u = c\u2081\u00b2 g e\u2081 e\u2081 + c\u2082\u00b2 g e\u2082 e\u2082`, which vanishes for a `SpectatorPlane` with `g e\u2081 e\u2081` and `g e\u2082 e\u2082` of opposite sign, so `SpectatorPlane` does not imply the non-nullness `SpectatorPartners.partner` demands. The docstring advertises API the module does not expose.",
+   "line": 55
+  }
+ ],
+ "head_sha": "aa7ecd4659f79a200de4ec04184547361704c31c",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9ea3cdf380b204cd7441fdcba4706c6c260c01530594b54b359bd7d86538f9fe",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261017T053305Z-71-api-design-abc581",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-17T05:33:05Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and bodies are kept unexposed, but the new spectator hypothesis bundles duplicate `SpectatorAssumptions` with no conversion, `SpectatorPartners` gates four public lemmas while being inhabited nowhere, and the module docstring advertises a `SpectatorPlane` corollary the API does not provide.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "72c3d5a5da238461f2ee6e5e6e4f6ffefbc842eafbeee6a392b42aca68b09417",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 152356,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 152356,
+  "cache_read_input_tokens": 500115,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2149,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2149,
+    "cache_read_input_tokens": 126559,
+    "input_tokens": 2,
+    "output_tokens": 11202,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17177,
+  "output_tokens_details": {
+   "thinking_tokens": 13597
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

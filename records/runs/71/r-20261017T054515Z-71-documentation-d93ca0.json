@@ -1,0 +1,172 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.730591,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 149.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 128582,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 128582,
+    "cache_read_input_tokens": 304442,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1270,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1270,
+      "cache_read_input_tokens": 104330,
+      "input_tokens": 2,
+      "output_tokens": 6803,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11700,
+    "output_tokens_details": {
+     "thinking_tokens": 8843
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f58523289271df354713e9980571e9aaff7bb2ea",
+ "cost_usd": 1.730591,
+ "dedupe_key": "eic/EpsilonEridani|71|aa7ecd4659f79a200de4ec04184547361704c31c|documentation|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "cb9ed9d480d0a11277075bd5aac3f843771ceec2aa2f116a6fd202372d22f404",
+ "diff_sha256": "cb9ed9d480d0a11277075bd5aac3f843771ceec2aa2f116a6fd202372d22f404",
+ "duration_s": 149.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep -n lMuNuOdd over the checkout returns only code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean:69 (plus the diff); Basic.lean:211 `def lMuNu ... := Bilin.rankOne g K.k K.kPrime + Bilin.rankOne g K.kPrime K.k - (g K.k K.kPrime) \u2022 g`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Delete the `Leptonic.lMuNuOdd` reference (the leptonic tensor here is the symmetric `lMuNu` only), or point instead at the parity-odd structure that does exist, `Tensors.ParityOdd.Hadronic.Witness.aFour`.",
+   "issue": "The rewritten F\u2083 paragraph says \"a parity-odd structure needs an alternating four-form supplied as data; the leptonic side does this in `Leptonic.lMuNuOdd`\". No such declaration exists: the repo-wide grep for `lMuNuOdd` hits only this docstring line, and the `Leptonic` namespace (Basic.lean:204-226) defines only `lMuNu`, `lMuNu_apply`, `lMuNu_isSymm` \u2014 none of which involves an alternating form.",
+   "line": "69"
+  },
+  {
+   "evidence": "ParityOdd.lean:212-217 `structure SpectatorPartners ... partner : ...`; the only plane-to-splitting bridge is ParityOdd.lean:221 `SpectatorPlane.spectatorSplitting ... : SpectatorSplitting g K`; grep for `SpectatorPartners` shows no instance constructed from `SpectatorPlane`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Drop the trailing \"the same holds under a `SpectatorPlane`\" clause (the lemmas take `SpectatorPartners` and nothing more), or add and cite the extra definiteness hypothesis that would actually give `SpectatorPartners` from a plane.",
+   "issue": "The \"Main results\" bullet for `apply_pTransverse_eq_zero` / `apply_p_eq_zero` ends \"...and every non-zero spectator is non-null with a non-null spectator orthogonal to it, the same holds under a `SpectatorPlane`.\" No lemma derives `SpectatorPartners` from `SpectatorPlane`, and the implication is false in general: `SpectatorPlane` only requires `e\u2081`, `e\u2082` non-null and mutually orthogonal, so with `g e\u2081 e\u2081 = 1`, `g e\u2082 e\u2082 = -1` the non-zero spectator `e\u2081 + e\u2082` is null and `partner` fails.",
+   "line": "58"
+  }
+ ],
+ "head_sha": "aa7ecd4659f79a200de4ec04184547361704c31c",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "91a746f3c994561c5ebdebc55619f4b7f157831acca5e193075d1506bc063c38",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261017T054515Z-71-documentation-d93ca0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-17T05:45:15Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two inaccurate documentation claims: the Tensors/Basic.lean module docstring cites a declaration (`Leptonic.lMuNuOdd`) that does not exist, and the ParityOdd module docstring asserts a `p_T`/`p` annihilation result under `SpectatorPlane` that is neither proved nor implied by the definitions.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "af03e20da2fd799b390ec6d94d0bb750e916941d129b9d53045e7aea3e718189",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 128582,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 128582,
+  "cache_read_input_tokens": 304442,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1270,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1270,
+    "cache_read_input_tokens": 104330,
+    "input_tokens": 2,
+    "output_tokens": 6803,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11700,
+  "output_tokens_details": {
+   "thinking_tokens": 8843
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
