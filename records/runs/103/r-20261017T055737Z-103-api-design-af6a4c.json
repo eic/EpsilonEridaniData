@@ -1,0 +1,209 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1847835,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 240.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 132956,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 132956,
+    "cache_read_input_tokens": 857327,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5472,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5472,
+      "cache_read_input_tokens": 108550,
+      "input_tokens": 2,
+      "output_tokens": 2276,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17058,
+    "output_tokens_details": {
+     "thinking_tokens": 13472
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.184783,
+ "dedupe_key": "eic/EpsilonEridani|103|a00b765193019b83be397514efc006a7788b50d4|api-design|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "0f12d5df3d94e03a72fe9c70c41c949e3e1ad509fdc21dd67157165be4f23805",
+ "diff_sha256": "0f12d5df3d94e03a72fe9c70c41c949e3e1ad509fdc21dd67157165be4f23805",
+ "duration_s": 240.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Tensors/Basic.lean:86 `namespace Bilin` (inside `namespace Tensors`) vs Kinematics/Basic.lean:35 `namespace Bilin`; Tensors/Basic.lean:174 had to be written as `Kinematics.Bilin.apply_sub_smul_pair` to cross the split.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "fix": "Put the general form API in one namespace: move `rankOne`, `IsIsometry`, `reflect` and their lemmas from `Tensors.Bilin` into `Kinematics.Bilin` (Tensors/Basic.lean already imports Kinematics/Basic.lean), deleting the second namespace rather than keeping both.",
+   "issue": "This PR opens a second `Bilin` namespace (`...DIS.Kinematics.Bilin`: apply_sub_smul_pair, projOrthogonal and its lemmas) while a `Bilin` namespace for the same type already exists at `...DIS.Tensors.Bilin` (rankOne, IsIsometry, reflect, Tensors/Basic.lean:86). A consumer cannot reach the whole `Bilin` API by opening one namespace, and `Bilin.foo`/dot-notation resolves to whichever is in scope.",
+   "line": 35
+  },
+  {
+   "evidence": "Kinematics/Basic.lean:63-82 (no attributes) vs Jets/Frame/Basic.lean:134-153 (`@[simp]` on the identical statements specialized to `F.n`); Longitudinal.lean:185 rewrites with `projOrthogonal_pairing` by hand.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "fix": "Add `@[simp]` to the three general lemmas; the `g u u \u2260 0` side condition is dischargeable and simply blocks firing where it is unknown.",
+   "issue": "`projOrthogonal_orthogonal` (:64), `projOrthogonal_apply_self` (:69) and `projOrthogonal_projOrthogonal` (:80) carry no `@[simp]`, while their Frame specializations `spatial_orthogonal_n`, `spatial_n`, `spatial_spatial` (Jets/Frame/Basic.lean:134,143,151) all do. Direct users of the projection (`pTransverse`, and \u00a71.2's Breit frame along `q`) get none of that automation and must `rw` manually.",
+   "line": 64
+  }
+ ],
+ "head_sha": "a00b765193019b83be397514efc006a7788b50d4",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "5b3d58adfd79d28bd27315fd199bd52e5312a16187f3052ab83be8386d94f9cf",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "d05593f4ef68032bd1fc90d83aa0aa7c556e068a",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261017T055737Z-103-api-design-af6a4c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-17T05:57:37Z",
+ "submitted_by": "wdconinc",
+ "summary": "The Frame surface itself is sound: minimal fields, derivable @[ext], unexposed bodies, and a complete set of _def/_apply/ker/range/massless restatements. Two problems in the new general Bilin layer: the API for Bilin V is now split across two namespaces of the same leaf name, and the general projection lemmas lack the @[simp] annotations their Frame specializations carry.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Witness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/Jets.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/docbuild/mk_docs_root.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4af3f3f4f6cb2ade3c472fa3aa29ffdc09a3e60e885e6e2a9686dd76c4a742b2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 132956,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 132956,
+  "cache_read_input_tokens": 857327,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5472,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5472,
+    "cache_read_input_tokens": 108550,
+    "input_tokens": 2,
+    "output_tokens": 2276,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17058,
+  "output_tokens_details": {
+   "thinking_tokens": 13472
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
