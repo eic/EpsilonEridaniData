@@ -1,0 +1,189 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4610625000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 145.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 100544,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 100544,
+    "cache_read_input_tokens": 419605,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1618,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1618,
+      "cache_read_input_tokens": 85771,
+      "input_tokens": 2,
+      "output_tokens": 3772,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9830,
+    "output_tokens_details": {
+     "thinking_tokens": 6848
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "cost_usd": 1.461063,
+ "dedupe_key": "eic/EpsilonEridani|166|6caae8ed051e10713772bcae1ad5cce9038aa411|api-design|claude-opus-5|a04d8ed758f03dbb|production|1",
+ "diff_blob": "02aebba032c1817d52ea3ffa7f6167b3e0ed1383375d8189bcbd2a6fb5000958",
+ "diff_sha256": "02aebba032c1817d52ea3ffa7f6167b3e0ed1383375d8189bcbd2a6fb5000958",
+ "duration_s": 145.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `singletGluonMatrix` in the file returns only lines 321 (def), 360 (statement) and 364 (`simp [singletGluonMatrix, ...]`); no lemma states its entries.",
+   "file": "EpsilonEridani/Particles/Parton/SingletDecomposition.lean",
+   "fix": "Add `@[simp] theorem singletGluonMatrix_def : singletGluonMatrix qq qg gq gg nf = !![qq, 2 * nf * qg; gq, gg] := (rfl)` (or the four `@[simp]` entry lemmas `singletGluonMatrix_apply_*`), proved inside the module; do not add `@[expose]`.",
+   "issue": "`singletGluonMatrix` is public but has no API at all: no entry lemmas, no `_def`/`_apply`. The file opens with plain `public section` (no `@[expose]`, unlike e.g. `Particles/Fragmentation/Basic.lean:23`), so the `!![qq, 2 * nf * qg; gq, gg]` body is invisible downstream and `Matrix.cons_val` simp lemmas cannot fire. The one theorem mentioning it (`singletGluon_flavorBlindMatrix_mulVec`) only unfolds it internally via `simp [singletGluonMatrix, ...]` (line 364), so a consumer such as CollinearEvolution's `gammaS` cannot identify the `2 n_f qg` entry the docstring advertises.",
+   "line": "321"
+  },
+  {
+   "evidence": "Lines 410\u2013413: `have h\u2081 : (singletVector : Species Flavor \u2192 R) \u2208 singletSector := Submodule.subset_span (by simp)` and the analogous `h\u2082`.",
+   "file": "EpsilonEridani/Particles/Parton/SingletDecomposition.lean",
+   "fix": "Hoist them to public lemmas `singletVector_mem_singletSector` and `single_gluon_mem_singletSector` next to `mem_singletSector` and use them here.",
+   "issue": "The two introduction facts for the span-defined `singletSector` \u2014 `singletVector \u2208 singletSector` and `Pi.single gluon 1 \u2208 singletSector` \u2014 are proved as local `have`s `h\u2081`/`h\u2082` inside `flavorBlindMatrix_mulVec_mem_singletSector` instead of being exported. Every consumer of `singletSector` needs exactly these, and the file itself demonstrates the need.",
+   "line": "410"
+  },
+  {
+   "evidence": "Line 136\u2013138 has no attribute, while `singlet_singletVector`, `singlet_single_gluon`, `singletGluon_apply` and `singlet_flavorBlindMatrix_mulVec` are all `@[simp]`; `Matrix.dotProduct` is not unfolded by default simp, so no loop results.",
+   "file": "EpsilonEridani/Particles/Parton/SingletDecomposition.lean",
+   "fix": "Tag `singletVector_dotProduct` with `@[simp]` (rewriting toward `singlet`, which the other simp lemmas are stated in terms of).",
+   "issue": "`singletVector_dotProduct : singletVector \u2b1d\u1d65 v = singlet v` is the normal-form bridge between the vector and the functional presentation of the singlet, but carries no `@[simp]`, so `singletVector \u2b1d\u1d65 (P *\u1d65 v)` does not reduce and the `@[simp]` lemma `singlet_flavorBlindMatrix_mulVec` never gets a chance to fire.",
+   "line": "137"
+  }
+ ],
+ "head_sha": "6caae8ed051e10713772bcae1ad5cce9038aa411",
+ "merge_base_sha": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 166,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "04a4f4104314bf88d32693043a8ccde1414f3378bdf23299a6c0867b0acf2482",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "3f1739d3a03dacea167170d6ed9d326de4dd0c3f",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261018T060801Z-166-api-design-ee5005",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-18T06:08:01Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and free of compatibility artifacts, but `singletGluonMatrix` is exported as an opaque definition with no characteristic lemma, so downstream consumers cannot see its entries; two singletSector introduction facts are buried as local `have`s, and the singlet-pairing normal form lacks `@[simp]`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/SingletDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inference/Helicity.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6e0d985d69b045464d29052ef0e18b52f6c6ba791c9e6286b220f649f3c923e3",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 100544,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 100544,
+  "cache_read_input_tokens": 419605,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1618,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1618,
+    "cache_read_input_tokens": 85771,
+    "input_tokens": 2,
+    "output_tokens": 3772,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9830,
+  "output_tokens_details": {
+   "thinking_tokens": 6848
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
