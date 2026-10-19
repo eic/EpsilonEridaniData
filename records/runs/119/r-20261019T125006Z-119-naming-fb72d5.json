@@ -1,0 +1,182 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.493075,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 134.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 107814,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 107814,
+    "cache_read_input_tokens": 337850,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5823,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5823,
+      "cache_read_input_tokens": 86848,
+      "input_tokens": 2,
+      "output_tokens": 2869,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9838,
+    "output_tokens_details": {
+     "thinking_tokens": 6918
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.493075,
+ "dedupe_key": "eic/EpsilonEridani|119|3a1ddd4d56fdd898d455d605bdc84aa0e0f3b12c|naming|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "4e936d3085614aaf03a83729304aabf5153b62da41f91aba906b3b7960e10282",
+ "diff_sha256": "4e936d3085614aaf03a83729304aabf5153b62da41f91aba906b3b7960e10282",
+ "duration_s": 134.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Conclusion is `K.toDisKinematics.xBj g = xi g K * beta g K` (line 104). Repo precedent: `Kinematics/Bounds.lean:40 lemma xBj_pos`, `:46 lemma xBj_le_one`, `Tensors/Longitudinal.lean:260 lemma two_xBj_mul_pq`, `pq_ne_zero_of_xBj_ne_zero`. This is the only `x_`-prefixed lemma in `EpsilonEridani/`. Naming conventions: \"_-separated strings in a lemma name correspond to a definition name or connective\" (namespace removed, i.e. `xBj`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Rename to `xBj_eq_xi_mul_beta`.",
+   "issue": "`x_eq_xi_mul_beta` names the concluded left-hand side `x`, but the declaration it is about is `DisKinematics.xBj`; `x` corresponds to no definition in the repo, and every other lemma about this quantity uses `xBj`.",
+   "line": 102
+  },
+  {
+   "evidence": "`Exclusive/Kinematics/Basic.lean:52 def Q2 (g : Bilin V) (K : ExclKinematics V)`, `:68 def tMom`, `:76 noncomputable def xiSkew`, `:80 def phiDiff` are all in `namespace ExclKinematics` and used as `K.tMom g`, `K.xiSkew g` (`:151`, `:153`); the new declarations take the same record but sit in `namespace Diffractive` (Diffractive/Basic.lean:51, 73-85).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Declare them in the record's namespace from this file (`namespace Exclusive.Kinematics.ExclKinematics` \u2014 no file move needed) under disambiguating names mirroring `xiSkew`, e.g. `xiDiff`, `betaDiff`, `MX2`, and update `x_eq_xi_mul_beta` accordingly.",
+   "issue": "`xi`, `beta` (line 79) and `MX2` (line 85) are invariants whose principal argument is `ExclKinematics V`, but they are declared in `DIS.Diffractive` rather than the `ExclKinematics` namespace, so `K.xi g` / `K.beta g` / `K.MX2 g` do not elaborate while every other invariant of that same record does. The bare names `xi`/`beta` also give no cue against the existing, numerically different `ExclKinematics.xiSkew` on the same record.",
+   "line": 73
+  }
+ ],
+ "head_sha": "3a1ddd4d56fdd898d455d605bdc84aa0e0f3b12c",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 119,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "91d09e43f5ab5294c209eaa318d70d5dd8d65acbbaf06f4c14e4f7092471d178",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "3f1739d3a03dacea167170d6ed9d326de4dd0c3f",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261019T125006Z-119-naming-fb72d5",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-19T12:50:06Z",
+ "submitted_by": "wdconinc",
+ "summary": "The key theorem is named `x_eq_xi_mul_beta` although the quantity it concludes about is `DisKinematics.xBj`, against the repo-wide `xBj` lemma-name convention; and the three new invariants of `ExclKinematics` sit outside that record's namespace, so `K.xi g` does not elaborate while every sibling invariant (`K.Q2 g`, `K.tMom g`, `K.xiSkew g`) does.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/SIDIS/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "cc1691e15c3a95c602f7a1b81a34f053159fc2bec5becd32b3e4147f49bccc90",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 107814,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 107814,
+  "cache_read_input_tokens": 337850,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5823,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5823,
+    "cache_read_input_tokens": 86848,
+    "input_tokens": 2,
+    "output_tokens": 2869,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9838,
+  "output_tokens_details": {
+   "thinking_tokens": 6918
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
