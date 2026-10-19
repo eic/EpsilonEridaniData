@@ -1,0 +1,248 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2706779999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 251.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 124318,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 124318,
+    "cache_read_input_tokens": 1169666,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1467,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1467,
+      "cache_read_input_tokens": 112430,
+      "input_tokens": 2,
+      "output_tokens": 4994,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17701,
+    "output_tokens_details": {
+     "thinking_tokens": 11853
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.270678,
+ "dedupe_key": "eic/EpsilonEridani|128|85ea2305fadb48d2d208a3016bcbc1168e39ef1d|api-design|claude-opus-5|a04d8ed758f03dbb|production|2",
+ "diff_blob": "30634f0a83069c53a05a4db22db4096bb8c9c0a55a0f0dd27f20da2d4c0e9364",
+ "diff_sha256": "30634f0a83069c53a05a4db22db4096bb8c9c0a55a0f0dd27f20da2d4c0e9364",
+ "duration_s": 251.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 174 and 186 use `simp only [colorSingletState, ...]` to unfold the body in-file; no `colorSingletState_*` equation lemma exists (`grep colorSingletState` returns only lines 41, 51-52, 167, 170-171, 174, 182-183, 186). Compare `colorSingletProj_apply := (rfl)` at line 88, which the author did provide for the projector.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "fix": "Add `@[simp] theorem colorSingletState_def : colorSingletState N = (((\u221aN)\u207b\u00b9 : \u211d) : \u2102) \u2022 (1 : Matrix (Fin N) (Fin N) \u2102) := (rfl)`, an entrywise `colorSingletState_apply`, and `@[simp] theorem conjTranspose_colorSingletState : (colorSingletState N)\u1d34 = colorSingletState N`.",
+   "issue": "`colorSingletState` is public but has no equation lemma, and the section is `public section` without `@[expose]` (line 69), so downstream the state is opaque: a consumer cannot prove `colorSingletState N = ((\u221aN)\u207b\u00b9 : \u211d) \u2022 1`, cannot compute an entry, and cannot simplify the `(colorSingletState N)\u1d34` that appears in both exported lemmas (lines 171, 183).",
+   "line": "167"
+  },
+  {
+   "evidence": "Line 264 of this very file does the unfolding by hand: `rw [casimir_genM_apply, colorOctetProj_eq, LinearMap.smul_apply, LinearMap.sub_apply, Module.End.one_apply, colorSingletProj_apply]`.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "fix": "Rename the sum form to `colorOctetProj_apply_eq_sum` and add `@[simp] theorem colorOctetProj_apply (\u03c8) : colorOctetProj N \u03c8 = \u03c8 - ((N : \u2102)\u207b\u00b9 * \u03c8.trace) \u2022 1`, parallel to `colorSingletProj_apply`.",
+   "issue": "There is no closed form for `colorOctetProj N \u03c8`. `colorOctetProj_apply` gives only the generator sum and is not `@[simp]`, and `colorOctetProj_eq` is operator-level, so applying the octet projector to a state requires a four-step rewrite while `colorSingletProj_apply` is simp.",
+   "line": "97"
+  },
+  {
+   "evidence": "The file exposes only idempotency, orthogonality, completeness, traces and Casimir values; nothing relates a channel to the traceless/scalar matrices. Roadmap README.md:525-526: the colour/spin classification 'is the index set of every sum in Layer 2'.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "fix": "Add `colorOctetProj_apply_eq_self_iff [NeZero N] (\u03c8) : colorOctetProj N \u03c8 = \u03c8 \u2194 \u03c8.trace = 0` and `colorSingletProj_apply_eq_self_iff [NeZero N] (\u03c8) : colorSingletProj N \u03c8 = \u03c8 \u2194 \u2203 c : \u2102, \u03c8 = c \u2022 1`.",
+   "issue": "No lemma characterises membership of either channel, so a consumer cannot say which wave functions are singlet or octet \u2014 the content that Layer 2's channel-indexed sums rest on.",
+   "line": "0"
+  },
+  {
+   "evidence": "`@[simp]` appears at lines 86, 112, 117, 136, 142, 148, 153, 218, 226, 272, 278, 284, 291 \u2014 the three trace lemmas are the only constant-valued results omitted.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "fix": "Mark all three `@[simp]`.",
+   "issue": "`trace_colorSingletProj` (194), `trace_colorOctetProj` (200) and `trace_conjTranspose_colorSingletState_mul_self` (170) are closed-form constant results with fixed LHS but carry no `@[simp]`, while every other closed-form result in the file does.",
+   "line": "194"
+  },
+  {
+   "evidence": "`mathlib/Mathlib/Algebra/Lie/OfAssociative.lean:49-50` declares `@[instance_reducible] def ofAssociativeRing`, enabled only file-locally (lines 66, 177); line 215 here does the same, and the docstring at lines 43-44 and 209-213 presents `LieAlgebra.ad \u2102 _ X` / `LieModule.casimir \u2102 _ _ (genM N) (genM N)` as the public vocabulary with no such note.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "fix": "State in the `### The colour action on the pair` docstring that consumers must write `attribute [local instance 100] LieRing.ofAssociativeRing`, or additionally expose bracket-free restatements (e.g. the Casimir result as a plain matrix sum).",
+   "issue": "The colour-action and Casimir API (`ad_mul_colorSingletProj`, `colorSingletProj_mul_ad`, `commute_ad_*`, `casimir_genM_*`) is stated using a Lie structure supplied by a *local* attribute, and nothing in the public docstring says so; a downstream file cannot state or `simp` with these lemmas until it repeats the attribute, since the instance is not global.",
+   "line": "215"
+  }
+ ],
+ "head_sha": "85ea2305fadb48d2d208a3016bcbc1168e39ef1d",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 128,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f90a60aa9d8d11a00591d80d0b8a9e9c8f1f1f20725a61396505d28ca9eb982d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "3f1739d3a03dacea167170d6ed9d326de4dd0c3f",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261019T130427Z-128-api-design-7c3b48",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-19T13:04:27Z",
+ "submitted_by": "wdconinc",
+ "summary": "The projector surface is close to complete, but `colorSingletState` is exported with no equation lemma at all (body unexposed), the octet projector has no closed-form apply lemma, the two channels have no membership characterisation, and the closed-form trace results are missing `@[simp]`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LieAlgebra/Casimir.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LieAlgebra/Casimir.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/SUNStructureConstants.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Lie",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/QuarkoniaAndExotics/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/QuarkoniaAndExotics/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/QuarkoniaAndExotics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Lie/OfAssociative.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Lie/Matrix.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "cf2d6ebe0e092568b46e92221be1db423efd08d113602fa798c2256f06d3c5f7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 124318,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 124318,
+  "cache_read_input_tokens": 1169666,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1467,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1467,
+    "cache_read_input_tokens": 112430,
+    "input_tokens": 2,
+    "output_tokens": 4994,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17701,
+  "output_tokens_details": {
+   "thinking_tokens": 11853
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
