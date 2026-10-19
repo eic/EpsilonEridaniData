@@ -1,0 +1,233 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1530934999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 219.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 131544,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 131544,
+    "cache_read_input_tokens": 927687,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3009,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3009,
+      "cache_read_input_tokens": 121078,
+      "input_tokens": 2,
+      "output_tokens": 3783,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14948,
+    "output_tokens_details": {
+     "thinking_tokens": 10827
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.153093,
+ "dedupe_key": "eic/EpsilonEridani|122|953ef820bbc379a623c360a599323ba29fa725f7|api-design|claude-opus-5|a04d8ed758f03dbb|production|3",
+ "diff_blob": "fdb1070200d5167006e5088a63dba8ba78753e1503fe761dc6551a7587f7a298",
+ "diff_sha256": "fdb1070200d5167006e5088a63dba8ba78753e1503fe761dc6551a7587f7a298",
+ "duration_s": 219.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -n DisKinematics EpsilonEridani/QFT/Scattering/DIS/Exclusive/` returns no matches, so no such conversion exists; `structure DisKinematics` fields are `p pPrime k kPrime q : V` plus `hq` (Kinematics/Basic.lean:32-45).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Expose a named public conversion `ExclKinematics.toDisKinematics` (with projection simp lemmas) and state `ofExcl_x` against it; at minimum use named-field syntax `{ p := K.p, pPrime := K.pPrime, ... }`.",
+   "issue": "`ofExcl_x` states the inclusive bridge with a positional anonymous constructor `\u27e8K.p, K.pPrime, K.k, K.kPrime, K.q, K.hqLepton\u27e9`. The `ExclKinematics \u2192 DisKinematics` conversion is therefore unnamed: no consumer can state any further agreement (`yInel`, `W2`, `Q2`) without retyping the literal, and since `p, pPrime, k, kPrime, q` all have type `V`, a reordering of `DisKinematics`' fields would silently change the meaning of this theorem rather than fail.",
+   "line": 189
+  },
+  {
+   "evidence": "Roadmap `Diffraction/Suggested.lean:66-73` lists `absT` and `absT_nonneg` in Layer 0; `README.md` Convention 2: \"The positive quantity `|t|` has its own definition `absT` with a lemma `absT = -t`, and every exponential or power law in the momentum transfer is written in terms of `absT`.\"",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Add `Invariants.absT (i) : \u211d := -i.t`, `absT_eq_neg_t ... := (rfl)`, and `absT_nonneg` (from `t_nonpos`).",
+   "issue": "The `t` field and `t_nonpos` are exposed with no accessor API \u2014 no declaration in the PR reads `t`. The roadmap's mandated `|t|` accessor is absent, so the first downstream power law will spell `-i.t` ad hoc, which Convention 2 exists to prevent.",
+   "line": 68
+  },
+  {
+   "evidence": "Lines 110/116 are `(x_pos i).le` / `(beta_pos i).le`; only `i.xi_nonneg` appears again, at line 132 in `x_le_xi_of_beta_le_one`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Delete `x_nonneg` and `beta_nonneg`; keep `xi_nonneg`, which is used at line 132, or inline it as `(xi_pos i).le` and drop it too.",
+   "issue": "`x_nonneg` (line 110) and `beta_nonneg` (line 116) are public duplicates of `x_pos`/`beta_pos` under identical (empty) hypotheses \u2014 `(x_pos i).le` \u2014 and neither is used anywhere. Two public spellings of the same fact in a brand-new surface.",
+   "line": 110
+  },
+  {
+   "evidence": "`grep -n 'Diffractive' EpsilonEridani.lean` \u2192 no match; `...DIS.Exclusive.Kinematics.Basic` is present at line 98.",
+   "file": "EpsilonEridani.lean",
+   "fix": "Add `import EpsilonEridani.QFT.Scattering.DIS.Diffractive.Kinematics` to `EpsilonEridani.lean` (alphabetically before line 98's `...DIS.Exclusive.Kinematics.Basic`).",
+   "issue": "The new module is not added to the root import list, so none of this PR's public surface is reachable from `import EpsilonEridani`.",
+   "line": 0
+  }
+ ],
+ "head_sha": "953ef820bbc379a623c360a599323ba29fa725f7",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 122,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "042a432c203e903f58acbcf68cba4bb2b83915a7a8a20117c462163fb8129925",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "3f1739d3a03dacea167170d6ed9d326de4dd0c3f",
+ "rubrics_version": "a04d8ed758f03dbb",
+ "run_id": "r-20261019T044901Z-122-api-design-d1ba9e",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-19T04:49:01Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and bodies are correctly left unexposed with `(rfl)` restatements, but the `ExclKinematics \u2192 DisKinematics` bridge is an unnamed positional constructor literal, the exposed `t` field has no `absT` accessor the roadmap's Convention 2 mandates, two `_nonneg` lemmas duplicate the `_pos` ones, and the module is missing from the root import list.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "236984321884d7cd3819eca95542187aa3f2df03e0d8ae5432fe693b93032a4f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 131544,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 131544,
+  "cache_read_input_tokens": 927687,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3009,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3009,
+    "cache_read_input_tokens": 121078,
+    "input_tokens": 2,
+    "output_tokens": 3783,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14948,
+  "output_tokens_details": {
+   "thinking_tokens": 10827
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
