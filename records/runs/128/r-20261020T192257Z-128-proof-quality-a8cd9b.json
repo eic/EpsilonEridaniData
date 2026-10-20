@@ -1,0 +1,181 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8309089999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 255.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 116859,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 116859,
+    "cache_read_input_tokens": 353418,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 9186,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 9186,
+      "cache_read_input_tokens": 94775,
+      "input_tokens": 2,
+      "output_tokens": 3345,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19422,
+    "output_tokens_details": {
+     "thinking_tokens": 16267
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.830909,
+ "dedupe_key": "eic/EpsilonEridani|128|bf05593f9cf8328a4aecb257ba650b5540ab8a5d|proof-quality|claude-opus-5|bc8443602e3163c9|production|3",
+ "diff_blob": "00a8ff0e5d773ef1d4f0c4662e1867643ce599d52ed49ebb9ac826979c7cdcf2",
+ "diff_sha256": "00a8ff0e5d773ef1d4f0c4662e1867643ce599d52ed49ebb9ac826979c7cdcf2",
+ "duration_s": 255.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Group/Commute/Defs.lean:44: `theorem commute_iff_eq [Mul S] (a b : S) : Commute a b \u2194 a * b = b * a := Iff.rfl`.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "fix": "Use `rw [commute_iff_eq, ad_mul_colorSingletProj, colorSingletProj_mul_ad]`.",
+   "issue": "`commute_ad_colorSingletProj` is proved by `rw [Commute, SemiconjBy, ad_mul_colorSingletProj, colorSingletProj_mul_ad]`, i.e. by unfolding two Mathlib definitions via their equation lemmas rather than using the stable iff.",
+   "line": 289
+  },
+  {
+   "evidence": "grep of `of_associative_ring_bracket` in code/EpsilonEridani returns only lines 276, 284, 307 of this file; no `ad`-to-matrix lemma exists in the repo.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "fix": "Add a named lemma, e.g. `ad_apply_matrix (X \u03c8 : Matrix (Fin N) (Fin N) \u2102) : LieAlgebra.ad \u2102 _ X \u03c8 = X * \u03c8 - \u03c8 * X`, and rewrite with it in the three proofs instead of feeding `LieRing.of_associative_ring_bracket` to simp each time.",
+   "issue": "The bridge from the Lie bracket to matrices is re-unfolded inline in three proofs \u2014 `simp [LieRing.of_associative_ring_bracket]` (276), `simp [LieRing.of_associative_ring_bracket, trace_sub, trace_mul_comm X]` (284), `simp only [LieRing.of_associative_ring_bracket, two_smul]` (307). This is the reusable fact the module docstring advertises as the colour action, yet it exists nowhere as a lemma, so downstream files (and readers) must repeat the unfolding.",
+   "line": 276
+  }
+ ],
+ "head_sha": "bf05593f9cf8328a4aecb257ba650b5540ab8a5d",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 128,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "807d06986309c4020f816ffce1bfe2d6921c9f81946843af44940d7e6da8ac8a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261020T192257Z-128-proof-quality-a8cd9b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-20T19:22:57Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are short, use robust automation (module, noncomm_ring, field_simp) and contain no change/show or undocumented defeq in the mathematics. Two fixes: a rw through Mathlib definitions where a named lemma exists, and the matrix form of the adjoint action re-unfolded inline in three proofs instead of being a reusable lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/SUNStructureConstants.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LieAlgebra/Casimir.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "48dfcb37f53471171acd2a78404c03a47ac666d263f407fea813e60de0db5078",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 116859,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 116859,
+  "cache_read_input_tokens": 353418,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 9186,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 9186,
+    "cache_read_input_tokens": 94775,
+    "input_tokens": 2,
+    "output_tokens": 3345,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19422,
+  "output_tokens_details": {
+   "thinking_tokens": 16267
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
