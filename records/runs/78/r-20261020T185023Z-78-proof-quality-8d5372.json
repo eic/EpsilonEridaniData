@@ -1,0 +1,174 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.534951,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 190.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 103567,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 103567,
+    "cache_read_input_tokens": 327142,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5107,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5107,
+      "cache_read_input_tokens": 88964,
+      "input_tokens": 2,
+      "output_tokens": 2468,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13426,
+    "output_tokens_details": {
+     "thinking_tokens": 10432
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "765d66a3b8b088d76f898e3758d111ccdd82bbd1",
+ "cost_usd": 1.534951,
+ "dedupe_key": "eic/EpsilonEridani|78|77300263352d66a885531443e335bd70eba9f282|proof-quality|claude-opus-5|bc8443602e3163c9|production|1",
+ "diff_blob": "a1ede1547d4990ef59e00f32564fd3d7574c41002a185502e04d3552c705a7f3",
+ "diff_sha256": "a1ede1547d4990ef59e00f32564fd3d7574c41002a185502e04d3552c705a7f3",
+ "duration_s": 190.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib provides only `LinearMap.IsSymm.polarization` (mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean:138); grep for `add_self|add_sq|sq_add` under Mathlib/LinearAlgebra/BilinearForm returns no expansion lemma, so the helper has to be local and is currently duplicated at lines 198 and 217.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "fix": "Add one helper beside `apply_deltaTarget_left/right`, e.g. `lemma apply_add_self (g : Bilin V) (hg : g.IsSymm) (u v : V) : g (u + v) (u + v) = g u u + 2 * g u v + g v v` (proved once from `hg.polarization`), with a `sub` corollary; then prove both `MX2_eq_...` and `MY2_eq_...` by `rw` on it, dropping the `-\u0394`/`hp`/`simp only` plumbing. The same fact is also open-coded upstream in `DIS/Kinematics/Basic.lean:79` (`W2_expand`), and \u00a70.2 of the roadmap will need it again.",
+   "issue": "The generic fact `g (u + v) (u + v) = g u u + 2 * g u v + g v v` for symmetric `g` is hidden inside two event-specific proofs: `MX2_eq_two_mul_apply_deltaTarget_q_sub_Q2_add_tMom` (lines 198-201: `hg.polarization (deltaTarget K) K.q` + `rw [add_comm ...] at h` + `linarith`) and `MY2_eq_p_sq_sub_two_mul_apply_p_deltaTarget_add_tMom` (lines 214-221), where the subtraction `P' = P - \u0394` is forced through `hg.polarization K.p (-deltaTarget K)` plus a `hp` rewrite and `simp only [map_neg, LinearMap.neg_apply, neg_neg]` to undo the negation.",
+   "line": 195
+  }
+ ],
+ "head_sha": "77300263352d66a885531443e335bd70eba9f282",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 78,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "60696dbccac65b145a6121cf0b2b4cf0461c5d43f0819c203dcb6c7ce4bb2693",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261020T185023Z-78-proof-quality-8d5372",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-20T18:50:23Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are short, use robust automation, and avoid change/show and defeq tricks. The one defect is the symmetric-form square expansion re-derived inline in two lemmas, the second via an awkward negation detour, instead of being factored into a reusable lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4a901d1c101b903767a5a43abe94e542f20e52af166d82018a86bc1b8360ea9d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 103567,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 103567,
+  "cache_read_input_tokens": 327142,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5107,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5107,
+    "cache_read_input_tokens": 88964,
+    "input_tokens": 2,
+    "output_tokens": 2468,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13426,
+  "output_tokens_details": {
+   "thinking_tokens": 10432
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
