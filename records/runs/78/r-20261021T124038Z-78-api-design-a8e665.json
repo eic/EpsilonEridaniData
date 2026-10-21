@@ -1,0 +1,287 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.9324564999999994,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 289.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 147396,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 147396,
+    "cache_read_input_tokens": 2014043,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 40,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 908,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 908,
+      "cache_read_input_tokens": 134592,
+      "input_tokens": 2,
+      "output_tokens": 4322,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18051,
+    "output_tokens_details": {
+     "thinking_tokens": 11927
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "765d66a3b8b088d76f898e3758d111ccdd82bbd1",
+ "cost_usd": 2.932456,
+ "dedupe_key": "eic/EpsilonEridani|78|ed7f8f9eaf8d8d6b44cb36792de715e7dd0793e3|api-design|claude-opus-5|bc8443602e3163c9|production|2",
+ "diff_blob": "b6db4c30869987b0c8dd7545374e84fb884227898d3e181060ce0beaf413f4f6",
+ "diff_sha256": "b6db4c30869987b0c8dd7545374e84fb884227898d3e181060ce0beaf413f4f6",
+ "duration_s": 289.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -n 'Diffractive' code/` matches only inside the new file; `EpsilonEridani.lean` has 140 `import` lines for 145 source files, the other five being Generator modules reachable through `EpsilonEridani.Generator.DISEvent` (`Generator/DISEvent.lean:10-11`).",
+   "file": "EpsilonEridani.lean",
+   "fix": "Add `import EpsilonEridani.QFT.Scattering.DIS.Diffractive.Kinematics.Basic` to `EpsilonEridani.lean`, in alphabetical position after the `Exclusive.*` block (line 97).",
+   "issue": "`EpsilonEridani.QFT.Scattering.DIS.Diffractive.Kinematics.Basic` is imported by nothing: it is absent from the root aggregator and no other module imports it, so the entire new public surface is invisible to `import EpsilonEridani`. Every other module in the tree is reachable from the root (Generator.Jets/Shower/Splitting transitively via Generator.DISEvent).",
+   "line": 97
+  },
+  {
+   "evidence": "Line 131: `g (u + v) (u + v) = g u u + 2 * g u v + g v v` \u2014 no `DisKinematics` argument. `DIS/Kinematics/Basic.lean:79-95` (`W2_expand`) performs the same `(p+q)\u00b2` expansion by hand over five `calc` steps.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "fix": "Move both to `EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean` (public, in the `Kinematics` namespace next to `Bilin`) and use `apply_add_add_self` to prove `DisKinematics.W2_expand` there; keep the diffractive file's two call sites (lines 210, 226) pointing at the relocated names.",
+   "issue": "`apply_add_add_self` (line 130) and `apply_sub_sub_self` (line 135) are general facts about a symmetric bilinear form \u2014 their statements mention only `Bilin V`, `g.IsSymm` and arbitrary `u v : V`, and their proofs use nothing from this file's subject \u2014 but are exported in namespace `DIS.Diffractive.Kinematics`, where the inclusive layer cannot find them.",
+   "line": 129
+  }
+ ],
+ "head_sha": "ed7f8f9eaf8d8d6b44cb36792de715e7dd0793e3",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 78,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "2cde8c657b283a4ceaab48782b4880e07b91c64af705173a3c9fa2c9403124d9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261021T124038Z-78-api-design-a8e665",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-21T12:40:38Z",
+ "submitted_by": "wdconinc",
+ "summary": "The characteristic API is complete and correctly annotated, bodies stay unexposed, and there is no compatibility artifact; but the new module is not reachable from the library root, so none of its API is published via `import EpsilonEridani`, and two general symmetric-bilinear-form lemmas are exported under the Diffractive namespace instead of their canonical home.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lint-style.sh",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/source-modules.sh",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/ModuleSystem.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 33,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8536be7596f2792f19cfb05ff0ea579ae067669cda1dba523321036ff4446d55",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 147396,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 147396,
+  "cache_read_input_tokens": 2014043,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 40,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 908,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 908,
+    "cache_read_input_tokens": 134592,
+    "input_tokens": 2,
+    "output_tokens": 4322,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18051,
+  "output_tokens_details": {
+   "thinking_tokens": 11927
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
