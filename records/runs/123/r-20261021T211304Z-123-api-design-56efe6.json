@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.341975,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 226.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 140994,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 140994,
+    "cache_read_input_tokens": 997350,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1606,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1606,
+      "cache_read_input_tokens": 130910,
+      "input_tokens": 2,
+      "output_tokens": 2157,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17330,
+    "output_tokens_details": {
+     "thinking_tokens": 12931
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.341975,
+ "dedupe_key": "eic/EpsilonEridani|123|76b5066247c65a55feebeb49da6f0c53ddfb170a|api-design|claude-opus-5|bc8443602e3163c9|production|2",
+ "diff_blob": "dd56716d743ae032964d4c18e3ec4db208e30d389897830971f1eb3833cc7777",
+ "diff_sha256": "dd56716d743ae032964d4c18e3ec4db208e30d389897830971f1eb3833cc7777",
+ "duration_s": 226.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Average.lean:116 `circleAverageTransverse_eq_zero_of_odd`; Average.lean:144-157 `azimuthalAverage`, `azimuthalAverage_of_neg`, `azimuthalAverage_of_nonneg`. No `azimuthalAverage_*_of_odd` in the file.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Export `azimuthalAverage_eq_zero_of_odd (f : VectorTmd Flavor) (i : Flavor) {x kT Q2 \u03b6 : \u211d} (hf : \u2200 w, \u2016w\u2016 = |kT| \u2192 f i x (-w) Q2 \u03b6 = -f i x w Q2 \u03b6) : azimuthalAverage f i x kT Q2 \u03b6 = 0`, unconditional in `kT`, proved by `rcases lt_or_ge kT 0` from `azimuthalAverage_of_neg` and `circleAverageTransverse_eq_zero_of_odd`.",
+   "issue": "The odd-annihilation lemma exists only at the `circleAverageTransverse` level (line 116). The roadmap's 2.4 product is annihilation of the *azimuthal average*, and a consumer holding `f i x (-w) Q2 \u03b6 = -f i x w Q2 \u03b6` on the circle must case-split on the sign of `kT` and rewrite with `azimuthalAverage_of_nonneg` before the existing lemma applies; at `kT < 0` the statement is true for a different reason (the `if` guard).",
+   "line": "144"
+  },
+  {
+   "evidence": "mathlib/Mathlib/MeasureTheory/Integral/CircleIntegral.lean:84 `range_circleMap (c R) : range (circleMap c R) = sphere c |R|`; mathlib/Mathlib/Analysis/Normed/Operator/LinearIsometry.lean:946 `LinearIsometryEquiv.image_sphere`. Grep of Transverse.lean finds no `range`/`sphere` lemma.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Transverse.lean",
+   "fix": "Add `range_radialVector (kT : \u211d) : Set.range (radialVector kT) = Metric.sphere 0 |kT|` (and/or the `mem_sphere \u2194 \u2203 \u03b8` restatement), from Mathlib's `range_circleMap` plus `LinearIsometryEquiv.image_sphere` and `map_zero`.",
+   "issue": "`radialVector` is exported with introduction/computation lemmas only (`_apply_zero`, `_apply_one`, `norm_radialVector`, `_zero_radius`, `_neg_radius`) and no elimination: nothing says the radial vectors exhaust the circle. A consumer holding a property in polar form `\u2200 \u03b8, P (radialVector kT \u03b8)` cannot discharge the `\u2200 w, \u2016w\u2016 = |kT| \u2192 P w` hypotheses that `circleAverageTransverse_congr_sphere`, `_nonneg_of_nonneg` and `_eq_zero_of_odd` all take.",
+   "line": "48"
+  },
+  {
+   "evidence": "Average.lean:64-73; mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean:245 `circleAverage_const`, :202 `ContinuousOn.circleAverage`, :162 `circleAverage_eq_circleAverage_zero_one`.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Export `circleAverageTransverse_def (g kT) : circleAverageTransverse g kT = Real.circleAverage (fun z => g (Complex.orthonormalBasisOneI.repr z)) 0 kT := (rfl)`, and generalise `circleAverageTransverse_zero_fun` to `circleAverageTransverse_const (c : \u211d) (kT) : circleAverageTransverse (fun _ => c) kT = c` (Mathlib's `circleAverage_const` is already what the current proof uses).",
+   "issue": "`circleAverageTransverse` is advertised as `Real.circleAverage` transported along `Complex.orthonormalBasisOneI.repr`, but the only exported restatement (`_eq_integral`, line 69) jumps to the fully unfolded interval integral. Reusing any Mathlib fact not hand-copied here \u2014 `Real.circleAverage_const`, `ContinuousOn.circleAverage`, `circleAverage_eq_circleAverage_zero_one`, the integrability lemmas \u2014 requires unfolding the definition rather than applying API.",
+   "line": "64"
+  },
+  {
+   "evidence": "Average.lean:88 `@[simp] circleAverageTransverse_zero_radius` vs Average.lean:159-162 with no annotation.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Mark `azimuthalAverage_zero_radius` `@[simp]`; the LHS has a literal `0` radius, so it cannot loop.",
+   "issue": "`azimuthalAverage_zero_radius` carries no `@[simp]`, while its `circleAverageTransverse` counterpart (line 88) does. Since `azimuthalAverage` is not simp-unfolded, `simp` cannot reduce `azimuthalAverage f i x 0 Q2 \u03b6` at all.",
+   "line": "160"
+  }
+ ],
+ "head_sha": "76b5066247c65a55feebeb49da6f0c53ddfb170a",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "501b3d704beb6047d0427a256c27971eafc38776432a217875e7b58a9785c2a7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261021T211304Z-123-api-design-56efe6",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-21T21:13:04Z",
+ "submitted_by": "wdconinc",
+ "summary": "The exported surface is minimal and free of compatibility artefacts, but the characteristic API is incomplete: the odd-annihilation result stops at `circleAverageTransverse` and never reaches `azimuthalAverage`, `radialVector` has no elimination lemma, and `circleAverageTransverse` exports no bridge back to `Real.circleAverage`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Transverse.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "dd2e17b10d4d8146f5427546189ec0165d0b3f33623a27d785bd0f3a87959b2d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 140994,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 140994,
+  "cache_read_input_tokens": 997350,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1606,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1606,
+    "cache_read_input_tokens": 130910,
+    "input_tokens": 2,
+    "output_tokens": 2157,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17330,
+  "output_tokens_details": {
+   "thinking_tokens": 12931
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
