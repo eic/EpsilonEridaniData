@@ -1,0 +1,201 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8936425,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 215.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 117796,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 117796,
+    "cache_read_input_tokens": 611885,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1852,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1852,
+      "cache_read_input_tokens": 103022,
+      "input_tokens": 2,
+      "output_tokens": 1334,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16386,
+    "output_tokens_details": {
+     "thinking_tokens": 12928
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.893642,
+ "dedupe_key": "eic/EpsilonEridani|130|a5910d360d41a2b41d79bcb2f1359e24760e0695|proof-quality|claude-opus-5|bc8443602e3163c9|production|3",
+ "diff_blob": "3c4314d7d966b6cc6dc1d49b3227dd9df47600580e892f630268f6851bd7b711",
+ "diff_sha256": "3c4314d7d966b6cc6dc1d49b3227dd9df47600580e892f630268f6851bd7b711",
+ "duration_s": 215.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:246-255; `timeRotation_ofReal` is stated at Basic.lean:240 for `(y : Fin 1 \u2295 Fin d \u2192 \u211d)`, while `ofMinkowski` is a `def` (Basic.lean:107) whose component equation is only recorded as the `rfl`-lemma `ofMinkowski_apply` (Basic.lean:116).",
+   "file": "EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "fix": "Add the lemma the proof is really using, e.g. `theorem timeRotation_ofMinkowski (v : Vector d) : timeRotation (ofMinkowski v) = continuation (WithLp.toLp 2 v)` proved componentwise (`funext`/`rcases`/`simp`), and use it in both directions together with the simp lemma `WithLp.toLp_ofLp` instead of relying on eta/`rfl`.",
+   "issue": "Both branches of `map_timeRotation_minkowskiSection` typecheck only by unfolding wrappers: `timeRotation_ofReal` is stated for a raw `y : Fin 1 \u2295 Fin d \u2192 \u211d` yet applied to `v : Vector d`, `ofMinkowski v` must reduce to `fun \u03bc => (v \u03bc : \u2102)`, the `toLinearEquiv.toLinearMap.restrictScalars \u211d` coercion tower must reduce to `timeRotation`, and line 255 additionally needs `WithLp.toLp 2 (WithLp.ofLp x) \u2261 x`. None of this is visible or commented.",
+   "line": 253
+  },
+  {
+   "evidence": "Uniqueness.lean:117,138-139; `WithLp.toLp_eq_zero` is Mathlib/Analysis/Normed/Lp/WithLp.lean:169 (`toLp p x = 0 \u2194 x = 0`). The in-repo precedent for documenting this is MinkowskiProductExtensions.lean:83-86 (\"`timeComponent` and `spatialPart` are the `abbrev`s \u2026 so the four component equations below hold by `rfl`\").",
+   "file": "EpsilonEridani/QFT/Lattice/Continuation/Uniqueness.lean",
+   "fix": "Either route through Physlib's `spatialPart` component lemma, or add a one-line comment recording the unfolding, as the repo already does for the same reliance.",
+   "issue": "`(WithLp.toLp_eq_zero (p := 2)).mp h` is matched against `h : spatialPart v = 0` (line 117) and `.mpr` against the goal `spatialPart v = 0` (line 138) by unfolding Physlib's `spatialPart`; likewise `congrFun h (Sum.inr i)` on `h : w = 0` with `w : Vector d` (line 139) relies on `Vector d` reducing to a pi type. Nothing says why these hold.",
+   "line": 117
+  }
+ ],
+ "head_sha": "a5910d360d41a2b41d79bcb2f1359e24760e0695",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 130,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "7a02cc87c519d794ca3add5c93013ab96d772b15e4c45497341d19911556871a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261021T221918Z-130-proof-quality-c0b44a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-21T22:19:18Z",
+ "submitted_by": "wdconinc",
+ "summary": "The analytic core in Mathematics/Analysis/Analytic/Uniqueness.lean is well factored and robust, but two proofs close their goals through undocumented definitional equality across the `ofMinkowski`/`Vector`/`WithLp` wrappers, hiding the reusable identity that is actually being used.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Uniqueness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Normed/Lp/WithLp.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9d424ff0c98fd8acd877fd3dde4ba32be5788ce2055f8a104811c3d3e672b11a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 117796,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 117796,
+  "cache_read_input_tokens": 611885,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1852,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1852,
+    "cache_read_input_tokens": 103022,
+    "input_tokens": 2,
+    "output_tokens": 1334,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16386,
+  "output_tokens_details": {
+   "thinking_tokens": 12928
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
