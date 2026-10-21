@@ -1,0 +1,280 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.2676879999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 297.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 154296,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 154296,
+    "cache_read_input_tokens": 2347096,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 46,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1234,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1234,
+      "cache_read_input_tokens": 131865,
+      "input_tokens": 2,
+      "output_tokens": 4141,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22038,
+    "output_tokens_details": {
+     "thinking_tokens": 15711
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 3.267688,
+ "dedupe_key": "eic/EpsilonEridani|104|d5aa3b0f0b8ce21993553109084cf6b9e23bceb0|reuse|claude-opus-5|bc8443602e3163c9|production|4",
+ "diff_blob": "a613b1d6d75e1f404c0cc85d1eda7accb6881117d3bc1510a35a7c169e563a93",
+ "diff_sha256": "a613b1d6d75e1f404c0cc85d1eda7accb6881117d3bc1510a35a7c169e563a93",
+ "duration_s": 297.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "ComplexSpinDensity.lean:272 `lemma isParityInvariant_iff : \u03c1.IsParityInvariant \u2194 PDF.IsParityInvariant \u03c1.re \u2227 \u03c1.transversity.im = 0`; line 390-394 proof body is exactly `rw [isParityInvariant_iff, and_iff_left h.im_transversity]`. Grep for `isParityInvariant_re_iff` across `code/` returns only its own declaration.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Delete `isParityInvariant_re_iff`; users under time-reversal invariance get it in one line from `isParityInvariant_iff` and `IsTimeReversalInvariant.im_transversity`.",
+   "issue": "`isParityInvariant_re_iff` adds nothing over `isParityInvariant_iff` (line 272): its whole proof is `rw [isParityInvariant_iff, and_iff_left h.im_transversity]`, so it is the same iff with an extra time-reversal hypothesis. It has no consumer anywhere in the repo.",
+   "line": "390"
+  },
+  {
+   "evidence": "ComplexSpinDensity.lean:364-368 proves `hsym : \u03c1.mat idxMM idxPP = \u03c1.mat idxPP idxMM` by `simpa using \u03c1.posSemidef.1.apply idxPP idxMM` and then `simp [SpinDensityC.IsParityInvariant, PDF.IsParityInvariant, hsym]`, repeating the hermiticity step already carried out inside `isParityInvariant_iff` (lines 282-286).",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Move it after `re_toSpinDensityC` and prove it from `SpinDensityC.isParityInvariant_iff` together with the existing simp lemmas `re_toSpinDensityC` (line 371) and `transversity_toSpinDensityC` (line 358), which make the second conjunct `(PDF.h1 \u03c1 : \u2102).im = 0` trivial.",
+   "issue": "`SpinDensity.isParityInvariant_toSpinDensityC_iff` re-derives the double-flip conjunct with its own hermiticity argument (`hsym` from `\u03c1.posSemidef.1.apply`) although `isParityInvariant_iff` (line 272) already settles exactly that conjunct in general.",
+   "line": "364"
+  }
+ ],
+ "head_sha": "d5aa3b0f0b8ce21993553109084cf6b9e23bceb0",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 104,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "0a35ecf551271292e3d112db70e6bd37bd154830d36a0da72913144ed3733d4b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 4,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261021T213522Z-104-reuse-fc170a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-21T21:35:22Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new PosSemidef material and SpinDensityC have no Mathlib or in-repo counterpart and reuse upstream API correctly. The parity-transfer content, however, is stated three times: isParityInvariant_re_iff is a hypothesis-weakened corollary of isParityInvariant_iff, and isParityInvariant_toSpinDensityC_iff re-derives it instead of reusing it.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Matrix/PosDef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": false,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/Positivity.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Matrix/Order.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/Symmetric.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace/Positive.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Matrix/Hermitian.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Model.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 30,
+  "trace_truncated": false
+ },
+ "transcript_blob": "27b7b014fb7b8e325c6d891bed7bd535f8169f8daa5ea4b33b3fa3aa99d93076",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 154296,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 154296,
+  "cache_read_input_tokens": 2347096,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 46,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1234,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1234,
+    "cache_read_input_tokens": 131865,
+    "input_tokens": 2,
+    "output_tokens": 4141,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22038,
+  "output_tokens_details": {
+   "thinking_tokens": 15711
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
