@@ -1,0 +1,166 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6154545000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 264.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 180034,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 180034,
+    "cache_read_input_tokens": 583589,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5026,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5026,
+      "cache_read_input_tokens": 134698,
+      "input_tokens": 2,
+      "output_tokens": 6282,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20930,
+    "output_tokens_details": {
+     "thinking_tokens": 17668
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.615455,
+ "dedupe_key": "eic/EpsilonEridani|71|a4c89efd3de8326b27157e7c4329196ec0095b47|naming|claude-opus-5|bc8443602e3163c9|production|2",
+ "diff_blob": "5d2ff8785022ddb7914deef94da6b01588f20d7f23edf09217231ccd68ddc5b2",
+ "diff_sha256": "5d2ff8785022ddb7914deef94da6b01588f20d7f23edf09217231ccd68ddc5b2",
+ "duration_s": 264.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:518-519 `lemma pTransverse_orthogonal_q \u2026 : g (pTransverse g K) K.q = 0`; Basic.lean:1046 `e\u2081_orthogonal_q : g K.q e\u2081 = 0`; Basic.lean:1054 `e\u2081_orthogonal_e\u2082 : g e\u2081 e\u2082 = 0`; Basic.lean:1061-1063 `smul_add_smul_orthogonal_q \u2026 : g K.q (c\u2081 \u2022 hP.e\u2081 + c\u2082 \u2022 hP.e\u2082) = 0`. Rubric: check adjacent declarations first, consistency beats a better name.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Make one convention hold: either rename the mismatched fields/lemmas to put the first slot first (`q_orthogonal_e\u2081`, `pT_orthogonal_e\u2081`, `q_orthogonal_smul_add_smul`, \u2026) or restate them as `g e\u2081 K.q = 0` / `g e\u2081 (pTransverse g K) = 0` so the name reads in argument order. Keep `e\u2081_orthogonal_e\u2082` as the model.",
+   "issue": "`SpectatorPair.e\u2081_orthogonal_q : g K.q e\u2081 = 0` (and `e\u2082_orthogonal_q` :1048, `e\u2081_orthogonal_pT` :1050, `e\u2082_orthogonal_pT` :1052, plus the derived `SpectatorPair.smul_add_smul_orthogonal_q` :1061 and `smul_add_smul_orthogonal_pT` :1066) name the subject that sits in the *second* slot, while the same file's `pTransverse_orthogonal_q : g (pTransverse g K) K.q = 0` (:518) and the sibling field `e\u2081_orthogonal_e\u2082 : g e\u2081 e\u2082 = 0` (:1054) name the subject in the *first* slot. `SpectatorPair` assumes no `g.IsSymm`, so the two readings are genuinely different statements and `rw [hP.e\u2081_orthogonal_q]` will not fire on `g e\u2081 K.q`.",
+   "line": "1046"
+  },
+  {
+   "evidence": "Basic.lean:1111 `lemma SpectatorPlane.spectatorSplitting \u2026 : SpectatorSplitting g K`; ParityOdd.lean:482 uses the auto-generated `spectatorPartners_kFour.toSpectatorSplitting` for the same target type. Naming conventions doc cites `Semifield.toIsField` as the pattern for a conversion into a Prop-valued structure.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Rename to `SpectatorPlane.toSpectatorSplitting` and update the use in `SpectatorPlane.spectatorPartners` (Basic.lean:1125 `toSpectatorSplitting := hP.spectatorSplitting`). `spectatorPartners` itself takes `hSymm`/`hnull`, so it is not a pure conversion and may keep its name.",
+   "issue": "`SpectatorPlane.spectatorSplitting` is a hypothesis-free conversion `SpectatorPlane g K \u2192 SpectatorSplitting g K`, but is named without the `to` prefix that Mathlib uses for structure-to-structure conversions and that the sibling `SpectatorPartners` already carries via `extends`. Users reaching for `hP.toSpectatorSplitting` find only `toSpectatorPair`.",
+   "line": "1111"
+  }
+ ],
+ "head_sha": "a4c89efd3de8326b27157e7c4329196ec0095b47",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "c0e924df94c0bf568de78629a42c0dd7610f22d0153a69442ad969c8515a027b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261021T215222Z-71-naming-43a625",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-21T21:52:22Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names generally describe their conclusions and match the adjacent witness and covariance families, and no notation is introduced; two naming issues remain: the `SpectatorPair` orthogonality fields reverse the slot order of the file's own `pTransverse_orthogonal_q` (and of their own sibling `e\u2081_orthogonal_e\u2082`), and `SpectatorPlane.spectatorSplitting` drops the `to` prefix used by the sibling conversion `SpectatorPartners.toSpectatorSplitting`. The prior round's `spectatorPlaneFour_self_ne_zero_of_spectator` finding is fixed, and I withdraw the contested `Bilin`-namespace point.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "017133d1534a0df854d5201b6bcde1b15a4428f17364c21bc2f772d1c127e690",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 180034,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 180034,
+  "cache_read_input_tokens": 583589,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5026,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5026,
+    "cache_read_input_tokens": 134698,
+    "input_tokens": 2,
+    "output_tokens": 6282,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20930,
+  "output_tokens_details": {
+   "thinking_tokens": 17668
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
