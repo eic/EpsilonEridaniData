@@ -1,0 +1,261 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.4774854999999993,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 315.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 177417,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 177417,
+    "cache_read_input_tokens": 2308781,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 40,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6154,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6154,
+      "cache_read_input_tokens": 154468,
+      "input_tokens": 2,
+      "output_tokens": 1632,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21949,
+    "output_tokens_details": {
+     "thinking_tokens": 16060
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 3.477485,
+ "dedupe_key": "eic/EpsilonEridani|120|b19cdefb9be1c01cf3587bba0deae299a8618dd9|reuse|claude-opus-5|bc8443602e3163c9|production|3",
+ "diff_blob": "d0fbc896da98ca1718e5a3df6e9862a7e143bbfd376588beb8d86de52fec7a12",
+ "diff_sha256": "d0fbc896da98ca1718e5a3df6e9862a7e143bbfd376588beb8d86de52fec7a12",
+ "duration_s": 315.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Tensors/Basic.lean:685 `structure UniquenessAssumptions (g : Bilin V) (K : DisKinematics V) : Type where vF1 \u2026 transverse_nonzero \u2026 pT_outer_zero \u2026`; Tensors/Basic.lean:706 `lemma fromF1F2_ne_zero \u2026` vs Tensor.lean:305/325/340.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Factor one generic structure `SeparatingProbes (A B : Bilin V)` with `linearIndependent_pair` lemma (`LinearIndependent \u211d ![A, B]`), and instantiate it at `(transverseMetric g K, Bilin.rankOne g (pTransverse g K) (pTransverse g K))` \u2014 `pT_outer_zero` is exactly `Bilin.rankOne_apply` (Tensors/Basic.lean:118) \u2014 and at `(spinStructureOne \u03b5 K, spinStructureTwo \u03b5 K)`; `fromF1F2_ne_zero` and `decomposition_unique` then come out the way `fromG1G2_ne_zero` does here.",
+   "issue": "`SpinUniquenessAssumptions` (305-322) plus `linearIndependent_spinStructure` (325-336) is a field-for-field clone of `Tensors.Hadronic.UniquenessAssumptions` (Tensors/Basic.lean:685-701) and the argument in `fromF1F2_ne_zero` (Tensors/Basic.lean:706-720): both say `A v\u2081 w\u2081 \u2260 0, B v\u2081 w\u2081 = 0, A v\u2082 w\u2082 = 0, B v\u2082 w\u2082 \u2260 0` for two `Bilin V` and conclude non-degeneracy. Nothing in either is specific to the structures involved.",
+   "line": "305"
+  },
+  {
+   "evidence": "BilinMap.lean:44-79 holds the generic `bilinMap` API but no sign lemma; the two `_reverse` proofs differ only in the fixed vector, and the two `_neg` proofs are `ext v w; simp [spinStructure*_apply]` verbatim.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Add `AlternatingMap.bilinMap_neg : (-f).bilinMap m = -(f.bilinMap m)` and `f.bilinMap ![a, -b] = -(f.bilinMap ![a, b])` to EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean (already imported at Tensor.lean:11 and the home of `isAlt_bilinMap`, `bilinMap_apply_left_eq_zero`); each of the four lemmas then reduces to one line, with `spinStructureTwo_reverse` only needing the extra step `g p q \u2022 (-S) - g (-S) q \u2022 p = -((p\u00b7q) \u2022 S - (S\u00b7q) \u2022 p)`.",
+   "issue": "`spinStructureOne_reverse` (152-160) and `spinStructureTwo_reverse` (163-176) run the identical `Function.update \u2026 3` + `\u03b5.map_update_neg` + `Function.update_eq_self` derivation; `spinStructureOne_neg` (179-182) and `spinStructureTwo_neg` (185-188) are two copies of `(-\u03b5).bilinMap m = -(\u03b5.bilinMap m)`. Four lemmas, two generic facts about `bilinMap`.",
+   "line": "152"
+  }
+ ],
+ "head_sha": "b19cdefb9be1c01cf3587bba0deae299a8618dd9",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "2c7b914b333bb4aa9161b8814974077cd3ff00c3dcb668363b0deeb695f76b36",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261021T120944Z-120-reuse-18f9f0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-21T12:09:44Z",
+ "submitted_by": "wdconinc",
+ "summary": "The PR reuses `AlternatingMap.bilinMap`, `tensorAssumptions_iff_isAlt` and the `lMuNuOdd`/`fromF1F2` shapes correctly, and the earlier hand-rolled `IsAlt` closure proof is gone. Two near-clones remain: the separating-probe/linear-independence scaffolding duplicates the unpolarised `UniquenessAssumptions`/`fromF1F2_ne_zero` argument, and four `bilinMap` sign lemmas re-derive two generic facts twice each.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Metrics/LeviCivita.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": false,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 26,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d53c9875c56fe948b3c6c5c9eb0aa52c8af9c8235d766812c8e70068e31528bf",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 177417,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 177417,
+  "cache_read_input_tokens": 2308781,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 40,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6154,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6154,
+    "cache_read_input_tokens": 154468,
+    "input_tokens": 2,
+    "output_tokens": 1632,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21949,
+  "output_tokens_details": {
+   "thinking_tokens": 16060
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

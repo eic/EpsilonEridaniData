@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8093000000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 188.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 119571,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 119571,
+    "cache_read_input_tokens": 560120,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3261,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3261,
+      "cache_read_input_tokens": 99607,
+      "input_tokens": 2,
+      "output_tokens": 4299,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13338,
+    "output_tokens_details": {
+     "thinking_tokens": 9470
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.8093,
+ "dedupe_key": "eic/EpsilonEridani|120|b19cdefb9be1c01cf3587bba0deae299a8618dd9|proof-quality|claude-opus-5|bc8443602e3163c9|production|3",
+ "diff_blob": "d0fbc896da98ca1718e5a3df6e9862a7e143bbfd376588beb8d86de52fec7a12",
+ "diff_sha256": "d0fbc896da98ca1718e5a3df6e9862a7e143bbfd376588beb8d86de52fec7a12",
+ "duration_s": 188.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Tensor.lean:401-403 vs 408-410 vs 415-417 vs 422-424 (byte-identical simp sets); `grep -rn 'det_fin_four' ./mathlib` returns nothing, and `Matrix.det_fin_three` is the largest explicit determinant in mathlib/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean, so the expansion is unavoidable but should be named, not repeated.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "State once `lemma \u03b5Wit_apply_vecCons (a b c d : Fin 4 \u2192 \u211d) : \u03b5Wit ![a, b, c, d] = <explicit cofactor expansion in the components>` (the `det_fin_four` Mathlib lacks), prove it with the current script, and close each of the four probe lemmas with `rw [spinStructure*_apply, \u03b5Wit_apply_vecCons]; norm_num`. The announced uniqueness work in the \"Not included\" section will need the same formula.",
+   "issue": "The same unfolding-heavy determinant expansion `rw [..., \u03b5Wit_apply, Matrix.det_succ_row_zero]; simp (disch := decide) [Fin.sum_univ_succ, Matrix.det_fin_three, Fin.succAbove_of_castSucc_lt, Fin.succAbove_of_le_castSucc]` is repeated identically in all four probe lemmas (l.401-403, 408-410, 415-417, 422-424). The reusable fact \u2014 an explicit cofactor formula for `\u03b5Wit` on a 4-tuple \u2014 is never stated, and each proof depends on conditional `Fin.succAbove` rewrites discharged by `decide`, a part of Mathlib that churns.",
+   "line": 399
+  },
+  {
+   "evidence": "Tensor.lean:155-160 and 167-176; the helper module has no negation/linearity lemma for the fixed slots (BilinMap.lean:42-79, only `bilinMap_apply`, `bilinMap_apply_self`, `isAlt_bilinMap`, `bilinMap_apply_left/right_eq_zero`). Both ingredients exist upstream: `Fin.cons_update` (mathlib/Mathlib/Data/Fin/Tuple/Basic.lean:144) and `AlternatingMap.map_update_neg` (mathlib/Mathlib/LinearAlgebra/Alternating/Basic.lean:168).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Add the general lemma to `Mathematics/LinearAlgebra/Alternating/BilinMap.lean` (over an `AddCommGroup`): `theorem bilinMap_update_neg (f : M [\u22c0^Fin (n+2)]\u2192\u2097[R] N) (m : Fin n \u2192 M) (i : Fin n) : f.bilinMap (Function.update m i (-m i)) = -f.bilinMap m`, provable via `Fin.cons_update` and `map_update_neg`; then each `_reverse` lemma is the (one-line, `module`/`abel`-provable) identification of the reversed fixed vector with the update, applied to that lemma \u2014 and no `rfl` on `Function.update` at numerals is needed.",
+   "issue": "`spinStructureOne_reverse` (l.155-160) and `spinStructureTwo_reverse` (l.167-176) each inline the same manoeuvre: rewrite the fixed tuple as `Function.update _ 3 (-(_ 3))`, then `\u03b5.map_update_neg` and `Function.update_eq_self`. The `have h` in the first is closed by `ext i; fin_cases i <;> rfl`, i.e. the `Function.update` `dite` at `Fin 4` numerals is discharged by raw definitional reduction with no comment, and the second mixes `rfl` with `simp [u, sub_eq_add_neg, add_comm]` for the same step.",
+   "line": 152
+  }
+ ],
+ "head_sha": "b19cdefb9be1c01cf3587bba0deae299a8618dd9",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "72685c5957d7833967ee07f625bb911eea60947c9b287617911e2ab1f91aca07",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261021T122643Z-120-proof-quality-8ec759",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-21T12:26:43Z",
+ "submitted_by": "wdconinc",
+ "summary": "The covariant-structure and decomposition lemmas are clean and term-level, but the witness file repeats one brittle 4x4 determinant expansion verbatim in four proofs instead of stating it once, and the two spin-reversal lemmas duplicate a Function.update massage closed by bare `rfl` rather than going through a reusable `bilinMap` lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Order/Fin",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Alternating",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c6e6640649408821c88261d0e79537f8f2c5dd5c78c0d4f04185fe7dea00fe0a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 119571,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 119571,
+  "cache_read_input_tokens": 560120,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3261,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3261,
+    "cache_read_input_tokens": 99607,
+    "input_tokens": 2,
+    "output_tokens": 4299,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13338,
+  "output_tokens_details": {
+   "thinking_tokens": 9470
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

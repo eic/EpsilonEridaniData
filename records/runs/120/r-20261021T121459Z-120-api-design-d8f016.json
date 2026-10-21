@@ -1,0 +1,200 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1301275,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 214.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 134256,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 134256,
+    "cache_read_input_tokens": 786135,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4126,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4126,
+      "cache_read_input_tokens": 111989,
+      "input_tokens": 2,
+      "output_tokens": 7441,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15776,
+    "output_tokens_details": {
+     "thinking_tokens": 11314
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.130127,
+ "dedupe_key": "eic/EpsilonEridani|120|b19cdefb9be1c01cf3587bba0deae299a8618dd9|api-design|claude-opus-5|bc8443602e3163c9|production|3",
+ "diff_blob": "d0fbc896da98ca1718e5a3df6e9862a7e143bbfd376588beb8d86de52fec7a12",
+ "diff_sha256": "d0fbc896da98ca1718e5a3df6e9862a7e143bbfd376588beb8d86de52fec7a12",
+ "duration_s": 214.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md:395 `(M/(p\u00b7q)) \u00b7 G.g1 x Q\u00b2 \u00b7 E\u2081  +  (1/(M (p\u00b7q))) \u00b7 G.g2 x Q\u00b2 \u00b7 E\u2082`; code line 200-201 `(\u221a(K.M2 g) / g K.p K.q * g\u2081) \u2022 \u2026 + (\u221a(K.M2 g) / g K.p K.q ^ 2 * g\u2082) \u2022 \u2026`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Use `(1 / (\u221a(K.M2 g) * g K.p K.q) * g\u2082) \u2022 spinStructureTwo \u03b5 K` and update `fromG1G2_apply`, `IsG1G2Decomposition.apply` and all five docstring occurrences; or, if the deviation is deliberate, say so explicitly and justify it against the roadmap formula.",
+   "issue": "`fromG1G2`'s second coefficient is `\u221a(K.M2 g) / g K.p K.q ^ 2 * g\u2082`, i.e. `M/(p\u00b7q)\u00b2`. Roadmap \u00a70.2 (README.md:395) and the PR description both specify `1/(M (p\u00b7q))`; these differ by `M\u00b2/(p\u00b7q)`, so `StructureFunctions.g2` means something other than the roadmap's `g\u2082` in the public predicate `IsG1G2Decomposition`, and every later stage (0.3 \u03c3_LT\u2032, 0.4 A\u2081/A\u2082 relations) inherits it. The same wrong factor is restated in the docstrings at lines 29, 194, 206-207, 255 and in `IsG1G2Decomposition.apply` (283).",
+   "line": 201
+  },
+  {
+   "evidence": "Lines 196-198 and 29; `spinStructureTwo` (95-96) is `\u03b5.bilinMap ![K.q, g K.p K.q \u2022 K.S - g K.S K.q \u2022 K.p]`, i.e. `(p\u00b7q)\u00b7\u03b5(\u00b7,\u00b7,q,S_\u22a5)`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Correct the coefficient per the previous finding, after which the \"standard form\" sentence becomes true; otherwise drop the claim.",
+   "issue": "The `fromG1G2` docstring calls `(M / (p\u00b7q)) \u00b7 \u03b5(\u00b7, \u00b7, q, g\u2081 S + g\u2082 (S \u2212 ((S\u00b7q)/(p\u00b7q)) p))` \"the standard form of the spin-dependent hadronic tensor\". With `E\u2082 = (p\u00b7q) \u03b5(\u00b7,\u00b7,q,S_\u22a5)`, the standard `1/(M(p\u00b7q))` coefficient gives `(1/M) \u03b5(\u00b7,\u00b7,q,S_\u22a5)`, not `(M/(p\u00b7q)) \u03b5(\u00b7,\u00b7,q,S_\u22a5)`. A consumer reading the docstring will assume the literature normalisation and get a different `g\u2082`.",
+   "line": 196
+  },
+  {
+   "evidence": "Lines 270-298 list the whole namespace; `fromG1G2_reverse` at 236-241; `Polarized/Kinematics.lean:86-87 reverse_toDisKinematics \u2026 := (rfl)`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Add `theorem IsG1G2Decomposition.reverse (h : IsG1G2Decomposition \u03b5 K G W) : IsG1G2Decomposition \u03b5 K.reverse G (-W)`; it follows from `h \u25b8 fromG1G2_reverse` since `PolarizedKinematics.reverse_toDisKinematics` is `rfl`, so `xBj` and `Q2` are unchanged.",
+   "issue": "`IsG1G2Decomposition`'s elimination API covers `eq`/`apply`/`isAlt`/`conserved_left`/`conserved_right` but not `PolarizedKinematics.reverse`, the one operation in scope that the file develops for `spinStructureOne/Two` and `fromG1G2`. A consumer holding `h : IsG1G2Decomposition \u03b5 K G W` and wanting the spin-reversed tensor (what 0.3's \u03c3_TT\u2032/\u03c3_LT\u2032 cross-section differences compare) must go through `h.eq` and `fromG1G2_reverse` by hand.",
+   "line": 296
+  },
+  {
+   "evidence": "Lines 152/163/236 carry `@[simp]`; 178-188 and 243-248 do not. `grep -n 'spinStructureOne_smul\\|spinStructureOne_add' Tensor.lean` has no hit.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Mark the three `_neg` lemmas `@[simp]` (they terminate: each strictly removes a `-` from under `\u03b5`), and either add the `smul`/`add` forms in `\u03b5` or weaken the docstring to the sign statement actually proved.",
+   "issue": "`spinStructureOne_neg`, `spinStructureTwo_neg` (185) and `fromG1G2_neg` (244) are normal-form lemmas pushing the sign out of `\u03b5`, exactly parallel to the `_reverse` trio, but carry no `@[simp]` while all three `_reverse` lemmas do (152, 163, 236). Also, the module docstring (44-46) asserts \"Both structures are linear in `\u03b5`\" while only the `neg` instance is available \u2014 there is no `_add`/`_smul` in `\u03b5`.",
+   "line": 179
+  }
+ ],
+ "head_sha": "b19cdefb9be1c01cf3587bba0deae299a8618dd9",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "888806bbf392bea09e41610527b221fe7ee2e101cbf69bf6191ed465584ff46f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261021T121459Z-120-api-design-d8f016",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-21T12:14:59Z",
+ "submitted_by": "wdconinc",
+ "summary": "The prior round's gaps (named witness, `.eq`/`.apply`, reverse interaction, diagonal simp lemmas) are all closed. What remains: `fromG1G2`'s `g\u2082` coefficient is not the roadmap's (nor the PR description's), making the docstring's \"standard form\" claim false; `IsG1G2Decomposition` has no `reverse` elimination although the file develops `reverse` for everything else; the `_neg` trio is unannotated where the parallel `_reverse` trio is `@[simp]`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0fc5771587cc5afd46e1df8f8ca079dfc4d4940c3ed5abe98d16515237eccf5a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 134256,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 134256,
+  "cache_read_input_tokens": 786135,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4126,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4126,
+    "cache_read_input_tokens": 111989,
+    "input_tokens": 2,
+    "output_tokens": 7441,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15776,
+  "output_tokens_details": {
+   "thinking_tokens": 11314
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

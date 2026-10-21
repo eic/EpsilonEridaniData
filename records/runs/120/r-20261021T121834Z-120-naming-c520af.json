@@ -1,0 +1,207 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4366944999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 233.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 163608,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 163608,
+    "cache_read_input_tokens": 816999,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2366,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2366,
+      "cache_read_input_tokens": 134657,
+      "input_tokens": 2,
+      "output_tokens": 4720,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15681,
+    "output_tokens_details": {
+     "thinking_tokens": 11488
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.436694,
+ "dedupe_key": "eic/EpsilonEridani|120|b19cdefb9be1c01cf3587bba0deae299a8618dd9|naming|claude-opus-5|bc8443602e3163c9|production|3",
+ "diff_blob": "d0fbc896da98ca1718e5a3df6e9862a7e143bbfd376588beb8d86de52fec7a12",
+ "diff_sha256": "d0fbc896da98ca1718e5a3df6e9862a7e143bbfd376588beb8d86de52fec7a12",
+ "duration_s": 233.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:179-185 definition `\u2200 x Q2, A = (G.g1 x Q2 + G.g2 x Q2) \u2022 A` with the new docstring; Basic.lean:190-191 `isPolarizedDecomposition_iff ... \u2194 A = 0 \u2228 \u2200 x Q2, G.g1 x Q2 + G.g2 x Q2 = 1`. Naming conventions: \"the name of theorem simply describes the conclusion\" \u2014 here the name describes a decomposition the statement does not provide.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "fix": "Rename the predicate to what it asserts, e.g. `IsStructureFunctionScaling` (lemma `isStructureFunctionScaling_iff`), and drop the apologetic sentences from both docstrings. `grep -rn IsPolarizedDecomposition code/` returns only Basic.lean:15,182,187,191, so under the no-backwards-compatibility policy the rename touches nothing else.",
+   "issue": "`IsPolarizedDecomposition` is kept with a docstring that admits the name is wrong (\"Despite its name it is not a decomposition of the tensor\", line 179), and this PR adds a second declaration whose name inherits the misnomer (`isPolarizedDecomposition_iff`, line 190). With the genuine decomposition now present as `IsG1G2Decomposition`, two differently-named predicates both read as \"the polarized decomposition\" while only one is one.",
+   "line": "182"
+  },
+  {
+   "evidence": "Tensor.lean:398-424. Compare the in-repo witness precedent `longitudinalSpin_kPol`, `transverseSpin_kPol`, `kPol_p_k` (Polarized/Kinematics.lean:321,332,302), where the name fixes the statement; here the trailing index is undocumented in the name.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Name the two probe pairs (e.g. `def probeOne : Fin 4 \u2192 \u211d := ![1, 0, 0, 1]` etc., or reuse them from `spinUniquenessWit`) and name the lemmas after the probe and the value: `spinStructureOne_probeOne_eq_one`, `spinStructureTwo_probeOne_eq_zero`, `spinStructureOne_probeTwo_eq_zero`, `spinStructureTwo_probeTwo_eq_one`.",
+   "issue": "The four witness value lemmas suffix the probe pair with `_one`/`_two`, which reads as the structure index already carried by `spinStructureOne`/`spinStructureTwo`: `spinStructureOne_kWit4_one = 1`, `spinStructureTwo_kWit4_one = 0` (406), `spinStructureOne_kWit4_two = 0` (413), `spinStructureTwo_kWit4_two = 1` (420). The name determines neither the arguments nor the conclusion, and `spinStructureTwo_kWit4_two` looks like a duplicate of `spinStructureTwo_kWit4_one`.",
+   "line": "399"
+  }
+ ],
+ "head_sha": "b19cdefb9be1c01cf3587bba0deae299a8618dd9",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "a84bf371f8f465154ac264dc3a9db1cbe88a3954892b53088b81f3a7a497094c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261021T121834Z-120-naming-c520af",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-21T12:18:34Z",
+ "submitted_by": "wdconinc",
+ "summary": "The prior naming findings are fixed: fromG1G2 now takes the structure-function values and carries the prefactors, and the non-degeneracy lemmas are named for what they prove. Two naming issues remain: the PR documents IsPolarizedDecomposition as a misnomer instead of renaming it, and the witness value lemmas carry ambiguous _one/_two suffixes.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "18209bc7d5ecab414882ce4e6e14cac3984a09bca0cd54aac4103ba095590b22",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 163608,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 163608,
+  "cache_read_input_tokens": 816999,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2366,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2366,
+    "cache_read_input_tokens": 134657,
+    "input_tokens": 2,
+    "output_tokens": 4720,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15681,
+  "output_tokens_details": {
+   "thinking_tokens": 11488
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
