@@ -1,0 +1,252 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1824405000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 263.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 110454,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 110454,
+    "cache_read_input_tokens": 1103221,
+    "inference_geo": "global",
+    "input_tokens": 41,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 523,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 523,
+      "cache_read_input_tokens": 90453,
+      "input_tokens": 2,
+      "output_tokens": 3216,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20323,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.182441,
+ "dedupe_key": "eic/EpsilonEridani|117|e55175e9636ee344b49361a771e648632507f7c7|reuse|claude-opus-5|bc8443602e3163c9|production|1",
+ "diff_blob": "71702ac029891a94716d6eadfea3914bf6034ad47d381850efba3476ab19f6bb",
+ "diff_sha256": "71702ac029891a94716d6eadfea3914bf6034ad47d381850efba3476ab19f6bb",
+ "duration_s": 263.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The author's own module docstring 'Main statements' lists only `betaCoeff_transformBeta_zero/_one/_two`, `transformBeta_rescale` and `betaCoeff_transformBeta_rescale`, not the four multiplied forms, confirming they are stepping stones; each inverse-form proof is one `rw` from its partner (lines 233-234, 240-241, 251-252, 344-345).",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "fix": "Mark the four `coeff_one_toPowerSeries_*mul_*` / `pow_mul_*` lemmas `private` (the file already uses `private lemma coeff_subst_transformBeta`); they have no consumer outside this file (grep shows `betaCoeff|transformBeta` only in this file and the new Substitution.lean), and downstream users can move between the forms with `Units.inv_mul_cancel_left` / `Units.eq_inv_mul_iff_mul_eq`. The `_of_coeff_one_eq_one` variants can be derived from the `betaCoeff_transformBeta_*` forms via `Units.ext ((SubstGroup.coe_linearCoeff F).trans hF)`.",
+   "issue": "Four pairs of public theorems state the same identity in two forms, one rewrite apart: `coeff_one_toPowerSeries_mul_betaCoeff_transformBeta_zero` (line 182) vs `betaCoeff_transformBeta_zero` (230), `coeff_one_toPowerSeries_pow_mul_betaCoeff_transformBeta_one` (191) vs `betaCoeff_transformBeta_one` (237), `coeff_one_toPowerSeries_pow_mul_betaCoeff_transformBeta_two` (202) vs `betaCoeff_transformBeta_two` (244), and `pow_mul_betaCoeff_transformBeta_rescale` (331) vs `betaCoeff_transformBeta_rescale` (341). The proofs of the second of each pair are a single `rw [\u2190 first, \u2190 coe_linearCoeff, Units.inv_mul_cancel_left]`-style line.",
+   "line": 182
+  }
+ ],
+ "head_sha": "e55175e9636ee344b49361a771e648632507f7c7",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 117,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9013fd6fe0647cc07023ad8c620b29744e9054ebde1ed179fc4a6ef76556cbaa",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261022T010758Z-117-reuse-3acc3a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-22T01:07:58Z",
+ "submitted_by": "veprbl",
+ "summary": "The substitution group, the finite coeff-of-substitution lemmas and the power-series beta function are genuinely new (no Mathlib or in-repo counterpart) and reuse upstream API well. The one duplication is four facts each exported twice, as a unit-multiplied form and as a unit-inverse form, one rewrite apart.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Action",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Action/Defs.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 28,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8ddbbe32399e5ba16723cc4f33f1a970b67fbccd6e3180698bac7f73993ea3cf",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 110454,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 110454,
+  "cache_read_input_tokens": 1103221,
+  "inference_geo": "global",
+  "input_tokens": 41,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 523,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 523,
+    "cache_read_input_tokens": 90453,
+    "input_tokens": 2,
+    "output_tokens": 3216,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20323,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
