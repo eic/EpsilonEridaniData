@@ -1,0 +1,203 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7671485000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 275.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 94168,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 94168,
+    "cache_read_input_tokens": 496401,
+    "inference_geo": "global",
+    "input_tokens": 19,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6742,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6742,
+      "cache_read_input_tokens": 68770,
+      "input_tokens": 2,
+      "output_tokens": 5073,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22395,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.767149,
+ "dedupe_key": "eic/EpsilonEridani|95|4b58bba1bd24bef8c10ac8744fbfbb22673c9b54|proof-quality|claude-opus-5|bc8443602e3163c9|production|1",
+ "diff_blob": "7c49b5fbb9b54b6b276c04380d4520924e24883fe4088a7a49d1e14ff229c36a",
+ "diff_sha256": "7c49b5fbb9b54b6b276c04380d4520924e24883fe4088a7a49d1e14ff229c36a",
+ "duration_s": 275.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 348-355: `hjk` is proved, then `simp only [Finset.sum_congr rfl fun j _ => Finset.sum_congr rfl (hjk j), sum_sum_erase_const', Finset.card_univ]` followed by `simp`. The same file already uses the readable form at line 135: `refine (Finset.sum_congr rfl fun j _ => (Finset.add_sum_erase _ _ (mem_univ j)).symm).trans ?_`.",
+   "file": "EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "fix": "Make it an explicit step: `rw [Finset.sum_congr rfl fun j _ => Finset.sum_congr rfl (hjk j), sum_sum_erase_const', Finset.card_univ]` (or a `calc`/`.trans` as at line 135), then close with `push_cast; ring` instead of bare `simp`.",
+   "issue": "The decisive step of `integral_norm_qVector_sq` \u2014 replacing each pair integral by `|V_n|\u00b2` and counting the `M(M-1)` ordered pairs \u2014 is an anonymous `Finset.sum_congr rfl fun j _ => Finset.sum_congr rfl (hjk j)` term used as a `simp only` rewrite rule, finished by a bare `simp` doing cast reconciliation. The reason the proof works is not visible.",
+   "line": "353"
+  },
+  {
+   "evidence": "grep for `qVector_def|twoParticleCorrelation_def|anisotropyCoeff_def` across `code/` matches only the three declaration sites; unfolding by definition name occurs at lines 100, 105, 111, 134, 155, 164, 176, 187, 193, 211, 217, 232, 238, 302, 375, and line 294 is `((integrable_norm_qVector_sq h\u03c6 n).sub (integrable_const _)).div_const _` for a goal stated in terms of `twoParticleCorrelation`.",
+   "file": "EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "fix": "Use the stated lemmas in the proofs (`rw [twoParticleCorrelation_def]`, `simp [qVector_def]`, `simp [anisotropyCoeff_def]`, and `by simp_rw [twoParticleCorrelation_def]; exact \u2026` at 292-294), or drop the three unused `_def` lemmas.",
+   "issue": "`qVector_def` (94), `twoParticleCorrelation_def` (146) and `anisotropyCoeff_def` (203) are never used; all proofs instead unfold the definition by name through the auto-generated equation lemma, and `integrable_twoParticleCorrelation` (294) relies on undocumented delta-unfolding of `twoParticleCorrelation` in a term proof.",
+   "line": "94"
+  }
+ ],
+ "head_sha": "4b58bba1bd24bef8c10ac8744fbfbb22673c9b54",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 95,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6be92a96cdc01cd2aa5c95db5a178176d56c320090b50a626fc6aba10740940e",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261022T045105Z-95-proof-quality-21abd0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-22T04:51:05Z",
+ "submitted_by": "veprbl",
+ "summary": "Proofs are mostly robust (nlinarith/field_simp/ring, no change/show, none over 50 lines), but the central step of integral_norm_qVector_sq is buried in a simp set as an anonymous sum_congr term, and the three stated `_def` lemmas are unused while every proof unfolds the definitions via equation lemmas or silent defeq.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Fourier/AddCircle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Algebra/BigOperators/Finset.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Fourier/AddCircle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lint-dot-notation.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lean_source.py",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f9831defce2e2287240a321b28fb7429300c583164adcea302b9bc9e3c6f6c99",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 94168,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 94168,
+  "cache_read_input_tokens": 496401,
+  "inference_geo": "global",
+  "input_tokens": 19,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6742,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6742,
+    "cache_read_input_tokens": 68770,
+    "input_tokens": 2,
+    "output_tokens": 5073,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22395,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
