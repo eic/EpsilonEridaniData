@@ -1,0 +1,170 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.570758,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 189.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 101522,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 101522,
+    "cache_read_input_tokens": 305272,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 9081,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 9081,
+      "cache_read_input_tokens": 77586,
+      "input_tokens": 2,
+      "output_tokens": 1843,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15527,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.570758,
+ "dedupe_key": "eic/EpsilonEridani|129|9f7fc7ddda4d5e44ede44e13c2e089cf3d059206|generality|claude-opus-5|bc8443602e3163c9|production|1",
+ "diff_blob": "22eb067692f83b33954e3c4c47ffe0d542e737d211a23494fe3dc65946864562",
+ "diff_sha256": "22eb067692f83b33954e3c4c47ffe0d542e737d211a23494fe3dc65946864562",
+ "duration_s": 189.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Domain.lean:182 docstring states it: \"Positivity of `P\u00b7q` is not assumed: `Q\u00b2 > 0` together with either side already forces it\", and Domain.lean:198-199 derives it (`have h2pq : 0 < 2 * g K.p K.q := hQ.trans_le h1`). Domain.lean:240-241 passes only `h.q2_pos`, `h.q2_le_two_p_dot_q`, `h.p_dot_q_le_p_dot_k`. Grep for `BasicAssumptions` shows a single `where`-construction, at Polarized/Kinematics.lean:308.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "fix": "Drop the `p_dot_q_pos` and `p_dot_k_pos` fields, keeping `q2_pos`, `q2_le_two_p_dot_q`, `p_dot_q_le_p_dot_k`, and re-expose them as lemmas `BasicAssumptions.p_dot_q_pos` / `BasicAssumptions.p_dot_k_pos` so `xBj_in_unitInterval` and `yInel_in_unitInterval` are unchanged. The only construction site is `basicAssumptions_kPol` (Polarized/Kinematics.lean:308), so the churn is one declaration.",
+   "issue": "`BasicAssumptions` carries two redundant obligations: `p_dot_q_pos` follows from `q2_pos` and `q2_le_two_p_dot_q` (`0 < Q\u00b2 \u2264 2 P\u00b7q`), and `p_dot_k_pos` then follows from `p_dot_q_le_p_dot_k`. The PR rewrote every lemma in this file to minimal hypotheses and `BasicAssumptions.invariants_mem_kinematicDomain` (Domain.lean:238) uses only three of the five fields, so the bundle now demands strictly more of a user than any consumer needs.",
+   "line": 33
+  }
+ ],
+ "head_sha": "9f7fc7ddda4d5e44ede44e13c2e089cf3d059206",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 129,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "67d958a0b0b03325853f4140500883307b71a148b83aa544547960e330c058a8",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261022T093038Z-129-generality-6bf5bf",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-22T09:30:38Z",
+ "submitted_by": "veprbl",
+ "summary": "Statements sit at the natural level and the general/special ordering is correct (the symmetry-free `invariants_mem_kinematicDomain_iff'` is primary, everything else derived). One residual too-strong assumption: `BasicAssumptions` keeps two fields that the PR's own reasoning shows are derivable from the other three.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Domain.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f9fd9145f8cbca0eee8e6fb954ea68ef5adc4e4418d40203dc96b9f2ca9ae76c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 101522,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 101522,
+  "cache_read_input_tokens": 305272,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 9081,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 9081,
+    "cache_read_input_tokens": 77586,
+    "input_tokens": 2,
+    "output_tokens": 1843,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15527,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

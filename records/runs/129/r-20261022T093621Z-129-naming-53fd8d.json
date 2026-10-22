@@ -1,0 +1,225 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8844395,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 208.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 114558,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 114558,
+    "cache_read_input_tokens": 600851,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2970,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2970,
+      "cache_read_input_tokens": 86728,
+      "input_tokens": 2,
+      "output_tokens": 3967,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16629,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.88444,
+ "dedupe_key": "eic/EpsilonEridani|129|9f7fc7ddda4d5e44ede44e13c2e089cf3d059206|naming|claude-opus-5|bc8443602e3163c9|production|1",
+ "diff_blob": "22eb067692f83b33954e3c4c47ffe0d542e737d211a23494fe3dc65946864562",
+ "diff_sha256": "22eb067692f83b33954e3c4c47ffe0d542e737d211a23494fe3dc65946864562",
+ "duration_s": 208.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 105 `lemma eq_zero_of_nonpos (hS : S \u2264 0) (\u03c3 : BornCrossSection S) : \u21d1\u03c3 = 0`; cf. line 129 `coe_ofLocallyIntegrableOn` in the same file and Mathlib's convention for `\u21d1`-valued equalities (`Mathlib/Basic/NNReal/Defs.lean:231 lemma coe_eq_zero`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/Born.lean",
+   "fix": "Rename to `coe_eq_zero_of_nonpos` (or `coe_eq_zero_of_S_nonpos`), matching the `coe_` prefix the same file uses for coercion statements.",
+   "issue": "`eq_zero_of_nonpos` concludes `\u21d1\u03c3 = 0` (a coercion equality, not `\u03c3 = 0` \u2014 there is no `Zero (BornCrossSection S)`), and `nonpos` refers to the parameter `S`, not to the lemma's subject `\u03c3`, which is always nonnegative.",
+   "line": 105
+  },
+  {
+   "evidence": "Line 143\u2013144: `theorem kinematicDomain_inter_fst_eq_one (S : \u211d) : kinematicDomain S \u2229 {z | z.1 = 1} = elasticLine S`. Contrast line 101 `interior_kinematicDomain`, where LHS-only naming is fine because the RHS is a set-builder, not a separate definition.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Domain.lean",
+   "fix": "Put the conclusion in the name: `kinematicDomain_inter_fst_eq_one_eq_elasticLine`, or state it as `elasticLine_eq_kinematicDomain_inter_fst_eq_one`.",
+   "issue": "`kinematicDomain_inter_fst_eq_one` names only the left-hand side and its trailing `_eq_one` reads as the lemma's conclusion; the actual conclusion, `= elasticLine S`, is absent, even though this is the characterisation lemma for the file's named object.",
+   "line": 143
+  },
+  {
+   "evidence": "Line 159: `theorem elasticLine_subset_frontier (S : \u211d) : elasticLine S \u2286 frontier (kinematicDomain S)` vs line 153 `elasticLine_subset_kinematicDomain`. Mathlib omits the ambient only when it is a variable (`Mathlib/Analysis/Convex/Intrinsic.lean:149 intrinsicFrontier_subset_frontier : \u2026 \u2286 frontier s`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Domain.lean",
+   "fix": "Rename to `elasticLine_subset_frontier_kinematicDomain`.",
+   "issue": "`elasticLine_subset_frontier` omits the set whose frontier is meant, unlike its neighbour `elasticLine_subset_kinematicDomain`; the ambient set here is a specific definition, not a variable.",
+   "line": 159
+  }
+ ],
+ "head_sha": "9f7fc7ddda4d5e44ede44e13c2e089cf3d059206",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 129,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6dc31613f1ee889a9c94075b2d47d834353573a506c23b558559fa375ff71fd9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261022T093621Z-129-naming-53fd8d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-22T09:36:21Z",
+ "submitted_by": "veprbl",
+ "summary": "Terminology (`kinematicDomain`, `elasticLine`, `BornCrossSection`) matches the roadmap and the namespaces are right, but three lemma names do not describe their conclusions: a coercion equality named as a structure equality with an ambiguous `of_nonpos`, and two set lemmas whose conclusion (`elasticLine`, `frontier (kinematicDomain \u2026)`) is missing from the name.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Domain.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Born.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Function/LocallyIntegrable.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e0bf7063bf6ecbf79bf8ce6741644796c6365a11012a66f46bd984933beac1cd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 114558,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 114558,
+  "cache_read_input_tokens": 600851,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2970,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2970,
+    "cache_read_input_tokens": 86728,
+    "input_tokens": 2,
+    "output_tokens": 3967,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16629,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

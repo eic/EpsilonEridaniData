@@ -1,0 +1,271 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2978905,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 286.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 115403,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 115403,
+    "cache_read_input_tokens": 1112983,
+    "inference_geo": "global",
+    "input_tokens": 35,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2368,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2368,
+      "cache_read_input_tokens": 97385,
+      "input_tokens": 2,
+      "output_tokens": 3681,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22879,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.29789,
+ "dedupe_key": "eic/EpsilonEridani|129|9f7fc7ddda4d5e44ede44e13c2e089cf3d059206|reuse|claude-opus-5|bc8443602e3163c9|production|1",
+ "diff_blob": "22eb067692f83b33954e3c4c47ffe0d542e737d211a23494fe3dc65946864562",
+ "diff_sha256": "22eb067692f83b33954e3c4c47ffe0d542e737d211a23494fe3dc65946864562",
+ "duration_s": 286.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Topology/Closure.lean:104 `theorem interior_inter : interior (s \u2229 t) = interior s \u2229 interior t`; mathlib/Mathlib/Topology/Maps/Basic.lean:446 `theorem preimage_interior_eq_interior_preimage (hf\u2081 : IsOpenMap f) (hf\u2082 : Continuous f) (s : Set Y) : f \u207b\u00b9' interior s = interior (f \u207b\u00b9' s)`; mathlib/Mathlib/Topology/Constructions/SumProd.lean:481 `theorem isOpenMap_fst`; mathlib/Mathlib/Topology/Order/DenselyOrdered.lean:120 `theorem interior_Iic [NoMaxOrder \u03b1] : interior (Iic a) = Iio a`; mathlib/Mathlib/Analysis/Normed/Operator/Banach.lean:268 `theorem interior_preimage (hsurj : Surjective f) (s : Set F) : interior (f \u207b\u00b9' s) = f \u207b\u00b9' interior s`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Domain.lean",
+   "fix": "Write `kinematicDomain S` as the intersection of its four constraint sets and compute: `interior_inter` distributes interior over the intersection; the two strict constraints are open (`isOpen_lt`, `IsOpen.interior_eq`); `{z | z.1 \u2264 1} = Prod.fst \u207b\u00b9' Iic 1` has interior `Prod.fst \u207b\u00b9' Iio 1` by `isOpenMap_fst.preimage_interior_eq_interior_preimage continuous_fst` plus `interior_Iic`; and `{z | z.2 \u2264 z.1 * S}` is the `Iic 0`-preimage of the surjective `L := ContinuousLinearMap.snd \u211d \u211d \u211d - S \u2022 ContinuousLinearMap.fst \u211d \u211d \u211d` (surjective: `fun a => \u27e8(0, a), by simp\u27e9`), so its interior is `{z | z.2 - z.1 * S < 0}` by `ContinuousLinearMap.interior_preimage` plus `interior_Iic`. Delete `key`.",
+   "issue": "The \u2286 direction of `interior_kinematicDomain` re-derives the interior of the two closed constraints from scratch via a hand-built `key : \u2200 v : \u211d \u00d7 \u211d, \u2203 t, 0 < t \u2227 z + t \u2022 v \u2208 kinematicDomain S` using `Tendsto`/`nhdsWithin`/`mem_interior_iff_mem_nhds` (lines 104-125). Mathlib already computes this.",
+   "line": "103"
+  },
+  {
+   "evidence": "`grep -rn in_unitInterval code` returns only the two definitions at Bounds.lean:62 and :66 \u2014 no uses anywhere; their bodies (Bounds.lean:64, :68) are one-line conjunctions of the preceding lemmas, and Domain.lean:200/213 call those lemmas directly instead.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "fix": "Delete both lemmas; callers with a `BasicAssumptions g K` apply `xBj_pos`/`xBj_le_one`/`yInel_pos`/`yInel_le_one` to its fields, exactly as `Domain.lean:200` and `Domain.lean:213` already do.",
+   "issue": "After this PR generalised `xBj_pos`/`xBj_le_one`/`yInel_pos`/`yInel_le_one` to take explicit hypotheses, `xBj_in_unitInterval` (line 62) and `yInel_in_unitInterval` (line 66) are literally `\u27e8xBj_pos g K h.q2_pos h.p_dot_q_pos, xBj_le_one g K h.p_dot_q_pos h.q2_le_two_p_dot_q\u27e9` and the `yInel` analogue \u2014 \u2227-bundles of the four lemmas directly above them, with no in-repo consumer.",
+   "line": "62"
+  }
+ ],
+ "head_sha": "9f7fc7ddda4d5e44ede44e13c2e089cf3d059206",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 129,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7f3daccc8aaac213be23f42bfad840032bad95a0c4b4c9b72687cb2a03c65703",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "c4bb13836ca4d409b8eb90b152a891fbffd1885b",
+ "rubrics_version": "bc8443602e3163c9",
+ "run_id": "r-20261022T091650Z-129-reuse-4c11c5",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-22T09:16:50Z",
+ "submitted_by": "veprbl",
+ "summary": "The material itself is new and reuses the existing DIS invariants well, but the `interior_kinematicDomain` proof hand-rolls the interior of its closed constraints instead of using Mathlib's `interior_inter`/open-map preimage lemmas, and the two `*_in_unitInterval` lemmas the PR rewrites are now bare \u2227-bundles of the lemmas just above them with no users.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Normed/Operator/Banach.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Closure.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 30,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9c1ba0d11e5a1bbf9e875d96b76e81917f67aebe6a060d2027b002bc57883818",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 115403,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 115403,
+  "cache_read_input_tokens": 1112983,
+  "inference_geo": "global",
+  "input_tokens": 35,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2368,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2368,
+    "cache_read_input_tokens": 97385,
+    "input_tokens": 2,
+    "output_tokens": 3681,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22879,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
