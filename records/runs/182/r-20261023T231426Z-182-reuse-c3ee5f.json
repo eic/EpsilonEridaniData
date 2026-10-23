@@ -1,0 +1,278 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.3312639999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 272.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 179137,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 179137,
+    "cache_read_input_tokens": 2111508,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 38,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1138,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1138,
+      "cache_read_input_tokens": 151946,
+      "input_tokens": 2,
+      "output_tokens": 3505,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19358,
+    "output_tokens_details": {
+     "thinking_tokens": 12649
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "cost_usd": 3.331264,
+ "dedupe_key": "eic/EpsilonEridani|182|359e1f5976fd328e350c5781c13eba1fa98cc783|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2059f1314b75dcbeb5bbb5deaf3501291892b1b60cd4534daedd9de5a0351162",
+ "diff_sha256": "2059f1314b75dcbeb5bbb5deaf3501291892b1b60cd4534daedd9de5a0351162",
+ "duration_s": 272.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep of `harmonicSum_singleton_one_one|_two|_eq_harmonic` in `EpsilonEridani/` returns only their definitions and the module docstring: no call sites. Mathlib has neither `harmonic_one` nor `harmonic_two` (grep of `Mathlib/NumberTheory/Harmonic/`), so the new names are justified; the duplication is the second, unused pair.",
+   "file": "EpsilonEridani/Mathematics/HarmonicSum/Basic.lean",
+   "fix": "Keep the `harmonic` spellings (the one `plusOneMinus_pow` produces) and delete the two `harmonicSum_singleton_one_*` lemmas, which have no consumer in the repo, or prove the new ones as one-liners: `theorem harmonic_one : harmonic 1 = 1 := (harmonicSum_singleton_one_eq_harmonic 1).symm.trans harmonicSum_singleton_one_one` and likewise for `harmonic_two`.",
+   "issue": "`harmonic_one` (line 186) and `harmonic_two` (line 191) restate `harmonicSum_singleton_one_one : harmonicSum [1] 1 = 1` (line 196) and `harmonicSum_singleton_one_two : harmonicSum [1] 2 = 3 / 2` (line 200) up to `harmonicSum_singleton_one_eq_harmonic (n) : harmonicSum [1] n = harmonic n` (line 155), all four in the same file, and all proved independently.",
+   "line": 186
+  },
+  {
+   "evidence": "`EpsilonEridani/QFT/QCD/Basic.lean:93-94: def beta0 (cf : ColorFactors) : \u211d := (11 / 3) * cf.cA - (4 / 3) * cf.tF * cf.nF`; halving gives `11/6 * cA - 2/3 * tF * nF`, the PR's coefficient. `LeadingOrder.lean:9` imports `EpsilonEridani.QFT.QCD.Basic` and line 73 does `open MeasureTheory QCD`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "fix": "Either define the field as `beta0 c / 2` and state `pgg_deltaCoeff : (pgg c).deltaCoeff = beta0 c / 2`, or keep the literal form and add that bridge lemma; the connection (the P_gg virtual term is \u03b2\u2080/2) is the reason the gluon-column momentum identity holds and should be recorded rather than left as a coincidence of numerals.",
+   "issue": "`pgg`'s delta coefficient `11 / 6 * c.cA - 2 / 3 * c.nF * c.tF` is literally `QCD.beta0 c / 2`; `beta0 (cf) = (11 / 3) * cf.cA - (4 / 3) * cf.tF * cf.nF` is already defined in `EpsilonEridani/QFT/QCD/Basic.lean:93`, which this file imports and opens. The same expression is re-spelled again in `pgg_deltaCoeff` (line ~195) and in the module docstring.",
+   "line": 110
+  },
+  {
+   "evidence": "grep of `moment_natCast` in `EpsilonEridani/` shows hits only at NormalForm.lean:51 (docstring), 122, 128, 131 and at LeadingOrder.lean:292 and 369, both of which name `moment_natCast_add_one`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "fix": "Delete `moment_natCast`; the `n + 1` indexing is the one the kernel moments use, and the \u2115-subtraction variant adds a second public spelling of the same fact with no consumer.",
+   "issue": "`KernelForm.moment_natCast` is `moment_natCast_add_one` re-indexed with truncated natural subtraction (its proof is `obtain \u27e8n, rfl\u27e9 ... ; simpa using P.moment_natCast_add_one n`), and nothing in the repo uses it: both `moment_pqq` and `moment_pgg` go through `moment_natCast_add_one`.",
+   "line": 128
+  },
+  {
+   "evidence": "`EpsilonEridani/QFT/Factorization/Convolution/Mellin.lean:88-93` defines `mellinDis` with the same `N - 1` convention and the same `(0,1]` domain; `CollinearForm.lean:115-122` and `MomentSpace.lean:94-98` consume it as the anomalous dimension. `NormalForm.lean` imports only `PlusFunctional` and mentions neither.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "fix": "Add a bridge lemma for the regular-only case, e.g. `P.plusCoeff = 0 \u2192 P.deltaCoeff = 0 \u2192 Convolution.mellinDis P.regular (N : \u2102) = ((P.moment N : \u211d) : \u2102)` (`Complex.ofReal_cpow` handles `(x : \u2102) ^ ((N : \u2102) - 1) = ((x ^ (N - 1) : \u211d) : \u2102)` for `x \u2265 0`), and cite `Convolution.mellinDis` in the `moment` docstring as the function-level transform it extends.",
+   "issue": "`KernelForm.moment` is a second Mellin transform in the `Evolution` namespace with exactly the index convention of the existing `Convolution.mellinDis f N = \u222b_{(0,1]} x ^ (N - 1) * f x` (momentum at `N = 2`), and nothing connects them. For the plus- and delta-free kernels `pgq` and `pqg` the two agree, yet the anomalous-dimension machinery downstream (`CollinearForm.mellinDis_dglapOperator`, `DglapMomentSystem.gamma`) is stated in `mellinDis` only, so the new closed forms cannot be used there.",
+   "line": 114
+  }
+ ],
+ "head_sha": "359e1f5976fd328e350c5781c13eba1fa98cc783",
+ "merge_base_sha": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 182,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a790d602e4efcfc7fd60aff489a9f969ab8fe9bfd550e1c5baf98f740d1a9e93",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T231426Z-182-reuse-c3ee5f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T23:14:26Z",
+ "submitted_by": "wdconinc",
+ "summary": "The kernels themselves are new and reuse ColorFactors and the plus-functional API correctly, but the PR adds two harmonic-number lemmas the same file already proves through its own bridge lemma, re-spells QCD.beta0 as a numeric literal in pgg's delta coefficient, and adds a consumer-less restatement of moment_natCast_add_one. A second Mellin-moment convention also lands next to the existing Convolution.mellinDis with nothing linking them.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Distribution/PlusFunctional.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/NumberTheory/Harmonic",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/CollinearForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Convolution/Mellin.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Model.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/Splitting.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Convolution/Mellin.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 27,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7b70c9a22ffbc909b6df5ef2f5953cf817fd1a62fcc1c56f08b7267c3b310307",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 179137,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 179137,
+  "cache_read_input_tokens": 2111508,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 38,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1138,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1138,
+    "cache_read_input_tokens": 151946,
+    "input_tokens": 2,
+    "output_tokens": 3505,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19358,
+  "output_tokens_details": {
+   "thinking_tokens": 12649
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

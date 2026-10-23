@@ -1,0 +1,199 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2798045,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 201.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 154439,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 154439,
+    "cache_read_input_tokens": 724669,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 703,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 703,
+      "cache_read_input_tokens": 128294,
+      "input_tokens": 2,
+      "output_tokens": 3612,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14920,
+    "output_tokens_details": {
+     "thinking_tokens": 11316
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "cost_usd": 2.279805,
+ "dedupe_key": "eic/EpsilonEridani|182|359e1f5976fd328e350c5781c13eba1fa98cc783|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2059f1314b75dcbeb5bbb5deaf3501291892b1b60cd4534daedd9de5a0351162",
+ "diff_sha256": "2059f1314b75dcbeb5bbb5deaf3501291892b1b60cd4534daedd9de5a0351162",
+ "duration_s": 201.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PlusFunctional.lean has no such lemma: its API is `plusFunctional_congr_ae_left/right`, `_const_right`, `_const_mul_left/right`, `_add_left/right`, `_mul_right`, `plusOneMinus_mul/_id_mul/_pow` (file read, lines 156-300). `hplus`'s proof (`rw [plusFunctional_def, \u2190 h32, \u2190 integral_const_mul, \u2190 integral_sub hconst hlin]; congr 1 with z; ring`) uses nothing specific to `-(1 + z)` beyond `hconst`/`hlin`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "fix": "State it once in `Mathematics/Distribution/PlusFunctional.lean`, e.g. `theorem plusFunctional_of_intervalIntegrable {K \u03c6} (hK\u03c6 : IntervalIntegrable (fun z => K z * \u03c6 z) volume 0 1) (hK : IntervalIntegrable K volume 0 1) : plusFunctional K \u03c6 = (\u222b z in (0:\u211d)..1, K z * \u03c6 z) - \u03c6 1 * \u222b z in (0:\u211d)..1, K z`, and apply it with `h32` in `pair_pqq`.",
+   "issue": "`hplus` (lines 218-223) proves the general identity `plusFunctional K \u03c6 = (\u222b\u2080\u00b9 K \u03c6) - \u03c6 1 * \u222b\u2080\u00b9 K` for an integrable kernel, specialised inline to `K z = -(1 + z)`. That reusable fact is hidden in a kernel-specific proof; every further regular (non-singular) kernel paired through `plusFunctional` will re-derive it.",
+   "line": 218
+  },
+  {
+   "evidence": "grep for `norm_num\\n  ring` over `EpsilonEridani/`: 2 hits, both in `Kernel/LeadingOrder.lean` (lines 391-392, 413-414); line 384 in `moment_pqq_one` is terminal `norm_num` and is fine.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "fix": "Make the last step a single terminal call: after `harmonic_two` the goal is pure cast + field arithmetic, so `push_cast` then `ring` (or `norm_num [...]` alone) works and is shape-independent.",
+   "issue": "Non-terminal `norm_num` followed by `ring` in `moment_pqq_two` (391-392) and `moment_pgg_two` (413-414): `ring` closes whatever shape `norm_num` happens to leave, so a change in the `norm_num`/`simp` set either breaks `ring` or closes the goal and makes `ring` error on no goals. The only two occurrences of this pattern in the repo are these.",
+   "line": 391
+  },
+  {
+   "evidence": "`harmonic` is `fun n => \u2211 i \u2208 Finset.range n, (\u2191(i + 1))\u207b\u00b9` with `@[simp] harmonic_zero/harmonic_succ` (upstream/mathlib/Mathlib/NumberTheory/Harmonic/Defs.lean:23-31); the adjacent lemmas in the same section use `norm_num [harmonicSum_cons, Finset.sum_range_succ]` (Basic.lean:196-205). grep `show \\(\\d+ : \u2115\\) = ` over `EpsilonEridani/` returns only these two lines.",
+   "file": "EpsilonEridani/Mathematics/HarmonicSum/Basic.lean",
+   "fix": "Use the idiom the neighbouring small-value lemmas use: `norm_num [harmonic, Finset.sum_range_succ]` (or `simp [harmonic]`), which needs no numeral-unfolding rewrite.",
+   "issue": "`harmonic_one` (187) and `harmonic_two` (192) reach `harmonic_succ` by rewriting with an undocumented definitional equality, `rw [show (1 : \u2115) = 0 + 1 from rfl, ...]` / `rw [show (2 : \u2115) = 1 + 1 from rfl, ...]`, where the goal is reachable by automation.",
+   "line": 187
+  }
+ ],
+ "head_sha": "359e1f5976fd328e350c5781c13eba1fa98cc783",
+ "merge_base_sha": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 182,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1499ce65f240945ee88a0b76fcc33997f4a540c1b222ac42fb139e8dfb69d9ea",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T234114Z-182-proof-quality-8d401c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T23:41:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly robust and the `integral_cubic_mul_rpow` factoring is the right call, but one general plus-functional fact is inlined inside `pair_pqq`, and two proofs end in a non-terminal `norm_num` whose output shape `ring` depends on.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Distribution/PlusFunctional.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/NumberTheory/Harmonic",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/NumberTheory/Harmonic/Defs.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d01eb94c2fb9783f07c4054a0f7ab797308787502879537fe4a199903d8b7f6b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 154439,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 154439,
+  "cache_read_input_tokens": 724669,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 703,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 703,
+    "cache_read_input_tokens": 128294,
+    "input_tokens": 2,
+    "output_tokens": 3612,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14920,
+  "output_tokens_details": {
+   "thinking_tokens": 11316
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
