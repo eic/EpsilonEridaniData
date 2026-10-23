@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7279939999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 151.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 111546,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 111546,
+    "cache_read_input_tokens": 653208,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4950,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4950,
+      "cache_read_input_tokens": 106596,
+      "input_tokens": 2,
+      "output_tokens": 2387,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11434,
+    "output_tokens_details": {
+     "thinking_tokens": 7675
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7094dfe8b0e20bdd6d152b78d77186ea8094a382",
+ "cost_usd": 1.727994,
+ "dedupe_key": "eic/EpsilonEridani|155|2e8556b8df6a4e8e1c0f0edca840ae4913386672|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "e72004f01b719f9a71505c9a2136aa7660aaff92df7f89c16f41627e352118ed",
+ "diff_sha256": "e72004f01b719f9a71505c9a2136aa7660aaff92df7f89c16f41627e352118ed",
+ "duration_s": 151.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `comp_rev` across `code/` matches only OrderedSimplexIntegral.lean; `Sudakov.lean:66` cites only `setIntegral_orderedRegion_eq_orderedProdIntegral`. roadmap/EpsilonEridaniRoadmaps/EventGeneration/README.md:627 and :1203 define `\u0394_n` descending.",
+   "file": "EpsilonEridani/Mathematics/OrderedSimplexIntegral.lean",
+   "fix": "Either add that corollary (one line from `setIntegral_preimage_comp_rev_orderedRegion` + `preimage_comp_rev_orderedRegion` + `Equiv.prod_comp` for `Fin.revPerm`, since the product integrand is symmetric), or delete the whole block as abstraction with no use.",
+   "issue": "The `### The descending region` block (`volume_preserving_comp_rev`, `preimage_comp_rev_orderedRegion`, and the two companions) is unused in-repo and stops one step short of the statement it exists for: the descending form of the identification, `\u222b p in {p | StrictAnti p \u2227 \u2200 i, p i \u2208 Ioo t T}, \u220f i, f (p i) = orderedProdIntegral f T n t`. The roadmap writes `\u0394_n(t, T) = {t < t_n < \u22ef < t_1 < T}`, i.e. descending, so that is the form acceptance example 9 names.",
+   "line": 363
+  },
+  {
+   "evidence": "`Mathlib/Dynamics/Ergodic/MeasurePreserving.lean:142` `measure_preimage (hs : NullMeasurableSet s \u03bcb) : \u03bca (f \u207b\u00b9' s) = \u03bcb s`; line 426 of the diff invokes `setIntegral_preimage_emb` directly as `key`, and lines 428-434 only massage `g ((p \u2218 Fin.rev) \u2218 Fin.rev)` back to `g p`.",
+   "file": "EpsilonEridani/Mathematics/OrderedSimplexIntegral.lean",
+   "fix": "Drop both, or restate them with `{p | StrictAnti p \u2227 \u2200 i, p i \u2208 Set.Ioo t T}` on the left \u2014 then they say something `MeasurePreserving.measure_preimage` / `.setIntegral_preimage_emb` do not already say.",
+   "issue": "`volume_preimage_comp_rev_orderedRegion` and `setIntegral_preimage_comp_rev_orderedRegion` (line 414) are general Mathlib lemmas specialized to one set with nothing added: the first is `(volume_preserving_comp_rev n).measure_preimage (measurableSet_orderedRegion T n t).nullMeasurableSet`, the second is `MeasurePreserving.setIntegral_preimage_emb` at `orderedRegion T n t` (the PR's own `key`, line 426). Both are also stated on the preimage rather than on the descending set, so a caller must rewrite with `preimage_comp_rev_orderedRegion` before either applies.",
+   "line": 404
+  }
+ ],
+ "head_sha": "2e8556b8df6a4e8e1c0f0edca840ae4913386672",
+ "merge_base_sha": "74f99fc7671738951b67f376ec39f1fc6a8f24ae",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 155,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a3bdd99ef7e9b17255fb0010285978c5bc1d1924ef193c940bc8d56741413932",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T223340Z-155-generality-42c12b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T22:33:40Z",
+ "submitted_by": "wdconinc",
+ "summary": "The Fubini identification itself sits at the right level (general `E`, bare `IntegrableOn`, `t \u2264 T` genuinely used). The appended descending-region block is unused abstraction: two of its lemmas are generic Mathlib lemmas instantiated at a single set, and none delivers the descending-labelled identification the roadmap's `\u0394_n` actually names.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/OrderedSimplexIntegral.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/StrictMono.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Shower/Sudakov.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/EventGeneration/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Dynamics/Ergodic/MeasurePreserving.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "836125ac089cbe76af3685a53ff7a3b7d813f172096e3160f39df26508b728a2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 111546,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 111546,
+  "cache_read_input_tokens": 653208,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4950,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4950,
+    "cache_read_input_tokens": 106596,
+    "input_tokens": 2,
+    "output_tokens": 2387,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11434,
+  "output_tokens_details": {
+   "thinking_tokens": 7675
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
