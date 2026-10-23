@@ -1,0 +1,226 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4142634999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 282.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 132562,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 132562,
+    "cache_read_input_tokens": 1066345,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 468,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 468,
+      "cache_read_input_tokens": 117772,
+      "input_tokens": 2,
+      "output_tokens": 2581,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21685,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b538300ea857dcb47dbcbaf2b2d6be88b5337e09",
+ "cost_usd": 2.414263,
+ "dedupe_key": "eic/EpsilonEridani|177|99b46507b97ce777d01352841bce0d0f5c1f2862|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4b5841ae228f5596fb9d04ca53475182b1569f35e699f7eb809c060d77700e67",
+ "diff_sha256": "4b5841ae228f5596fb9d04ca53475182b1569f35e699f7eb809c060d77700e67",
+ "duration_s": 282.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Both proofs use only `PDF.valenceNumber_eq_sub_valenceTarget` (ChargeConjugation.lean:145) and never touch `M`. The general form is what other roadmaps need: InclusiveStructureFunctions README:148-153 fixes the convention that \"a target is specified by a map from flavours to valence numbers... not two separate developments\", and NuclearPartonDistributions/Suggested.lean:190 `NumberSumRule ... (count : \u211d)` has non-integer targets, so the `\u2124`-valued meson form cannot serve them.",
+   "file": "EpsilonEridani/Particles/Meson/Pdf/Basic.lean",
+   "fix": "State them in `Parton/PDF/ChargeConjugation.lean` next to `valenceNumber_eq_sub_valenceTarget` for `v : Flavor \u2192 \u211d`: `(\u2200 i Q2, valenceNumber f i Q2 = v i) \u2194 \u2200 i, h.valenceTarget (.quark i) - h.valenceTarget (.antiquark i) = v i`, and `(\u2200 i, valenceNumber f i Q2\u2080 = v i) \u2192 \u2200 i Q2, valenceNumber f i Q2 = v i`; then define `PseudoscalarMeson.HasValenceNumbers M f` as the instance at `v = fun i => (M.valenceNumber i : \u211d)` and derive both meson lemmas from the general ones.",
+   "issue": "`hasValenceNumbers_iff_valenceTarget` (line 138) and `hasValenceNumbers_of_forall_valenceNumber_eq` (line 153) contain no meson content: both are statements about `PDF.valenceNumber f` against an arbitrary real target, stated only for the target `(M.valenceNumber i : \u211d)`. Under-generalised, and not reusable by any other hadron.",
+   "line": "138"
+  },
+  {
+   "evidence": "Model.lean:50 \"Nothing in the statements below depends on the particular values of `a` and `b`\"; Mathlib has no real closed form for this integral (`Complex.betaIntegral_eval_nat_add_one_right` only, Gamma/Beta.lean:199), so a later exponent will get its own copy \u2014 MesonStructure Layer 1.6 and its example at README:506 (\"Two densities with the same first and second moments and different large-fraction exponents\") need moments at `b \u2260 1`.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/Model.lean",
+   "fix": "Prove the general moment `mellinMoment (modelPdf Flavor a b) n i Q2 = (n+a)! * b! / (n+a+b+1)!` and derive the `(0,1)` value used by `valenceModelPdf`. Induction on `b` from `I m (b+1) = I m b - I (m+1) b` with `integral_pow` as the base case; the `a`-dependence is free already (the present proof goes through with `n` replaced by `n + a` via `pow_add`).",
+   "issue": "`mellinMoment_modelPdf_zero_one` fixes both exponents of `modelPdf Flavor a b`, which is otherwise developed uniformly in `a b`. Every other moment lemma in the file is general (e.g. `mellinMoment_modelPdf_nonneg`, line 168), and the file's own implementation note states nothing below depends on the values of `a` and `b`.",
+   "line": "149"
+  }
+ ],
+ "head_sha": "99b46507b97ce777d01352841bce0d0f5c1f2862",
+ "merge_base_sha": "b538300ea857dcb47dbcbaf2b2d6be88b5337e09",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 177,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1a566398b5540e460712b0002fb58e988d9ce4d878d6f96588fe6c683ba08037",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T185721Z-177-generality-946443",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T18:57:21Z",
+ "submitted_by": "veprbl",
+ "summary": "Two statements sit below their natural level: the valence-target characterisation and the one-scale lemma are pure `PDF.valenceNumber` facts stated only for a meson's valence numbers, and the new `modelPdf` moment is pinned to the single exponent pair `(0, 1)` in `modelPdf`'s own file.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Model.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MesonStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/NuclearPartonDistributions/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Gamma/Beta.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Unified/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Pdf/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "04d6b943dc37e679b5b36cd9af1c01c529a0dd91ed051233494f66c4f5e75184",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 132562,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 132562,
+  "cache_read_input_tokens": 1066345,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 468,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 468,
+    "cache_read_input_tokens": 117772,
+    "input_tokens": 2,
+    "output_tokens": 2581,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21685,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
