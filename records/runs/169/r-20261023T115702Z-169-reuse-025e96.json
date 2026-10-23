@@ -1,0 +1,278 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.2817775,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 211.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 176767,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 176767,
+    "cache_read_input_tokens": 2266545,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 616,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 616,
+      "cache_read_input_tokens": 162518,
+      "input_tokens": 2,
+      "output_tokens": 2686,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15225,
+    "output_tokens_details": {
+     "thinking_tokens": 9194
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 3.281778,
+ "dedupe_key": "eic/EpsilonEridani|169|c417e4565fcec3492d80b55f869d58b8a5fac8f7|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "3b2dbb96306a1ceda2fb7f595ba927653ae14364fbbb2908646224f8c2479d8f",
+ "diff_sha256": "3b2dbb96306a1ceda2fb7f595ba927653ae14364fbbb2908646224f8c2479d8f",
+ "duration_s": 211.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "VanishingMoments.lean:229-232 `theorem ae_eq_zero_of_forall_moment_eq_zero (g : \u211d \u2192 \u211d) (hexp : \u2203 a : \u211d, 0 < a \u2227 Integrable (fun x : \u211d => Real.exp (a * |x|) * g x) \u03bd) (hmom : \u2200 n : \u2115, \u222b x : \u211d, x ^ n * g x \u2202\u03bd = 0) : g =\u1d50[\u03bd] 0`, with `variable {\u03bd : Measure \u211d}` at line 53 and the docstring at 224-226: \"The reference measure is arbitrary, not just `volume`, and carries no \u03c3-finiteness hypothesis\".",
+   "file": "EpsilonEridani/Mathematics/MomentDeterminacy.lean",
+   "fix": "Replace the proof by `TauCeti.ae_eq_zero_of_forall_moment_eq_zero f \u27e81, one_pos, IntegrableOn.continuousOn_mul (by fun_prop) hf isCompact_Icc\u27e9 hmom` (the `continuousOn_mul` idiom this file already uses at lines 76 and 171 discharges the exponential weight on a compact interval; `TauCeti.Integrable.exp_abs_smul_of_ae_abs_le`, upstream/TauCeti/TauCeti/MeasureTheory/Function/BoundedSupportExponential.lean:56, is the packaged alternative). Derive `ae_eq_of_forall_setIntegral_Icc_pow_mul_eq` (line 164) from that, and `public import` the TauCeti module.",
+   "issue": "`ae_eq_zero_of_forall_setIntegral_Icc_pow_mul_eq_zero` is directly replaced by `TauCeti.ae_eq_zero_of_forall_moment_eq_zero` (upstream/TauCeti/TauCeti/Probability/Moments/VanishingMoments.lean:229), which is stated for an arbitrary `{\u03bd : Measure \u211d}` (no \u03c3-finiteness) with hypotheses `\u2203 a > 0, Integrable (fun x => Real.exp (a*|x|) * g x) \u03bd` and `\u2200 n, \u222b x, x^n * g x \u2202\u03bd = 0`. At `\u03bd := volume.restrict (Icc a b)` the moment hypothesis is syntactically `\u2200 n, \u222b x in Icc a b, x^n * f x = 0` and the conclusion is `f =\u1d50[volume.restrict (Icc a b)] 0` \u2014 the PR's statement exactly. TauCeti is a declared dependency (code/lakefile.toml:16) and nothing in the import-boundary guard (.github/workflows/pr-build.yml:547) forbids importing it.",
+   "line": 156
+  },
+  {
+   "evidence": "grep of the file: `setIntegral_Icc_eval_mul_eq_zero` appears at 106 (decl) and 134 (sole use); `setIntegral_Icc_mul_eq_zero_of_continuousOn` at 114 (decl) and 161 (sole use); neither is referenced from EpsilonEridani/Particles/Parton/GPD/Determinacy.lean.",
+   "file": "EpsilonEridani/Mathematics/MomentDeterminacy.lean",
+   "fix": "Delete both once line 156 is reproved through `TauCeti.ae_eq_zero_of_forall_moment_eq_zero`. Keep `setIntegral_Icc_eval_mul_eq_sum` (line 69) and `setIntegral_Icc_pow_mul_eval_eq_sum` (line 91): they are consumed by the sharpness theorem at line 223 and are not covered by TauCeti.",
+   "issue": "`setIntegral_Icc_eval_mul_eq_zero` (line 106) and `setIntegral_Icc_mul_eq_zero_of_continuousOn` (line 114) exist only to build the determinacy engine that TauCeti already supplies: `setIntegral_Icc_eval_mul_eq_zero` is used solely at line 134, and `setIntegral_Icc_mul_eq_zero_of_continuousOn` solely at line 161. They re-derive the Weierstrass\u2192vanishing-integral route end to end (47 lines of \u03b5-estimate plus `exists_polynomial_near_of_continuousOn`), which the located TauCeti theorem makes unnecessary.",
+   "line": 106
+  },
+  {
+   "evidence": "upstream/TauCeti/TauCeti/Probability/Moments/VanishingMoments.lean:15-19 \"# Vanishing moments force a function to be zero ... `TauCeti.Probability.Moments.Determinacy` pins down a *measure* from its moments; this file transfers that to *functions*.\"; `grep -r 'import TauCeti' code/` returns no matches.",
+   "file": "",
+   "fix": "Update the description's upstream survey, and make this file the first TauCeti consumer rather than a second implementation.",
+   "issue": "The PR description's reuse survey is wrong about TauCeti: it asserts \"TauCeti's determinacy results (`Measure.ext_of_forall_laplaceTransform_natCast_eq`, `Measure.ext_of_integral_inv_add_eventuallyEq`) are for measures under a Laplace or Stieltjes transform, not for a signed integrable function under its moments.\" TauCeti's `Probability/Moments/VanishingMoments.lean` is precisely the signed-integrable-function-under-its-moments statement, and no EpsilonEridani file imports TauCeti today, so the gap was not detected by in-repo search either.",
+   "line": 0
+  }
+ ],
+ "head_sha": "c417e4565fcec3492d80b55f869d58b8a5fac8f7",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 169,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "10f0c2518e4e967825a22e798552b7839b8bb138fc8b73a250d0dca78b9df706",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T115702Z-169-reuse-025e96",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T11:57:02Z",
+ "submitted_by": "wdconinc",
+ "summary": "The uniqueness half of the file is already in TauCeti: `TauCeti.ae_eq_zero_of_forall_moment_eq_zero` is stated for an arbitrary `Measure \u211d` and instantiates at `volume.restrict (Icc a b)` to give `ae_eq_zero_of_forall_setIntegral_Icc_pow_mul_eq_zero` verbatim, which makes the whole Weierstrass route in this PR redundant scaffolding. The sharpness half and the GPD transfer are genuinely new.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Probability/Moments/VanishingMoments.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/InnerProductSpace/PolynomialCompleteness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/Gegenbauer/Measure.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pr-build.yml",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pr-build.yml",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/MeasureTheory/Function/BoundedSupportExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/SpecialFunctions/Trigonometric/Chebyshev/HilbertBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Ambiguity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Moments.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MomentDeterminacy.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inference/Identifiability.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Deconvolution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Integrals",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 28,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f3850229087d5e12c000ab0d8680a89a32c75dfe6e8042942e6927e205a582a4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 176767,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 176767,
+  "cache_read_input_tokens": 2266545,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 616,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 616,
+    "cache_read_input_tokens": 162518,
+    "input_tokens": 2,
+    "output_tokens": 2686,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15225,
+  "output_tokens_details": {
+   "thinking_tokens": 9194
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "block"
+}
