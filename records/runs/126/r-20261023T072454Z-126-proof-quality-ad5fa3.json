@@ -1,0 +1,191 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.594922,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 212.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 100679,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 100679,
+    "cache_read_input_tokens": 319238,
+    "inference_geo": "global",
+    "input_tokens": 13,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5247,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5247,
+      "cache_read_input_tokens": 73966,
+      "input_tokens": 2,
+      "output_tokens": 2879,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16344,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 1.594922,
+ "dedupe_key": "eic/EpsilonEridani|126|ff6d93de309f934f090ac660dcb20ae836cce518|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "165ac7ae04b6381f3924dae6c4b22aa17bef6d9b2bc7c049681aa138eaa3f225",
+ "diff_sha256": "165ac7ae04b6381f3924dae6c4b22aa17bef6d9b2bc7c049681aa138eaa3f225",
+ "duration_s": 212.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`abbrev timeComponent {d : \u2115} (v : Vector d) : \u211d := v (Sum.inl 0)` (upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean:383); `@[simp] lemma apply_add ... := rfl` (ibid.:146). Neither Physlib nor EpsilonEridani defines `timeComponent_add` (grep for `timeComponent_add` returns nothing).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add `timeComponent_add (u v : Vector d) : (u + v).timeComponent = u.timeComponent + v.timeComponent` next to `spatialPart_add` in `MinkowskiProductExtensions.lean` and use it here; while touching this, split the conjunction into two `rw`-usable private lemmas so the three call sites need no `obtain`.",
+   "issue": "`components_add_target` proves `(q + P).timeComponent = k + E` by `simp [hq, hP]`, which only fires because `timeComponent` is a reducible `abbrev` for `v (Sum.inl 0)` and Physlib's `apply_add` matches through it \u2014 while the companion fact for the spatial part was given an explicit lemma (`spatialPart_add`) in this same PR.",
+   "line": "98"
+  },
+  {
+   "evidence": "`theorem one_sub_energyFraction_mul_energy ... := by simp only [energyFraction, sub_mul, div_mul_cancel\u2080 _ hs, one_mul]` (EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean:107); no `energyFraction_mul_energy` exists (grep for `energyFraction` in that file).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add `PhotonKinematics.energyFraction_mul_energy (hs : s.energy \u2260 0) : \u03b3.energyFraction s * s.energy = \u03b3.energy` to `Kinematics/Basic.lean` beside the existing `one_sub_energyFraction_mul_energy`, and rewrite with it at all three sites.",
+   "issue": "The same step `x * E_s = k` is re-derived inline in three proofs: `rw [PhotonKinematics.energyFraction_def, div_mul_cancel\u2080 _ hs]` at lines 209, 219 and 230 (the last two preceded by `mul_assoc 2` purely to expose the shape).",
+   "line": "209"
+  },
+  {
+   "evidence": "Lines 242-244 and 165-166 of the file; both chains are pure field rearrangement done by name rather than by `linear_combination`/`field_simp`, unlike the robust `linear_combination` finishers used at lines 145, 158 and 185.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Take the forward equation as a hypothesis and finish with field automation, e.g. `have h := two_mul_photonEnergy_eq_exp_rapidity_mul_sub_div_sqrt \u2026; rw [PhotonKinematics.energyFraction_def]; linear_combination h / (2 * s.energy)`, and replace the line 165\u2013166 chain with `field_simp` after the single `targetEnergy_add_momentum_\u2026` rewrite.",
+   "issue": "`energyFraction_eq_exp_rapidity_mul_sub_div_sqrt` is closed by a five-step shape-matching chain (`mul_assoc 2, mul_left_comm 2, \u2190 div_div, \u2190 two_mul_photonEnergy_eq_exp_rapidity_mul_sub_div_sqrt, mul_div_mul_left`); the backwards rewrite by the main lemma requires the goal to contain its RHS verbatim, so any reassociation upstream breaks it. Same class at lines 165\u2013166 (`exp_neg, mul_left_comm, mul_inv_cancel\u2080, mul_one`).",
+   "line": "242"
+  }
+ ],
+ "head_sha": "ff6d93de309f934f090ac660dcb20ae836cce518",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "90728e9d7d154d733ef6ccce94283f8cb5804dfee837354a750498953bb0e57c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T072454Z-126-proof-quality-ad5fa3",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T07:24:54Z",
+ "submitted_by": "veprbl",
+ "summary": "The rapidity development is well factored (shared `eq_sqrt_mul_mul_sqrt_div`, `linear_combination` finishers), but the photoproduction file repeats an energy-fraction unfolding in three proofs instead of factoring it, closes the time component of a sum by reducible unfolding while adding an explicit lemma for the spatial part, and shapes two goals with `mul_assoc`/`mul_left_comm`/backwards-rewrite chains.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6a0d08c2314466bf21af5013dda22b221a578019cf9c05ee4b7a7a509670d2e9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 100679,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 100679,
+  "cache_read_input_tokens": 319238,
+  "inference_geo": "global",
+  "input_tokens": 13,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5247,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5247,
+    "cache_read_input_tokens": 73966,
+    "input_tokens": 2,
+    "output_tokens": 2879,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16344,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

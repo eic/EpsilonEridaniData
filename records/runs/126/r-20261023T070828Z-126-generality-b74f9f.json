@@ -1,0 +1,201 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8832905000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 302.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 105441,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 105441,
+    "cache_read_input_tokens": 415365,
+    "inference_geo": "global",
+    "input_tokens": 17,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4699,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4699,
+      "cache_read_input_tokens": 79528,
+      "input_tokens": 2,
+      "output_tokens": 4110,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24058,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 1.883291,
+ "dedupe_key": "eic/EpsilonEridani|126|ff6d93de309f934f090ac660dcb20ae836cce518|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "165ac7ae04b6381f3924dae6c4b22aa17bef6d9b2bc7c049681aa138eaa3f225",
+ "diff_sha256": "165ac7ae04b6381f3924dae6c4b22aa17bef6d9b2bc7c049681aa138eaa3f225",
+ "duration_s": 302.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "InvariantMass.lean:170-173 (current proof); the needed factorisation is the PR's own `minkowskiProduct_self_eq_mul_of_spatialPart_eq_smul` in MinkowskiProductExtensions.lean, and the cone bound is `abs_sub_lt_add` (InvariantMass.lean:104).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add `sqrt_minkowskiProduct_self_pos_of_spatialPart_eq_smul (hn : \u2016n\u2016 = 1) (hv : v.spatialPart = a \u2022 n) (h : |a| < v.timeComponent) : 0 < \u221a\u27eav, v\u27eb\u2098` in MinkowskiProductExtensions.lean (two lines: `minkowskiProduct_self_eq_mul_of_spatialPart_eq_smul` + `Real.sqrt_pos`, both factors positive), and obtain the photon\u2013target case from `components_add_target` + `abs_sub_lt_add`.",
+   "issue": "`sqrt_minkowskiProduct_add_self_pos` proves `0 < \u221a\u27eav,v\u27eb\u2098` only for the real-photon-plus-target configuration (`hn hq hq' hP hP' hk hp hpE`), via a detour through `exp_rapidity_mul_targetEnergy_add_momentum`. The fact is general: for any `v` with `v.spatialPart = a \u2022 n`, `\u2016n\u2016 = 1` and `|a| < v.timeComponent`, `\u27eav,v\u27eb\u2098 = (v\u2070+a)(v\u2070-a) > 0`.",
+   "line": 170
+  },
+  {
+   "evidence": "Proofs at InvariantMass.lean:129-131, 140-145, 170-173 go only through `components_add_target` (lines 95-99), which uses `hq`/`hq'` solely to compute `(q+P).timeComponent = k + E` and `(q+P).spatialPart = (k - p) \u2022 n`; the generic Rapidity.lean lemmas already hold for arbitrary components.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Make the axial momentum an independent variable, `hq' : q.spatialPart = a \u2022 n` with cone hypothesis `|a - p| < k + E`, in `components_add_target`, `exp_two_mul_rapidity_of_realPhoton` (\u2192 `(k + a + E - p)/(k - a + E + p)`), `two_mul_photonEnergy_add_targetEnergy_sub_momentum_eq_sqrt_mul_exp_rapidity` (\u2192 `k + a + E - p = W e^{y}`), the positivity lemma and `exp_two_mul_rapidity_of_realPhoton_energyFraction`; derive the present statements at `a = k`. `targetEnergy_add_momentum_eq_sqrt_mul_exp_neg_rapidity` and `two_mul_photonEnergy_eq_exp_rapidity_mul_sub_div_sqrt` do need nullness in their shape and can stay as the `a = k` corollaries.",
+   "issue": "The `RealPhoton` section ties the axial momentum to the energy (`hq : q.timeComponent = k`, `hq' : q.spatialPart = k \u2022 n`, i.e. `\u27eaq,q\u27eb\u2098 = 0`), but the rapidity results only use the light-cone components of `q + P`, so nullness is stronger than their proofs need. This matters here: \u00a70.1's own `ChargedSource.not_isReal_of_mem_photonRegion` (Kinematics/Basic.lean:329) proves a massive source never emits a photon with `Q\u00b2 = 0`, so the only exported rapidity statements apply to a configuration the companion file rules out, even though the invariant-mass lemma `minkowskiProduct_add_self_of_target` keeps `q\u00b2` explicit.",
+   "line": 110
+  },
+  {
+   "evidence": "grep for `cosh_rapidity|sinh_rapidity` over ./code returns hits only inside Rapidity.lean itself (definitions, docstring lines 28-37, and the derivations at 149/159/191/200); InvariantMass.lean uses only `..._mul_exp_rapidity_of_spatialPart_eq_smul` and `..._mul_exp_neg_rapidity_of_spatialPart_eq_smul`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Drop the two `_of_spatialPart_eq_smul` cosh/sinh lemmas and keep the generic cosh/sinh statements; the collinear exp forms (165, 176), which InvariantMass.lean does use, stay.",
+   "issue": "`timeComponent_eq_sqrt_minkowskiProduct_mul_cosh_rapidity_of_spatialPart_eq_smul` (185) and `eq_sqrt_minkowskiProduct_mul_sinh_rapidity_of_spatialPart_eq_smul` (195) are one-rewrite specialisations of the generic `timeComponent_eq_sqrt_mul_cosh_rapidity` (145) / `inner_spatialPart_eq_sqrt_mul_sinh_rapidity` (154) under `minkowskiProduct_self_eq_sq_sub_inner_sq_of_spatialPart_eq_smul`; neither is used anywhere, and \u00a70.1 needs only the `exp` forms.",
+   "line": 185
+  }
+ ],
+ "head_sha": "ff6d93de309f934f090ac660dcb20ae836cce518",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "14747578b55d0118705b94186233394a97f3fa738449452b45864bcd9336d534",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T070828Z-126-generality-b74f9f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T07:08:28Z",
+ "submitted_by": "veprbl",
+ "summary": "The general-before-special discipline is mostly respected (massless and energy-fraction forms are derived, not reproved), but three statements sit at the wrong level: positivity of W is proved only for the photon\u2013target pair although it is a property of any collinear vector in the forward cone, the rapidity lemmas assume an exactly null photon where only the light-cone components matter, and two collinear cosh/sinh lemmas are unused restatements of the generic ones.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "db7a02f4a66b0e9771587278f9a2b8d05cb4dc9581a523c379ee9d1a5bf4f669",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105441,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 105441,
+  "cache_read_input_tokens": 415365,
+  "inference_geo": "global",
+  "input_tokens": 17,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4699,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4699,
+    "cache_read_input_tokens": 79528,
+    "input_tokens": 2,
+    "output_tokens": 4110,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24058,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
