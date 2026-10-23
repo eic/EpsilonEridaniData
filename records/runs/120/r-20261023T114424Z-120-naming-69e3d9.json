@@ -1,0 +1,182 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2652680000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 151.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 162239,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 162239,
+    "cache_read_input_tokens": 743996,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2447,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2447,
+      "cache_read_input_tokens": 131019,
+      "input_tokens": 2,
+      "output_tokens": 1760,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10832,
+    "output_tokens_details": {
+     "thinking_tokens": 7541
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.265268,
+ "dedupe_key": "eic/EpsilonEridani|120|37f88b84c1e81395c648e02866160974ede568ad|naming|claude-opus-5|30e3cfe49d22c07d|production|4",
+ "diff_blob": "7ceec37418e9c122fe776e7317a0f92488b8a3c9a3ac8d78a828198d804bd9ec",
+ "diff_sha256": "7ceec37418e9c122fe776e7317a0f92488b8a3c9a3ac8d78a828198d804bd9ec",
+ "duration_s": 151.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:181-184 `def IsStructureFunctionScaling ... := \u2200 x Q2, A = (G.g1 x Q2 + G.g2 x Q2) \u2022 A`; Basic.lean:189 `... \u2194 A = 0 \u2228 \u2200 x Q2, G.g1 x Q2 + G.g2 x Q2 = 1`. The repo already uses \"scaling\" in its standard DIS sense: `EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean:55` \"The Bjorken scaling variable `xBj := Q2 / (2 p\u00b7q)`\". Naming conventions: \"the name of theorem simply describes the conclusion\" \u2014 the conclusion here is a smul fixed point, not scaling of `g\u2081`, `g\u2082`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "fix": "Rename to something describing the conclusion, e.g. `IsFixedByStructureFunctionSum` / `isFixedByStructureFunctionSum_iff` (or name it directly after the equality, `structureFunctionSum_smul_eq_self`), and update the module docstring at lines 14-17.",
+   "issue": "`IsStructureFunctionScaling` (and `isStructureFunctionScaling_iff`, line 188) uses \"structure function scaling\", which in DIS means Bjorken scaling (structure functions depending on `x` alone); the statement is instead `\u2200 x Q2, A = (G.g1 x Q2 + G.g2 x Q2) \u2022 A`, a fixed-point condition on the tensor under a scalar multiple. The name advertises a standard DIS notion the declaration does not state.",
+   "line": 181
+  },
+  {
+   "evidence": "BilinMap.lean:104-107 docstring \"Negating the second of two fixed vectors negates the bilinear map\" versus the name `bilinMap_vecCons_neg`; contrast BilinMap.lean:97 `bilinMap_update_neg (f) (m) (i : Fin n)`, where the index is an argument. Naming conventions: \"Sometimes the word 'left' or 'right' is helpful to describe variants of a theorem.\"",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "fix": "Rename to name the slot, e.g. `bilinMap_pair_neg_right` or `bilinMap_neg_snd`, and update the module docstring bullet at lines 31-32.",
+   "issue": "`bilinMap_vecCons_neg : f.bilinMap ![a, -b] = -f.bilinMap ![a, b]` negates specifically the second fixed vector, but the name names no slot; it reads as if it covered a negated `vecCons` head (`![-a, b]`), which it does not match for `rw`. Its general form `bilinMap_update_neg` (line 97) does carry the index.",
+   "line": 106
+  }
+ ],
+ "head_sha": "37f88b84c1e81395c648e02866160974ede568ad",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "6d63bf7e0bf3fb916be189e35babb03ee823e8c0fdf15547330a3b17aee24f00",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 4,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T114424Z-120-naming-69e3d9",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T11:44:24Z",
+ "submitted_by": "wdconinc",
+ "summary": "The two prior naming findings are fixed. The replacement name `IsStructureFunctionScaling` collides with the entrenched DIS meaning of \"structure function scaling\" (Bjorken scaling) while stating an unrelated algebraic fixed-point condition, and `bilinMap_vecCons_neg` does not say which fixed vector it negates.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ed957bb0a4c8b83cf439c21db645c0d00c7c11ec3c663a50dc01fcb68c8e0bc2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 162239,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 162239,
+  "cache_read_input_tokens": 743996,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2447,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2447,
+    "cache_read_input_tokens": 131019,
+    "input_tokens": 2,
+    "output_tokens": 1760,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10832,
+  "output_tokens_details": {
+   "thinking_tokens": 7541
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
