@@ -1,0 +1,212 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.667434,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 228.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 159494,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 159494,
+    "cache_read_input_tokens": 1327628,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3838,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3838,
+      "cache_read_input_tokens": 130393,
+      "input_tokens": 2,
+      "output_tokens": 2371,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16342,
+    "output_tokens_details": {
+     "thinking_tokens": 11829
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.667434,
+ "dedupe_key": "eic/EpsilonEridani|126|3c9a6cc0ed3e43b6317a115da9c748809ae91633|api-design|claude-opus-5|30e3cfe49d22c07d|production|6",
+ "diff_blob": "6bef8cfe1c540bed2f315a7e00f3f1a5d70f579c893ca23a9084c5f1ed45cbba",
+ "diff_sha256": "6bef8cfe1c540bed2f315a7e00f3f1a5d70f579c893ca23a9084c5f1ed45cbba",
+ "duration_s": 228.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "InvariantMass.lean:104-108 `private theorem spatialPart_add_target (hq' : q.spatialPart = a \u2022 n) (hP' : P.spatialPart = -p \u2022 n) : (q + P).spatialPart = (a - p) \u2022 n := by rw [spatialPart_add, hq', hP', sub_smul, _root_.neg_smul, \u2190 sub_eq_add_neg]`; all lemmas it is fed to are public in MinkowskiProductExtensions.lean:70,78,92,101 and take exactly the `spatialPart = a \u2022 n` hypothesis shape.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Move it public to `MinkowskiProductExtensions.lean` next to `minkowskiProduct_self_eq_mul_of_spatialPart_eq_smul`, with a neutral name (e.g. `spatialPart_add_eq_smul_of_spatialPart_eq_smul`) and no `_target` in it. `timeComponent_add_target` (line 98) is the same shape but carries nothing beyond the already-public `timeComponent_add`; inline it rather than exporting a near-duplicate.",
+   "issue": "`private theorem spatialPart_add_target` states `(q+P).spatialPart = (a - p) \u2022 n` from `q.spatialPart = a \u2022 n` and `P.spatialPart = -p \u2022 n`. Its statement mentions only `Lorentz.Vector d`, `EuclideanSpace \u211d (Fin d)` and `\u211d`, and its proof is `spatial_add`/`sub_smul`/`neg_smul` \u2014 no photoproduction content. It is the closure property (sum of collinear vectors is collinear) that the whole `_of_spatialPart_eq_smul` family added by this PR needs, yet no consumer outside this file can use it.",
+   "line": "104"
+  },
+  {
+   "evidence": "Declaration list of InvariantMass.lean: the `CollinearPhoton` section holds only `exp_two_mul_rapidity_of_collinearPhoton` (:125), `photonEnergy_add_photonMomentum_add_targetEnergy_sub_momentum_eq_sqrt_mul_exp_rapidity` (:136) and `sqrt_minkowskiProduct_add_self_pos_of_collinearPhoton` (:146); Rapidity.lean:174 and :185 supply both signs upstream, so only the applied side is asymmetric.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add the collinear backward component in the same section, via `timeComponent_sub_eq_sqrt_minkowskiProduct_mul_exp_neg_rapidity_of_spatialPart_eq_smul` (the upstream dual already proved in Rapidity.lean:185), and derive `targetEnergy_add_momentum_eq_sqrt_mul_exp_neg_rapidity` from it as the `a = k` case.",
+   "issue": "The `CollinearPhoton` section (any virtuality \u2014 the case the PR argues is the physical one, since `ChargedSource.not_isReal_of_mem_photonRegion` rules out real photons) exposes only the forward light-cone component `k + a + E - p = W e^{y}`. The dual `k - a + E + p = W e^{-y}` exists only in the real-photon specialisation (`targetEnergy_add_momentum_eq_sqrt_mul_exp_neg_rapidity`, line 180, which requires `q.spatialPart = k \u2022 n`). A consumer at nonzero virtuality cannot obtain it without re-proving `spatialPart_add_target`, which is private.",
+   "line": "136"
+  }
+ ],
+ "head_sha": "3c9a6cc0ed3e43b6317a115da9c748809ae91633",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "b8d2961a06906bb2fc06bece589b84ff105f7caf5282e81238a408d1f966ff90",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 6,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T224744Z-126-api-design-e60348",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T22:47:44Z",
+ "submitted_by": "wdconinc",
+ "summary": "The closure fact that a sum of two collinear four-vectors is collinear is hidden as a private photoproduction helper instead of living public beside the rest of the `_of_spatialPart_eq_smul` API, and the collinear (any-virtuality) section exposes only the forward light-cone component, so the backward one cannot be reconstructed by a consumer.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Boosts/Axis.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/CollinsSoper.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ebde34833f34815b3d126663abaaf5a704b2457e7ee2ac3ccece44f4934c8283",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 159494,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 159494,
+  "cache_read_input_tokens": 1327628,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3838,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3838,
+    "cache_read_input_tokens": 130393,
+    "input_tokens": 2,
+    "output_tokens": 2371,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16342,
+  "output_tokens_details": {
+   "thinking_tokens": 11829
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
