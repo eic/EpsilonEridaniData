@@ -1,0 +1,219 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1880995,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 229.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 132135,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 132135,
+    "cache_read_input_tokens": 931929,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1363,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1363,
+      "cache_read_input_tokens": 114977,
+      "input_tokens": 2,
+      "output_tokens": 6137,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16027,
+    "output_tokens_details": {
+     "thinking_tokens": 11852
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.188099,
+ "dedupe_key": "eic/EpsilonEridani|92|26b96d3c53717d454ce1cdb9e1eb2095736cc72a|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "dd727e842fd4fe95585d5f61528edbd756bd8e1ab51074af28a095d951531735",
+ "diff_sha256": "dd727e842fd4fe95585d5f61528edbd756bd8e1ab51074af28a095d951531735",
+ "duration_s": 229.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 198 of the file; the goal is only `\u03c1\u2080 * (1 + exp (-((R-r)/a)))\u207b\u00b9 = \u03c1\u2080 / (1 + exp ((r-R)/a))`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Replace with `simp [woodsSaxonDensity_def, Real.sigmoid_def, neg_div, neg_sub, div_eq_mul_inv]` or a two-step `rw [woodsSaxonDensity_def, Real.sigmoid_def]` followed by `field_simp`/`ring_nf`.",
+   "issue": "`woodsSaxonDensity_eq_div` proves a trivial rearrangement by a 6-lemma rw chain with two reverse rewrites: `rw [woodsSaxonDensity_def, Real.sigmoid_def, \u2190 neg_div, neg_sub, \u2190 one_div, mul_one_div]`. Each `\u2190` step is syntax-position dependent and breaks on upstream renames.",
+   "line": "198"
+  },
+  {
+   "evidence": "Line 204; after `Real.sigmoid_zero` the remaining goal is pure field algebra that `ring` closes.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "`rw [woodsSaxonDensity_def, sub_self, zero_div, Real.sigmoid_zero]` then `ring`, or `simp [woodsSaxonDensity_def, Real.sigmoid_zero, div_eq_mul_inv]`.",
+   "issue": "Same pattern in `woodsSaxonDensity_self`: `rw [woodsSaxonDensity_def, sub_self, zero_div, Real.sigmoid_zero, \u2190 one_div, mul_one_div]` \u2014 five library-name steps plus a reverse rewrite for `\u03c1\u2080 * 2\u207b\u00b9 = \u03c1\u2080 / 2`.",
+   "line": "204"
+  },
+  {
+   "evidence": "Line 23: `rw [sigmoid_def, \u2190 inv_inv (exp x), inv_le_inv\u2080 (by positivity) (by positivity), \u2190 exp_neg]`.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SigmoidExtensions.lean",
+   "fix": "Make the comparison explicit, e.g. `calc sigmoid x = (1 + exp (-x))\u207b\u00b9 := sigmoid_def x; _ \u2264 (exp (-x))\u207b\u00b9 := by gcongr <;> [positivity; linarith [exp_pos (-x)]]; _ = exp x := by rw [\u2190 exp_neg, neg_neg]`.",
+   "issue": "`sigmoid_le_exp` uses a 4-lemma rw chain with two reverse rewrites (`\u2190 inv_inv (exp x)`, `\u2190 exp_neg`) plus two anonymous `(by positivity)` side conditions, so the reason the bound holds is not visible from the script.",
+   "line": "23"
+  }
+ ],
+ "head_sha": "26b96d3c53717d454ce1cdb9e1eb2095736cc72a",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 92,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "549dfb3c469be34c61a27750dc39bbc27191e0fa8b838623c1cc0b0312db12cb",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T112805Z-92-proof-quality-cea9b8",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T11:28:05Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are short, readable, free of change/show and of undocumented definitional equality, and the one 27-line proof is commented and factors its bound into a reusable lemma. Only remaining nit: three trivial algebraic rearrangements are proved by multi-lemma rw chains with reverse rewrites rather than robust automation.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SigmoidExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Tactic/Linter",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Nat/Find.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "61ae4ca19365de6fb1ae394732bf72b2658716e91524db903c0276ab334a3769",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 132135,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 132135,
+  "cache_read_input_tokens": 931929,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1363,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1363,
+    "cache_read_input_tokens": 114977,
+    "input_tokens": 2,
+    "output_tokens": 6137,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16027,
+  "output_tokens_details": {
+   "thinking_tokens": 11852
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "approve"
+}
