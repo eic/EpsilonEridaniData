@@ -1,0 +1,308 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.856719,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 224.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 158494,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 158494,
+    "cache_read_input_tokens": 1708198,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 36,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3827,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3827,
+      "cache_read_input_tokens": 139354,
+      "input_tokens": 2,
+      "output_tokens": 3551,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16700,
+    "output_tokens_details": {
+     "thinking_tokens": 10207
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "cost_usd": 2.856719,
+ "dedupe_key": "eic/EpsilonEridani|130|9f20de81df228164e0648cc1132b5e6995c9beaf|reuse|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "8c17f7f2dc485c9ee1a0a54c8b37c1a633fdea01301fd309e8873efee600507d",
+ "diff_sha256": "8c17f7f2dc485c9ee1a0a54c8b37c1a633fdea01301fd309e8873efee600507d",
+ "duration_s": 224.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/TauCeti/TauCeti/Analysis/Analytic/Complexification/Basic.lean:326 `theorem eventually_eq_zero_of_eventually_real {E : Type*} [NormedAddCommGroup E] [NormedSpace \u2102 E] {F : (\u03b9 \u2192 \u2102) \u2192 E} {a : \u03b9 \u2192 \u211d} (hF : AnalyticAt \u2102 F (fun i \u21a6 (a i : \u2102))) (h : \u2200\u1da0 x in \ud835\udcdd a, F (fun i \u21a6 (x i : \u2102)) = 0) : \u2200\u1da0 z in \ud835\udcdd (fun i \u21a6 (a i : \u2102)), F z = 0` in `namespace AnalyticAt` (line 320). TauCeti is a lakefile dependency (code/lakefile.toml:16) already imported from EpsilonEridani (EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean:10).",
+   "file": "EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "fix": "Delete it and `public import TauCeti.Analysis.Analytic.Complexification.Basic`; use `hf.eventually_eq_zero_of_eventually_real h\u2080` at the use sites.",
+   "issue": "`AnalyticAt.eventuallyEq_zero_of_eventuallyEq_zero_ofReal` is directly replaced by TauCeti's `AnalyticAt.eventually_eq_zero_of_eventually_real`: same `[Fintype \u03b9]`, `{F : (\u03b9 \u2192 \u2102) \u2192 E}`, `{a : \u03b9 \u2192 \u211d}`, hypothesis `AnalyticAt \u2102 F (fun i \u21a6 (a i : \u2102))` plus vanishing at nearby real points, same conclusion \u2014 and without any completeness detour.",
+   "line": 108
+  },
+  {
+   "evidence": "upstream/TauCeti/TauCeti/Analysis/Analytic/Complexification/Basic.lean:350-356.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "fix": "Delete it; call `(hf _ h\u2080).eventuallyEq_of_eventually_real (hg _ h\u2080) hfg` instead.",
+   "issue": "`AnalyticAt.eventuallyEq_of_eventuallyEq_ofReal` is a verbatim duplicate of TauCeti's `AnalyticAt.eventuallyEq_of_eventually_real` (same hypotheses, same `F =\u1da0[\ud835\udcdd fun i \u21a6 (a i : \u2102)] G` conclusion, same `hF.sub hG` proof).",
+   "line": 121
+  },
+  {
+   "evidence": "upstream/TauCeti/TauCeti/Analysis/Analytic/Complexification/Basic.lean:214-238 (`set \u03c6 : \u2102 \u2192 E := fun t \u21a6 Q (fun _ \u21a6 x + t \u2022 y)`, `h\u03c6.eqOn_zero_of_preconnected_of_frequently_eq_zero isPreconnected_univ (mem_univ 0) hfreq (mem_univ Complex.I)`).",
+   "file": "EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "fix": "Delete the private aux together with the two theorems above.",
+   "issue": "The 50-line private `eventuallyEq_zero_of_eventuallyEq_zero_ofReal_aux` re-derives machinery TauCeti already has: the restriction to the complex line `x + t \u2022 y`, the punctured-neighbourhood `Tendsto ((\u2191) : \u211d \u2192 \u2102)` argument and `eqOn_zero_of_preconnected_of_frequently_eq_zero` evaluated at `I` are exactly `ContinuousMultilinearMap.apply_const_eq_zero_of_forall_ofReal`; the `UniformSpace.Completion` transfer is unnecessary because TauCeti's proof goes through the power series and needs no `CompleteSpace`.",
+   "line": 54
+  },
+  {
+   "evidence": "grep for `eventually_real` across ./upstream finds only the `AnalyticAt` local forms (Complexification/Basic.lean:326,350,360) and their consumers; no `AnalyticOnNhd` preconnected variant exists.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "fix": "Keep this theorem as the file's sole content, proved by `hf.eqOn_of_preconnected_of_eventuallyEq hg hU h\u2080 ((hf _ h\u2080).eventuallyEq_of_eventually_real (hg _ h\u2080) hfg)`.",
+   "issue": "`AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq_ofReal` is the only genuinely new statement here (TauCeti has no preconnected/global form), but it is currently built on the duplicated local lemmas.",
+   "line": 130
+  },
+  {
+   "evidence": "grep `map_wickRotation_minkowskiSection` in ./code returns only Basic.lean:44 (docstring), 219 (docstring) and 247 (the declaration) \u2014 no use site.",
+   "file": "EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "fix": "Drop `map_wickRotation_minkowskiSection` (and its `## Main results` bullet), or make it the lemma the uniqueness proof actually applies.",
+   "issue": "`map_wickRotation_minkowskiSection` has no consumer anywhere in the repo (only docstring mentions) and repackages located lemmas: `wickRotation_ofReal` (line 241) plus `mem_minkowskiSection_iff` (line 141) and `euclideanSection_def` (line 189) already give the image equality; `Continuation/Uniqueness.lean` uses `wickRotation_ofReal` via `simp`, not this lemma.",
+   "line": 247
+  }
+ ],
+ "head_sha": "9f20de81df228164e0648cc1132b5e6995c9beaf",
+ "merge_base_sha": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 130,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "5f88d3bbbcf1c9ebbce408d3289c29f45fa3ffc9edd405560b1d708203a8b1f9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T114525Z-130-reuse-c837b6",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T11:45:25Z",
+ "submitted_by": "wdconinc",
+ "summary": "The two local theorems of the new `Mathematics/Analysis/Analytic/Uniqueness.lean` are already in TauCeti as `AnalyticAt.eventually_eq_zero_of_eventually_real` and `AnalyticAt.eventuallyEq_of_eventually_real` (TauCeti/Analysis/Analytic/Complexification/Basic.lean:326,350), with identical statements and no completeness hypothesis, so the PR's claim that no such statement exists in TauCeti is wrong. Only the global preconnected form is new; it should be a two-line consequence of the TauCeti lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Uniqueness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Analytic",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Analytic/IsolatedZeros.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Complex/HalfPlaneIdentity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Analytic/Complexification/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Analytic/Complexification/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Analytic/Complexification/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 31,
+  "trace_truncated": false
+ },
+ "transcript_blob": "57e03c6bd6fa7029d03734e6bc810d031f24d887765daa8d13bd7d46cc286732",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 158494,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 158494,
+  "cache_read_input_tokens": 1708198,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 36,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3827,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3827,
+    "cache_read_input_tokens": 139354,
+    "input_tokens": 2,
+    "output_tokens": 3551,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16700,
+  "output_tokens_details": {
+   "thinking_tokens": 10207
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "block"
+}
