@@ -1,0 +1,178 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.5343529999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 136.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 114016,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 114016,
+    "cache_read_input_tokens": 281586,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4766,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4766,
+      "cache_read_input_tokens": 95908,
+      "input_tokens": 2,
+      "output_tokens": 2413,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10134,
+    "output_tokens_details": {
+     "thinking_tokens": 6982
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 1.534353,
+ "dedupe_key": "eic/EpsilonEridani|180|e7e766a18cde1e5dd03df433415faaef0395f54f|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "cbfe7773ef9f627d7742a236857f341277487575caee66d7a6f607bbfa0dd2e9",
+ "diff_sha256": "cbfe7773ef9f627d7742a236857f341277487575caee66d7a6f607bbfa0dd2e9",
+ "duration_s": 136.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 263-265 and 272-274: `cases l <;> ext <;> simp [...]` then `all_goals congr 1; field_simp`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Make the `simp` terminal per component: prove the `x` component separately with an explicit `div_eq_div_iff`/`field_simp` step on a named intermediate equality, instead of `congr 1` on whatever simp produced.",
+   "issue": "`cases l <;> ext <;> simp only [...] <;> simp [...]` is non-terminal and is followed by `all_goals congr 1; field_simp` (same shape at line 274 in `mixedMethod_eq_trueInvariants_of_photon_eq_zero`). Which goals the `simp` closes and what shape it leaves for `congr 1` is invisible to the reader and changes with any Mathlib simp-set change; `congr 1` on an equation of real quotients is structure-dependent and can split into unprovable subgoals.",
+   "line": 265
+  },
+  {
+   "evidence": "Lines 377-378 and 412-413; denominators are `2 * (g e.p e.k - g e.p e.kPrime)` (electron `x`) and the `y_\u03a3`/`y` denominators, all zero under `h`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Either add the non-degeneracy hypothesis (`g e.p (e.pX - e.p) \u2260 0`) to the statement, or keep the split with a comment stating that in this branch both sides are the junk value `0` of division by zero.",
+   "issue": "Undocumented junk-value branch: `rcases eq_or_ne (g e.p e.k - g e.p e.kPrime) 0 with h | h \u00b7 simp [h]` closes the degenerate case only because `a / 0 = 0` makes both sides zero \u2014 i.e. the stated identity is vacuous there, not true for a physical reason. Same pattern at line 412 in `sigmaMethod_x_eq_trueInvariants_x_of_collinear` (`rcases eq_or_ne (z * g e.p e.k - g e.p e.kPrime) 0`).",
+   "line": 377
+  },
+  {
+   "evidence": "Lines 333-335, 353-355, 371-375, 408-411, 437-438 contain the same simp-only list; 376-381 and 412-416 the same case-split/field_simp tail.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Factor the collinear normalization into private lemmas stated once, e.g. `g e.p (e.pX - e.p) = z * g e.p e.k - g e.p e.kPrime` and the explicit values of `(e.trueInvariants g .initialState).Q2/.x/.y`, and rewrite with those.",
+   "issue": "The same ~12-name normalization block (`DisKinematics.*, hardKinematics_*, leptonIn_of_collinear, pX_sub_p_of_collinear, map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul, hk, hk'`) is repeated verbatim at lines 333-335, 353-355, 371-375, 408-411 and 437-438, each time re-deriving the collinear scalar products inline; the shared tail (degenerate split, `mul_comm` restatement, `field_simp; ring`) is duplicated at 376-381 and 412-416.",
+   "line": 333
+  },
+  {
+   "evidence": "Lines 375-379 (`... at hy \u22a2`, `(div_ne_zero_iff.mp hy).1`, `rwa [mul_comm]`) and line 414.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Derive the nonvanishing hypothesis from an explicitly stated lemma about `(e.trueInvariants g .initialState).y` (the factored lemma suggested above) rather than from simp's output shape, and drop the `mul_comm` restatements by giving `field_simp` the hypothesis in the form it needs.",
+   "issue": "`have hzk : z * g e.p e.k - g e.p e.kPrime \u2260 0 := (div_ne_zero_iff.mp hy).1` extracts a numerator fact from `hy` only after `hy` was rewritten by the big `simp only ... at hy \u22a2`, so it depends on the exact syntactic form simp leaves; likewise `have hzk' := by rwa [mul_comm]` (and line 414) exists only to match `field_simp`'s argument order.",
+   "line": 376
+  },
+  {
+   "evidence": "`AccessMethods.lean:127` `lemma ySigma_eq_yInel ... : d.ySigma g_met = K.yInel g_met`; its hypotheses `K.p = e.p`, `K.kPrime = e.kPrime`, `e.p + (e.k - e.photon) = e.pX + e.kPrime` all hold for `e.hardKinematics .initialState` by `RadiativeEvent.conservation`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Apply `SigmaMethodData.ySigma_eq_yInel \u27e8e.pX, e.kPrime, e.p\u27e9 g (e.hardKinematics .initialState) rfl rfl (conservation)` instead of unfolding; same for the `hy` step at 260-262.",
+   "issue": "`rw [sigmaMethod_y, SigmaMethodData.ySigma, \u2190 map_add, h]` unfolds the `ySigma` definition by hand, as does line 262 in the Born-limit proof, although `SigmaMethodData.ySigma_eq_yInel` already proves exactly `d.ySigma g = K.yInel g` under momentum conservation.",
+   "line": 313
+  }
+ ],
+ "head_sha": "e7e766a18cde1e5dd03df433415faaef0395f54f",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "56ca8d1566c69154dee16754b5e0d321daa35119de864a136e5415e99e6ac843",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T122439Z-180-proof-quality-3e7249",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T12:24:39Z",
+ "submitted_by": "wdconinc",
+ "summary": "The collinear and Born-limit proofs rest on non-terminal `simp` followed by `congr 1`/`field_simp` and on undocumented division-by-zero branches that close only because Lean's `/` returns junk; the same 12-lemma normalization block and degenerate-case tail are copy-pasted across five proofs instead of being factored, and two Sigma proofs unfold `ySigma` by hand instead of using the existing `ySigma_eq_yInel`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1537a7f47799602cccd760fbdae8ca5ab338c7ec5a7fb0f9d9951e885ce0ee3d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 114016,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 114016,
+  "cache_read_input_tokens": 281586,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4766,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4766,
+    "cache_read_input_tokens": 95908,
+    "input_tokens": 2,
+    "output_tokens": 2413,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10134,
+  "output_tokens_details": {
+   "thinking_tokens": 6982
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

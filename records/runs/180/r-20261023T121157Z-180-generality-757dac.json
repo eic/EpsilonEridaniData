@@ -1,0 +1,201 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4789935,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 329.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 144833,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 144833,
+    "cache_read_input_tokens": 847177,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 251,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 251,
+      "cache_read_input_tokens": 131495,
+      "input_tokens": 2,
+      "output_tokens": 2122,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24279,
+    "output_tokens_details": {
+     "thinking_tokens": 20618
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 2.478994,
+ "dedupe_key": "eic/EpsilonEridani|180|e7e766a18cde1e5dd03df433415faaef0395f54f|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "cbfe7773ef9f627d7742a236857f341277487575caee66d7a6f607bbfa0dd2e9",
+ "diff_sha256": "cbfe7773ef9f627d7742a236857f341277487575caee66d7a6f607bbfa0dd2e9",
+ "duration_s": 329.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 333-336 and 437-443 both reduce to `simp only [... hk, hk']; ring` on the same quadratic expansion.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Add that identity as a private lemma and derive both theorems by substituting `hk`, `hk'` (ISR: `u = k, v = k'`; FSR: `u = w = k' + \u2113, v = k`, using `g (-a) (-a) = g a a`). This also makes the finite-lepton-mass form, which roadmap convention 9 asks to keep, available for free.",
+   "issue": "`trueInvariants_Q2_of_collinear_initialState` (line 330) and `electronMethod_Q2_of_collinear_finalState` (line 425) are two instances of one identity, each expanded inline under `hk`/`hk'`. The identity needs no mass-shell hypothesis: for all `u v z`, `-g (z\u2022u - v) (z\u2022u - v) = z * (-g (u - v) (u - v)) + (1 - z) * (z * g u u - g v v)` (expand: LHS = -(z\u00b2a - zS + b), RHS = -za + zS - zb + (1-z)(za - b) with a = g u u, b = g v v, S = g u v + g v u).",
+   "line": "330"
+  },
+  {
+   "evidence": "Lines 330-336: `hcol` constrains `photon` against `e.k` only; `g e.kPrime e.kPrime` appears in no other hypothesis.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Drop `hk'` from `trueInvariants_Q2_of_collinear_initialState` by stating it with the `-(1 - z) * g e.kPrime e.kPrime` remainder (per the lemma above), keep `hk'` only where exactness genuinely needs it (`electronMethod_x_of_collinear`, `sigmaMethod_x_eq_trueInvariants_x_of_collinear`), and correct the docstring sentence.",
+   "issue": "The module docstring justifies `k'\u00b2 = 0` with \"Exact collinearity of an on-shell photon with a lepton forces the lepton to be massless\". For the ISR statements the photon is collinear with `k` (`hcol : e.photon = (1 - z) \u2022 e.k`, line 331), so only `g k k = 0` is forced; `hk' : g e.kPrime e.kPrime = 0` is an independent masslessness assumption on the outgoing lepton that nothing in the hypotheses implies.",
+   "line": "53"
+  },
+  {
+   "evidence": "Line 295-297 has no hypotheses; `hardKinematics` (line 222) differs between lines only in `k`/`kPrime`, which `photon = 0` collapses.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Prove `hardKinematics_eq_of_photon_eq_zero : e.photon = 0 \u2192 e.hardKinematics l = e.hardKinematics .finalState` once, derive the hadronic Born limit from `hadronicMethod_eq_trueInvariants_finalState`, and prove the other three for a single `l`.",
+   "issue": "`hadronicMethod_eq_trueInvariants_of_photon_eq_zero` is a strict special case of the hypothesis-free `hadronicMethod_eq_trueInvariants_finalState` (line 295): with `photon = 0`, `leptonIn .initialState = e.k - 0 = e.k = leptonIn .finalState`, so `trueInvariants` does not depend on `l` and the Born-limit statement is the unconditional one. All four Born-limit theorems (lines 245, 251, 256, 268) re-run the same `cases l` split instead.",
+   "line": "251"
+  },
+  {
+   "evidence": "Line 164 vs `hadronicMethod_y` at line 147 (`g p (pX - p) / g p k`); the Born-limit proof at line 274 ends in `field_simp`, which consumes `hpk`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Define `x := -g (k - kPrime) (k - kPrime) / (2 * g p (pX - p))` (same function wherever `g p k \u2260 0`, and still \"Q\u00b2_e with y_h\"), then drop `hpk` from the mixed Born-limit theorem \u2014 with `photon = 0` all three components match `trueInvariants` with no hypotheses.",
+   "issue": "`mixedMethod.x` is written `-g (k-k') (k-k') / (2 * g p k * (g p (pX - p) / g p k))`; the `g p k` factors cancel wherever `g p k \u2260 0`, so the only effect of keeping them is a junk value at `g p k = 0`, which forces the extra hypothesis `hpk` in `mixedMethod_eq_trueInvariants_of_photon_eq_zero` (line 269). Unlike `sigmaMethod`, whose `y_\u03a3` has no `p\u00b7k` to cancel, nothing here requires the uncancelled form.",
+   "line": "164"
+  }
+ ],
+ "head_sha": "e7e766a18cde1e5dd03df433415faaef0395f54f",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a6e19f2b297cc0d01d54e5f1d8e5ea1b671ba8c001510e0cba4e122597fbb88f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T121157Z-180-generality-757dac",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T12:11:57Z",
+ "submitted_by": "wdconinc",
+ "summary": "The covariant methods and the collinear statements sit at a reasonable level, but two Q\u00b2 results are the same hypothesis-free algebraic identity proved twice under mass-shell assumptions, the Born-limit group reproves a special case of an unconditional theorem in the same file, and `mixedMethod.x` carries a cancelling `p\u00b7k` factor that forces a spurious hypothesis.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "291c04b8f2e7a93af27f91843e4464737b1a1c882dc69c4628ce31b0c36bd441",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 144833,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 144833,
+  "cache_read_input_tokens": 847177,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 251,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 251,
+    "cache_read_input_tokens": 131495,
+    "input_tokens": 2,
+    "output_tokens": 2122,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24279,
+  "output_tokens_details": {
+   "thinking_tokens": 20618
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

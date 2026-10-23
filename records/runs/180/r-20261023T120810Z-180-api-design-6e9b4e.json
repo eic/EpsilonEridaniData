@@ -1,0 +1,198 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.136184,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 227.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 153624,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 153624,
+    "cache_read_input_tokens": 444268,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5826,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5826,
+      "cache_read_input_tokens": 133877,
+      "input_tokens": 2,
+      "output_tokens": 3967,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15110,
+    "output_tokens_details": {
+     "thinking_tokens": 11730
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 2.136184,
+ "dedupe_key": "eic/EpsilonEridani|180|e7e766a18cde1e5dd03df433415faaef0395f54f|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "cbfe7773ef9f627d7742a236857f341277487575caee66d7a6f607bbfa0dd2e9",
+ "diff_sha256": "cbfe7773ef9f627d7742a236857f341277487575caee66d7a6f607bbfa0dd2e9",
+ "duration_s": 227.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Radiative.lean:156,158,262,313; AccessMethods.lean:119-122 (no restatement lemma for `ySigma`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Add `SigmaMethodData.ySigma_def` in its canonical home (AccessMethods.lean) and restate it here as `sigmaMethod_y_eq : (sigmaMethod g k p kPrime pX).y = g p (pX - p) / (g p (pX - p) + g p kPrime)`; use it in place of the two `rw [SigmaMethodData.ySigma]` steps.",
+   "issue": "`sigmaMethod`'s only characteristic lemma is the `@[simps]`-generated `sigmaMethod_y : ... = SigmaMethodData.ySigma \u27e8pX, kPrime, p\u27e9 g`, which exposes the anonymous-constructor field order of a packaging structure and is not evaluable: grep shows `ySigma` (AccessMethods.lean:119) has no `_def`/`_eq` lemma anywhere, so the only route to its value is unfolding the definition \u2014 which this file does at lines 262 and 313 (`rw [SigmaMethodData.ySigma, ...]`).",
+   "line": 158
+  },
+  {
+   "evidence": "Radiative.lean:156,164; `@[simps]` on both produces only the literal bodies.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Add `mixedMethod_x_eq (hpk : g p k \u2260 0) : (mixedMethod g k p kPrime pX).x = -g (k - kPrime) (k - kPrime) / (2 * g p (pX - p))` and the corresponding `sigmaMethod_x_eq`, so consumers never unfold the definitions.",
+   "issue": "`mixedMethod_x` has normal form `-g (k - kPrime) (k - kPrime) / (2 * g p k * (g p (pX - p) / g p k))`; the `g p k` factors cancel only under `g p k \u2260 0`, and no lemma states the usable form. Same for `sigmaMethod_x` (line 156), whose `2 * g p k * ySigma ...` denominator needs both `hpk` and the lemma of the previous finding.",
+   "line": 164
+  },
+  {
+   "evidence": "Radiative.lean:320-326; roadmap README 1.3 (`shift_first_order`, `shift_doubleAngle_collinearISR`) and 1.4 (`tailSupport_explicit`) are stated over the same collinear configuration.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Make both public, and state the first as `e.leptonIn .initialState = z \u2022 e.k`.",
+   "issue": "`leptonIn_of_collinear` and `pX_sub_p_of_collinear` are `private`, but they are the characterisation of the collinear-ISR configuration (`leptonIn .initialState = z \u2022 k`, `pX - p = z \u2022 k - kPrime`) that every item the PR defers \u2014 the double-angle collinear shift, `shift_first_order`, and 1.4's tail support \u2014 must re-derive. `leptonIn_of_collinear` also does not mention `leptonIn` in its statement despite its name.",
+   "line": 320
+  },
+  {
+   "evidence": "Radiative.lean:80,89 (`@[ext]` on both invariant structures) vs 115 (none); `pX_sub_p` at line 207 determines `pX` from `k, p, kPrime, photon`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Add `@[ext]` to `RadiativeEvent` and, if the generated five-field lemma is the wrong one, supply the four-momentum `ext` lemma derived from `conservation`.",
+   "issue": "`RadiativeEvent` carries no `@[ext]`, unlike `TrueInvariants` and `ReconstructedInvariants` in the same file, so no equality or uniqueness reasoning about events is available to consumers. The data is not free: `pX` is determined by the other four momenta through `conservation` (as `pX_sub_p` shows), so ext on `k, p, kPrime, photon` is derivable.",
+   "line": 115
+  },
+  {
+   "evidence": "roadmap README 1.3 (\"**Definition.** For a method `m`, the `shift` is the map `\u03b4_m : RadiativeEvent \u2192 \u211d \u00d7 \u211d`\") and 2.3 (\"with `\u03a6` the shifted-invariant map of Layer 1 ... taken from 1.3 and not redefined\"); no `shift` declaration exists in the diff.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Export the shift, e.g. `def shift (r : ReconstructedInvariants) (t : TrueInvariants) : \u211d \u00d7 \u211d := (r.x - t.x, r.Q2 - t.Q2)` (plus the `(x, y)` form the PR's caveat relies on), and restate the exactness results as its vanishing.",
+   "issue": "The PR targets 1.3 and is titled after the shift maps, but exports no `shift`: every result is an equation between a method's output and `trueInvariants`. Layer 2.3 requires the shift map to be \"taken from 1.3 and not redefined\", so the next layer has nothing to import.",
+   "line": 0
+  }
+ ],
+ "head_sha": "e7e766a18cde1e5dd03df433415faaef0395f54f",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "048a4049c324e18fbc0704141a56652bfb103a5c5bd7d235b814df00b0eef153",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T120810Z-180-api-design-6e9b4e",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T12:08:10Z",
+ "submitted_by": "wdconinc",
+ "summary": "The reconstruction methods are exported without the lemmas that characterise them: the Sigma method's surface leaks `SigmaMethodData` packaging with no `ySigma` restatement (the file unfolds the definition twice itself), and the mixed/Sigma `x` normal forms cannot be simplified without an unstated `p\u00b7k \u2260 0` lemma. The collinear-ISR characterisation that the deferred Layer 1.2\u20131.3 results need is `private`, and `RadiativeEvent` carries no `@[ext]`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "96ece67d4f6531e44edf90c9cc1ed10f9072dcc4a32bc28761a3323e29e69bda",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 153624,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 153624,
+  "cache_read_input_tokens": 444268,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5826,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5826,
+    "cache_read_input_tokens": 133877,
+    "input_tokens": 2,
+    "output_tokens": 3967,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15110,
+  "output_tokens_details": {
+   "thinking_tokens": 11730
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
