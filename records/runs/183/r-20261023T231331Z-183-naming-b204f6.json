@@ -1,0 +1,215 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.7713075000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 246.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 176952,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 176952,
+    "cache_read_input_tokens": 1042425,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4374,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4374,
+      "cache_read_input_tokens": 140753,
+      "input_tokens": 2,
+      "output_tokens": 2012,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19219,
+    "output_tokens_details": {
+     "thinking_tokens": 15029
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "53264f1eb6514941bc81e80d2077947441cad972",
+ "cost_usd": 2.771308,
+ "dedupe_key": "eic/EpsilonEridani|183|c83a1c9a1480b6b27483d7c0abfc9eec2aa5d19e|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "714e31ca4e182c760a76dd184398900969abe95f64cff873e2adc690071c32ac",
+ "diff_sha256": "714e31ca4e182c760a76dd184398900969abe95f64cff873e2adc690071c32ac",
+ "duration_s": 246.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Same file: `transverseProj_nPlus_eq_zero` (225), `transverseProj_nMinus_eq_zero` (229), `plus_nMinus_eq_zero` (145), `minus_nPlus_eq_zero` (149), `plus_transverseProj_eq_zero` (203). The parents are `AlternatingMap.bilinMap_apply_left_eq_zero` / `bilinMap_apply_right_eq_zero` (EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean:70,76), invoked verbatim in these proofs.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "fix": "Append `_eq_zero`: `transverseEps_nPlus_left_eq_zero`, \u2026, `transverseEpsLin_nPlus_eq_zero`, `transverseEpsLin_nMinus_eq_zero`.",
+   "issue": "`transverseEps_nPlus_left` (361), `transverseEps_nMinus_left` (365), `transverseEps_nPlus_right` (369), `transverseEps_nMinus_right` (373), `transverseEpsLin_nPlus` (426) and `transverseEpsLin_nMinus` (430) all conclude `= 0` but name only the LHS, contradicting the file's own convention and the parent lemmas they specialise.",
+   "line": 361
+  },
+  {
+   "evidence": "Adjacent Minkowski specialisations in the same namespace all mark themselves: `minkowskiAxis_plus_apply` (145), `mem_transverse_minkowskiAxis_iff` (160), `finrank_transverse_minkowskiProduct_add_one_eq` (169), `finrank_transverse_minkowskiProduct_eq_two` (178).",
+   "file": "EpsilonEridani/Relativity/LightConeBasis.lean",
+   "fix": "Carry the specialisation marker the neighbouring lemmas use, e.g. `transverseEpsLin_minkowskiProduct_apply`, `transverseEpsLin_minkowskiProduct_comp_self`.",
+   "issue": "`transverseEpsLin_apply` (195), `transverseEpsLin_transverseEpsLin` (227) and `transverseEpsLin_comp_self` (240) live in the same `LinearMap.BilinForm.LightConeBasis` namespace as the general theory but hold only for `minkowskiProduct (d := 3)`. `transverseEpsLin_apply` in particular is the natural name for the generic evaluation lemma of the definition at BilinearForm/LightConeBasis.lean:402, and now claims it.",
+   "line": 195
+  },
+  {
+   "evidence": "`transverseEpsLin_volumeForm_eq_volumeFormRaise` (Relativity/LightConeBasis.lean:204): `L.transverseEpsLin volumeForm \u2026 u = volumeFormRaise L.nPlus L.nMinus u`; both docstrings describe \"the second index raised\".",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/VolumeForm.lean",
+   "fix": "Pick one suffix for index raising and use it in both places (e.g. `transverseEpsRaise`, keeping `volumeFormRaise`).",
+   "issue": "Two suffixes for one notion: `volumeFormRaise` (VolumeForm.lean:167) and `transverseEpsLin` (BilinearForm/LightConeBasis.lean:402) both name the index-raised contraction, and the PR proves they are the same object.",
+   "line": 167
+  },
+  {
+   "evidence": "Bases live in the namespace of their space upstream (`EuclideanSpace.basisFun`, `Pi.basisFun`); the sibling file EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean:96 opens `namespace Lorentz.Vector` for its Lorentz-vector declarations rather than root `EpsilonEridani`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/VolumeForm.lean",
+   "fix": "Name it for its space, e.g. `Lorentz.Vector.basisFin4` (as the sibling file does for Lorentz-vector material) or `minkowskiBasisFin4`.",
+   "issue": "`EpsilonEridani.basisFin4` is an unqualified root-namespace name that does not say what it is a basis of; it is specifically the standard basis of `Lorentz.Vector 3`.",
+   "line": 79
+  }
+ ],
+ "head_sha": "c83a1c9a1480b6b27483d7c0abfc9eec2aa5d19e",
+ "merge_base_sha": "53264f1eb6514941bc81e80d2077947441cad972",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 183,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "20cf4b0f09c75260ffb97c47b45377a1240e8efd9a549e3c081eb0786460630b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261023T231331Z-183-naming-b204f6",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T23:13:31Z",
+ "submitted_by": "wdconinc",
+ "summary": "Six new lemmas concluding `= 0` drop the `_eq_zero` suffix that the surrounding declarations and their own parent lemmas use, and three Minkowski-only lemmas in the shared `LightConeBasis` namespace are named as if they held for any bilinear form. Also a split convention (`Lin` vs `Raise`) for the same index-raising operation.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/VolumeForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LightConeBasis.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b2745b07d4f1bca7736762d7c32b59bac37c23adae49ee25945313b5e1fa2ea8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 176952,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 176952,
+  "cache_read_input_tokens": 1042425,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4374,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4374,
+    "cache_read_input_tokens": 140753,
+    "input_tokens": 2,
+    "output_tokens": 2012,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19219,
+  "output_tokens_details": {
+   "thinking_tokens": 15029
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
