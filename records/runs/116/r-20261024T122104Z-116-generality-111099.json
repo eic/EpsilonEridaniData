@@ -1,0 +1,191 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0964769999999993,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 146.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 140397,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 140397,
+    "cache_read_input_tokens": 866314,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4117,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4117,
+      "cache_read_input_tokens": 116607,
+      "input_tokens": 2,
+      "output_tokens": 4117,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10370,
+    "output_tokens_details": {
+     "thinking_tokens": 6949
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.096477,
+ "dedupe_key": "eic/EpsilonEridani|116|910ccb1e61bd2d2055230b1d32c65d3e37baf323|generality|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "ae506bbab513c0582ce596817b3f31bc84194c55419d1b38e6e747654ba0c9d4",
+ "diff_sha256": "ae506bbab513c0582ce596817b3f31bc84194c55419d1b38e6e747654ba0c9d4",
+ "duration_s": 146.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:373 \u2014 `hq : Continuous fun S : Matrix \u03b9 \u03b9 \u211d => c \u2b1d\u1d65 S *\u1d65 c` is `continuous_const.dotProduct (continuous_id.matrix_mulVec continuous_const)`; the same term proves continuity of `fun S => c \u2b1d\u1d65 S *\u1d65 c'` with a second constant, never using that the two vectors coincide.",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "State `HasContinuumLimit.tendsto_covarianceForm (h) (c c' : \u03b9 \u2192 \u211d) : Tendsto (fun a => (F a).covarianceForm c c') (\ud835\udcdd[>] 0) (\ud835\udcdd (D.covarianceForm c c'))` and derive `tendsto_variance` from it at `c' = c`.",
+   "issue": "`HasContinuumLimit.tendsto_variance` states only the diagonal of the bilinear convergence; its proof is already general. Every other variance lemma in the file is derived from a `covarianceForm` lemma (comp_variance from comp_covarianceForm, IsNoiseModel.variance_dotProduct from covariance_dotProduct), so \u00a75.5(iii)'s combined covariance has no convergence lemma.",
+   "line": 370
+  },
+  {
+   "evidence": "Basic.lean:363-364 \u2014 `have hc' : D.covarianceForm c c' = 0 := by rw [covarianceForm_comm, covarianceForm_def, D.mem_determinedSubspace.1 hc, dotProduct_zero]`; the proof is two rewrites and holds for arbitrary `c'`.",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Promote it to `covarianceForm_eq_zero_of_mem_determinedSubspace (hc : c \u2208 D.determinedSubspace) (c' : \u03b9 \u2192 \u211d) : D.covarianceForm c c' = 0` and keep the current theorem as its corollary.",
+   "issue": "The general fact `c \u2208 D.determinedSubspace \u2192 D.covarianceForm c c' = 0` (an exactly determined functional is uncorrelated with every functional) is buried as a `have` inside `variance_add_of_mem_determinedSubspace`, which only exposes the variance corollary.",
+   "line": 363
+  }
+ ],
+ "head_sha": "910ccb1e61bd2d2055230b1d32c65d3e37baf323",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 116,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "1cb7e09f2d276f17e0cf5bcdd4214b37f018f6044ce9305743fd12553910b190",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261024T122104Z-116-generality-111099",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-24T12:21:04Z",
+ "submitted_by": "wdconinc",
+ "summary": "Both prior findings are resolved or withdrawn. What remains: the PR establishes `covarianceForm` as its bilinear primitive and derives `variance` from it everywhere except two places, where only the quadratic diagonal is stated although the given proof is already the bilinear one.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/Extend.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Moments/Covariance.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Matrix/Order.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8e6bdb93ce82bcc0899c10d34fd9f01b2345f970b9303f704a7184eb058f9e4c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 140397,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 140397,
+  "cache_read_input_tokens": 866314,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4117,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4117,
+    "cache_read_input_tokens": 116607,
+    "input_tokens": 2,
+    "output_tokens": 4117,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10370,
+  "output_tokens_details": {
+   "thinking_tokens": 6949
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
