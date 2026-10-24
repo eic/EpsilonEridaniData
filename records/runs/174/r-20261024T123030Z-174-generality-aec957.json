@@ -1,0 +1,157 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.817518,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 112.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 148955,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 148955,
+    "cache_read_input_tokens": 241906,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3504,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3504,
+      "cache_read_input_tokens": 122427,
+      "input_tokens": 2,
+      "output_tokens": 4746,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8279,
+    "output_tokens_details": {
+     "thinking_tokens": 5362
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "cost_usd": 1.817518,
+ "dedupe_key": "eic/EpsilonEridani|174|f15b0f3bd81e8a4a5cd9b2fcbf0acbcc9dfe152c|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "f404b21f729fda70d58c0f71332581473df961d31a9f24957bc3b966dbcb7b25",
+ "diff_sha256": "f404b21f729fda70d58c0f71332581473df961d31a9f24957bc3b966dbcb7b25",
+ "duration_s": 112.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`besselK_nonneg (\u03bd x : \u211d) : 0 \u2264 besselK \u03bd x` at Basic.lean:156; old statement `neg_log_mul_exp_neg_one_le_besselK (\u03bd : \u211d) {x : \u211d} (hx : 0 < x)` in the diff used `rcases le_or_gt 1 x`. Both call sites now need `Ioc_mem_nhdsGT (by norm_num : (0:\u211d) < 1)` (Basic.lean:495, Basic.lean:512).",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "fix": "Drop `hx1` and open the proof with `rcases le_or_gt 1 x with h1 | h1`, closing the first branch with `besselK_nonneg \u03bd x` (as the old lemma did); then remove the `Ioc_mem_nhdsGT` factors at lines 495 and 512.",
+   "issue": "`neg_log_sub_one_le_besselK` assumes `hx1 : x \u2264 1`, but the bound holds for every `x > 0`: for `1 < x`, `-log x - 1 < -1 < 0 \u2264 besselK \u03bd x`. The deleted `neg_log_mul_exp_neg_one_le_besselK` covered all `x > 0`, so this narrows the API it replaces.",
+   "line": "406"
+  },
+  {
+   "evidence": "`besselK_add_one_sub_besselK_sub_one (\u03bd : \u211d) {x : \u211d} (hx : 0 < x)` at Basic.lean:174 and `hasDerivAt_besselK (\u03bd : \u211d) {x : \u211d} (hx : 0 < x)` at Basic.lean:244 are both for arbitrary real `\u03bd`; eliminating `K_{\u03bd+1}` between them gives `-(K_{\u03bd-1}+K_{\u03bd+1})/2 = -K_{\u03bd-1} - (\u03bd/x)K_\u03bd`. Roadmap convention 11 asks for order-indexed family statements (roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md:175-180).",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "fix": "State `theorem hasDerivAt_besselK_sub_one (\u03bd : \u211d) {x : \u211d} (hx : 0 < x) : HasDerivAt (besselK \u03bd) (-besselK (\u03bd - 1) x - \u03bd / x * besselK \u03bd x) x` from `hasDerivAt_besselK \u03bd hx` and `besselK_add_one_sub_besselK_sub_one \u03bd hx` (the deriv goal is `linear_combination (-1/2) * h`), and derive `hasDerivAt_besselK_one` (and `hasDerivAt_besselK_zero`) from it.",
+   "issue": "`hasDerivAt_besselK_one` states only the `\u03bd = 1` case of DLMF 10.29.2, although both ingredients are already general in `\u03bd`; the general statement `K_\u03bd' = -K_{\u03bd-1} - (\u03bd/x) K_\u03bd` is the same proof with `\u03bd` in place of the numerals, and has the \u03bd = 0 and \u03bd = 1 relations as immediate corollaries.",
+   "line": "288"
+  }
+ ],
+ "head_sha": "f15b0f3bd81e8a4a5cd9b2fcbf0acbcc9dfe152c",
+ "merge_base_sha": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 174,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a9f35b0b34b3d964033125561715a233aa13bce1b1bc7fe9709caa8919327f9d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261024T123030Z-174-generality-aec957",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-24T12:30:30Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two generality defects in the BesselK file: a removable `x \u2264 1` hypothesis on the new logarithmic lower bound (narrowing the lemma it replaces), and the derivative relation stated only at \u03bd = 1 although its two inputs are already general in \u03bd. The flux file itself sits at the right level.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c8debc96b9c31737dd451ebbfdfe85226f1682a29570c8a3157205d6608cc085",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 148955,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 148955,
+  "cache_read_input_tokens": 241906,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3504,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3504,
+    "cache_read_input_tokens": 122427,
+    "input_tokens": 2,
+    "output_tokens": 4746,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8279,
+  "output_tokens_details": {
+   "thinking_tokens": 5362
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
