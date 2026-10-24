@@ -1,0 +1,152 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.81442,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 197.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 134506,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 134506,
+    "cache_read_input_tokens": 214590,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 9049,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 9049,
+      "cache_read_input_tokens": 106257,
+      "input_tokens": 2,
+      "output_tokens": 1622,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14481,
+    "output_tokens_details": {
+     "thinking_tokens": 12372
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 1.81442,
+ "dedupe_key": "eic/EpsilonEridani|180|7ca61ef3c4a646c9f29d2aca3d7b46ccc80b2dd6|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c27588adc7db9caf3a458b6f761293f7c00e1ec789f37fedbf7ddf0d446a7efd",
+ "diff_sha256": "c27588adc7db9caf3a458b6f761293f7c00e1ec789f37fedbf7ddf0d446a7efd",
+ "duration_s": 197.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "AccessMethods.lean:80-85 `yElectron := 1 - d.finalEnergy / d.initialEnergy`, `xBjElectron := q2Electron / (2 * M_p * initialEnergy * yElectron)`; Basic.lean:56-61 `xBj := Q2 / (2 * g p q)`, `yInel := g p q / g p k`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "Replace \"collider-frame form\" with \"target-rest-frame (fixed-target) form\" at all three sites, and at line 166 list the inputs correctly: beam energy, scattered energy, scattering angle *and the target mass* `M_p` (`xBjElectron` takes `M_p`).",
+   "issue": "\"`ElectronMethodData` is the collider-frame form of `electronMethod`\" is inaccurate. `yElectron = 1 - E'/E` (line 81) and `xBjElectron = Q\u00b2/(2 M_p E y)` (line 85) are target-rest-frame (fixed-target) formulas: `x = Q\u00b2/(2 p\u00b7q)` reduces to `Q\u00b2/(2 M_p E y)` only for `p = (M_p, 0)`, and the HERA collider-frame electron-method inelasticity is `1 - (E'/2E)(1 - cos \u03b8)`, not `1 - E'/E`. Same wording repeated at lines 58-60 and 165-167.",
+   "line": 28
+  },
+  {
+   "evidence": "Radiative.lean:405-411 `trueInvariants_Q2_of_collinear_initialState : (e.trueInvariants g .initialState).Q2 = z * (electronMethod g e.k e.p e.kPrime).Q2 - (1 - z) * g e.kPrime e.kPrime`; the shift lemma proved is `shiftXY`, not `shiftXQ2` (Radiative.lean:492-497).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "Qualify the header sentence to the non-radiative case and add one sentence to the `sigmaMethod` docstring: its `Q\u00b2` is the electron-method one and is shifted by initial-state radiation, see `RadiativeEvent.trueInvariants_Q2_of_collinear_initialState` / `shiftXY_sigmaMethod_eq_zero_of_collinear_initialState`.",
+   "issue": "The module header states without qualification that \"the Sigma method needs no Q\u00b2 of its own, since the lepton momentum transfer gives the canonical `DisKinematics.Q2` directly\", and `sigmaMethod`'s docstring (lines 183-187) likewise presents `Q\u00b2_e` as its virtuality with no caveat. This PR proves in the same import tree that under initial-state radiation the lepton transfer is not the hadronic transfer: `Q\u00b2 = z Q\u00b2_e - (1 - z) k'\u00b2`, so the Sigma method is exact only in `(x, y)`.",
+   "line": 16
+  }
+ ],
+ "head_sha": "7ca61ef3c4a646c9f29d2aca3d7b46ccc80b2dd6",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f98671264f729829774a2224ea81bc69e8b621003b4e1cf56e4510afccdd2b81",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261024T131456Z-180-documentation-d20cc6",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-24T13:14:56Z",
+ "submitted_by": "wdconinc",
+ "summary": "Radiative.lean's documentation is accurate and well scoped, but the new text in AccessMethods.lean misidentifies `ElectronMethodData` as the \"collider-frame form\" of `electronMethod` (its `y` and `x` formulas are target-rest-frame expressions) in three places, and the module header's unqualified claim that the lepton momentum transfer gives the canonical `Q2` is now contradicted by the radiative results this PR proves.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "be5a0ba6cbb748b424d9b031167f365cb8ac3eecb4aea67d7f721700aaa3ef59",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 134506,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 134506,
+  "cache_read_input_tokens": 214590,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 9049,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 9049,
+    "cache_read_input_tokens": 106257,
+    "input_tokens": 2,
+    "output_tokens": 1622,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14481,
+  "output_tokens_details": {
+   "thinking_tokens": 12372
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

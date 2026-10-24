@@ -1,0 +1,178 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8279865000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 176.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 134420,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 134420,
+    "cache_read_input_tokens": 328273,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1495,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1495,
+      "cache_read_input_tokens": 113640,
+      "input_tokens": 2,
+      "output_tokens": 2842,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12784,
+    "output_tokens_details": {
+     "thinking_tokens": 9291
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 1.827987,
+ "dedupe_key": "eic/EpsilonEridani|180|7ca61ef3c4a646c9f29d2aca3d7b46ccc80b2dd6|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c27588adc7db9caf3a458b6f761293f7c00e1ec789f37fedbf7ddf0d446a7efd",
+ "diff_sha256": "c27588adc7db9caf3a458b6f761293f7c00e1ec789f37fedbf7ddf0d446a7efd",
+ "duration_s": 176.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`hardKinematics` (212-218) has field `q := e.pX - e.p`; `DisKinematics.Q2 g K = -g K.q K.q` (Basic.lean:52-53) and `hadronicMethod ... |>.Q2 = -g (pX - p) (pX - p)` (AccessMethods.lean:180) \u2014 the two sides coincide only by delta/iota on these four definitions.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Replace each `rfl` with an explicit chain through the available `@[simps]` lemmas, e.g. `simp [hadronicMethod_Q2, trueInvariants_Q2, DisKinematics.Q2, hardKinematics_q]`, so the proof names the momentum-transfer identity it rests on.",
+   "issue": "`hadronicMethod_Q2_eq_trueInvariants_Q2` (251) and `hadronicMethod_x_eq_trueInvariants_x` (256) \u2014 the PR's central claim that the hadronic method recovers x and Q\u00b2 whichever line radiates \u2014 are proved by bare `rfl`, with no comment. They hold only because `hardKinematics` sets `q := e.pX - e.p` literally; had it been defined as `q := e.leptonIn l - e.leptonOut l` (equally natural, and what `hq` asserts) the proofs would break and the real content, `leptonIn_sub_leptonOut`, would be needed. The reader cannot see why they are true.",
+   "line": 251
+  },
+  {
+   "evidence": "All six `@[simps]`-generated projection lemmas exist (`trueInvariants` 222, `hardKinematics` 211, `sigmaMethod` AccessMethods.lean:188) and are already used elsewhere in the file, e.g. lines 332-333 and 483; the `rfl` sites bypass them.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Prove each by rewriting with the generated projection lemmas (`trueInvariants_Q2`, `hardKinematics_q`, `hardKinematics_p`, `hardKinematics_kPrime`, `leptonOut_initialState`, `ySigma`) plus the definition being unfolded, rather than by `rfl`.",
+   "issue": "Same undocumented cross-wrapper defeq in the other `rfl` proofs: `trueInvariants_Q2_eq` (231), `trueInvariants_x_eq` (236), `trueInvariants_y_eq` (242) each unfold `trueInvariants` \u2192 `hardKinematics` \u2192 `DisKinematics.Q2/xBj/yInel`; `hadronicMethod_eq_trueInvariants_finalState`'s third component (273); the `rfl rfl` arguments at 295-296 standing for `(e.hardKinematics .initialState).p = e.p` and `.kPrime = e.kPrime`; `mixedMethod_eq_trueInvariants_of_photon_eq_zero`'s trailing `rfl` (367); and `sigmaMethod_y_eq` (AccessMethods.lean:208), which unfolds `ySigma` applied to an anonymous constructor.",
+   "line": 229
+  },
+  {
+   "evidence": "Lines 449-451 and 484-485 contain the identical rewrite sequence.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Factor `trueInvariants_x_of_collinear_initialState : (e.trueInvariants g .initialState).x = z * (electronMethod g e.k e.p e.kPrime).Q2 / (2 * (z * g e.p e.k - g e.p e.kPrime))` (under `hk`, `hk'`, `hcol`) and use it in both proofs.",
+   "issue": "`electronMethod_x_of_collinear_initialState` (448-452) and `sigmaMethod_x_eq_trueInvariants_x_of_collinear_initialState` (483-486) repeat the same four-step expansion of the true `x` into measured quantities (`trueInvariants_x_eq`, `trueInvariants_Q2_of_collinear_initialState`, `hk'`, `apply_pX_sub_p_of_collinear_initialState`) before diverging. That expansion is itself a statement worth having.",
+   "line": 448
+  },
+  {
+   "evidence": "Line 158 `private theorem neg_apply_smul_sub`, used at 409 and 521; line 396 `private theorem trueInvariants_y_of_collinear_initialState`, used at 399, 428, 440, 451, 486.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Drop `private` from `neg_apply_smul_sub` (ideally stating it in `Kinematics/Basic.lean` beside the other `Bilin` lemmas) and from `trueInvariants_y_of_collinear_initialState`.",
+   "issue": "`neg_apply_smul_sub` is `private`, yet it is a general bilinear-form identity with no DIS content, already used twice (409 for ISR, 521 for FSR), and the follow-up work the description lists (collinear FSR variants, `shift_first_order`, the peaking approximation) will need it again. `trueInvariants_y_of_collinear_initialState` (396) is likewise `private` although it states a result about the public API \u2014 the true inelasticity after collinear ISR in measured quantities \u2014 that downstream shift lemmas will want.",
+   "line": 158
+  },
+  {
+   "evidence": "Lines 444-447: comment \"in the orientation `field_simp` normalises products to\" followed by `rw [mul_comm]`; the same quantity appears as `z * g e.p e.k - g e.p e.kPrime` at 393 and 398.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "State `hzk` in the natural order (`z * g e.p e.k - g e.p e.kPrime \u2260 0`) and pass it explicitly, `field_simp [hzk]`, or discharge the side condition with `sub_ne_zero` so the orientation does not matter.",
+   "issue": "`hzk` is deliberately stated as `g e.p e.k * z - g e.p e.kPrime \u2260 0` \u2014 the factor order reversed from every other occurrence in the file \u2014 solely so that `field_simp` at line 457 picks it up. The comment is honest, but the proof now depends on `field_simp`'s internal normalisation order, which is not a stable interface.",
+   "line": 445
+  }
+ ],
+ "head_sha": "7ca61ef3c4a646c9f29d2aca3d7b46ccc80b2dd6",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "43e514b7a3b390ab7965dea6b955ffff73d466dbb036b55b893eedd9b97a0c8f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261024T131813Z-180-proof-quality-5ba6a0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-24T13:18:13Z",
+ "submitted_by": "wdconinc",
+ "summary": "The headline exactness results for the hadronic method and the defining equations for the true invariants are proved by bare `rfl` across the `ReconstructedInvariants`/`DisKinematics` wrappers, which hides their actual content and depends on an incidental choice in `hardKinematics`. Minor issues: a reusable bilinear identity and the ISR inelasticity relation are `private`, and one hypothesis is phrased to match `field_simp`'s internal normalisation order.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a512f4a97655af330b5f9c0bd53f42bac50c491a6aa2825ff2b3fb2940639770",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 134420,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 134420,
+  "cache_read_input_tokens": 328273,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1495,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1495,
+    "cache_read_input_tokens": 113640,
+    "input_tokens": 2,
+    "output_tokens": 2842,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12784,
+  "output_tokens_details": {
+   "thinking_tokens": 9291
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

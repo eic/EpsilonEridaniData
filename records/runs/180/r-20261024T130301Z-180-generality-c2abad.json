@@ -1,0 +1,192 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5617015000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 285.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 168142,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 168142,
+    "cache_read_input_tokens": 717703,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5137,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5137,
+      "cache_read_input_tokens": 143977,
+      "input_tokens": 2,
+      "output_tokens": 3397,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20854,
+    "output_tokens_details": {
+     "thinking_tokens": 17401
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 2.561702,
+ "dedupe_key": "eic/EpsilonEridani|180|7ca61ef3c4a646c9f29d2aca3d7b46ccc80b2dd6|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c27588adc7db9caf3a458b6f761293f7c00e1ec789f37fedbf7ddf0d446a7efd",
+ "diff_sha256": "c27588adc7db9caf3a458b6f761293f7c00e1ec789f37fedbf7ddf0d446a7efd",
+ "duration_s": 285.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "AccessMethods.lean:169-172 vs 178-181; the two field lists differ only by the substitution of `q`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "Introduce one definition, e.g. `invariantsOfTransfer (g : Bilin V) (p k q : V) : ReconstructedInvariants` with those three fields (or reuse `DisKinematics.xBj/Q2/yInel`), define `electronMethod g k p kPrime := invariantsOfTransfer g p k (k - kPrime)` and `hadronicMethod g k p pX := invariantsOfTransfer g p k (pX - p)` (both `rfl`), and state `x = Q2 / (2 * g p q)` and `x = Q2 / (2 * g p k * y)` once there. Each method keeps exactly the arguments it measures, as roadmap 1.2 requires.",
+   "issue": "`electronMethod g k p kPrime` (169-172) and `hadronicMethod g k p pX` (178-181) have identical bodies with `q := k - kPrime` resp. `q := pX - p`: `x = -g q q / (2 * g p q)`, `Q2 = -g q q`, `y = g p q / g p k`. The general result (the invariants of a transfer `q`) is never stated, so every relation among `x`, `Q2`, `y` has to be reproved per method; the PR already shows this gap \u2014 `electronMethod_disKinematics` (line 228) exists but has no hadronic analogue even though the hadronic method is the same map.",
+   "line": 169
+  },
+  {
+   "evidence": "`grep -r 'ElectronMethodData\\|q2Electron\\|xBjElectron\\|yElectron'` over `code/` matches only `Kinematics/AccessMethods.lean` and `Kinematics/Radiative.lean` (the latter only via the covariant `electronMethod`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "Either prove the reduction (`electronMethod_lab_formula`: specialise `electronMethod` in a concrete collider frame and recover `q2Electron`, `yElectron`, `xBjElectron`), or delete `ElectronMethodData` and its lemmas, which have no in-repository use and are superseded by the covariant definition.",
+   "issue": "`ElectronMethodData` with `q2Electron`/`yElectron`/`xBjElectron` is the collider-frame special case of the new covariant `electronMethod`, in the same module, with no proved reduction (the docstrings at 56-60 and 163-167 say so) and no user anywhere in the repo. Roadmap convention 2 and \u00a71.2 (`electronMethod_lab_formula`) put the lab formulae at the level of lemmas about the covariant definition; as it stands the PR leaves two unrelated electron methods and nothing forces them to agree. Note the PR did the right thing for Sigma: `sigmaMethod` is built on `SigmaMethodData.ySigma`.",
+   "line": 61
+  },
+  {
+   "evidence": "Radiative.lean:158-162 `neg_apply_smul_sub` is proved by `ring` with no hypotheses and its docstring says it \"holds without any mass-shell condition on `u` or `v`\"; Radiative.lean:409-411 then discards the `z * g e.k e.k` term via `hk`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "State the hypothesis-free form `(e.trueInvariants g .initialState).Q2 = z * (electronMethod g e.k e.p e.kPrime).Q2 + (1 - z) * (z * g e.k e.k - g e.kPrime e.kPrime)` and derive the current `hk = 0` version as a one-line corollary for the downstream users (`trueInvariants_Q2_lt_...`, `electronMethod_x_of_...`, `sigmaMethod_x_eq_...`), which do need `hk`.",
+   "issue": "`trueInvariants_Q2_of_collinear_initialState` assumes `hk : g e.k e.k = 0`, but the identity holds with no mass-shell hypothesis at all: applying the module's own `neg_apply_smul_sub` with `u = k`, `v = k'` to `pX - p = z \u2022 k - k'` gives `Q\u00b2 = z * Q\u00b2_e + (1 - z) * (z * g k k - g k' k')`. This contradicts roadmap convention 9 (\"The lepton mass is kept nonzero throughout\") and the module docstring's own stated style (lines 61-63: the other lepton's mass \"appears as an explicit remainder\"), which the FSR counterpart at line 507 follows by keeping `g e.k e.k` as a remainder.",
+   "line": 405
+  }
+ ],
+ "head_sha": "7ca61ef3c4a646c9f29d2aca3d7b46ccc80b2dd6",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a70d30c8d8845fddba90d6e359cb4771292bc6b304e50bdc40c3c216a34bcf73",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261024T130301Z-180-generality-c2abad",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-24T13:03:01Z",
+ "submitted_by": "wdconinc",
+ "summary": "The covariant methods and the collinear shift theorems sit at a reasonable level, but `electronMethod` and `hadronicMethod` are the same function duplicated, the new covariant electron method leaves the pre-existing frame-specific `ElectronMethodData` as an unreconciled second electron method, and the ISR virtuality theorem assumes a masslessness it does not need.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e3dfba18d75ce281f1833963bc6f0bda202bf61643ce9018b70445a58f48a93b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 168142,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 168142,
+  "cache_read_input_tokens": 717703,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5137,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5137,
+    "cache_read_input_tokens": 143977,
+    "input_tokens": 2,
+    "output_tokens": 3397,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20854,
+  "output_tokens_details": {
+   "thinking_tokens": 17401
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
