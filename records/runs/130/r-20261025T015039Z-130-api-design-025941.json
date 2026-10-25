@@ -1,0 +1,227 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2360245,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 300.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 114772,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 114772,
+    "cache_read_input_tokens": 991665,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4362,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4362,
+      "cache_read_input_tokens": 99196,
+      "input_tokens": 2,
+      "output_tokens": 4594,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23256,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "cost_usd": 2.236025,
+ "dedupe_key": "eic/EpsilonEridani|130|f59a7677fa6a285981b7da2f833d719234c1bb66|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "cb3c1f5b8fa22e4ea73f231c8b1d8241d09738a0488b5e54a4eafde1858427a2",
+ "diff_sha256": "cb3c1f5b8fa22e4ea73f231c8b1d8241d09738a0488b5e54a4eafde1858427a2",
+ "duration_s": 300.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `wickRotation` in ./code returns only the def and the three lemmas at Basic.lean:219-242; the def's docstring (Basic.lean:216-218) and Uniqueness.lean:52-57 both assert the real-points/Euclidean-section correspondence, which `wickRotation_ofReal` states only pointwise.",
+   "file": "EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "fix": "Add the section-level lemma, e.g. `wickRotation \u207b\u00b9' (euclideanSection d) = minkowskiSection d` (or the image/`Submodule.map` form) plus `wickRotation_symm_apply_inl`/`_inr` as `@[simp]`.",
+   "issue": "`wickRotation` is exposed with forward component lemmas only (`wickRotation_apply_inl/_inr`, `wickRotation_ofReal`). The structural property both new module docstrings invoke to justify it \u2014 that it matches the real points (`minkowskiSection`, i.e. `mem_minkowskiSection_iff`) with `euclideanSection`, making the latter maximal totally real \u2014 is stated nowhere, and `wickRotation.symm` has no component API, so a consumer transporting a domain along the rotation (as `Uniqueness.lean:81-92` does) must unfold the definition.",
+   "line": 219
+  },
+  {
+   "evidence": "Uniqueness.lean:121-133: `let w := v - v.timeComponent \u2022 basis (Sum.inl 0)`, `hwE`, `hw0`, `hw` are all local `have`s consumed only by the final `exact`.",
+   "file": "EpsilonEridani/QFT/Lattice/Continuation/Uniqueness.lean",
+   "fix": "Extract it as a public lemma (next to `ofMinkowski_mem_euclideanSection_iff` in `Continuation/Basic.lean`, or above the theorem in this file), e.g. `causalCharacter (v - v.timeComponent \u2022 basis (Sum.inl 0)) = .spaceLike \u2227 ofMinkowski (v - v.timeComponent \u2022 basis (Sum.inl 0)) \u2208 euclideanSection d` for spacelike `v`, and use it here.",
+   "issue": "The fact that the equal-time projection `v - v.timeComponent \u2022 basis (Sum.inl 0)` of a spacelike `v` is again spacelike and lands on the Euclidean section is derived inline (lines 123-132). It is the only way to discharge the `hne` hypothesis of `eqOn_of_eqOn_euclideanSection` from spacelike coverage, is independent of the analyticity argument, and Layer 0.3/0.4 (spacelike points vs. the Euclidean section) will need it; no consumer can get it from the public surface.",
+   "line": 123
+  }
+ ],
+ "head_sha": "f59a7677fa6a285981b7da2f833d719234c1bb66",
+ "merge_base_sha": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 130,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2f4e93b6e0d2d60b807856d22e0849a9f7979edc08f43dc8f29b87646957fc5c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261025T015039Z-130-api-design-025941",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-25T01:50:39Z",
+ "submitted_by": "veprbl",
+ "summary": "The exposed surface is minimal and free of compatibility artifacts, and the general identity theorem is correctly public in the AnalyticOnNhd namespace. Two gaps: wickRotation's only structural property (that it matches the real points with the Euclidean section) exists in no lemma, and the reusable equal-time-projection fact is buried inside a proof body.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Uniqueness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality/TimeLike.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "bbc86381ee308a4f4ab6f124b868c35e863de7ec7f014e6c47c98c59e1a7d05d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 114772,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 114772,
+  "cache_read_input_tokens": 991665,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4362,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4362,
+    "cache_read_input_tokens": 99196,
+    "input_tokens": 2,
+    "output_tokens": 4594,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23256,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
