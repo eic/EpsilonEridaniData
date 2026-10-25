@@ -1,0 +1,194 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7253175,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 219.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 97371,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 97371,
+    "cache_read_input_tokens": 617221,
+    "inference_geo": "global",
+    "input_tokens": 21,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 353,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 353,
+      "cache_read_input_tokens": 85888,
+      "input_tokens": 2,
+      "output_tokens": 3170,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17275,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "cost_usd": 1.725318,
+ "dedupe_key": "eic/EpsilonEridani|175|b1a6d525becdd497cb6cc9ac48778676821de49c|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "88b9bc8edc2d3fb251a7c56f7b56f568c124cb7d2a199b53cad9be9c2229547a",
+ "diff_sha256": "88b9bc8edc2d3fb251a7c56f7b56f568c124cb7d2a199b53cad9be9c2229547a",
+ "duration_s": 219.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Couplings.lean:103,108 carry `@[simp]`; lines 112-124 have no attribute; `Parameters.lean:64,68` (`gL_def`, `gR_def`) are plain theorems, so nothing else rewrites `.gL`/`.gR`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Couplings.lean",
+   "fix": "Tag both `ofQuantumNumbers_gL` and `ofQuantumNumbers_gR` with `@[simp]`. The LHS patterns are stable (arguments are variables) and the RHS cannot loop: `chiralCoupling 0 q s2` only normalises further via `chiralCoupling_zero_left`.",
+   "issue": "`ofQuantumNumbers_gL` (line 114) and `ofQuantumNumbers_gR` (line 121) are not `@[simp]`, while the sibling `ofQuantumNumbers_gV` (line 103) and `ofQuantumNumbers_gA` (line 108) are. Since `gL_def`/`gR_def` are also not `simp`, a term `(ofQuantumNumbers t3 q s2).gL` is inert under `simp` for every downstream consumer, even though these are \u00a70.4's stated products.",
+   "line": 114
+  },
+  {
+   "evidence": "Parameters.lean:20 `@[expose] public section`; Parameters.lean:58,61 defs; Couplings.lean:67 uses a plain `public section` for the parallel new definitions. `@[no_expose]` is the per-declaration override, used inside an exposed section at upstream/mathlib/Mathlib/Basic/Real/Basic.lean:28,89.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "fix": "Mark both definitions `@[no_expose] def gL` / `@[no_expose] def gR`, leaving `gL_def`/`gR_def` as the only access to the bodies.",
+   "issue": "`gL` and `gR` are added inside the file-level `@[expose] public section` (line 20), so their bodies are exported even though `gL_def`/`gR_def` (lines 64, 68, deliberately `:= (rfl)`) already give consumers the unfolding. Downstream proofs can then close `c.gL = (c.gV + c.gA) / 2` by `rfl`/`unfold gL`, defeating the `(rfl)` discipline the new Couplings.lean follows.",
+   "line": 58
+  }
+ ],
+ "head_sha": "b1a6d525becdd497cb6cc9ac48778676821de49c",
+ "merge_base_sha": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 175,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "47295394227302eac5a2620978a9ca6eefe857565835711ae037da92fbd156a5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261025T115119Z-175-api-design-dda637",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-25T11:51:19Z",
+ "submitted_by": "veprbl",
+ "summary": "The surface is minimal and the characteristic API for `ofQuantumNumbers`/`gL`/`gR` is usable without unfolding, but the two chiral-coupling characterisations lack `@[simp]` while their `gV`/`gA` siblings carry it, and the new `gL`/`gR` bodies are exported by Parameters.lean's file-level `@[expose]` despite `gL_def`/`gR_def` existing.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ElectricCharge.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Representation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Couplings.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Basic/Real/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Basic/Real/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4c069f46658a856b93c0b6c994c55762c52cb054f03cf1c2f4582a51fdd01a6a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 97371,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 97371,
+  "cache_read_input_tokens": 617221,
+  "inference_geo": "global",
+  "input_tokens": 21,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 353,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 353,
+    "cache_read_input_tokens": 85888,
+    "input_tokens": 2,
+    "output_tokens": 3170,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17275,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
