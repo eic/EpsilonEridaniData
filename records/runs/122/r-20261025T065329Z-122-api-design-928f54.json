@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.633203,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 191.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 92617,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 92617,
+    "cache_read_input_tokens": 661974,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2800,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2800,
+      "cache_read_input_tokens": 81251,
+      "input_tokens": 2,
+      "output_tokens": 2962,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14674,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.633203,
+ "dedupe_key": "eic/EpsilonEridani|122|3d8a667c7a843d10c94129ba66af41a140d8a466|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "f10a3422054178f049a4f77a3706c03a42a1792f3fbb84ad85168b599462db08",
+ "diff_sha256": "f10a3422054178f049a4f77a3706c03a42a1792f3fbb84ad85168b599462db08",
+ "duration_s": 191.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -r ExclKinematics code/EpsilonEridani` matches only `Exclusive/Kinematics/Basic.lean` and the new file, so no such conversion exists; `Polarized/Kinematics.lean:66` shows the repo's idiom of naming the inclusive view (`extends DisKinematics` with `toDisKinematics` and `@[simp]` lemmas at lines 86-90) rather than inlining a literal.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Add a public `ExclKinematics.toDis (K : ExclKinematics V) : DisKinematics V := { p := K.p, pPrime := K.pPrime, k := K.k, kPrime := K.kPrime, q := K.q, hq := K.hqLepton }` in `Exclusive/Kinematics/Basic.lean` with `@[simp]` projection lemmas, and restate `ofExcl_x` as `(ofExcl ...).x = DisKinematics.xBj g K.toDis`.",
+   "issue": "ofExcl_x states its right-hand side against an inline `DisKinematics` anonymous constructor. The exclusive-to-inclusive view is therefore public API with no name: a consumer must reproduce the exact record literal to apply the lemma, and cannot reach any other inclusive variable (`yInel`, `W2`) of the same event. That conversion mentions only `ExclKinematics`/`DisKinematics` and nothing diffractive, so it is general infrastructure whose canonical home is the exclusive kinematics file.",
+   "line": 198
+  },
+  {
+   "evidence": "Lines 105-111 are the whole `absT` API; `abs_of_nonpos` is available upstream (e.g. `upstream/mathlib/Mathlib/Algebra/Order/CauSeq/BigOperators.lean:170` uses it).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Add `theorem absT_eq_abs_t (i : Invariants) : i.absT = |i.t| := (abs_of_nonpos i.t_nonpos).symm`.",
+   "issue": "`absT` is named for `|t|` but no lemma connects it to `abs`: the API offers only `absT_eq_neg_t` and `absT_nonneg`, so a goal arriving with `|i.t|` (from any Mathlib `abs` lemma) cannot be rewritten into the canonical `absT` form that Convention 2 requires all momentum-transfer power laws to use.",
+   "line": 108
+  },
+  {
+   "evidence": "Lines 230-246 give only `tMinElastic_def`, `tMinElastic_xi_zero` and `tMinElastic_nonpos`; nothing mentions `absT`, and `grep absT` in the repo shows `absT` occurs only at lines 103-111.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Add the companion restatement, e.g. `theorem neg_tMinElastic (M xi : \u211d) : -tMinElastic M xi = xi ^ 2 * M ^ 2 / (1 - xi)` and/or `theorem le_tMinElastic_iff_le_absT (i : Invariants) (M xi : \u211d) : i.t \u2264 tMinElastic M xi \u2194 xi ^ 2 * M ^ 2 / (1 - xi) \u2264 i.absT`.",
+   "issue": "The `tMinElastic` docstring asserts the boundary is \"equivalently `|t| \u2265 \u03be\u00b2M\u00b2/(1-\u03be)`\", but no lemma states the magnitude form, so a consumer who writes the boundary in `absT` (as Convention 2 mandates) has to redo the sign manipulation at each use site.",
+   "line": 221
+  }
+ ],
+ "head_sha": "3d8a667c7a843d10c94129ba66af41a140d8a466",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 122,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7d9502e721c996bc1427819a9ea84c7382e75d71d5df8b0e8ebb130b51049f1d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261025T065329Z-122-api-design-928f54",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-25T06:53:29Z",
+ "submitted_by": "veprbl",
+ "summary": "The surface is minimal and bodies stay hidden, but the exclusive-to-inclusive view is published only as an anonymous record literal inside ofExcl_x, and absT/tMinElastic lack the magnitude-side lemmas their names and docstrings promise.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Order",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1bced0bb8d68023c523d0cafc5c9a1816dbb5a2060fa6617ec7f60a9d49e933a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 92617,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 92617,
+  "cache_read_input_tokens": 661974,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2800,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2800,
+    "cache_read_input_tokens": 81251,
+    "input_tokens": 2,
+    "output_tokens": 2962,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14674,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

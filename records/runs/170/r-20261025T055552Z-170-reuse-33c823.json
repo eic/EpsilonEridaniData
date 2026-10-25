@@ -1,0 +1,254 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6157285,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 287.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 145189,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 145189,
+    "cache_read_input_tokens": 1110367,
+    "inference_geo": "global",
+    "input_tokens": 31,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2394,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2394,
+      "cache_read_input_tokens": 116821,
+      "input_tokens": 2,
+      "output_tokens": 2889,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23409,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.615728,
+ "dedupe_key": "eic/EpsilonEridani|170|57bdbee28335d69471b66c33258eb9976e8cfc6b|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "45d061f5d08a3c708200bab9ebf69c4df52433a95e5a7cecc8ccdd6b4213a4e9",
+ "diff_sha256": "45d061f5d08a3c708200bab9ebf69c4df52433a95e5a7cecc8ccdd6b4213a4e9",
+ "duration_s": 287.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 254: `rw [favoured_def, unfavoured_def, Finset.sum_inter_add_sum_sdiff, Species.sum_flavorPair]` proves `favoured + unfavoured = D (quark i) + D (antiquark i)`, so `favoured = D (quark i)` determines `unfavoured`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Replace each proof with e.g. `have := favoured_add_unfavoured C D h i z Q2; rw [favoured_eq_apply_quark hq hq'] at this; linarith` (and `favoured_eq_apply_antiquark hq' hq` for the other).",
+   "issue": "`unfavoured_eq_apply_antiquark` (289-298) and `unfavoured_eq_apply_quark` (321-330) hand-roll a `Finset` set computation that `favoured_add_unfavoured` (line 251) plus the matching favoured lemma already gives.",
+   "line": "289"
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/Data/Finset/Lattice/Lemmas.lean:120 `insert_inter_of_mem`, :131 `insert_inter_of_notMem`, :152 `singleton_inter_of_mem`, :156 `singleton_inter_of_notMem`; `flavorPair` is `{quark i, antiquark i}` (Species.lean:191).",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Unfold `Species.flavorPair i = {quark i, antiquark i}` and rewrite with `Finset.insert_inter_of_mem hq` + `Finset.singleton_inter_of_notMem hq'` (resp. `Finset.insert_inter_of_notMem hq` + `Finset.singleton_inter_of_mem hq'`).",
+   "issue": "The remaining two `hset` blocks (273-281 and 305-313) re-prove standard `Finset` plumbing by `ext`/`rintro`: `Species.flavorPair i \u2229 C.valence h = {quark i}` resp. `= {antiquark i}`.",
+   "line": "273"
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/Data/Finset/Image.lean:480 `image_inter (s\u2081 s\u2082) (hf : Injective f)` and :504 `image_sdiff (s t) (hf : Injective f)`; injectivity is `Species.conj_involutive.injective`, already used at lines 384/392.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "State the two real facts once \u2014 `(C.valence h).image Species.conj = C.valence (C.conj h)` (from `mem_valence_conj`) and `(Species.flavorPair i).image Species.conj = Species.flavorPair i` (next to `Species.conj_mem_flavorPair`) \u2014 then both lemmas are `rw [Finset.image_inter _ _ Species.conj_involutive.injective, ...]` resp. `Finset.image_sdiff`.",
+   "issue": "`image_conj_inter_valence` (342-350) and `image_conj_sdiff_valence` (352-360) are the same hand-written image computation twice, instantiating `Finset.image_inter`/`Finset.image_sdiff`.",
+   "line": "342"
+  },
+  {
+   "evidence": "Lines 462-466 and 476-480 are character-for-character the same three `rw`s up to the membership argument.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Add one congruence lemma `valenceStepFrag C h' s' z Q2 = valenceStepFrag C h s z Q2` from `s' \u2208 C.valence h' \u2194 s \u2208 C.valence h`; then the charge-conjugation case is it applied to `C.mem_valence_conj` and the flavour case to `hv h s`, one line each.",
+   "issue": "`chargeConjRelation_valenceStepFrag` (457-466) and `flavorRelation_valenceStepFrag` (470-480) are the identical `by_cases hz`/`by_cases hs` proof, differing only in the membership transport used.",
+   "line": "457"
+  },
+  {
+   "evidence": "PDF/Basic.lean:32 `abbrev Pdf (Flavor) := Flavor \u2192 \u211d \u2192 \u211d \u2192 \u211d` vs Fragmentation/Basic.lean:41 `abbrev Frag Hadron Flavor := Hadron \u2192 Flavor \u2192 \u211d \u2192 \u211d \u2192 \u211d`; PDF/Basic.lean:36 vs Fragmentation/Basic.lean:55 are the same integral; PDF/Basic.lean:167-210 `comap`, `comap_apply`, `comap_id`, `comap_comap`, `mellinMoment_comap`, `IsPartonDensity.comap` (whose fields at :97-99 match `Fragmentation.Assumptions` at :45-46); PDF/ChargeConjugation.lean:71-88 `chargeConj`/`chargeConj_chargeConj`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "fix": "Define `comap \u03c4 \u03c3 D := fun h => PDF.comap \u03c3 (D (\u03c4 h))` and derive `zMoment_comap` from `PDF.mellinMoment_comap` and `Assumptions.comap` from `PDF.IsPartonDensity.comap`; define `partonConj D := fun h => PDF.chargeConj (D h)` and get involutivity from `PDF.chargeConj_chargeConj`.",
+   "issue": "The new `Comap` section (142-188) restates the existing `PDF.comap` API declaration for declaration (`comap`, `comap_apply`, `comap_id`, `comap_comap`, moment lemma, `Assumptions.comap`); its flavour-index half *is* `PDF.comap`, since `Frag Hadron Flavor` unfolds to `Hadron \u2192 PDF.Pdf Flavor` and `zMoment D n h` is the same integral as `PDF.mellinMoment (D h) n`. Same for `partonConj`/`partonConj_partonConj` in Symmetries.lean:197-209, which are `PDF.chargeConj`/`PDF.chargeConj_chargeConj` per hadron.",
+   "line": "142"
+  }
+ ],
+ "head_sha": "57bdbee28335d69471b66c33258eb9976e8cfc6b",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 170,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8c84d271cc948195a5a72c4872be47e49d7410997af218251d758d2f76e15ab0",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261025T055552Z-170-reuse-33c823",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-25T05:55:52Z",
+ "submitted_by": "veprbl",
+ "summary": "The mathematics is new, but the file carries four sets of near-clone proofs that re-derive named Mathlib lemmas or earlier lines of the same file, and the new Fragmentation pullback API restates the existing PDF.comap API.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Finset",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Finset",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d085b6a3e9e0f048f7f932435e4d0805340e4411955bb6fdd581f44f11cd08ec",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 145189,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 145189,
+  "cache_read_input_tokens": 1110367,
+  "inference_geo": "global",
+  "input_tokens": 31,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2394,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2394,
+    "cache_read_input_tokens": 116821,
+    "input_tokens": 2,
+    "output_tokens": 2889,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23409,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
