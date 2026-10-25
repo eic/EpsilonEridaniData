@@ -1,0 +1,218 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5436730000000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 188.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 157563,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 157563,
+    "cache_read_input_tokens": 1209046,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2993,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2993,
+      "cache_read_input_tokens": 128533,
+      "input_tokens": 2,
+      "output_tokens": 2854,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14536,
+    "output_tokens_details": {
+     "thinking_tokens": 10029
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.543673,
+ "dedupe_key": "eic/EpsilonEridani|167|04dee4cf07e84ea772f1a68c1f588fd7eb33fde8|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "15376d8f07ccaee7af6d1b08745b1ca6df2ad3aba55690b9d5fde3956343df8d",
+ "diff_sha256": "15376d8f07ccaee7af6d1b08745b1ca6df2ad3aba55690b9d5fde3956343df8d",
+ "duration_s": 188.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The file's own `IsOneLoopRGSolution.add_landauTime_notMem` (line 252) names the same `t\u2080 + landauTime \u03b2\u2080 (f t\u2080)` shape with the `add` prefix; the two are inconsistent.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "fix": "Rename to `add_landauTime_oneLoopCoupling`.",
+   "issue": "`landauTime_oneLoopCoupling` states `s + landauTime \u03b2\u2080 (oneLoopCoupling \u03b2\u2080 a\u2080 s) = landauTime \u03b2\u2080 a\u2080`, but the name advertises the head `landauTime (oneLoopCoupling \u2026)`; `rw [landauTime_oneLoopCoupling]` will not fire on that term, since the LHS is an `add`.",
+   "line": "352"
+  },
+  {
+   "evidence": "Mathlib names set-restricted equalities `eqOn_\u2026`: `IsOpen.eqOn_of_deriv_eq \u2026 : s.EqOn f g` (Mathlib/Analysis/Calculus/MeanValue.lean:779), the very lemma used at line 228.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "fix": "Rename to `IsOneLoopRGSolution.eqOn_oneLoopCoupling` and `IsOneLoopRGSolution.inv_eqOn` (optionally stating them with `Set.EqOn`, which the proofs already produce).",
+   "issue": "`IsOneLoopRGSolution.eq_oneLoopCoupling` proves only `\u2200 t \u2208 Ioo A B, f t = oneLoopCoupling \u03b2\u2080 (f t\u2080) (t - t\u2080)`, i.e. a `Set.EqOn` on the interval with a shifted argument, while the name reads as the function equality `f = oneLoopCoupling \u2026`. Same mismatch at line 216 for `IsOneLoopRGSolution.inv_eq`, whose equation also holds only on `Ioo A B`.",
+   "line": "237"
+  },
+  {
+   "evidence": "Roadmap convention 1: \"The evolution variable is `t = log (Q\u00b2 / \u03bc\u2080\u00b2)`\" (CollinearEvolution/README.md:103); sibling API `IsDGLAPLogScaleEquation` and `dglapRhsLogScale` for \"the logarithmic scale variable `\u03c4 = log Q2`\" (Evolution/Basic.lean:18, 224, 285).",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "fix": "Rename `landauTime` to `landauLogScale` (keeping `landauScaleSq` for `\u039b\u00b2`) and update the dependent lemma names accordingly.",
+   "issue": "`landauTime` coins \"time\" for the value of the evolution variable `t = log (Q\u00b2/\u03bc\u2080\u00b2)` at the pole. The standard term is the Landau pole (as the file's own docstrings say), and the roadmap and the adjacent declarations in this directory call `t` the log-scale/evolution variable, not a time. This propagates to `landauTime_def`, `one_add_mul_landauTime_eq_zero`, `landauTime_neg`, `landauTime_lt_iff`, `tendsto_oneLoopCoupling_nhdsGT_landauTime`, `IsOneLoopRGSolution.add_landauTime_notMem` and `landauTime_oneLoopCoupling`.",
+   "line": "91"
+  }
+ ],
+ "head_sha": "04dee4cf07e84ea772f1a68c1f588fd7eb33fde8",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 167,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c4408c87df8fa8db1ed04d0482c4882c9a882a06a2b539164460f950ede40601",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261025T212410Z-167-naming-794156",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-25T21:24:10Z",
+ "submitted_by": "wdconinc",
+ "summary": "Most names describe their conclusions correctly, but three are off: a lemma whose name omits the leading `s +` of its LHS (so it cannot be used as a rewrite under its advertised head), a set-restricted equality named as an unrestricted one, and a coined `landauTime` for the evolution variable that the roadmap and the adjacent modules call the log-scale variable.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Calculus/MeanValue.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/Splitting.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ab0f18e2c5dec354fa9c923e38831735a08fdf9e112946f49365d85e587420f8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 157563,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 157563,
+  "cache_read_input_tokens": 1209046,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2993,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2993,
+    "cache_read_input_tokens": 128533,
+    "input_tokens": 2,
+    "output_tokens": 2854,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14536,
+  "output_tokens_details": {
+   "thinking_tokens": 10029
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

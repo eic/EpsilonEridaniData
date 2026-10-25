@@ -1,0 +1,219 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4056520000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 253.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 142300,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 142300,
+    "cache_read_input_tokens": 1016384,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3093,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3093,
+      "cache_read_input_tokens": 122341,
+      "input_tokens": 2,
+      "output_tokens": 6012,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18974,
+    "output_tokens_details": {
+     "thinking_tokens": 14087
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.405652,
+ "dedupe_key": "eic/EpsilonEridani|167|04dee4cf07e84ea772f1a68c1f588fd7eb33fde8|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "15376d8f07ccaee7af6d1b08745b1ca6df2ad3aba55690b9d5fde3956343df8d",
+ "diff_sha256": "15376d8f07ccaee7af6d1b08745b1ca6df2ad3aba55690b9d5fde3956343df8d",
+ "duration_s": 253.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`def IsOneLoopRGSolution` at :141 vs `oneLoopCoupling_def` :78, `landauTime_def` :93, `landauScaleSq_def` :366; `public section` :58 carries no `@[expose]`, unlike `Evolution/Solutions.lean:38` and `Evolution/QCDCore.lean:21`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "fix": "Add `theorem isOneLoopRGSolution_iff : IsOneLoopRGSolution \u03b2\u2080 s f \u2194 \u2200 t \u2208 s, HasDerivAt f (-\u03b2\u2080 * f t ^ 2) t := Iff.rfl` plus `IsOneLoopRGSolution.hasDerivAt` (elimination) and an `of_forall`-style introduction, matching the `oneLoopCoupling_def`/`landauTime_def`/`landauScaleSq_def` convention the file already follows.",
+   "issue": "`IsOneLoopRGSolution` is the only definition in the file without a `_def`/`iff` restatement, and the file is a bare `public section` (line 58, no `@[expose]`), so its body is not available downstream. A consumer can neither prove `IsOneLoopRGSolution \u03b2\u2080 s f` for their own `f` nor extract `HasDerivAt f (-\u03b2\u2080 * f t ^ 2) t` from a hypothesis, which makes `IsOneLoopRGSolution.eq_oneLoopCoupling` (:237) \u2014 the stated point of the file \u2014 unusable outside it.",
+   "line": 141
+  },
+  {
+   "evidence": "Witness set at :162 is `{t | 1 + \u03b2\u2080 * a\u2080 * t \u2260 0}`; hypotheses at :169, :217, :238, :253 are all `IsOneLoopRGSolution \u03b2\u2080 (Ioo A B) f`. No `mono`/subset lemma exists in the file.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "fix": "Add `theorem IsOneLoopRGSolution.mono (hs : s \u2286 s') (hf : IsOneLoopRGSolution \u03b2\u2080 s' f) : IsOneLoopRGSolution \u03b2\u2080 s f`, and ideally an `Ioi (landauTime \u03b2\u2080 a\u2080)` form of the witness, since `landauTime_lt_iff` (:110) identifies that as the natural domain.",
+   "issue": "The only public witness, `isOneLoopRGSolution_oneLoopCoupling`, is stated on `{t | 1 + \u03b2\u2080 * a\u2080 * t \u2260 0}`, while every consuming theorem requires `Ioo A B` (:168, :216, :237, :252). With no restriction lemma and no exposed body, the file's own witness cannot be fed to the file's own uniqueness theorems.",
+   "line": 161
+  },
+  {
+   "evidence": "`landauScaleSq` :364; its only public facts are `landauScaleSq_def` :366, `landauScaleSq_pos` :371, `landauScaleSq_oneLoopCoupling` :389 \u2014 none states that `landauScaleSq` is the scale whose evolution variable is `landauTime`; the `hlog` step at :380-384 is a local `have`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "fix": "Export the characteristic lemma `Real.log (landauScaleSq \u03b2\u2080 a\u2080 \u03bc\u2080sq / \u03bc\u2080sq) = landauTime \u03b2\u2080 a\u2080` (hypothesis `0 < \u03bc\u2080sq`) and prove `oneLoopCoupling_log_eq_inv` through it.",
+   "issue": "`landauScaleSq`'s docstring calls it \"the scale at which the one-loop coupling diverges\", but no lemma relates it back to `landauTime` in the evolution variable; `oneLoopCoupling_log_eq_inv` inlines that computation in its own proof (:380-384) rather than exporting it, so every consumer must redo `Real.log_div`/`log_mul`/`log_exp` by hand.",
+   "line": 362
+  }
+ ],
+ "head_sha": "04dee4cf07e84ea772f1a68c1f588fd7eb33fde8",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 167,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "cd3813a28553ebc4e0652341801878e2730dfe84291dc77c659e2784db344e24",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261025T211420Z-167-api-design-6477e9",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-25T21:14:20Z",
+ "submitted_by": "wdconinc",
+ "summary": "The predicate `IsOneLoopRGSolution` is public with an unexposed body and no `_def`/intro/elim lemma, so downstream consumers can neither establish nor use it \u2014 which makes the headline uniqueness theorem unusable outside this file, and leaves the file's own witness incomposable with its own consumers. `landauScaleSq` also lacks the one lemma that backs its docstring.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/PowerCounting.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Convolution/Algebra.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "79a905b805803abab6780d25890d484a6e213cfd9ac0e164cb8f530447caacbb",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 142300,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 142300,
+  "cache_read_input_tokens": 1016384,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3093,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3093,
+    "cache_read_input_tokens": 122341,
+    "input_tokens": 2,
+    "output_tokens": 6012,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18974,
+  "output_tokens_details": {
+   "thinking_tokens": 14087
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
