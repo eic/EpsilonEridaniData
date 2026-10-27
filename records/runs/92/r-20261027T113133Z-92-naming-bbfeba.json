@@ -1,0 +1,177 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2487785000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 213.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 161024,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 161024,
+    "cache_read_input_tokens": 507307,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3357,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3357,
+      "cache_read_input_tokens": 130576,
+      "input_tokens": 2,
+      "output_tokens": 4775,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15393,
+    "output_tokens_details": {
+     "thinking_tokens": 12451
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.248779,
+ "dedupe_key": "eic/EpsilonEridani|92|40d18c542d993cacb1df9a34806502f577345c95|naming|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "0d20b86ec4eb0966feeddf875a88b52256e0c26b962d884e4d61a361e9bb0f09",
+ "diff_sha256": "0d20b86ec4eb0966feeddf875a88b52256e0c26b962d884e4d61a361e9bb0f09",
+ "duration_s": 213.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 259-260: `def woodsSaxonNormIntegral (R a : \u211d) : \u211d := \u222b x : Space, woodsSaxonDensity 1 R a \u2016x\u2016`; line 284: `woodsSaxonCentralDensity m R a = m / woodsSaxonNormIntegral R a`. The `_norm` = `\u2016\u00b7\u2016` precedent the file follows is `integrable_fun_norm_addHaar` / `integral_fun_norm_addHaar` (mathlib/Mathlib/MeasureTheory/Constructions/HaarToSphere.lean:255,296), used at line 234.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Rename to `woodsSaxonUnitIntegral` (with `woodsSaxonUnitIntegral_def`, `woodsSaxonUnitIntegral_pos`), keeping `_norm` in theorem names for `\u2016\u00b7\u2016` only.",
+   "issue": "`woodsSaxonNormIntegral` reuses `Norm` for \"normalisation\" while the same file's theorem names use `_norm` for the `\u2016\u00b7\u2016`-composition, and the name does not record the defining feature that the integrand has `\u03c1\u2080 = 1`. In `integral_woodsSaxonDensity_norm` (:277) both senses appear in one statement, and a reader can plausibly take `woodsSaxonNormIntegral` for the normalising central density, which is its reciprocal times `m` (:284).",
+   "line": "259"
+  },
+  {
+   "evidence": "Lines 145-146, 172-173 (`\u2026 = m`) versus 276-277 (`\u2026 = \u03c1\u2080 * woodsSaxonNormIntegral R a`); the value statement for Woods\u2013Saxon lives instead at line 305, `integral_woodsSaxonDensity_norm_woodsSaxonCentralDensity`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Rename to `integral_woodsSaxonDensity_norm_eq_mul`, matching the pointwise `woodsSaxonDensity_eq_mul` (:217) it is the integral of.",
+   "issue": "`integral_woodsSaxonDensity_norm` states the factorisation `= \u03c1\u2080 * woodsSaxonNormIntegral R a`, but the two sibling names of identical shape, `integral_hardSphereDensity_norm` (:145) and `integral_gaussianDensity_norm` (:172), state the normalisation value `= m`. The name a user guesses for the Woods\u2013Saxon normalisation delivers a different kind of fact.",
+   "line": "276"
+  }
+ ],
+ "head_sha": "40d18c542d993cacb1df9a34806502f577345c95",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 92,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "de2192f62ed096be49f917f5bdb3bca4287b4e1acdae547a1b0e7c79d6c4b0ce",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261027T113133Z-92-naming-bbfeba",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-27T11:31:33Z",
+ "submitted_by": "wdconinc",
+ "summary": "The prior round's findings on `_norm` and `woodsSaxonDensity_le` are fixed, and I withdraw the simp-lemma ordering finding. Remaining: `woodsSaxonNormIntegral` uses `Norm` in a sense the same file reserves for `\u2016\u00b7\u2016` and omits that it is taken at `\u03c1\u2080 = 1`, and `integral_woodsSaxonDensity_norm` occupies the name shape its two siblings use for the normalisation value while stating a factorisation.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6027717725b081ac94a7ebc5e5571ba755ca818d2b5d19111aa41ee9e82b5fb2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 161024,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 161024,
+  "cache_read_input_tokens": 507307,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3357,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3357,
+    "cache_read_input_tokens": 130576,
+    "input_tokens": 2,
+    "output_tokens": 4775,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15393,
+  "output_tokens_details": {
+   "thinking_tokens": 12451
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
