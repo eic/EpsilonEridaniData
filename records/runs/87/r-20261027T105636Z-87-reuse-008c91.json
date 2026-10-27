@@ -1,0 +1,267 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.883402,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 329.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 196429,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 196429,
+    "cache_read_input_tokens": 2652704,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4200,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4200,
+      "cache_read_input_tokens": 172818,
+      "input_tokens": 2,
+      "output_tokens": 2160,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23702,
+    "output_tokens_details": {
+     "thinking_tokens": 17173
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "cost_usd": 3.883402,
+ "dedupe_key": "eic/EpsilonEridani|87|a16a3ea19889bc60e70b9e7e18a56185a99e967f|reuse|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "81c27448794a095f65aef80e9ed8cb61d0ddafce9bbb4b724c3d67c4045df0a0",
+ "diff_sha256": "81c27448794a095f65aef80e9ed8cb61d0ddafce9bbb4b724c3d67c4045df0a0",
+ "duration_s": 329.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean:53`: `lemma minkowskiProduct_sub_self {d : \u2115} (u v : Vector d) : \u27eau - v, u - v\u27eb\u2098 = \u27eau, u\u27eb\u2098 - 2 * \u27eau, v\u27eb\u2098 + \u27eav, v\u27eb\u2098`; `Physlib/.../MinkowskiProduct.lean:181,188` for `minkowskiProduct_add_self`/`minkowskiProduct_smul_self`. Kinematics.lean:8 imports the module and line 65 opens `Lorentz.Vector`; line 261 already uses the other two.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "Either `rw [p_eq_avgMomentum_sub, minkowskiProduct_sub_self] at h` and finish with `minkowskiProduct_smul_self`, or drop `p_eq_avgMomentum_sub` here and compute directly: `minkowskiProduct_add_self` + `minkowskiProduct_smul_self` give `\u27eaP,P\u27eb\u2098 = (M\u00b2 + 2\u27eap,p'\u27eb\u2098 + M\u00b2)/4`, and `minkowskiProduct_sub_self` gives `K.tMom = 2M\u00b2 - 2\u27eap,p'\u27eb\u2098`, so `linarith` closes it.",
+   "issue": "`minkowskiProduct_avgMomentum_self_eq` expands `\u27eaP - 2\u207b\u00b9\u2022\u0394, P - 2\u207b\u00b9\u2022\u0394\u27eb\u2098` by hand (`simp only [map_sub, map_smul, sub_apply, smul_apply, smul_eq_mul]` plus a manual `minkowskiProduct_symm`), re-deriving the located `Lorentz.Vector.minkowskiProduct_sub_self`, which is in the very file this PR extends and which this module imports.",
+   "line": "232"
+  },
+  {
+   "evidence": "MinkowskiProductExtensions.lean:109-114 (`let p : Lorentz.Vector d := fun \u03bc => Sum.elim (fun _ => E) (fun i => (P \u2022 e\u2080) i) \u03bc`, with `e\u2080 = EuclideanSpace.basisFun (Fin d) \u211d \u27e80,_\u27e9`, `u = cos \u03b8 \u2022 e\u2080 + sin \u03b8 \u2022 e\u2081`) versus the new definition at line 164-166; `Physlib/.../Vector/Basic.lean:341,348` (`spatialPart_basis_sum_inr`, `spatialPart_basis_sum_inl`) connect the two spellings.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "fix": "Give `ofTimeAndTwoSpatial` the two component lemmas it is missing \u2014 `ofTimeAndTwoSpatial_timeComponent` (`= x`) and `ofTimeAndTwoSpatial_spatialPart` (`= y \u2022 EuclideanSpace.single i 1 + z \u2022 EuclideanSpace.single j 1`, via `spatialPart_basis_sum_inr`/`spatialPart_basis_sum_inl`) \u2014 then define `p`, `p'` in `exists_massShell_pair_angle_eq` through it and delete the now-obsolete comment at lines 105-108.",
+   "issue": "`ofTimeAndTwoSpatial i j x y z` is exactly the vector that the pre-existing `exists_massShell_pair_angle_eq` builds by hand as a raw `Sum.elim` function in the same file: its `p` is `ofTimeAndTwoSpatial \u27e80,_\u27e9 \u27e81,_\u27e9 E P 0` and its `p'` is `ofTimeAndTwoSpatial \u27e80,_\u27e9 \u27e81,_\u27e9 E' (P' * cos \u03b8) (P' * sin \u03b8)` (both proofs also share the `2 \u2264 d` hypothesis). Two parallel conventions for explicit Lorentz vectors now sit in one module.",
+   "line": "164"
+  }
+ ],
+ "head_sha": "a16a3ea19889bc60e70b9e7e18a56185a99e967f",
+ "merge_base_sha": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 87,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "150fbcde2e08f9ae5e9231f458d8fca4e763c7217dfa0899ced94f6a27e38ea9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261027T105636Z-87-reuse-008c91",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-27T10:56:36Z",
+ "submitted_by": "wdconinc",
+ "summary": "The mathematics (t\u2080(\u03be), the attainability of the physical region, the orthogonal-complement inequality) is genuinely new and reuses upstream Minkowski-product API in most places. Two reuse gaps remain: one proof re-expands a difference that an imported lemma already expands, and the new `ofTimeAndTwoSpatial` is the construction the pre-existing `exists_massShell_pair_angle_eq` performs by hand fourteen lines above it in the same file.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality/LightLike.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/MinkowskiProduct.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/MinkowskiProduct.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 27,
+  "trace_truncated": false
+ },
+ "transcript_blob": "502022c5f2dc0f3e21602389c326ae6c82c6be31bd3594e2a6f1b785c52f2576",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 196429,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 196429,
+  "cache_read_input_tokens": 2652704,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4200,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4200,
+    "cache_read_input_tokens": 172818,
+    "input_tokens": 2,
+    "output_tokens": 2160,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23702,
+  "output_tokens_details": {
+   "thinking_tokens": 17173
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
