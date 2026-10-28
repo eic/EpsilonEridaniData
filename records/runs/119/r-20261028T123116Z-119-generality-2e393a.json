@@ -1,0 +1,165 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8558095,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 139.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 134892,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 134892,
+    "cache_read_input_tokens": 557589,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3950,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3950,
+      "cache_read_input_tokens": 123781,
+      "input_tokens": 2,
+      "output_tokens": 1575,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9121,
+    "output_tokens_details": {
+     "thinking_tokens": 6875
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.855809,
+ "dedupe_key": "eic/EpsilonEridani|119|6c3b56240b1a7397032541d4a3443edb25d2d415|generality|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "3e310fb7fb8b6886061ae909ae81ac8ec58a4adc653558e29987e32e28cb764e",
+ "diff_sha256": "3e310fb7fb8b6886061ae909ae81ac8ec58a4adc653558e29987e32e28cb764e",
+ "duration_s": 139.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diffractive/Basic.lean:77-90 and 117-123 reference only `K.delta`, `K.p`, `K.q`, `K.Q2`; `delta` is `K.pPrime - K.p` (Exclusive/Kinematics/Basic.lean:54-55) and `Q2`/`xBj` are `DisKinematics` defs (Kinematics/Basic.lean:52-57). `grep -n 'ExclKinematics'` over EpsilonEridani/ returns hits only in Exclusive/Kinematics/Basic.lean and the new Diffractive/Basic.lean.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "State them over `DisKinematics V`, which already carries `pPrime` (Kinematics/Basic.lean:35-37); with `ExclKinematics extends DisKinematics` they reach exclusive events for free via `toDisKinematics`, exactly as `xBj`/`Q2` now do. This requires moving `delta` (and with it `tMom`, since `t = \u0394\u00b2` is also a function of `p`, `pPrime` only) to `DisKinematics`; `ExclKinematics.delta`/`tMom`/`xiSkew` have no uses outside Exclusive/Kinematics/Basic.lean and the new file, so the move is contained. Keep `MX2`, `MX2_def` and `MX2_eq_q_sub_delta` on `ExclKinematics` \u2014 they genuinely need `qPrime` and `hMomentum`.",
+   "issue": "`xi` (l.77), `xi_def` (l.80), `beta` (l.86), `beta_def` (l.89) and `xBj_eq_xi_mul_beta` (l.117) are stated for `ExclKinematics V`, but their bodies mention only `K.delta` (= `pPrime - p`), `K.p`, `K.q` and `K.Q2` \u2014 all parent `DisKinematics` data. The `qPrime`, `phiL`, `phiH` fields and the `hMomentum` proof are unused assumptions: a caller holding an inclusive event with an identified `P'` must fabricate a produced system, two angles and a conservation proof to use `\u03be`, `\u03b2` or `x = \u03be\u03b2`. The roadmap itself records these as functions of `q`, `P`, `P'` alone (README \u00a70.1, 'The y-independence of \u03be, \u03b2 and t: they are functions of q, P, P' alone').",
+   "line": 77
+  }
+ ],
+ "head_sha": "6c3b56240b1a7397032541d4a3443edb25d2d415",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 119,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7eb28aaff0daf4add41149c9b20187ff164fc7ce81d44f179f9bea5e500b6e24",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261028T123116Z-119-generality-2e393a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-28T12:31:16Z",
+ "submitted_by": "wdconinc",
+ "summary": "The diffractive variables `xi`, `beta` and the `x = \u03be\u03b2` identity use only fields of the `DisKinematics` parent (`p`, `pPrime`, `q`), yet are stated over `ExclKinematics`, so they needlessly demand a produced system, two azimuthal angles and a momentum-conservation proof. `MX2` and `MX2_eq_q_sub_delta` are correctly placed, since they genuinely need `qPrime`/`hMomentum`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f82038de054f531a35b16cd89324594317f62384c6fedd3287cf1bac92f78486",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 134892,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 134892,
+  "cache_read_input_tokens": 557589,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3950,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3950,
+    "cache_read_input_tokens": 123781,
+    "input_tokens": 2,
+    "output_tokens": 1575,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9121,
+  "output_tokens_details": {
+   "thinking_tokens": 6875
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

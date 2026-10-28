@@ -1,0 +1,267 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.805403,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 235.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 152393,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 152393,
+    "cache_read_input_tokens": 1754836,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 36,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4864,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4864,
+      "cache_read_input_tokens": 139537,
+      "input_tokens": 2,
+      "output_tokens": 3821,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16155,
+    "output_tokens_details": {
+     "thinking_tokens": 10690
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.805403,
+ "dedupe_key": "eic/EpsilonEridani|119|6c3b56240b1a7397032541d4a3443edb25d2d415|api-design|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "3e310fb7fb8b6886061ae909ae81ac8ec58a4adc653558e29987e32e28cb764e",
+ "diff_sha256": "3e310fb7fb8b6886061ae909ae81ac8ec58a4adc653558e29987e32e28cb764e",
+ "duration_s": 235.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diffractive/Basic.lean:55 `namespace ExclKinematics`; Exclusive/Kinematics/Basic.lean:66 `noncomputable def xiSkew`. Roadmap Convention 1 names exactly this trap (\"two different momentum fractions ... a lemma about one is applied to the other\").",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Wrap the diffractive declarations in `namespace Diffractive` inside the file (keeping the roadmap-mandated names `xi`, `beta`), so the diffractive surface is `Diffractive.xi`/`Diffractive.beta` and is not offered as dot notation on an exclusive event.",
+   "issue": "`xi`, `beta`, `MX2` are declared in `namespace ExclKinematics`, so every DVCS/DVMP event gets `K.xi g = -\u0394\u00b7q/P\u00b7q` sitting next to `K.xiSkew g`, the skewness that the exclusive literature also calls \u03be. The PR description itself says these live in `namespace Diffractive`; the code does not.",
+   "line": 77
+  },
+  {
+   "evidence": "Both are exact with only symmetry of `g`: `Q2 + MX2 - tMom = -2 g K.delta K.q` (expand `MX2_eq_q_sub_delta` and cancel `g \u03b4 \u03b4`), and `Q2 + W2 - M2 = 2 g K.p K.q` from `W2_expand` (Kinematics/Basic.lean:79). Roadmap 0.1 lists both as exact identities of the claimed section (README.md:285-287).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Add `beta_eq_Q2_div_Q2_add_MX2_sub_tMom (g) (hg : g.IsSymm) (K) : K.beta g = K.Q2 g / (K.Q2 g + K.MX2 g - K.tMom g)` and the companion `xi` form `(K.Q2 g + K.MX2 g - K.tMom g) / (K.Q2 g + K.W2 g - K.M2 g)`.",
+   "issue": "`beta` has no characteristic lemma relating it to the quantities defined in scope: `MX2` and `tMom` interact with nothing, so a consumer cannot get from `beta` to the measurable `M_X\u00b2`, `t` without unfolding the definition. The same holds for `xi` against `W2`/`M2`.",
+   "line": 86
+  },
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md:279 `- \\`M_X\u00b2 = (q + \u0394)\u00b2\\` and \\`M_Y\u00b2 = P'\u00b2\\`.`; grep for `MY2` in code/EpsilonEridani returns nothing.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Add `MY2 (g) (K) : \u211d := g K.pPrime K.pPrime` with `MY2_def ... := (rfl)`, mirroring `MX2`/`MX2_def`.",
+   "issue": "`M_Y\u00b2 = P'\u00b2` \u2014 part of the same variable set of the claimed roadmap section 0.1 and needed by 0.2 (`t_min(\u03be, M, M_Y)`) and 0.4 (target-elastic/dissociative partition) \u2014 is not exposed, although `MX2` is.",
+   "line": 95
+  }
+ ],
+ "head_sha": "6c3b56240b1a7397032541d4a3443edb25d2d415",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 119,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5b7acf9d70b8bb9f5af03362bc5422e93d83b9c4a4ecd9fc72546ade3535e8fa",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261028T122721Z-119-api-design-dcaea2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-28T12:27:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "The removal of the duplicated `Q2`/`hqLepton` surface in favour of the `DisKinematics` parent is clean and leaves no compatibility residue. Two interface problems remain: the diffractive variables are attached to the shared `ExclKinematics` namespace where `K.xi` collides semantically with the skewness `K.xiSkew`, and `beta`/`MX2`/`tMom` are left with no lemma connecting them.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/.github",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pages.yml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 27,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7ab415b86abde41a5fffd45904b378c4beb8d4774616aecf61fc6eb0a5160b09",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 152393,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 152393,
+  "cache_read_input_tokens": 1754836,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 36,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4864,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4864,
+    "cache_read_input_tokens": 139537,
+    "input_tokens": 2,
+    "output_tokens": 3821,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16155,
+  "output_tokens_details": {
+   "thinking_tokens": 10690
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

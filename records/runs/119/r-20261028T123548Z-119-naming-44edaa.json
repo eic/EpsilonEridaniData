@@ -1,0 +1,177 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.023712,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 115.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 159756,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 159756,
+    "cache_read_input_tokens": 457384,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4536,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4536,
+      "cache_read_input_tokens": 138059,
+      "input_tokens": 2,
+      "output_tokens": 1231,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 7896,
+    "output_tokens_details": {
+     "thinking_tokens": 5617
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.023712,
+ "dedupe_key": "eic/EpsilonEridani|119|6c3b56240b1a7397032541d4a3443edb25d2d415|naming|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "3e310fb7fb8b6886061ae909ae81ac8ec58a4adc653558e29987e32e28cb764e",
+ "diff_sha256": "3e310fb7fb8b6886061ae909ae81ac8ec58a4adc653558e29987e32e28cb764e",
+ "duration_s": 115.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diffractive/Basic.lean:55 `namespace ExclKinematics` with no `namespace Diffractive` anywhere (grep for `namespace Diffractive` in EpsilonEridani/: no matches); Exclusive/Kinematics/Basic.lean:66 `noncomputable def xiSkew (g : Bilin V) (K : ExclKinematics V) : \u211d`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Either introduce the `Diffractive` namespace the description claims (`Diffractive.xi g K`, `Diffractive.beta`, `Diffractive.MX2`, `Diffractive.xBj_eq_xi_mul_beta`), matching the roadmap's own dedicated `Invariants` namespace, or qualify as `xiDiff`/`betaDiff` in the style of the already-qualified `xiSkew`. Roadmap Convention 1 only forbids `xPom`; neither option violates it.",
+   "issue": "`ExclKinematics.xi` claims the bare symbol \u03be in a namespace that already has `ExclKinematics.xiSkew` (Exclusive/Kinematics/Basic.lean:66) \u2014 a different \u03be for the same record. `K.xi` reads as the skewness that `ExclKinematics` was built for; the docstring disclaimer does not fix the interface. `beta` (line 86) and `MX2` (line 95) are likewise diffraction-only notions named generically on the general DVCS/DVMP record (for DVCS, `MX2` is the produced photon's mass squared). The PR description states these live in `namespace Diffractive`, but the file declares them directly in `namespace ExclKinematics`.",
+   "line": 77
+  },
+  {
+   "evidence": "Exclusive/Kinematics/Basic.lean:81 `tMom_eq_hadronic_transfer_sq` and :87 `tMom_eq_photon_transfer_sq : K.tMom g = g (K.q - K.qPrime) (K.q - K.qPrime)` \u2014 identical statement shape, `_sq` suffix.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Rename to `MX2_eq_q_sub_delta_sq` and update the module docstring's Main results entry.",
+   "issue": "`MX2_eq_q_sub_delta` names an equality whose RHS is `g (K.q - K.delta) (K.q - K.delta)`, i.e. the *square* of `q - delta`, not `q - delta` (which is a `V`, not an `\u211d`). The two existing lemmas of the same shape in the parent namespace carry `_sq`.",
+   "line": 102
+  }
+ ],
+ "head_sha": "6c3b56240b1a7397032541d4a3443edb25d2d415",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 119,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b889de9ae7a2486803d6ea49e57651303622cbdb3e8c4b4d2a8c565ce734c84c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261028T123548Z-119-naming-44edaa",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-28T12:35:48Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two naming defects: the diffractive variables are declared bare in `ExclKinematics`, where `xi` collides with the existing `xiSkew` on the same record (and the PR description's claimed `namespace Diffractive` does not exist in the code), and `MX2_eq_q_sub_delta` drops the `_sq` that its two sibling lemmas in the same namespace carry.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "36b942838b293aafdc0cf81449168cb234376fef21d470091d9b2e8b157c8100",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 159756,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 159756,
+  "cache_read_input_tokens": 457384,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4536,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4536,
+    "cache_read_input_tokens": 138059,
+    "input_tokens": 2,
+    "output_tokens": 1231,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 7896,
+  "output_tokens_details": {
+   "thinking_tokens": 5617
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
