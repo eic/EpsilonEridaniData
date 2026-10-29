@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6497295,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 339.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 154442,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 154442,
+    "cache_read_input_tokens": 781647,
+    "inference_geo": "global",
+    "input_tokens": 21,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5182,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5182,
+      "cache_read_input_tokens": 110232,
+      "input_tokens": 2,
+      "output_tokens": 2577,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 27202,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.649729,
+ "dedupe_key": "eic/EpsilonEridani|71|83172593f2f2acc4d61a8d6b502fa0146f5c0683|naming|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "9fc9b340a47fcb320d58f2a587a9c5c52a928e63808e906c25a74176618c1d14",
+ "diff_sha256": "9fc9b340a47fcb320d58f2a587a9c5c52a928e63808e906c25a74176618c1d14",
+ "duration_s": 339.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `namespace Bilin` \u2192 only Kinematics/Basic.lean:31 (added by this PR) and Tensors/Basic.lean:94; the latter sits inside `namespace Tensors` (lines 84-88), so its full name is `...Tensors.Bilin`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "fix": "Keep one `Bilin` namespace. Since the `Bilin` abbrev is defined in `Kinematics`, change Tensors/Basic.lean:94 to `namespace Kinematics.Bilin` (call sites still resolve via `open Kinematics (Bilin)`), or declare the new lemma in the existing `Bilin` block in Tensors/Basic.lean.",
+   "issue": "`namespace Bilin` here creates `...DIS.Kinematics.Bilin`, while every other `Bilin` lemma (`reflect`, `reflect_apply_self`, `reflect_isometry`, and the new `det_reflect`) lives in the pre-existing `...DIS.Tensors.Bilin` (Tensors/Basic.lean:94). Two namespaces with the same leaf name now hold lemmas about the same abbrev: in ParityOdd.lean `Bilin.apply_eq_zero_of_apply_eq_self_of_apply_eq_neg` (line 158) and in Basic.lean `Bilin.reflect_apply_self` (line 1032) resolve to different namespaces with no visible difference, and any future duplicate leaf name makes `Bilin.*` ambiguous.",
+   "line": "31"
+  },
+  {
+   "evidence": "Line 384 `noncomputable def aFour (K : DisKinematics (Fin 4 \u2192 \u211d))`; lines 395/445/449/454/487 all fix `K := kFour`; the file's own section docstring (lines 339-341) states that only `aFour` and `parityOddAssumptions_aFour` are general and \"the remaining declarations of this section are specialized to the witness\".",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Name the instance in the specialized declarations: `aFour_kFour_apply`, `aFour_kFour_ne_zero`, `aFour_kFour_e\u2081_e\u2082`, `existsUnique_eq_smul_aFour_kFour`, `not_isLorentzCovariant_aFour_kFour` \u2014 matching the sibling `spectatorPartners_kFour` and `pTransverse_kFour`, which do name the instance.",
+   "issue": "`aFour` is a family indexed by `K` (line 384), but lemmas named after it state only the `kFour` instance, so the names claim more than the statements. `aFour_ne_zero : aFour kFour \u2260 0` reads as a property of `aFour`, yet `aFour K = 0` whenever `K.p`, `K.q` are dependent; `aFour_apply` (line 395) is a general-sounding `@[simp]` `_apply` lemma that only fires on `aFour kFour`. Same mismatch in `aFour_e\u2081_e\u2082` (445), `existsUnique_eq_smul_aFour` (454) and `not_isLorentzCovariant_aFour` (487), while the genuinely general lemma is `parityOddAssumptions_aFour` (414).",
+   "line": "449"
+  },
+  {
+   "evidence": "Both declarations take a `SpectatorPlane g K` and return a structure (`SpectatorSplitting g K`, `SpectatorPartners g K`); line 1126 uses the real parent projection name `toSpectatorSplitting` in the same `where` block.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Rename to `SpectatorPlane.toSpectatorPartners`, matching the adjacent `toSpectatorSplitting` and the `Foo.toBar` convention for structure conversions.",
+   "issue": "Two conversions out of `SpectatorPlane` added in the same PR use different naming schemes: `SpectatorPlane.toSpectatorSplitting` (line 1112) and `SpectatorPlane.spectatorPartners` (line 1122). A consumer holding `hP : SpectatorPlane g K` cannot guess that `hP.toSpectatorPartners` does not exist.",
+   "line": "1122"
+  }
+ ],
+ "head_sha": "83172593f2f2acc4d61a8d6b502fa0146f5c0683",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ac5c0d18afac198b6a7d2eec9ac328db47e1e410a826411a25bf20e977522b10",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261029T025426Z-71-naming-191965",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-29T02:54:26Z",
+ "submitted_by": "veprbl",
+ "summary": "Names mostly describe their conclusions in standard terminology (`IsProperLorentzCovariant`, `existsUnique_sub_flip_eq_smul`, `det_reflect`) and no notation is introduced, but the PR creates a second `Bilin` namespace with the same leaf name as the existing one, and several `Witness` lemmas are named after the family `aFour` while stating facts only about `aFour kFour`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lint-dot-notation.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e01affe2ef0830ad7d38b1b0c1c3c4b950716b2aa812bd939cdf16d7203c0a26",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 154442,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 154442,
+  "cache_read_input_tokens": 781647,
+  "inference_geo": "global",
+  "input_tokens": 21,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5182,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5182,
+    "cache_read_input_tokens": 110232,
+    "input_tokens": 2,
+    "output_tokens": 2577,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 27202,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
