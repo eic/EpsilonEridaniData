@@ -1,0 +1,218 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.9835374999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 270.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 174128,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 174128,
+    "cache_read_input_tokens": 1494255,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2185,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2185,
+      "cache_read_input_tokens": 149416,
+      "input_tokens": 2,
+      "output_tokens": 6763,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19800,
+    "output_tokens_details": {
+     "thinking_tokens": 15101
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.983537,
+ "dedupe_key": "eic/EpsilonEridani|120|7698f3dc0f4a8b695c0fab54083d45d8ee215e87|api-design|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "37b96dd0522264d6befbf9c7a7d8566def02aff62e4faa1e4495e8ccb87d04ab",
+ "diff_sha256": "37b96dd0522264d6befbf9c7a7d8566def02aff62e4faa1e4495e8ccb87d04ab",
+ "duration_s": 270.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Polarized/Kinematics.lean:48` uses plain `public section` and supplies `_def`/`(rfl)` lemmas for the same purpose; all in-file proofs (`norm_num [probeOne]`, `kWit4_p := rfl`) are in the defining module and are unaffected by dropping `@[expose]`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Replace `@[expose] public section` with `public section`, as in the sibling `Polarized/Kinematics.lean:48` and the two Mathematics files added by this PR; add `@[simp] spinUniquenessWit_vOne`-style accessors only if a consumer later needs the probe values.",
+   "issue": "`@[expose] public section` exposes the bodies of `spinStructureOne`, `spinStructureTwo`, `fromG1G2`, `IsG1G2Decomposition`, `\u03b7Wit` and `kWit4`, but every one of them already has its characteristic lemma (`spinStructureOne_apply` :96, `spinStructureTwo_apply` :106, `fromG1G2_apply` :198, `.eq` :270 plus `fromG1G2_isDecomposition` :259, `\u03b7Wit_apply` :382, `kWit4_p/q/S` :404-408). No consumer must unfold or compute, so exposure only lets downstream proofs depend on defeq of these definitions.",
+   "line": 74
+  },
+  {
+   "evidence": "`Tensors/Basic.lean:1035-1043` (`uniquenessWit`) inlines `vF1 := (0,0,1)` etc. with inline proofs and exports no probe defs or probe-value lemmas.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Mark the two probe defs and the four probe-value lemmas `private`, or inline the vectors into `spinUniquenessWit`'s fields with `by rw [spinStructureOne_apply, Matrix.detRowAlternating_fin_four]; norm_num` proofs, as `Tensors/Basic.lean:1035` does for `uniquenessWit`.",
+   "issue": "`probeOne` (:415), `probeTwo` (:418) and the four lemmas `spinStructureOne_probeOne_eq_one` (:421), `spinStructureTwo_probeOne_eq_zero` (:427), `spinStructureOne_probeTwo_eq_zero` (:433), `spinStructureTwo_probeTwo_eq_one` (:439) are public API with no use outside `spinUniquenessWit` (:446); `grep probeOne|probeTwo` matches only this file. They are scaffolding for one witness, and `probeOne : (Fin 4 \u2192 \u211d) \u00d7 (Fin 4 \u2192 \u211d)` is meaningless to a consumer.",
+   "line": 415
+  },
+  {
+   "evidence": "Tensor.lean:465-466: `(by rw [kWit4_M2]; exact one_pos) (by rw [kWit4_p_q]; exact one_ne_zero)` \u2014 the manual rewrites are what the missing annotations cost.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Add `@[simp]` to `kWit4_M2` and `kWit4_p_q` (both are terminal rewrites to numerals, no loop risk). While there, use the repo's `:= (rfl)` idiom for `kWit4_p/q/S` instead of bare `rfl`, as in `Polarized/Kinematics.lean:87,90` and `Alternating/BilinMap.lean:56`.",
+   "issue": "`kWit4_M2` (:410) and `kWit4_p_q` (:412) are the closed-form values of the witness's `M\u00b2` and `p\u00b7q` but carry no `@[simp]`, while the neighbouring `kWit4_p/q/S` (:404-408) do; consequently `fromG1G2_kWit4_ne_zero` (:465) has to `rw` them by hand.",
+   "line": 410
+  }
+ ],
+ "head_sha": "7698f3dc0f4a8b695c0fab54083d45d8ee215e87",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "fd3a13756808f635458b64292c161f632c038372b82f02cb960c2bd70ad07de7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261029T140323Z-120-api-design-dfb787",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-29T14:03:23Z",
+ "submitted_by": "wdconinc",
+ "summary": "Withdrawing the contested coefficient findings; the E\u2082 prefactor and the \"standard form\" docstring are internally consistent and the reverse/neg findings are fixed. Remaining: the new file exposes definition bodies it does not need, and the witness scaffolding (probe pairs and their four value lemmas) is public instead of private.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b737dad390602fb847eb174dd54472f59941db0a744b0cc142cc8055d74655c2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 174128,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 174128,
+  "cache_read_input_tokens": 1494255,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2185,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2185,
+    "cache_read_input_tokens": 149416,
+    "input_tokens": 2,
+    "output_tokens": 6763,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19800,
+  "output_tokens_details": {
+   "thinking_tokens": 15101
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
