@@ -1,0 +1,214 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6813900000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 215.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 153027,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 153027,
+    "cache_read_input_tokens": 1503910,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3778,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3778,
+      "cache_read_input_tokens": 136487,
+      "input_tokens": 2,
+      "output_tokens": 3041,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15961,
+    "output_tokens_details": {
+     "thinking_tokens": 11423
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "cost_usd": 2.68139,
+ "dedupe_key": "eic/EpsilonEridani|175|d4df18b996db4b78124350474d5ab805c1c648f3|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "22e4ddcf5af6f515d95f7af90f5855b185da10c29f222f5dbd3c0ceb85713714",
+ "diff_sha256": "22e4ddcf5af6f515d95f7af90f5855b185da10c29f222f5dbd3c0ceb85713714",
+ "duration_s": 215.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Couplings.lean:88, 98, 108 must write `rw [..., gL_def, gR_def, chiralCoupling_def, chiralCoupling_def]` \u2014 the consumer unfolds to raw arithmetic because no lemma in the simp set computes `gL`/`gR` of `ofQuantumNumbers`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "fix": "Tag `ofQuantumNumbers_gL` and `ofQuantumNumbers_gR` `@[simp]`. Both fire cleanly to `chiralCoupling t3 q s2` and `chiralCoupling 0 q s2` (the latter chaining into the existing `@[simp] chiralCoupling_isospin_zero`); no loop, since `ofQuantumNumbers_gV`/`_gA` match a different projection.",
+   "issue": "`ofQuantumNumbers_gL` and `ofQuantumNumbers_gR` (lines 338, 345) are not `@[simp]`, while `ofQuantumNumbers_gV`/`_gA` (lines 327, 332) are. Since `gL`/`gR` are `@[no_expose]` (lines 68, 71) and `gL_def`/`gR_def` (74, 78) carry no `@[simp]`, `simp` cannot reduce `(ofQuantumNumbers t3 q s2).gL` or `.gR` at all \u2014 the chiral couplings are exactly what \u00a70.4 adds.",
+   "line": 338
+  },
+  {
+   "evidence": "Parameters.lean:368-371 defines the record with no accessor lemmas; the existing in-file proofs `c1Up_eq_two_mul_gA_mul_gV` (384), `electronWeakCharge_eq_four_mul_gA_mul_gV` (415) and `electron_gV_eq_zero_iff` (459) unfold the same body and would also be served by the new lemmas.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Couplings.lean",
+   "fix": "Add `@[simp] theorem smTreeLevelCouplings_electron (s2 : \u211d) : (smTreeLevelCouplings s2).electron = { gV := -1 / 2 + 2 * s2, gA := -1 / 2 }` and the `_upType`/`_downType` analogues in `Parameters.lean`, and use them here instead of `simp only [smTreeLevelCouplings]`.",
+   "issue": "The three bridge theorems prove their goals with `simp only [smTreeLevelCouplings]` (lines 89, 99, 109), unfolding the definition body from a downstream module; it works only because `Parameters.lean` opens `@[expose] public section` (line 30). `smTreeLevelCouplings` has no characteristic lemma for its three fields.",
+   "line": 89
+  },
+  {
+   "evidence": "Couplings.lean:199-206 \u2014 the theorem's conclusion is `{ gV := 1 / 2, gA := 1 / 2 }`; `grep` finds no `gR`-vanishing or non-vanishing statement about the neutrino anywhere in the diff.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Couplings.lean",
+   "fix": "State them: `(ofQuantumNumbers (isospinWeight 0) (doubletElectricCharge (standardModel.YL : \u211d) 0) s2).gR = 0` and the corresponding `.gV \u2260 0`, each one line from `ofQuantumNumbers_neutrino` and `gR_def`; or drop the unproved claim from the docstring.",
+   "issue": "The docstring of `ofQuantumNumbers_neutrino` asserts `g_R = (g_V - g_A)/2` vanishes, and the roadmap's second \u00a70.4 theorem asks that the neutrino's neutral-current coupling *not* vanish; neither is a declaration \u2014 both live only in prose, so a consumer gets no lemma for either.",
+   "line": 199
+  }
+ ],
+ "head_sha": "d4df18b996db4b78124350474d5ab805c1c648f3",
+ "merge_base_sha": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 175,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "650412aeded35355652d8dc37f8ad37633b37af684f34a47c6dc45c9ee6b1621",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261029T145011Z-175-api-design-96123b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-29T14:50:11Z",
+ "submitted_by": "wdconinc",
+ "summary": "The chiral-coupling half of the new API carries no automation: `ofQuantumNumbers_gL`/`_gR` are not `@[simp]` while `_gV`/`_gA` are, and `gL`/`gR` are `@[no_expose]` with non-simp `*_def`, so `simp` cannot compute the very quantities \u00a70.4 introduces. The bridge proofs also reach into the body of `smTreeLevelCouplings` across a module boundary for want of per-species lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ElectricCharge.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/NeutralCurrent.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Representation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Representation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Representation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Representation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5e74f2ffc74b42a0b613f7caace33cbfa95b1788cc1dbe608516821868f83a9a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 153027,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 153027,
+  "cache_read_input_tokens": 1503910,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3778,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3778,
+    "cache_read_input_tokens": 136487,
+    "input_tokens": 2,
+    "output_tokens": 3041,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15961,
+  "output_tokens_details": {
+   "thinking_tokens": 11423
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
