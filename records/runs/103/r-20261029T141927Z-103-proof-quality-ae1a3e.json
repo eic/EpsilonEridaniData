@@ -1,0 +1,167 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1456315,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 217.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 151188,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 151188,
+    "cache_read_input_tokens": 452983,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 9539,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 9539,
+      "cache_read_input_tokens": 123200,
+      "input_tokens": 2,
+      "output_tokens": 1632,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16288,
+    "output_tokens_details": {
+     "thinking_tokens": 13746
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.145631,
+ "dedupe_key": "eic/EpsilonEridani|103|6d39fec027605ad8258f020c883eebdede924d29|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "cfa36824a6f2955d99e88e194d299923cb8f50a7ab840bd3427ab736eb1fd678",
+ "diff_sha256": "cfa36824a6f2955d99e88e194d299923cb8f50a7ab840bd3427ab736eb1fd678",
+ "duration_s": 217.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diff hunk at `pTransverse_pairing` removes `simp only [pTransverse, map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]` and adds `rw [pTransverse_def, g.projOrthogonal_apply, map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]`; same substitution at lines 340-341. Contrast `q_sq_mul_pTransverse_self` (Longitudinal.lean:185-187), where the same refactor correctly ends in `field_simp`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Restore `simp only [pTransverse_def, Bilin.projOrthogonal_apply, map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]` in `pTransverse_pairing` and `simp only [pTransverse_def, Bilin.projOrthogonal_apply, map_sub, map_smul, hf.fixes_p, hf.fixes_q]` in `stabilizer_fixes_pTransverse`.",
+   "issue": "`pTransverse_pairing` (293-294) and `stabilizer_fixes_pTransverse` (340-341) were converted from `simp only [pTransverse, map_sub, map_smul, ...]` into `rw` chains of 7 and 6 named lemmas. `rw` is positional and order-sensitive, so these now break on any reassociation or rename upstream, where the previous `simp only` with the same lemma set did not. The adaptation to `projOrthogonal` needed only swapping `pTransverse` for `pTransverse_def, Bilin.projOrthogonal_apply` in the existing `simp only`.",
+   "line": 293
+  },
+  {
+   "evidence": "Witness.lean:47 `@[simp] theorem energy_restFrameWit_apply`; `norm_num` runs the default simp set, so lines 57-58 re-request a rewrite that is already applied. Same pattern at line 49, `simp [energy_apply, restFrameWit_n]`, where `restFrameWit_n` is `@[simp]` on line 42.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Witness.lean",
+   "fix": "Drop line 58 and the explicit `[energy_restFrameWit_apply]` arguments on line 57; if the `rw` is in fact load-bearing, drop `@[simp]` from `energy_restFrameWit_apply` instead so the dependency is visible.",
+   "issue": "`energy_restFrameWit_apply` is `@[simp]` (line 47), so the `rw [energy_restFrameWit_apply, energy_restFrameWit_apply] at h` on line 58 is subsumed by the `norm_num at h` on the next line, and the two `norm_num [energy_restFrameWit_apply]` arguments on line 57 are likewise redundant. The dead steps suggest the proof turns on a rewrite it does not need.",
+   "line": 58
+  }
+ ],
+ "head_sha": "6d39fec027605ad8258f020c883eebdede924d29",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "a3dcab6e3b18c3fcc068172380b4136b29ac80267a0d49d5ce6706ce7e810275",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261029T141927Z-103-proof-quality-ae1a3e",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-29T14:19:27Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs in the new Frame files are short, readable and free of change/show or defeq tricks; the prior round's findings no longer apply. The remaining issue is that two pre-existing DIS proofs were rewritten from order-insensitive `simp only` into 6-7 step `rw` chains, a robustness regression, plus some dead rewrite steps in the witness file.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Witness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "01b6b9cb6a6a08197e9fabbbbc6efdf5b9587c8e679e91c66d3c886a974e3ce8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 151188,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 151188,
+  "cache_read_input_tokens": 452983,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 9539,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 9539,
+    "cache_read_input_tokens": 123200,
+    "input_tokens": 2,
+    "output_tokens": 1632,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16288,
+  "output_tokens_details": {
+   "thinking_tokens": 13746
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
