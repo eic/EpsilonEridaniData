@@ -1,0 +1,157 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.8835554999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 166.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 50208,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 50208,
+    "cache_read_input_tokens": 70941,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 9846,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 9846,
+      "cache_read_input_tokens": 43585,
+      "input_tokens": 2,
+      "output_tokens": 7857,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13839,
+    "output_tokens_details": {
+     "thinking_tokens": 11296
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 0.883555,
+ "dedupe_key": "eic/EpsilonEridani|92|9312edba2f8c2de77a49f2d4a0b2211fa14ffc76|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a646a03088aa9eb790c71986f618bf8acd7e398096651b6b2f578c06298ec6a1",
+ "diff_sha256": "a646a03088aa9eb790c71986f618bf8acd7e398096651b6b2f578c06298ec6a1",
+ "duration_s": 166.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean:63`: `noncomputable def sigmoid (x : \u211d) := (1 + exp (-x))\u207b\u00b9`; `Density/Basic.lean:189-190` `woodsSaxonDensity \u03c1\u2080 R a r = \u03c1\u2080 * Real.sigmoid ((R - r) / a)`; no declaration in the file takes an `0 < R` hypothesis (grep for `0 < R` hits only `hardSphere`/`integral_hardSphereDensity_norm`).",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Say that `\u03c1(R) = \u03c1\u2080/2` is half the normalisation parameter `\u03c1\u2080`, and define `\u03c1\u2080` once (at `woodsSaxonDensity`) as the interior plateau value `lim_{r \u2192 -\u221e} \u03c1`, equal to the density at the origin only in the `a/R \u2192 0` idealisation; keep the conventional names but stop claiming `\u03c1\u2080 = \u03c1(0)` and `R` the half-density radius relative to `\u03c1(0)`.",
+   "issue": "`woodsSaxonDensity_self`'s docstring (\"At the half-density radius `r = R`, the Woods\u2013Saxon profile takes half its central value `\u03c1\u2080 / 2`\") is inaccurate: `\u03c1\u2080` is the plateau value (the `r \u2192 -\u221e` limit), not the density at the origin. Since `sigmoid x = (1 + exp (-x))\u207b\u00b9`, `woodsSaxonDensity \u03c1\u2080 R a 0 = \u03c1\u2080/(1 + exp (-R/a)) < \u03c1\u2080`, and the lemma imposes no `0 < R` \u2014 at `R = 0` the density at the origin is itself `\u03c1\u2080/2`, so `\u03c1(R)` is not half of it. Same unexplained terminology at lines 186-188 (`woodsSaxonDensity`, \"with central density `\u03c1\u2080`\"), 281-283 (`woodsSaxonCentralDensity`) and the module docstring lines 35-36.",
+   "line": "200"
+  },
+  {
+   "evidence": "`SigmoidExtensions.lean:13-14`; the only consumer is `Density/Basic.lean:226` `exact Real.sigmoid_le_exp _` inside `woodsSaxonDensity_le_mul_exp`, used at `Density/Basic.lean:250`.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SigmoidExtensions.lean",
+   "fix": "Replace the status clause with the use: the bound `sigmoid x \u2264 exp x` dominates the logistic profile by an exponential tail, which is what makes the Woods\u2013Saxon density integrable on \u211d\u00b3 (`integrable_woodsSaxonDensity_norm`).",
+   "issue": "The module docstring states only upstreaming status (\"not yet upstreamed to Mathlib\") and restates the lemma name; it does not say what the bound is for. The mathematical why \u2014 the exponential tail bound that drives the Woods\u2013Saxon integrability comparison \u2014 is absent, and the upstreaming status dates badly with nothing to update it.",
+   "line": "10"
+  }
+ ],
+ "head_sha": "9312edba2f8c2de77a49f2d4a0b2211fa14ffc76",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 92,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "aec09b1b1a9ad26b5f74ee625d5834571fcaf13c94bdf0e6a5220958f79fc104",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261030T225852Z-92-documentation-48466f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-30T22:58:52Z",
+ "submitted_by": "veprbl",
+ "summary": "Documentation is otherwise accurate and hypothesis-faithful, but the Woods\u2013Saxon docstrings assert that \u03c1\u2080 is the density at the origin, which is false at the stated generality (no `0 < R` is assumed anywhere), and the new SigmoidExtensions file's module docstring gives upstreaming status instead of what the lemma is mathematically for.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SigmoidExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "675ac0a2b36b925067bb4f2a7c187374fc2372d55e33cbe7ba83da9a8ad3b039",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 50208,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 50208,
+  "cache_read_input_tokens": 70941,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 9846,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 9846,
+    "cache_read_input_tokens": 43585,
+    "input_tokens": 2,
+    "output_tokens": 7857,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13839,
+  "output_tokens_details": {
+   "thinking_tokens": 11296
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

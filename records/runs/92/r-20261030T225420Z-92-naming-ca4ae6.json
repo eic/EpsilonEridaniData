@@ -1,0 +1,254 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.991473,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 272.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 86267,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 86267,
+    "cache_read_input_tokens": 1168416,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1083,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1083,
+      "cache_read_input_tokens": 88407,
+      "input_tokens": 2,
+      "output_tokens": 4343,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21777,
+    "output_tokens_details": {
+     "thinking_tokens": 16698
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.991473,
+ "dedupe_key": "eic/EpsilonEridani|92|9312edba2f8c2de77a49f2d4a0b2211fa14ffc76|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a646a03088aa9eb790c71986f618bf8acd7e398096651b6b2f578c06298ec6a1",
+ "diff_sha256": "a646a03088aa9eb790c71986f618bf8acd7e398096651b6b2f578c06298ec6a1",
+ "duration_s": 272.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `^namespace ` under code/EpsilonEridani/Particles: GPD/Basic.lean:34-37 `EpsilonEridani/Particles/Parton/GPD`, TMD/Basic.lean:22-25, Fragmentation/Basic.lean:22-24, and QFT/QCD/Basic.lean:29-31 `EpsilonEridani/QFT/QCD`; the new Nuclei files open only `namespace EpsilonEridani` (Nuclei/Basic.lean:43, Density/Basic.lean:78).",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Wrap both new files in `namespace EpsilonEridani / Particles / Nuclei` as the siblings do, giving `EpsilonEridani.Particles.Nuclei.gaussianDensity`, `\u2026hardSphereDensity`, `\u2026Nucleus`, etc.",
+   "issue": "`hardSphereDensity`, `gaussianDensity`, `woodsSaxonDensity`, `woodsSaxonUnitIntegral`, `woodsSaxonCentralDensity` (and `Nucleus` in Particles/Nuclei/Basic.lean:48) sit directly in `EpsilonEridani`, unlike every other file under `Particles/`, which nests the directory as a namespace. `EpsilonEridani.gaussianDensity` in particular advertises a general Gaussian density while it is the nuclear 3-D convention `m (\u03c0R\u00b2)^{-3/2} exp(-r\u00b2/R\u00b2)`; Mathlib's general one is `ProbabilityTheory.gaussianPDFReal \u03bc v x` (Mathlib/Probability/Distributions/Gaussian/Real.lean:49), parameterised by variance, so the two cannot coexist under compatible names.",
+   "line": 117
+  },
+  {
+   "evidence": "Line 259-260: `def woodsSaxonUnitIntegral (R a : \u211d) : \u211d := \u222b x : Space, woodsSaxonDensity 1 R a \u2016x\u2016`; its value is not 1, and `woodsSaxonCentralDensity m R a = m / woodsSaxonUnitIntegral R a` (line 284).",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Rename to `woodsSaxonUnitDensityIntegral` (and `woodsSaxonUnitDensityIntegral_def/_pos`), or drop the def and state `integral_woodsSaxonDensity_norm_one`.",
+   "issue": "`woodsSaxonUnitIntegral` reads as \"the integral is one\" or \"the integral of the normalised profile\"; it is in fact the integral at unit *central density*, and is the quantity the whole normalisation argument divides by. In a file about normalisation this is an easy misread.",
+   "line": 259
+  },
+  {
+   "evidence": "Line 202-203: `lemma woodsSaxonDensity_self (\u03c1\u2080 R a : \u211d) : woodsSaxonDensity \u03c1\u2080 R a R = \u03c1\u2080 / 2`; naming-conventions.md lists `self`-style axiomatic names for repeated-argument laws, and otherwise requires the name to describe the conclusion.",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Rename to `woodsSaxonDensity_eq_half` (or `woodsSaxonDensity_radius_eq_half`), which names the conclusion.",
+   "issue": "`woodsSaxonDensity_self` uses the Mathlib `_self` pattern (`sub_self`, `div_self`), which denotes the same argument repeated in the same role; here the repetition is the radius *parameter* against the evaluation radius, and the name says nothing about the conclusion `\u03c1\u2080 / 2` \u2014 the defining half-density property.",
+   "line": 202
+  }
+ ],
+ "head_sha": "9312edba2f8c2de77a49f2d4a0b2211fa14ffc76",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 92,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3f9bffaffd2d8ef85acc19ad343de65b444e98bfa5003716ea28316b4ba23dd9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261030T225420Z-92-naming-ca4ae6",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-30T22:54:20Z",
+ "submitted_by": "veprbl",
+ "summary": "Names mostly describe their conclusions and match upstream terminology (Woods\u2013Saxon, isoscalar, half-density radius), but the three radial profiles land in the bare top-level `EpsilonEridani` namespace with over-general names, out of step with every sibling physics area, and two names misdescribe what they denote.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/NuclearPartonDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/NuclearPartonDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Complex",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Complex/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Model.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/StandardModel",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 23,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b03ff9033fb3ef10ee3345af585746df586fd081d5c91da941a40bae78bea6d7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 86267,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 86267,
+  "cache_read_input_tokens": 1168416,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1083,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1083,
+    "cache_read_input_tokens": 88407,
+    "input_tokens": 2,
+    "output_tokens": 4343,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21777,
+  "output_tokens_details": {
+   "thinking_tokens": 16698
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
