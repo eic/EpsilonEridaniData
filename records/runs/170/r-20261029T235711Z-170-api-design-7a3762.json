@@ -1,0 +1,196 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3503410000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 228.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 167214,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 167214,
+    "cache_read_input_tokens": 517032,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4501,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4501,
+      "cache_read_input_tokens": 137177,
+      "input_tokens": 2,
+      "output_tokens": 6299,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16785,
+    "output_tokens_details": {
+     "thinking_tokens": 12812
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.350341,
+ "dedupe_key": "eic/EpsilonEridani|170|57bdbee28335d69471b66c33258eb9976e8cfc6b|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "45d061f5d08a3c708200bab9ebf69c4df52433a95e5a7cecc8ccdd6b4213a4e9",
+ "diff_sha256": "45d061f5d08a3c708200bab9ebf69c4df52433a95e5a7cecc8ccdd6b4213a4e9",
+ "duration_s": 228.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 87 `public section` (no `@[expose]`), contrast `Fragmentation/Basic.lean:28` `@[expose] public section`. Repo convention: `Fragmentation/MomentumSumRule.lean:83` `/-- Unfolding lemma for `MomentumSumRule`. -/ lemma momentumSumRule_iff` for the sibling Prop-valued def in the same directory, used via `rw`/`.1` at lines 109, 150, 167.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Add `chargeConjRelation_iff` and `flavorRelation_iff` restating each as the `\u2200 h s z Q2, \u2026` equality (proved `(rfl)`/`Iff.rfl`), plus `FlavorRelation.apply` mirroring `ChargeConjRelation.apply_eq`.",
+   "issue": "`FlavorRelation` (line 190) has no characteristic lemma at all, and `ChargeConjRelation` (line 177) has only `apply_eq`. Both are `def ... : Prop` in a `public section` without `@[expose]` (line 87), so a downstream consumer can neither `intro h s z Q2` to prove one for their own family nor apply `hF h s z Q2` to use one \u2014 but these are hypotheses of `apply_map_eq_apply_conj`, `favoured_conj_of_chargeConjRelation` and the pion theorems, i.e. exactly what users are expected to supply.",
+   "line": 190
+  },
+  {
+   "evidence": "Line 127 `def IsValenceFlavor ... : Prop := Xor ...`; the only public consequences are the two intro lemmas and `quark_mem_iff`/`antiquark_mem_iff`, from which the case split is only recoverable indirectly via `by_cases` and contraposition.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Add `isValenceFlavor_iff : C.IsValenceFlavor h i \u2194 Xor (Species.quark i \u2208 C.valence h) (Species.antiquark i \u2208 C.valence h)` (`Iff.rfl`), or an `IsValenceFlavor.elim`-style disjunction lemma.",
+   "issue": "`ValenceContent.IsValenceFlavor` is a `def ... : Prop` with no unfolding lemma; in-file proofs case on it with `rcases hi with \u27e8hq, hq'\u27e9 | \u27e8hq', hq\u27e9` (lines 148, 156, 599), which downstream cannot do since the body is hidden.",
+   "line": 127
+  },
+  {
+   "evidence": "`Particles/Parton/PDF/ChargeConjugation.lean:74` is the exact parallel: `theorem chargeConj_eq_comap (f) : chargeConj f = comap conj f := (rfl)`, used at lines 80, 84, 93, 99, 105, 111, 117 to reach every `comap` lemma.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Add `theorem partonConj_eq_comap (D) : partonConj D = comap id Species.conj D := (rfl)`, and derive `Assumptions.partonConj` from `Assumptions.comap`.",
+   "issue": "`partonConj D := comap id Species.conj D` has `partonConj_apply` but no `partonConj_eq_comap`, so the `comap` API added in this same PR cannot be transported to it downstream \u2014 in particular there is no way to get `Assumptions (partonConj D)` from `Assumptions.comap`.",
+   "line": 197
+  },
+  {
+   "evidence": "Grep of the file shows only `Pion.conj_involutive` (552) for `Pion.conj` and no lemma whatsoever for `Pion.valence`; every in-file use is `simp [Pion.valence]` / `simp only [Pion.conj, Pion.valence, \u2026]` (lines 571, 588\u2013591, 599\u2013600, 606\u2013624, 633), which relies on the body being visible in its own module.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Add `@[simp]` equation lemmas `Pion.conj_plus/conj_zero/conj_minus` and `Pion.valence_plus/valence_zero/valence_minus` (or membership `mem_valence_*` lemmas), all `(rfl)`, mirroring `PionFlavor.swap_up/swap_down` and `Species.conj_quark/conj_antiquark`.",
+   "issue": "`Pion.conj` (546) and `Pion.valence` (558) are pattern-matching defs with no equation lemmas, while `PionFlavor.swap` right above gets `swap_up`/`swap_down` (523, 527). Nothing public says `Pion.conj .plus = .minus` or `Species.quark .up \u2208 Pion.valence .plus`, so the \u03c0\u207b/\u03c0\u2070 content advertised in the module docstring (line 45) is unreachable downstream, as is `favoured_conj_of_chargeConjRelation` applied at `.plus` (its result mentions `pionContent.conj .plus`, which cannot be reduced).",
+   "line": 546
+  }
+ ],
+ "head_sha": "57bdbee28335d69471b66c33258eb9976e8cfc6b",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 170,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "88cd73511d65743b0105893ae81a93f74d074a21e2530cbdb90302be456f1e3e",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261029T235711Z-170-api-design-7a3762",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-29T23:57:11Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new file is a non-exposed `public section` (Symmetries.lean:87), so definition bodies are invisible downstream, yet the two named relations, `IsValenceFlavor`, `partonConj`, `Pion.conj` and `Pion.valence` ship without the unfolding/equation lemmas the repo gives every other def in that situation (`momentumSumRule_iff`, `chargeConj_eq_comap`, `Species.conj_quark`, and this PR's own `favoured_def`/`swap_up`). As published, a consumer can neither establish nor apply `ChargeConjRelation`/`FlavorRelation`, and nothing public states the antiparticle or valence content of any pion.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3a716474ebf79e0ded04c23e32ae554d8fb1c4f334b9d02aa242349f514525f6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 167214,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 167214,
+  "cache_read_input_tokens": 517032,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4501,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4501,
+    "cache_read_input_tokens": 137177,
+    "input_tokens": 2,
+    "output_tokens": 6299,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16785,
+  "output_tokens_details": {
+   "thinking_tokens": 12812
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

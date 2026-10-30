@@ -1,0 +1,181 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.180154,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 195.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 162739,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 162739,
+    "cache_read_input_tokens": 373428,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6865,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6865,
+      "cache_read_input_tokens": 131176,
+      "input_tokens": 2,
+      "output_tokens": 3783,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14640,
+    "output_tokens_details": {
+     "thinking_tokens": 11318
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.180154,
+ "dedupe_key": "eic/EpsilonEridani|170|57bdbee28335d69471b66c33258eb9976e8cfc6b|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "45d061f5d08a3c708200bab9ebf69c4df52433a95e5a7cecc8ccdd6b4213a4e9",
+ "diff_sha256": "45d061f5d08a3c708200bab9ebf69c4df52433a95e5a7cecc8ccdd6b4213a4e9",
+ "duration_s": 195.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Symmetries.lean:178 `\u2200 h s z Q2, D (\u03c4 h) (Species.conj s) z Q2 = D h s z Q2` vs 192 `\u2200 h s z Q2, D (\u03c4 h) (Species.map \u03c1 s) z Q2 = D h s z Q2`; Basic.lean:151 `comap \u03c4 \u03c3 D = fun h i => D (\u03c4 h) (\u03c3 i)`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Define one predicate, e.g. `def Invariant (\u03c4 : Hadron \u2192 Hadron) (\u03c3 : Species Flavor \u2192 Species Flavor) (D) : Prop := comap \u03c4 \u03c3 D = D`, and keep the physics names as instances: `ChargeConjRelation \u03c4 D := Invariant \u03c4 Species.conj D`, `FlavorRelation \u03c4 \u03c1 D := Invariant \u03c4 (Species.map \u03c1) D`. `ChargeConjRelation.apply_eq` (181) then generalises to `Involutive \u03c3 \u2192 Invariant \u03c4 \u03c3 D \u2192 D (\u03c4 h) s = D h (\u03c3 s)`, and `apply_map_eq_apply_conj` (216) to `Involutive \u03c4 \u2192 Invariant \u03c4 \u03c3 D \u2192 Invariant \u03c4 \u03c3' D \u2192 D h (\u03c3' s) = D h (\u03c3 s)`.",
+   "issue": "`ChargeConjRelation \u03c4 D` (line 177) and `FlavorRelation \u03c4 \u03c1 D` (line 190) are one notion at two species maps: both unfold to `\u2200 h s z Q2, D (\u03c4 h) (\u03c3 s) z Q2 = D h s z Q2`, i.e. `comap \u03c4 \u03c3 D = D` for the `comap` added in this PR (Basic.lean:149). The species-conjugation map is hard-coded, although roadmap \u00a70.4 bullet 1 asks for it \"as explicit data\".",
+   "line": 177
+  },
+  {
+   "evidence": "Both proofs are `intro h s z Q2; by_cases hz ...; by_cases hs ...` with the identical four `valenceStepFrag_apply_of_*` rewrites; the required instance holds since `C.mem_valence_conj h (Species.conj s) : Species.conj s \u2208 valence (conj h) \u2194 Species.conj (Species.conj s) \u2208 valence h` (Symmetries.lean:111-113).",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "State it once for a general species map \u03c3: `invariant_valenceStepFrag (hv : \u2200 h s, \u03c3 s \u2208 C.valence (\u03c4 h) \u2194 s \u2208 C.valence h) : Invariant \u03c4 \u03c3 (valenceStepFrag C)`, then derive the charge-conjugation case by instantiating `\u03c3 := Species.conj`, `\u03c4 := C.conj` with `C.mem_valence_conj` at `conj s` plus `Species.conj_conj`.",
+   "issue": "`chargeConjRelation_valenceStepFrag` (457-467) duplicates `flavorRelation_valenceStepFrag` (470-480) line for line; the latter's hypothesis `\u2200 h s, Species.map \u03c1 s \u2208 C.valence (\u03c4 h) \u2194 s \u2208 C.valence h` is already the general compatibility condition, and only the species map differs.",
+   "line": 457
+  },
+  {
+   "evidence": "Symmetries.lean:334-338 takes `hq : quark i \u2208 C.valence h`, `hq' : antiquark i \u2209 C.valence h`; Symmetries.lean:610 `favoured_pion_plus_down` is the antiquark-valence case.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Add the companion under `(hq' : Species.antiquark i \u2208 C.valence h) (hq : Species.quark i \u2209 C.valence h)` giving `favoured - unfavoured = D h (antiquark i) - D h (quark i)`, derived from `favoured_eq_apply_antiquark`/`unfavoured_eq_apply_quark` exactly as the existing one.",
+   "issue": "`favoured_sub_unfavoured_eq` is given only for the quark-valence orientation, while all four `favoured/unfavoured_eq_apply_*` lemmas (270-330) are supplied in both. The PR description advertises it as the `IsValenceFlavor` consequence, but a flavour whose antiquark is the valence constituent \u2014 e.g. `\u03c0\u207a` at the down flavour, which this file itself exhibits at `favoured_pion_plus_down` \u2014 has no such lemma.",
+   "line": 334
+  },
+  {
+   "evidence": "`grep -n comap EpsilonEridani/` returns only Basic.lean's own declarations, the PDF.comap material, and Symmetries.lean:198.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "fix": "Make them pay for themselves \u2014 routing the two relations through `comap` (finding 1) uses the def, and `Assumptions.comap`/`zMoment_comap` specialise to the missing `Assumptions (partonConj D)` and `zMoment (partonConj D)` lemmas; otherwise drop the unused ones.",
+   "issue": "Of the new `comap` block, only `comap`/`comap_apply` are used anywhere (once, by `partonConj`, Symmetries.lean:198); `comap_id`, `comap_comap`, `comap_indicatorUnitInterval`, `zMoment_comap` and `Assumptions.comap` have no consumer in the repo, contrary to the PR description's \"the three pullbacks the symmetry material needs are instances of it\".",
+   "line": 158
+  }
+ ],
+ "head_sha": "57bdbee28335d69471b66c33258eb9976e8cfc6b",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 170,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "76cf08a212c5b3368a3c7be9e98111f861a7f0ce7a3289a3eefbe29770c252d1",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261030T000100Z-170-generality-5e12a7",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-30T00:01:00Z",
+ "submitted_by": "wdconinc",
+ "summary": "The two symmetry relations are the same predicate (`comap \u03c4 \u03c3 D = D`) written twice at `\u03c3 = Species.conj` and `\u03c3 = Species.map \u03c1`, which forces a duplicated witness proof and keeps the `comap` abstraction this PR adds almost entirely unused; `favoured_sub_unfavoured_eq` is also stated in only one of the two valence orientations the file otherwise covers.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ffcde55bb5f7e003387b99119111d7edfb1c97d32d73a799419c3904cd887190",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 162739,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 162739,
+  "cache_read_input_tokens": 373428,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6865,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6865,
+    "cache_read_input_tokens": 131176,
+    "input_tokens": 2,
+    "output_tokens": 3783,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14640,
+  "output_tokens_details": {
+   "thinking_tokens": 11318
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
