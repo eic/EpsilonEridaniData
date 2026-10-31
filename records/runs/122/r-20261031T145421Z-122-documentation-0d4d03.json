@@ -1,0 +1,162 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6318715,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 151.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 120060,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 120060,
+    "cache_read_input_tokens": 315243,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1975,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1975,
+      "cache_read_input_tokens": 109247,
+      "input_tokens": 2,
+      "output_tokens": 2311,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10944,
+    "output_tokens_details": {
+     "thinking_tokens": 8547
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.631871,
+ "dedupe_key": "eic/EpsilonEridani|122|ae61b8298bf890558ac45fdf4420b79992228628|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "191678884d386df49933ca19adbdaed094e9fdbf51dee790701e295a84ffb3bc",
+ "diff_sha256": "191678884d386df49933ca19adbdaed094e9fdbf51dee790701e295a84ffb3bc",
+ "duration_s": 151.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`def tMinElastic (M xi : \u211d) : \u211d := -(xi ^ 2 * M ^ 2) / (1 - xi)` (line 231) with `div_zero`; docstring lines 220-223 carry no \u03be < 1 restriction, while `tMinElastic_nonpos` requires `h : xi < 1`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Qualify the claim with `\u03be < 1` (or `\u03be \u2208 [0,1)`) and add the convention note, as the sibling `ExclKinematics.xiSkew` already does: \"Like any real division in Lean, it is `0` when the denominator vanishes\" (`Exclusive/Kinematics/Basic.lean:91`).",
+   "issue": "The `tMinElastic` docstring claims without qualification that \"the accessible momentum transfers of the target-elastic physical region are `t \u2264 tMinElastic M \u03be`, equivalently `|t| \u2265 \u03be\u00b2M\u00b2/(1-\u03be)`\", and never mentions the \u03be = 1 junk value: by Lean's division convention `tMinElastic M 1 = -(M\u00b2)/0 = 0`, so the stated characterisation is false exactly at the pole, where the true boundary diverges. Only `tMinElastic_nonpos` (line 255) hints at the restriction, via its `xi < 1` hypothesis.",
+   "line": 220
+  },
+  {
+   "evidence": "`theorem Invariants.t_le_tMinElastic_iff (i : Invariants) (M xi : \u211d) : i.t \u2264 tMinElastic M xi \u2194 ...` (lines 242-244); contrast lines 215-218: \"at finite energy the target-elastic boundary is not exactly `tMinElastic M (Invariants.xi i)`\".",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Add one clause: `M` and `xi` are arbitrary parameters, `xi` being the light-cone fraction of `tMinElastic`, not `i.xi`; the lemma is the `|t|` form of the boundary condition, valid for any choice of boundary value.",
+   "issue": "`Invariants.t_le_tMinElastic_iff` is stated for arbitrary `M xi : \u211d` unrelated to `i`, but its docstring calls the argument \"\u03be\" with no note \u2014 and the lemma sits in the `Invariants` namespace taking `(i : Invariants)`, so a reader naturally reads `\u03be` as `i.xi`. The same file's `tMinElastic` docstring (lines 212-218) explicitly warns that the two \u03be's are different variables agreeing only in the Bjorken limit, so the omission lands exactly where the confusion matters.",
+   "line": 240
+  }
+ ],
+ "head_sha": "ae61b8298bf890558ac45fdf4420b79992228628",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 122,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "68cf785b58d84bb880a7f3b46d8487e67830b65fa7d0dfbd4811001d041a6074",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T145421Z-122-documentation-0d4d03",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T14:54:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "Declarations are documented and references are genuine, but the `tMinElastic` docstring states the physical-region boundary unconditionally while the definition silently returns 0 at \u03be = 1, and `t_le_tMinElastic_iff` writes its free argument as \"\u03be\" without the disambiguation the same file insists on elsewhere.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2d697e96bdec9a988afba19e0e11ec5ed98e888ece21e3588e752a2b1fd95f7c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 120060,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 120060,
+  "cache_read_input_tokens": 315243,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1975,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1975,
+    "cache_read_input_tokens": 109247,
+    "input_tokens": 2,
+    "output_tokens": 2311,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10944,
+  "output_tokens_details": {
+   "thinking_tokens": 8547
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

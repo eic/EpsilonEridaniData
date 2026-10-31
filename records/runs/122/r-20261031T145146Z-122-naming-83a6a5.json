@@ -1,0 +1,165 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.145763,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 155.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 169466,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 169466,
+    "cache_read_input_tokens": 349956,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 32845,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 32845,
+      "cache_read_input_tokens": 117944,
+      "input_tokens": 2,
+      "output_tokens": 4377,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11043,
+    "output_tokens_details": {
+     "thinking_tokens": 8281
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.145763,
+ "dedupe_key": "eic/EpsilonEridani|122|ae61b8298bf890558ac45fdf4420b79992228628|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "191678884d386df49933ca19adbdaed094e9fdbf51dee790701e295a84ffb3bc",
+ "diff_sha256": "191678884d386df49933ca19adbdaed094e9fdbf51dee790701e295a84ffb3bc",
+ "duration_s": 155.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Kinematics.lean:92 `def xi (i : Invariants) : \u211d := i.Dq / i.Pq`; Kinematics.lean:212-215 docstring: \"The argument `xi` is the light-cone momentum fraction `\u0394\u207a/P\u207a` ... at finite energy the target-elastic boundary is not exactly `tMinElastic M (Invariants.xi i)`\"; Kinematics.lean:242-243 `theorem Invariants.t_le_tMinElastic_iff (i : Invariants) (M xi : \u211d)`. Roadmap Convention 1 (Diffraction/README.md:111) names this exact trap: \"a file in which two different momentum fractions are both called `x` and a lemma about one is applied to the other\".",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Rename the light-cone argument throughout to a distinct name (e.g. `xiLC`, with the declarations becoming `tMinElastic M xiLC`, `tMinElastic_xiLC_zero`, etc.), or state the boundary in terms of the invariant `Invariants.xi` so one `xi` means one thing. Note `ExclKinematics.xiSkew` already takes the disambiguating-suffix route for the third \u03be-like variable (Exclusive/Kinematics/Basic.lean:92).",
+   "issue": "`tMinElastic (M xi : \u211d)` names its second argument `xi`, but its docstring (lines 212-215) states this `xi` is the light-cone fraction `\u0394\u207a/P\u207a`, which \"agrees with the invariant `\u03be = \u0394\u00b7q / P\u00b7q` of `Invariants.xi` only up to relative corrections of order `Q\u00b2M\u00b2/(P\u00b7q)\u00b2`\" \u2014 i.e. a different quantity from `Diffractive.Invariants.xi` (line 92) in the same namespace, with no lemma relating them. Nothing in the API signals the difference, so `tMinElastic_nonpos M (Invariants.xi i)` elaborates and reads as the physical boundary while, per the author, it is not. Same identifier reused at lines 234 (`tMinElastic_def`), 237 (`neg_tMinElastic`), 248 (`tMinElastic_xi_zero`), 255 (`tMinElastic_nonpos`), and worst at line 242, where `Invariants.t_le_tMinElastic_iff (i : Invariants) (M xi : \u211d)` puts both meanings in one signature: `i.xi` and the free `xi` are different \u03be's.",
+   "line": "231"
+  }
+ ],
+ "head_sha": "ae61b8298bf890558ac45fdf4420b79992228628",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 122,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4b557384e29d68c7c40d6fc050475a655fa75b9ddaff7b422f5103513ae1728b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T145146Z-122-naming-83a6a5",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T14:51:46Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names and suffixes otherwise match the roadmap's prescribed vocabulary and the statements they carry, and no notation is introduced. But `xi` is used for two inequivalent quantities in one namespace \u2014 `Invariants.xi` (the invariant `\u0394\u00b7q/P\u00b7q`) and the argument of `tMinElastic` (the light-cone `\u0394\u207a/P\u207a`), which the file's own docstring says are not equal at finite energy.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "47af0aef4f14f7d595539f167bf6b009370866f1021410172779cdc576585e50",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 169466,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 169466,
+  "cache_read_input_tokens": 349956,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 32845,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 32845,
+    "cache_read_input_tokens": 117944,
+    "input_tokens": 2,
+    "output_tokens": 4377,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11043,
+  "output_tokens_details": {
+   "thinking_tokens": 8281
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
