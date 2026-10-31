@@ -1,0 +1,244 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.5292995,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 270.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 191628,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 191628,
+    "cache_read_input_tokens": 2230479,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 36,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2882,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2882,
+      "cache_read_input_tokens": 166942,
+      "input_tokens": 2,
+      "output_tokens": 3728,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19904,
+    "output_tokens_details": {
+     "thinking_tokens": 14529
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 3.5293,
+ "dedupe_key": "eic/EpsilonEridani|120|c4c61a10ff95c8ea3dad3d5bb205f13f9aa7edca|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "dace79ca4644a898987e0484d420f08d6909718dd8df368ab9de5c5b51f5d307",
+ "diff_sha256": "dace79ca4644a898987e0484d420f08d6909718dd8df368ab9de5c5b51f5d307",
+ "duration_s": 270.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `LinearIndependent` over `code/EpsilonEridani` returns only `Tensor.lean:331,332,460` and an unrelated hit in `Inference/Identifiability.lean:599`, so no shared lemma exists yet; `Tensors/Basic.lean:709-720` and `733-769` carry out the same probe elimination (`mul_eq_zero.mp \u2026 |>.resolve_right hU.\u2026`) that `Tensor.lean:333-340` repeats.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Factor the generic statement out once, e.g. `theorem linearIndependent_pair_of_probes {B\u2081 B\u2082 : Bilin V} {v\u2081 w\u2081 v\u2082 w\u2082 : V} (h\u2081 : B\u2081 v\u2081 w\u2081 \u2260 0) (h\u2082 : B\u2082 v\u2081 w\u2081 = 0) (h\u2083 : B\u2081 v\u2082 w\u2082 = 0) (h\u2084 : B\u2082 v\u2082 w\u2082 \u2260 0) : LinearIndependent \u211d ![B\u2081, B\u2082]` (the current 10-line `LinearIndependent.pair_iff` proof verbatim), place it with the other `Bilin`/alternating-map infrastructure under `EpsilonEridani/Mathematics/LinearAlgebra/`, and derive `linearIndependent_spinStructure` from it; then obtain `fromF1F2_ne_zero` and `decomposition_unique` from the same lemma via `LinearIndependent.pair_iff`/`LinearIndependent.eq_of_pair`, as `fromG1G2_ne_zero`/`fromG1G2_inj` already do.",
+   "issue": "`linearIndependent_spinStructure` (+ `fromG1G2_inj`, `fromG1G2_ne_zero`, `IsG1G2Decomposition.unique`) re-derive, for a third time in the repo, the generic fact \"two bilinear forms separated by two probe pairs are linearly independent, hence their coefficients are pinned\". `Tensors/Basic.lean:706 fromF1F2_ne_zero` and `Tensors/Basic.lean:726 decomposition_unique` prove exactly the same thing by hand (\u224850 lines) for `transverseMetric` and `Bilin.rankOne g pT pT`, with `UniquenessAssumptions` (`Tensors/Basic.lean:685`) being `SpinUniquenessAssumptions` (`Tensor.lean:309`) up to field renaming.",
+   "line": "329"
+  }
+ ],
+ "head_sha": "c4c61a10ff95c8ea3dad3d5bb205f13f9aa7edca",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "565511e6bac4876892478c57a4bd1e78f1565f9e0bf7dc5320c9c3faa148140a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T172850Z-120-reuse-2c06ac",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T17:28:50Z",
+ "submitted_by": "wdconinc",
+ "summary": "New material is genuinely new and reuses the `AlternatingMap.bilinMap` API and Mathlib's `detRowAlternating`/`det_fin_three` machinery well. One defect: the probe-separation non-degeneracy argument is written a third time instead of being factored into the shared lemma that the existing hadronic version also needs.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Metrics/LeviCivita.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 24,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c61e71bd0867ba536a66644131180cda0dbe9f5504d4853e083731d2875ad93c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 191628,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 191628,
+  "cache_read_input_tokens": 2230479,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 36,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2882,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2882,
+    "cache_read_input_tokens": 166942,
+    "input_tokens": 2,
+    "output_tokens": 3728,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19904,
+  "output_tokens_details": {
+   "thinking_tokens": 14529
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
