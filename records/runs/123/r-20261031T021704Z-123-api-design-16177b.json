@@ -1,0 +1,238 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9450770000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 281.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 97136,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 97136,
+    "cache_read_input_tokens": 790644,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 288,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 288,
+      "cache_read_input_tokens": 100071,
+      "input_tokens": 2,
+      "output_tokens": 3609,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23131,
+    "output_tokens_details": {
+     "thinking_tokens": 17726
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.945077,
+ "dedupe_key": "eic/EpsilonEridani|123|e78cb3245fdeb2c3bec5a9ead16b89ab51738435|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "e76b5b2a515f01c47dc6982d84fdc78c72f66bfa09132a22cd638074c9c97ca4",
+ "diff_sha256": "e76b5b2a515f01c47dc6982d84fdc78c72f66bfa09132a22cd638074c9c97ca4",
+ "duration_s": 281.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`TMD/Reduction.lean:47` `collinearFromTmd_nonneg (fTmd : Tmd Flavor) (h : Assumptions fTmd)`; `TMD/Basic.lean:149-151` `integrateTransverse_nonneg ... (h : Assumptions f)`; `Unified/Basic.lean:46` `tmdStruct : TMD.Assumptions U.tmd`. Roadmap README convention 9 requires the physical/analytic split plus the exactness lemma for each object introduced. Mathlib `MeasureTheory/Integral/CircleAverage.lean:217` `@[fun_prop] theorem Continuous.circleAverage ... : Continuous (Real.circleAverage f c)`.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Add `GTMD.Regularity` (measurability/integrability of the slices) and the `assumptions_iff`-style split lemma required by roadmap convention 9, plus `regularity_azimuthalAverage` (available from `Continuous.circleAverage`/`ContinuousOn.circleAverage` on each slice, the `if kT < 0` branch being measurable), and an `assumptions_azimuthalAverage` combining it with `isTmdDensity_azimuthalAverage`.",
+   "issue": "Only the physical half is exposed: there is an `IsVectorTmdDensity` but no `VectorTmd`-level `Regularity`, no `assumptions_iff`, and no lemma producing `TMD.Regularity (azimuthalAverage f)`. Every existing consumer of a `TMD.Tmd` in the repo takes the full `TMD.Assumptions`, so `azimuthalAverage f` cannot be used with any of them.",
+   "line": "146"
+  },
+  {
+   "evidence": "Mathlib `MeasureTheory/Integral/CircleAverage.lean:345` `circleAverage_add (hf\u2081 : CircleIntegrable f\u2081 c R) (hf\u2082 : CircleIntegrable f\u2082 c R)`, `:272` `circleAverage_mono (hf\u2081 : CircleIntegrable f\u2081 c R)`, `:332` `circleAverage_smul`. Average.lean:68-70 docstring: \"the identification with the mean requires circle integrability\" \u2014 a condition the new interface never names.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Expose `CircleIntegrableTransverse g kT : Prop := CircleIntegrable (fun z => g (Complex.orthonormalBasisOneI.repr z)) 0 kT` with a transport lemma from an intrinsic condition (continuity on `Metric.sphere 0 |kT|`, or `IntervalIntegrable (fun \u03b8 => g (circleMapTransverse kT \u03b8))`), and the `circleAverageTransverse_add` / `_smul` / `_mono` restatements the amplitude decomposition of Layers 1\u20132 needs.",
+   "issue": "`circleAverageTransverse` is published with no name for the circle-integrability condition its own docstring relies on, and with no linearity lemmas. Mathlib gates `circleAverage_add`, `_sub`, `_smul`, `_mono`, `circleAverage_const_on_circle` and `ContinuousLinearMap.circleAverage_comp_comm` on `CircleIntegrable f c R`, so a consumer holding a `Transverse \u2192 E` function cannot state the hypothesis or reach any of them without unfolding through `Complex.orthonormalBasisOneI.repr`.",
+   "line": "71"
+  },
+  {
+   "evidence": "Mathlib `MeasureTheory/Integral/CircleAverage.lean:254` `circleAverage_const_on_circle`; the PR exposes only `circleAverageTransverse_const` (constant everywhere, Average.lean:109) and `_congr_sphere` (Average.lean:114). Roadmap README lines 108-114 (convention 2) make this factorisation the stated purpose of the definition.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Add `circleAverageTransverse_const_on_circle` (Mathlib's `circleAverage_const_on_circle` transported) and `azimuthalAverage_comp_norm : 0 \u2264 kT \u2192 azimuthalAverage (fun i x w Q2 \u03b6 => g i x \u2016w\u2016 Q2 \u03b6) i x kT Q2 \u03b6 = g i x kT Q2 \u03b6`.",
+   "issue": "`azimuthalAverage` has no retraction lemma: nothing states that averaging a function of the magnitude alone returns that function, so the definition is connected to `TMD.Tmd` only through `IsTmdDensity`. This is the lemma that makes convention 2's \"the reduction factors through an explicit azimuthal average\" usable; each consumer must currently re-derive it from `_congr_sphere` plus `_const`.",
+   "line": "155"
+  },
+  {
+   "evidence": "Transverse.lean:66-67 proof is `rw [LinearIsometryEquiv.norm_map, mem_sphere_zero_iff_norm.mp hz]`; used only at Average.lean:118 and :124. `Basic.lean` now carries `public import EpsilonEridani.Particles.Parton.GTMD.Average`, so the name reaches the whole parton surface.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Transverse.lean",
+   "fix": "State it in its canonical home for an arbitrary linear isometry equiv (`(e : E \u2243\u2097\u1d62[\u211d] F) (hz : z \u2208 Metric.sphere 0 r) : \u2016e z\u2016 = r`) under `EpsilonEridani/Mathematics/`, or drop the declaration and use `LinearIsometryEquiv.norm_map` with `mem_sphere_zero_iff_norm` at the two call sites.",
+   "issue": "`norm_repr_eq_of_mem_sphere` is general infrastructure published in the parton GTMD namespace and re-exported through `Parton.Basic`: its statement mentions no `Transverse` and no parton object, only `Complex.orthonormalBasisOneI.repr`, `Metric.sphere` and the norm, and its proof is two upstream rewrites.",
+   "line": "65"
+  },
+  {
+   "evidence": "Average.lean:79 `  rfl` closing `circleAverageTransverse_def`.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Write the proof as `:= (rfl)`.",
+   "issue": "`circleAverageTransverse_def` is proved `:= rfl`, publishing the unfolding as a definitional equality and inviting downstream defeq reliance on the `Complex.orthonormalBasisOneI` transport.",
+   "line": "79"
+  }
+ ],
+ "head_sha": "e78cb3245fdeb2c3bec5a9ead16b89ab51738435",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b9629b65772d2d73c56659c34ce8c9ebaa249b561709fdc03a08a91481a8be2a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T021704Z-123-api-design-16177b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T02:17:04Z",
+ "submitted_by": "veprbl",
+ "summary": "The exposed surface has no compatibility residue and the exposure level matches house style, but the new `VectorTmd`/`azimuthalAverage` interface delivers only the physical half of the assumption bundle, so the result cannot be fed to any existing TMD consumer, and `circleAverageTransverse` is published without a name for its integrability hypothesis or any linearity/retraction lemmas. One general norm/sphere lemma is also published in the parton namespace.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Transverse.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Reduction.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Reduction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Unified",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex/CircleMap.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "98ed58147c477e7340b906c68ae6208d0501791543d1d070bf6e9064b6b21940",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 97136,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 97136,
+  "cache_read_input_tokens": 790644,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 288,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 288,
+    "cache_read_input_tokens": 100071,
+    "input_tokens": 2,
+    "output_tokens": 3609,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23131,
+  "output_tokens_details": {
+   "thinking_tokens": 17726
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
