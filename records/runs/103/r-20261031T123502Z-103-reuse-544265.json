@@ -1,0 +1,267 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9210835000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 260.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 92488,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 92488,
+    "cache_read_input_tokens": 971437,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2490,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2490,
+      "cache_read_input_tokens": 93221,
+      "input_tokens": 2,
+      "output_tokens": 4265,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20413,
+    "output_tokens_details": {
+     "thinking_tokens": 14322
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.921084,
+ "dedupe_key": "eic/EpsilonEridani|103|56447b18072b33be3f2a9a3dcd8729c933046ab3|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "24f6d78f43846c6ee41c7fe15b285c3978aac24a1257161909dc7637b9f40799",
+ "diff_sha256": "24f6d78f43846c6ee41c7fe15b285c3978aac24a1257161909dc7637b9f40799",
+ "duration_s": 260.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:144-165 bodies are `g.projOrthogonal_apply_self F.timelike.ne'`, `g.projOrthogonal_eq_self_iff F.timelike.ne'`, `g.projOrthogonal_projOrthogonal F.timelike.ne' p`, `g.ker_projOrthogonal F.timelike.ne'`, `g.range_projOrthogonal F.timelike.ne'`; the generic lemmas are at DIS/Kinematics/Basic.lean:69,74,80,85,99. grep for `spatialPart_n|spatialPart_eq_self_iff|spatialPart_spatialPart|ker_spatialPart|range_spatialPart` finds no call site outside their own declarations.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Delete these five; at any future use site write `g.ker_projOrthogonal F.timelike.ne'` etc. directly (`F.spatialPart` is `g.projOrthogonal F.n` by definition, so they apply verbatim). Keep `spatialPart_def`, `spatialPart_apply` and `spatialPart_orthogonal_n`, which the rest of the file consumes.",
+   "issue": "Parallel API: `spatialPart_n` (144), `spatialPart_eq_self_iff` (147), `spatialPart_spatialPart` (152), `ker_spatialPart` (156) and `range_spatialPart` (162) restate `Bilin.projOrthogonal_apply_self`, `projOrthogonal_eq_self_iff`, `projOrthogonal_projOrthogonal`, `ker_projOrthogonal` and `range_projOrthogonal` with `u := F.n`; each proof is a single application of the generic lemma, and none is used in this PR or named by the roadmap's \u00a71.1 (Suggested.lean:103-120 asks only for orthogonality, linearity of the energy, and the massless norm).",
+   "line": 144
+  },
+  {
+   "evidence": "Tensors/Basic.lean:136-151 hand-rolls the structure; the combinator used by the PR is at DIS/Kinematics/Basic.lean:56-57 (`Module.preReflection u ((g u u)\u207b\u00b9 \u2022 g.flip u)`), and Mathlib supplies `Module.preReflection_apply` / `preReflection_apply_self` at upstream/mathlib/Mathlib/LinearAlgebra/Reflection.lean:74-82.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Define `reflect g u := Module.preReflection u ((2 * (g u u)\u207b\u00b9) \u2022 g u)`, deleting the `map_add'`/`map_smul'` plumbing; `reflect_apply` then follows by `simp [Module.preReflection_apply]` and `reflect_apply_self` from Mathlib's `Module.preReflection_apply_self` (`preReflection x f x = -x` given `f x = 2`), discharging `f u = 2` with `inv_mul_cancel\u2080 hu`.",
+   "issue": "`Bilin.reflect` is a near-clone of the new `Bilin.projOrthogonal` (both `v \u21a6 v - f v \u2022 u` with `f = c \u2022 g u`, both unconditional, same `g u u = 0` degeneration note), but it still assembles the linear map from raw pieces with 16 lines of manual `map_add'`/`map_smul'`, while the PR's new definition uses the `Module.preReflection` combinator one line away in the same project.",
+   "line": 136
+  }
+ ],
+ "head_sha": "56447b18072b33be3f2a9a3dcd8729c933046ab3",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9f1945247113e362e7f8160cf224dd455e56d1840e29066818759145683c40e1",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T123502Z-103-reuse-544265",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T12:35:02Z",
+ "submitted_by": "veprbl",
+ "summary": "The new material reuses Mathlib and the new Bilin.projOrthogonal correctly, but five Frame.spatialPart lemmas are a 1:1 restatement of the generic projOrthogonal lemmas with no consumer, and the pre-existing Bilin.reflect still hand-rolls the linear-map assembly that the combinator this PR just located (Module.preReflection) provides.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Numerics/FourMom.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/Jets.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Transvection/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 27,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ac0086bb70b0fdc8f28c1e21f5707daf6ef5d69dfcaae0b1f639ebcfd8038d19",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 92488,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 92488,
+  "cache_read_input_tokens": 971437,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2490,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2490,
+    "cache_read_input_tokens": 93221,
+    "input_tokens": 2,
+    "output_tokens": 4265,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20413,
+  "output_tokens_details": {
+   "thinking_tokens": 14322
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

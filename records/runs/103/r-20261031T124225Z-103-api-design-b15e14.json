@@ -1,0 +1,219 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7388195000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 310.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 78673,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 78673,
+    "cache_read_input_tokens": 661669,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6799,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6799,
+      "cache_read_input_tokens": 75097,
+      "input_tokens": 2,
+      "output_tokens": 4844,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24845,
+    "output_tokens_details": {
+     "thinking_tokens": 20253
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.73882,
+ "dedupe_key": "eic/EpsilonEridani|103|56447b18072b33be3f2a9a3dcd8729c933046ab3|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "24f6d78f43846c6ee41c7fe15b285c3978aac24a1257161909dc7637b9f40799",
+ "diff_sha256": "24f6d78f43846c6ee41c7fe15b285c3978aac24a1257161909dc7637b9f40799",
+ "duration_s": 310.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`cosAngle_def` (line 212) is the only unconditional characterisation; `spatialPart_pairing_spatialPart` (line 167) gives `g a\u20d7 b\u20d7 = g a b - E a E b`, so the general identity is immediate but unstated. Roadmap Suggested.lean:181-188 applies `cosAngle` to merged (massive) pseudojets.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Add the general symmetric-`g` form, e.g. `theorem cosAngle_eq_energy_mul_sub_div (hg : g.IsSymm) (a b : V) : F.cosAngle a b = (F.energy a * F.energy b - g a b) / (F.spatialNorm a * F.spatialNorm b)`, and derive `one_sub_cosAngle_of_massless` from it.",
+   "issue": "The only lemma relating `cosAngle` to the exposed scalars is `one_sub_cosAngle_of_massless`, which requires `g a a = 0`, `g b b = 0` and positive energies. The module docstring itself states that the `E`-scheme sum of two massless momenta is massive, and the roadmap's `durhamDist`/`genKtDist` (Suggested.lean:181,186) take `F.cosAngle a b` on exactly those pseudojets. For a massive pair the only route is `cosAngle_def` plus a re-derivation through `spatialPart_pairing_spatialPart`, so the characteristic API of `cosAngle` is incomplete for its intended consumers.",
+   "line": "239"
+  },
+  {
+   "evidence": "`energy` (line 96) divides by `\u221a(g n n)` and `spatialPart` (line 119) by `g n n`, making both homogeneous of degree 0 in `n`; `@[ext]` at line 81 is equality of `n`, strictly finer than agreement of every exposed operation.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Add the invariance lemmas, e.g. `energy_smul_n {c : \u211d} (hc : 0 < c) : (Frame.mk (c \u2022 F.n) _).energy = F.energy` together with the `spatialPart`/`spatialNorm`/`cosAngle` versions (`spatialPart` holds for `c \u2260 0`; energy flips sign for `c < 0`), or constrain the field with `g n n = 1`.",
+   "issue": "`Frame` exposes the scale of `n` as data that no operation or law uses: for `0 < c`, the frame `\u27e8c \u2022 n, _\u27e9` has the same `energy`, `spatialPart`, `spatialNorm` and `cosAngle` as `\u27e8n, _\u27e9` (energy: `c * g p n / \u221a(c\u00b2 g n n)`; spatialPart: `(c g p n)/(c\u00b2 g n n) \u2022 (c \u2022 n)` = `(g p n/g n n) \u2022 n`), yet `@[ext]` makes them unequal. The field docstring claims `n` is the observer four-velocity \"up to normalisation\", but nothing records that, so consumers (\u00a71.2's Breit-frame existence/uniqueness, which must pick a normalisation) cannot transport any statement between a frame and its rescaling.",
+   "line": "82"
+  },
+  {
+   "evidence": "`Tensors/Basic.lean:86` opens a second `namespace Bilin` holding `rankOne`/`IsIsometry`/`reflect` (lines 91-175), and line 174 must now write `Kinematics.Bilin.apply_sub_smul_pair` to reach across the split; `Tensors/Basic.lean:293,340` reach the new lemmas only via the `open ... (Bilin)` alias at line 84.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "fix": "Move the remaining general `Bilin` declarations (`rankOne`, `rankOne_apply`, `rankOne_isSymm`, `IsIsometry`, `isIsometry_id`, `reflect` and its lemmas) into `Kinematics.Bilin` in this PR, updating all uses; none of them mentions `DisKinematics`.",
+   "issue": "The PR homes `projOrthogonal` and `apply_sub_smul_pair` in `Kinematics.Bilin`, the namespace of the `Bilin` abbrev, while `rankOne`, `IsIsometry` and `reflect` stay in the distinct namespace `Tensors.Bilin`. Dot notation on `g : Bilin V` resolves only into `Kinematics.Bilin`, so after this PR `g.projOrthogonal u` works while `g.reflect u` does not, and `open`ing both makes any future shared name ambiguous. The `Bilin` API is now two-homed under the same short name.",
+   "line": "35"
+  }
+ ],
+ "head_sha": "56447b18072b33be3f2a9a3dcd8729c933046ab3",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "61bdeb9aded81befa9b9ec75808a360bb118db89944d34e4ff3fbe568d21fee0",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T124225Z-103-api-design-b15e14",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T12:42:25Z",
+ "submitted_by": "veprbl",
+ "summary": "No compatibility residue and bodies are properly unexposed in the new Jets files, but the `cosAngle` API stops at the massless specialisation that Layer 2's pseudojet consumers cannot use, `Frame` carries the normalisation of `n` as data no law constrains or relates, and the `Bilin` dot-notation API is now split across two namespaces of the same short name.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Witness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "00ac42f4d0a924239c0a1001786ef79aa4051ff6ce21d6be173e29eecc20df5b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 78673,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 78673,
+  "cache_read_input_tokens": 661669,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6799,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6799,
+    "cache_read_input_tokens": 75097,
+    "input_tokens": 2,
+    "output_tokens": 4844,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24845,
+  "output_tokens_details": {
+   "thinking_tokens": 20253
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

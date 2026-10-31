@@ -1,0 +1,220 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.603811,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 229.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 83982,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 83982,
+    "cache_read_input_tokens": 683242,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4038,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4038,
+      "cache_read_input_tokens": 83167,
+      "input_tokens": 2,
+      "output_tokens": 3725,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16890,
+    "output_tokens_details": {
+     "thinking_tokens": 12716
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 1.603811,
+ "dedupe_key": "eic/EpsilonEridani|103|56447b18072b33be3f2a9a3dcd8729c933046ab3|placement|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "24f6d78f43846c6ee41c7fe15b285c3978aac24a1257161909dc7637b9f40799",
+ "diff_sha256": "24f6d78f43846c6ee41c7fe15b285c3978aac24a1257161909dc7637b9f40799",
+ "duration_s": 229.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -n gWit` finds it only in DIS/Tensors/Basic.lean and the new Jets/Frame/Witness.lean (the Reciprocity.lean hits are `ContractingWith_timelikeMap`). DIS/Tensors/Basic.lean:755 defines it with `LinearMap.mk\u2082` over `\u211d \u00d7 \u211d \u00d7 \u211d` and uses no Tensors declaration.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Witness.lean",
+   "fix": "Move `gWit`, `gWit_apply` and `gWit_isSymm` to `DIS/Kinematics/Basic.lean` (e.g. a `Kinematics.Witness` namespace next to the `Bilin` abbrev), update the uses in `DIS/Tensors/Basic.lean` in this PR, and let `Jets/Frame/Witness.lean` import only `DIS.Kinematics.Basic` plus `Jets.Frame.Basic` \u2014 the same mechanical earlier-file move this PR already performs for `apply_sub_smul_pair`.",
+   "issue": "`public import EpsilonEridani.QFT.Scattering.DIS.Tensors.Basic` exists solely to reach `gWit`/`gWit_isSymm` (the `open` on line 28 names nothing else), so a Jets-layer file now depends on the entire inclusive-DIS hadronic-tensor development (F1/F2 basis, `exists_isF1F2Decomposition`, `decomposition_unique`) for a 3-dimensional Minkowski form. `gWit` is a broadly useful concrete `+--` form that depends on nothing in `Tensors`, yet lives in `Tensors.Hadronic.Witness`, a section documented as the `IsLorentzCovariant` vacuity audit (DIS/Tensors/Basic.lean:750-770).",
+   "line": 9
+  },
+  {
+   "evidence": "DIS/Tensors/Basic.lean:84-86 opens `Kinematics (Bilin)` and then declares `namespace Bilin`, which resolves to `...DIS.Tensors.Bilin`, distinct from the abbrev's `...DIS.Kinematics.Bilin` where this PR puts `projOrthogonal` (Kinematics/Basic.lean:35-115).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "fix": "In this PR, move the remaining generic declarations (`rankOne`, `rankOne_apply`, `rankOne_isSymm`, `IsIsometry`, `isIsometry_id`, `reflect`, `reflect_apply`, `reflect_apply_self`, `reflect_apply_of_orthogonal`, `reflect_isometry`) into `Kinematics.Bilin` in `DIS/Kinematics/Basic.lean` and update their uses, so `Bilin`'s API has one home; a pure namespace move, no declaration renames.",
+   "issue": "The PR makes `Kinematics.Bilin` (the abbrev's own namespace) the home for generic bilinear-form API by moving `apply_sub_smul_pair` there and adding `projOrthogonal`, but leaves the rest of the equally DIS-independent API \u2014 `rankOne`, `IsIsometry`, `isIsometry_id`, `reflect` and its lemmas \u2014 in the unrelated `Tensors.Bilin` namespace of `DIS/Tensors/Basic.lean:86-177`. `projOrthogonal` and `reflect` are the same `Module.preReflection u f` construction and now sit in different files and namespaces, which is how a second copy of the projection gets written; the cross-namespace call at DIS/Tensors/Basic.lean:174 (`Kinematics.Bilin.apply_sub_smul_pair` inside `namespace Bilin`) makes the split visible.",
+   "line": 35
+  }
+ ],
+ "head_sha": "56447b18072b33be3f2a9a3dcd8729c933046ab3",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "70d147aac4d99bfbbf53eeae946ee13e6d773368943b2204477187c56900c1fd",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T125149Z-103-placement-3821a3",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T12:51:49Z",
+ "submitted_by": "veprbl",
+ "summary": "The Jets frame files are in the roadmap-named home and the projection move is clean, but two pieces of shared Bilin-level material are left in the wrong home: gWit stays buried in the hadronic-tensor covariance audit (pulling all of DIS/Tensors/Basic into Jets for a three-line metric), and the generic Bilin API is now split across Kinematics.Bilin and Tensors.Bilin.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Reciprocity.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d837e8592c5094dcbf203554ddf669fc628f4e44bbcbcb73d529c85f3be1efec",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 83982,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 83982,
+  "cache_read_input_tokens": 683242,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4038,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4038,
+    "cache_read_input_tokens": 83167,
+    "input_tokens": 2,
+    "output_tokens": 3725,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16890,
+  "output_tokens_details": {
+   "thinking_tokens": 12716
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
