@@ -1,0 +1,247 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.1051400000000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 260.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 180218,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 180218,
+    "cache_read_input_tokens": 1600890,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1456,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1456,
+      "cache_read_input_tokens": 159310,
+      "input_tokens": 2,
+      "output_tokens": 4012,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20095,
+    "output_tokens_details": {
+     "thinking_tokens": 14129
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 3.10514,
+ "dedupe_key": "eic/EpsilonEridani|167|322bf066d8f3eaf116e069c1aaeefd91b41ca783|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "9b8ad4fe87937df42c64fca13668e9d91c7ffc9de1cbf6c96f165ab616ff54dc",
+ "diff_sha256": "9b8ad4fe87937df42c64fca13668e9d91c7ffc9de1cbf6c96f165ab616ff54dc",
+ "duration_s": 260.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `Mathlib/Analysis/ODE/Basic.lean:44: def IsIntegralCurveOn (\u03b3 : \u211d \u2192 E) (v : \u211d \u2192 E \u2192 E) (s : Set \u211d) : Prop := \u2200 t \u2208 s, HasDerivWithinAt \u03b3 (v t (\u03b3 t)) s t`; line 98 `lemma IsIntegralCurveOn.mono`. Instantiating at `E = \u211d`, `v = fun _ a => -\u03b2\u2080 * a ^ 2` gives `v t (f t) = -\u03b2\u2080 * f t ^ 2`, the body of the new definition.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "fix": "State the hypothesis as `IsIntegralCurveOn f (fun _ a => -\u03b2\u2080 * a ^ 2) s` (add `public import Mathlib.Analysis.ODE.Basic`), or keep the domain name by defining `IsOneLoopRGSolution \u03b2\u2080 s f := IsIntegralCurveOn f (fun _ a => -\u03b2\u2080 * a ^ 2) s`; delete `IsOneLoopRGSolution.mono` in favour of `IsIntegralCurveOn.mono`. The `HasDerivWithinAt`/`HasDerivAt` gap costs nothing here: the witnesses give `HasDerivAt` (use `.hasDerivWithinAt`), and every consumer (`ne_zero`, `inv_eqOn`, `eqOn_oneLoopCoupling`, `add_landauLogScale_notMem`) already assumes `IsOpen s`, where `isIntegralCurveOn_iff_isIntegralCurveAt hs` and `IsIntegralCurveAt.hasDerivAt` recover the pointwise `HasDerivAt`.",
+   "issue": "`IsOneLoopRGSolution \u03b2\u2080 s f := \u2200 t \u2208 s, HasDerivAt f (-\u03b2\u2080 * f t ^ 2) t` together with `IsOneLoopRGSolution.mono` (line 161) re-creates, for the single vector field `fun _ a => -\u03b2\u2080 * a ^ 2`, the predicate Mathlib already provides: `IsIntegralCurveOn \u03b3 v s` (`upstream/mathlib/Mathlib/Analysis/ODE/Basic.lean:44`) with `IsIntegralCurveOn.mono` (line 98), `isIntegralCurveOn_iff_isIntegralCurveAt` (line 116) and `IsIntegralCurveAt.hasDerivAt` (line 101). TauCeti states its ODE hypotheses with that API rather than a bespoke predicate (e.g. `upstream/TauCeti/TauCeti/Analysis/ODE/LyapunovPerron/Basic.lean:655`, `.../Local.lean:263`, `.../GlobalSolution.lean:242`).",
+   "line": 143
+  },
+  {
+   "evidence": "grep of the file for `isOneLoopRGSolution_iff` returns only the declaration at lines 149\u2013151; line 151 is `Iff.rfl`, lines 155\u2013157 are `theorem IsOneLoopRGSolution.hasDerivAt \u2026 := hf t ht`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "fix": "Delete `isOneLoopRGSolution_iff`; keep `IsOneLoopRGSolution.hasDerivAt` (or drop both if the predicate becomes `IsIntegralCurveOn` per the previous finding).",
+   "issue": "`isOneLoopRGSolution_iff` is `Iff.rfl` on an `@[expose]`d definition: its forward direction is exactly `IsOneLoopRGSolution.hasDerivAt` (line 155) and its reverse direction is the anonymous constructor the file already uses directly (`isOneLoopRGSolution_oneLoopCoupling`, line 180, is `fun _ ht => \u2026`). It has no use site in the diff.",
+   "line": 149
+  }
+ ],
+ "head_sha": "322bf066d8f3eaf116e069c1aaeefd91b41ca783",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 167,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3126670495e8c9be9b5fa041835f9e7ecc4ff2fb52b5f979ace1cea9657acab7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T150743Z-167-reuse-dd6c2f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T15:07:43Z",
+ "submitted_by": "wdconinc",
+ "summary": "The physics content is new and reuses the QCD colour-factor and Mathlib analysis API correctly, but the new `IsOneLoopRGSolution` predicate with its `mono`/intro-elim lemmas is a parallel API to Mathlib's `IsIntegralCurveOn`, and `isOneLoopRGSolution_iff` is an unused `Iff.rfl` restatement of the exposed definition.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/ODE",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/ODE/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/ODE",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/ODE/ExistUnique.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/ODE/PicardLindelof.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/ODE",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/ODE/ExistUnique.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 23,
+  "trace_truncated": false
+ },
+ "transcript_blob": "dabb28a7967be9e2d5ad23f46a6e58b4b55eaf8935c61cd2c234034824ec1c06",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 180218,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 180218,
+  "cache_read_input_tokens": 1600890,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1456,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1456,
+    "cache_read_input_tokens": 159310,
+    "input_tokens": 2,
+    "output_tokens": 4012,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20095,
+  "output_tokens_details": {
+   "thinking_tokens": 14129
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
