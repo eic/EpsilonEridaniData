@@ -1,0 +1,227 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2653689999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 176.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 135492,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 135492,
+    "cache_read_input_tokens": 1171938,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 372,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 372,
+      "cache_read_input_tokens": 124829,
+      "input_tokens": 2,
+      "output_tokens": 1529,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12974,
+    "output_tokens_details": {
+     "thinking_tokens": 8787
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.265369,
+ "dedupe_key": "eic/EpsilonEridani|122|36c31179024c1ea0ab8c6760c507a75cd00efea1|reuse|claude-opus-5|30e3cfe49d22c07d|production|4",
+ "diff_blob": "6c2e1ddc902421e4f6350dfb77ddf04b590000f1fdc8c3af2e58ab14f66022e6",
+ "diff_sha256": "6c2e1ddc902421e4f6350dfb77ddf04b590000f1fdc8c3af2e58ab14f66022e6",
+ "duration_s": 176.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diffractive/Kinematics.lean:152-193 vs `@[simps] def toDisKinematics` at EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean:64; `@[simps]` is already in use in the repo (also PVES/Electroweak/Representation.lean).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Delete lines 164-193 and tag `def ofExcl` (line 152) with `@[simps]`, exactly as this PR does for `toDisKinematics` in Exclusive/Kinematics/Basic.lean:64-71.",
+   "issue": "ofExcl_Pq, ofExcl_Dq, ofExcl_Q2, ofExcl_t (lines 166-193) are four hand-written `(rfl)` projection lemmas that `@[simps]` on `ofExcl` generates verbatim, under the same names.",
+   "line": 166
+  },
+  {
+   "evidence": "Lines 247-249 (`t \u2264 tMinElastic M xiLC \u2194 xiLC^2*M^2/(1-xiLC) \u2264 -t`) and 254-257, whose proof is `rw [Invariants.absT_eq_neg_t]; exact le_tMinElastic_iff M xiLC i.t`; grep shows no other use of either lemma in EpsilonEridani/.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Keep one. Per the roadmap's Convention 2 (Diffraction/README.md:113-115, every |t| statement in terms of `absT`), keep the `absT` form and prove it directly from `neg_tMinElastic`, deleting `le_tMinElastic_iff`; or drop the `Invariants` wrapper and use `le_tMinElastic_iff M xiLC i.t`, which already closes goals about `i.absT`.",
+   "issue": "`Invariants.t_le_tMinElastic_iff` is `le_tMinElastic_iff M xiLC i.t` with `absT` delta-unfolded \u2014 `absT i := -i.t` and `absT_eq_neg_t` is `rfl` (lines 105, 108) \u2014 so lines 247 and 254 state the same proposition up to defeq, giving two names for one fact with no consumer.",
+   "line": 254
+  }
+ ],
+ "head_sha": "36c31179024c1ea0ab8c6760c507a75cd00efea1",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 122,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "29528fd92821cf1b379a5ab19f65a41af953b7ef627ce3afd370a9371964f68a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 4,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T164736Z-122-reuse-1b3b3e",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T16:47:36Z",
+ "submitted_by": "wdconinc",
+ "summary": "The diffractive invariants, \u03be\u2013\u03b2 kinematics and tMinElastic have no counterpart in EpsilonEridani, Mathlib, Physlib or TauCeti, and the PR reuses ExclKinematics/DisKinematics.xBj through the ofExcl bridge as the roadmap prescribes. Two pieces of scaffolding inside the diff re-derive what an attribute and an earlier line already provide.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/Kinematics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/Kinematics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "25001040d6c7450197d78f70263f31907a8b2cf409d59d5643fac718c6bce70d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 135492,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 135492,
+  "cache_read_input_tokens": 1171938,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 372,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 372,
+    "cache_read_input_tokens": 124829,
+    "input_tokens": 2,
+    "output_tokens": 1529,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12974,
+  "output_tokens_details": {
+   "thinking_tokens": 8787
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
