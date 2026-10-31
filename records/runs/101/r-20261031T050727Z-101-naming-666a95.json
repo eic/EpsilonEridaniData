@@ -1,0 +1,299 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.705876,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 406.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 112289,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 112289,
+    "cache_read_input_tokens": 1488002,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4643,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4643,
+      "cache_read_input_tokens": 110869,
+      "input_tokens": 2,
+      "output_tokens": 2318,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 33551,
+    "output_tokens_details": {
+     "thinking_tokens": 26383
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "53264f1eb6514941bc81e80d2077947441cad972",
+ "cost_usd": 2.705876,
+ "dedupe_key": "eic/EpsilonEridani|101|2a340ab8ed168e7f828777e3a318764e7f5aa4e8|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "96dcd3fb99968ee2cebfe3e18bd4352399b9564040a4471ddad91a266375ef0a",
+ "diff_sha256": "96dcd3fb99968ee2cebfe3e18bd4352399b9564040a4471ddad91a266375ef0a",
+ "duration_s": 406.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/mathlib/Mathlib/Analysis/Calculus/FDeriv/Analytic.lean:452,468 (`AnalyticOnNhd.deriv`, `AnalyticAt.deriv`); upstream/mathlib/Mathlib/Algebra/Group/EvenFunction.lean:105,124,128 (`Even.const_smul`, `Even.mul_odd`, `Odd.mul_even`).",
+   "file": "EpsilonEridani/Mathematics/Calculus/EvenFunction.lean",
+   "fix": "Rename to `Function.Even.odd_deriv` (conclusion-stating, dot notation preserved: `hf.odd_deriv`); update the two uses in SphericalBessel/Basic.lean:169,179.",
+   "issue": "`Function.Even.deriv` proves `Function.Odd (deriv f)`, but the `P.deriv` pattern upstream means \"deriv preserves P\" (`AnalyticAt.deriv : AnalyticAt \ud835\udd5c (deriv f) x`, `AnalyticOnNhd.deriv` \u2014 both used in this PR), and in Mathlib's own `Function.Even`/`Odd` file a unary `Even.op` keeps evenness (`Even.const_smul : (r \u2022 g).Even`, `Even.add`, `Even.left_comp`) while any parity flip is spelled out in the name (`Even.mul_odd`, `Even.smul_odd`, `Odd.smul_even`). The name advertises the wrong conclusion.",
+   "line": "28"
+  },
+  {
+   "evidence": "`grep -n '^namespace' code/EpsilonEridani/Mathematics/SpecialFunctions/**`: BesselK/Basic.lean:66 `namespace EpsilonEridani` + line 71 `def besselK (\u03bd x : \u211d) : \u211d`; Gegenbauer/Basic.lean:79; Legendre/Basic.lean:58-60; `EpsilonEridani.Real` occurs only in the two files added here.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "fix": "Use `namespace EpsilonEridani` in both new `SpecialFunctions` files (`EpsilonEridani.sphericalBesselJ`, `EpsilonEridani.analyticAt_sinc`, \u2026), matching `EpsilonEridani.besselK`; same at Trigonometric/Sinc.lean:25.",
+   "issue": "`namespace EpsilonEridani.Real` introduces a namespace layer no other file in the repo uses; the other Bessel family in the same tree is `EpsilonEridani.besselK (\u03bd x : \u211d)` and the neighbours are `EpsilonEridani.gegenbauerThreeHalves`, `EpsilonEridani.Polynomial.legendre` (the latter nested only because its declarations are `Polynomial`s and gain dot notation). `Real` yields no dot notation for `(x : \u211d)` arguments, so the extra component only splits the API.",
+   "line": "90"
+  },
+  {
+   "evidence": "Lines 92-97: \"Here \\\"reduced\\\" means `j_l(x) / x ^ l`, not the Riccati\u2013Bessel function `x * j_l(x)`\"; no upstream declaration uses \"reduced\" for a spherical Bessel quantity (`grep -r 'phericalBessel' upstream/` \u2192 no matches).",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "fix": "Name it for what it is, e.g. `sphericalBesselJDivPow` (consistent with this PR's own `..._div_pow` vocabulary) or a `rayleigh`-based name, and rename the dependent lemmas.",
+   "issue": "`reducedSphericalBesselJ` names `j_l(x)/x^l` \"reduced\", a term neither A&S \u00a710.1 nor DLMF \u00a710.49 attaches to this quantity, while in scattering/nuclear usage \"reduced\" is the opposite factor (`x * j_l(x)`, the Riccati\u2013Bessel function / reduced radial function). The docstring itself has to warn the reader off that reading \u2014 a name that needs a disclaimer against the expected meaning is misleading, and it propagates to ~12 public lemmas.",
+   "line": "98"
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Deriv.lean:412 `theorem tendsto_sin_div_nhdsNE_zero : Tendsto (fun x : \u211d \u21a6 sin x / x) (\ud835\udcdd[\u2260] 0) (\ud835\udcdd 1)`; repo precedent code/EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean:299,350 (`tendsto_mul_besselK_one_nhdsGT_zero`, `tendsto_besselK_nhdsGT_zero`).",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "fix": "Rename to `tendsto_sphericalBesselJ_div_pow_nhdsNE_zero`.",
+   "issue": "`tendsto_sphericalBesselJ_div_pow` omits the filter, so the name does not say where the limit is taken \u2014 and \u00a70.3's remaining large-argument asymptotics will want exactly this unqualified name for an `atTop` statement. Upstream names the directly analogous lemma with the filter.",
+   "line": "297"
+  }
+ ],
+ "head_sha": "2a340ab8ed168e7f828777e3a318764e7f5aa4e8",
+ "merge_base_sha": "53264f1eb6514941bc81e80d2077947441cad972",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 101,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8cbfb8fcae0b12e1c2797f7f1e6c95aa49d2004c9aab37c36a63ea1ffe15490a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T050727Z-101-naming-666a95",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T05:07:27Z",
+ "submitted_by": "veprbl",
+ "summary": "Four naming issues: `Function.Even.deriv` reads as \"deriv preserves evenness\" but proves oddness; the new `EpsilonEridani.Real` namespace layer diverges from the repo's other special functions (`EpsilonEridani.besselK`); `reducedSphericalBesselJ` coins \"reduced\" in a sense its own docstring has to disclaim; and the limit lemma omits the filter that upstream and the adjacent repo file both put in the name.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Sinc.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric/Sinc.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/Legendre/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Bessel.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Group/EvenFunction.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Group/EvenFunction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/SpecialFunctions/Hermite/Function/Ladder.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/SpecialFunctions/Hermite/Function/Oscillator.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Order/Filter/AtTopBot",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Calculus/EvenFunction.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 31,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4baf8aff819c292e60eed06a4ede1a7b8946cf508c25c6027590c5ff0a0a7918",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 112289,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 112289,
+  "cache_read_input_tokens": 1488002,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4643,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4643,
+    "cache_read_input_tokens": 110869,
+    "input_tokens": 2,
+    "output_tokens": 2318,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 33551,
+  "output_tokens_details": {
+   "thinking_tokens": 26383
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
