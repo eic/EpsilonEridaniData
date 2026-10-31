@@ -1,0 +1,221 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6778020000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 346.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 133365,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 133365,
+    "cache_read_input_tokens": 1237194,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1905,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1905,
+      "cache_read_input_tokens": 134683,
+      "input_tokens": 2,
+      "output_tokens": 5483,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 29017,
+    "output_tokens_details": {
+     "thinking_tokens": 24242
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 2.677802,
+ "dedupe_key": "eic/EpsilonEridani|180|7419d563e087b03540bb99ab2cb1ec1d7dc29f77|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2175d46dff60b44fa8aa73e0e652a8c9c21d63fe7f2165311b89562a1f8c3d72",
+ "diff_sha256": "2175d46dff60b44fa8aa73e0e652a8c9c21d63fe7f2165311b89562a1f8c3d72",
+ "duration_s": 346.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Proof body is `simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]; ring` \u2014 no `\u211d`-specific step and no `g.IsSymm`. The repo already states BilinForm results over a general ring: `Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean:99` `variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V] {B : BilinForm R V}`, inside `namespace LinearMap.BilinForm` (line 70). Mathlib has no equivalent (grep of `Mathlib/LinearAlgebra/BilinearForm/Basic.lean` finds only `sub_apply`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "fix": "Restate as `LinearMap.BilinForm.neg_apply_smul_sub {R M} [CommRing R] [AddCommGroup M] [Module R M] (g : LinearMap.BilinForm R M) (u v : M) (z : R)` and put it with the existing `LinearMap.BilinForm` material (e.g. `EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/`); the DIS uses specialise to `R = \u211d` unchanged.",
+   "issue": "`neg_apply_smul_sub` is a general bilinear-form identity with no DIS content, but is stated only for `Bilin V = LinearMap.BilinForm \u211d V` and placed in the `DIS.Kinematics` namespace, so no other consumer of bilinear forms can find or use it.",
+   "line": "34"
+  },
+  {
+   "evidence": "`trueInvariants_Q2_of_collinear_initialState` (line 368) with `hk` gives `Q\u00b2_true = z * Q\u00b2_e - (1 - z) * k'\u00b2`, so `Q\u00b2_true < Q\u00b2_e \u2194 (1 - z) * (Q\u00b2_e + k'\u00b2) > 0`, which needs only `z < 1`, `0 \u2264 k'\u00b2`, `0 < Q\u00b2_e`. The current `hQ` is strictly stronger: `0 < Q\u00b2_true` with `0 < z < 1`, `0 \u2264 k'\u00b2` forces `z * Q\u00b2_e = Q\u00b2_true + (1-z) k'\u00b2 > 0` hence `0 < Q\u00b2_e`, while the converse fails at `z = 1/2, Q\u00b2_e = 1, k'\u00b2 = 10` (`Q\u00b2_true = -4.5`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Replace `hQ` by `0 < (electronMethod g e.k e.p e.kPrime).Q2` and drop `hz0`, keeping `hk`, `hk' : 0 \u2264 g e.kPrime e.kPrime`, `hcol` and `hz1 : z < 1`. The goal then follows from `(1 - z) * ((electronMethod \u2026).Q2 + g e.kPrime e.kPrime) > 0`.",
+   "issue": "`trueInvariants_Q2_lt_electronMethod_Q2_of_collinear_initialState` assumes `hQ : 0 < (e.trueInvariants g .initialState).Q2` and `hz0 : 0 < z`; both are stronger than needed. Positivity of the *measured* `Q\u00b2_e` suffices, and it is also the hypothesis a caller can actually discharge from data; with it `hz0` becomes unused.",
+   "line": "387"
+  }
+ ],
+ "head_sha": "7419d563e087b03540bb99ab2cb1ec1d7dc29f77",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b7574fcf1b1a968f9fcd201fffc8c314ce8e20860dbfbcf81805ca188fc2da46",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T193600Z-180-generality-05a75c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T19:36:00Z",
+ "submitted_by": "veprbl",
+ "summary": "Two generality defects: a general bilinear-form identity is pinned to \u211d inside the DIS kinematics namespace, and one collinear-ISR inequality carries two hypotheses stronger than its proof needs. The reconstruction methods themselves sit at the right level (electron/hadronic correctly factored through ofTransfer, hadronic and Sigma results stated for arbitrary emission, mass remainders kept explicit).",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/QuadraticForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/Kinematics.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a43899619f8f785b9558e8428709e9d830595952f578d6dc949c22a449a09ac0",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 133365,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 133365,
+  "cache_read_input_tokens": 1237194,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1905,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1905,
+    "cache_read_input_tokens": 134683,
+    "input_tokens": 2,
+    "output_tokens": 5483,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 29017,
+  "output_tokens_details": {
+   "thinking_tokens": 24242
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

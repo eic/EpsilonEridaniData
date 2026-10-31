@@ -1,0 +1,190 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4829615,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 458.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 120283,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 120283,
+    "cache_read_input_tokens": 712133,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1741,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1741,
+      "cache_read_input_tokens": 121765,
+      "input_tokens": 2,
+      "output_tokens": 8858,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 36959,
+    "output_tokens_details": {
+     "thinking_tokens": 32786
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 2.482962,
+ "dedupe_key": "eic/EpsilonEridani|180|7419d563e087b03540bb99ab2cb1ec1d7dc29f77|correctness|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2175d46dff60b44fa8aa73e0e652a8c9c21d63fe7f2165311b89562a1f8c3d72",
+ "diff_sha256": "2175d46dff60b44fa8aa73e0e652a8c9c21d63fe7f2165311b89562a1f8c3d72",
+ "duration_s": 458.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Roadmap README 1.2 defines sigmaMethod as `Q\u00b2` from the electron method with `x_\u03a3 = Q\u00b2_e/(2 (P\u00b7k) y_\u03a3)`, while acceptance example 3 (README line 1098) and Suggested.lean `shift_sigma_collinear_isr` demand exactness in (x, Q\u00b2); checked in the collider frame that Q\u00b2 = E'\u00b2sin\u00b2\u03b8/(1-y) holds for the hard scattering (2k\u00b7k' = 2EE'(1+cos\u03b8) = E'\u00b2sin\u00b2\u03b8/(1-y)), and p_T' is unchanged by collinear ISR while y_\u03a3 = y_true (sigmaMethod_y_eq_trueInvariants_y_initialState), so BB's Q\u00b2_\u03a3 is ISR-exact and Q\u00b2_e is not.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "Keep the proved (x, y) statement, but do not record acceptance example 3 as closed; flag for the humans that roadmap 1.2's `Q\u00b2 from the electron method` should become the transverse-momentum form E'\u00b2sin\u00b2\u03b8/(1-y_\u03a3) (which needs a beam-axis datum, as the double-angle method already does) \u2014 with that Q\u00b2_\u03a3 the collinear-ISR shift does vanish in (x, Q\u00b2).",
+   "issue": "`sigmaMethod.Q2 := (electronMethod ...).Q2` is not the \u03a3-method virtuality of the cited Bassler\u2013Bernardi paper (Q\u00b2_\u03a3 = p_T'\u00b2/(1-y_\u03a3)), so the API labelled `sigmaMethod` returns a Q\u00b2 that is wrong by 1/z for any radiative event (trueInvariants_Q2_of_collinear_initialState: Q\u00b2 = z Q\u00b2_e), and no definition with this field can satisfy the roadmap's acceptance example 3 (\"the Sigma-method invariants equal the true invariants\"), since x_\u03a3 = Q\u00b2_\u03a3/(2(p\u00b7k)y_\u03a3) forces Q\u00b2_\u03a3 = 2(p\u00b7k)x y while the hard scattering has Q\u00b2 = 2(p\u00b7(k-\u2113))x y.",
+   "line": "219"
+  }
+ ],
+ "head_sha": "7419d563e087b03540bb99ab2cb1ec1d7dc29f77",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d1e09c2e6bf8511ffe5518475438641dbdb9e1b7ebb659b310a92031c5c1df30",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T191436Z-180-correctness-44a26a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T19:14:36Z",
+ "submitted_by": "veprbl",
+ "summary": "Every new definition and statement checks out: the collinear-ISR and collinear-FSR identities reproduce the Bl\u00fcmlein/Kwiatkowski relations, I confirmed them on an explicit Minkowski event, and the degenerate (division-by-zero) branches are genuinely true rather than vacuous. The one real fidelity gap is that `sigmaMethod.Q2` is the electron-method virtuality, which is the roadmap's own definition but not Bassler\u2013Bernardi's and makes acceptance example 3 unreachable in `(x, Q\u00b2)`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "03037a48d6f5a4ebf2fdbb2d8c955a2c86be66bce2c875b43b5377d55584a750",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 120283,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 120283,
+  "cache_read_input_tokens": 712133,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1741,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1741,
+    "cache_read_input_tokens": 121765,
+    "input_tokens": 2,
+    "output_tokens": 8858,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 36959,
+  "output_tokens_details": {
+   "thinking_tokens": 32786
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "approve"
+}

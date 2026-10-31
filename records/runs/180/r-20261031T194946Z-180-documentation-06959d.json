@@ -1,0 +1,164 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.1782664999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 179.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 71888,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 71888,
+    "cache_read_input_tokens": 169093,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3283,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3283,
+      "cache_read_input_tokens": 71828,
+      "input_tokens": 2,
+      "output_tokens": 6262,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14992,
+    "output_tokens_details": {
+     "thinking_tokens": 12322
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 1.178266,
+ "dedupe_key": "eic/EpsilonEridani|180|7419d563e087b03540bb99ab2cb1ec1d7dc29f77|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2175d46dff60b44fa8aa73e0e652a8c9c21d63fe7f2165311b89562a1f8c3d72",
+ "diff_sha256": "2175d46dff60b44fa8aa73e0e652a8c9c21d63fe7f2165311b89562a1f8c3d72",
+ "duration_s": 179.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 387-390: hypotheses `(hk : g e.k e.k = 0) (hk' : 0 \u2264 g e.kPrime e.kPrime) (hcol ...) (hz0 : 0 < z) (hz1 : z < 1) (hQ : 0 < (e.trueInvariants g .initialState).Q2)`; the proof closes by `nlinarith` from `Q\u00b2 = z Q\u00b2_e - (1-z) k'\u00b2`, which needs `0 < z < 1` and `0 < Q\u00b2`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "State the hypotheses: \"for `0 < z < 1`, a massless incoming and nonnegative-mass-squared scattered lepton, and a positive true virtuality, `Q\u00b2 < Q\u00b2_e`\".",
+   "issue": "`trueInvariants_Q2_lt_electronMethod_Q2_of_collinear_initialState` docstring claims \"the electron method overestimates the virtuality, `Q\u00b2 < Q\u00b2_e`, for a scattered lepton of nonnegative mass squared\", naming only `hk'` and omitting `hz0 : 0 < z`, `hz1 : z < 1` and `hQ : 0 < Q\u00b2`. Without those the claim is false (`z = 1` gives equality, `z > 1` reverses it), so the docstring promises more than the statement.",
+   "line": 385
+  },
+  {
+   "evidence": "Lines 203-205 vs lines 210-217 (`Bassler and Bernardi build their own virtuality from the transverse momentum of the scattered lepton; it is not used here`); roadmap README:510-513 states only `hadronicMethod_lab_formula` for `y_h` reduces to \"the Jacquet-Blondel expression `\u03a3_h (E_h - p_{z,h}) / (2 E_e)`\".",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "Add a sentence mirroring the Sigma one, e.g. \"Jacquet and Blondel build their virtuality from the hadronic transverse momentum; the exact transfer `-q_h\u00b2` is used here, and the two agree at Born level for massless leptons.\" The roadmap likewise ties only `y_h` to the Jacquet\u2013Blondel expression.",
+   "issue": "`hadronicMethod` is documented as \"The hadronic method of Jacquet and Blondel\" with `Q\u00b2_h = -q_h\u00b2` attributed to them. Jacquet\u2013Blondel's virtuality is built from the hadronic transverse momentum (`Q\u00b2_h = p_{T,h}\u00b2/(1 - y_h)`), which coincides with `-q_h\u00b2` only at Born level with massless leptons \u2014 precisely not the radiative regime this API is built for. The same docstring already applies this caveat to the Sigma method, so the silence here is misleading.",
+   "line": 203
+  },
+  {
+   "evidence": "Basic.lean:13 module docstring unchanged in the diff; Basic.lean:31-38 adds `theorem neg_apply_smul_sub`, which the PR description itself highlights as \"a public lemma in `Kinematics/Basic.lean`\".",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "fix": "Add a clause to the module docstring naming the material and what it feeds, e.g. \"and the bilinear expansion `neg_apply_smul_sub` of `-(z u - v)\u00b2`, used for the virtuality after collinear emission\".",
+   "issue": "The PR adds the public lemma `neg_apply_smul_sub`, a bilinear-form expansion that is neither a kinematic record nor a DIS invariant, but the module docstring still says only \"This module introduces a minimal kinematic record and canonical DIS invariants\", so the file's stated contents no longer describe what lives in it.",
+   "line": 13
+  }
+ ],
+ "head_sha": "7419d563e087b03540bb99ab2cb1ec1d7dc29f77",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1f8e69b84616a511d8ecb9aa03f6ef8fbaec857c5580c076797d1682614d214f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T194946Z-180-documentation-06959d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T19:49:46Z",
+ "submitted_by": "veprbl",
+ "summary": "Docstrings are mostly accurate and the formula summaries check out, but one collinear-ISR docstring states its inequality without the hypotheses that make it true, the hadronic method is attributed to Jacquet and Blondel without the virtuality caveat the author gave for the Sigma method, and Basic.lean's module docstring no longer covers the material in it.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4aaee496f821e82b190d164042b694e4e8adcb01bdf13ca7d1ac1f7d3205f4f6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 71888,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 71888,
+  "cache_read_input_tokens": 169093,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3283,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3283,
+    "cache_read_input_tokens": 71828,
+    "input_tokens": 2,
+    "output_tokens": 6262,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14992,
+  "output_tokens_details": {
+   "thinking_tokens": 12322
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

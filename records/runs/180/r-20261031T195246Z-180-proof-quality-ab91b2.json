@@ -1,0 +1,162 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4507135,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 240.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 84508,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 84508,
+    "cache_read_input_tokens": 255617,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3784,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3784,
+      "cache_read_input_tokens": 83947,
+      "input_tokens": 2,
+      "output_tokens": 2171,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19111,
+    "output_tokens_details": {
+     "thinking_tokens": 16841
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 1.450713,
+ "dedupe_key": "eic/EpsilonEridani|180|7419d563e087b03540bb99ab2cb1ec1d7dc29f77|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2175d46dff60b44fa8aa73e0e652a8c9c21d63fe7f2165311b89562a1f8c3d72",
+ "diff_sha256": "2175d46dff60b44fa8aa73e0e652a8c9c21d63fe7f2165311b89562a1f8c3d72",
+ "duration_s": 240.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Radiative.lean:499-502 (`rw [hkw, \u2190 neg_sub (z \u2022 w), \u2190 neg_sub w]` / `simp only [map_neg, LinearMap.neg_apply, neg_neg]` / `rw [neg_apply_smul_sub, hww]`) versus the ISR use at Radiative.lean:371, which applies `neg_apply_smul_sub` (Basic.lean:34) directly because `pX - p = z \u2022 k - k'` already has the lemma's shape.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Add the mirrored companion next to `neg_apply_smul_sub` in `Kinematics/Basic.lean`: `theorem neg_apply_sub_smul (g : Bilin V) (u v : V) (z : \u211d) : -g (u - z \u2022 v) (u - z \u2022 v) = z * -g (u - v) (u - v) + (1 - z) * (z * g v v - g u u)`, proved by the same `simp only [map_sub, map_smul, \u2026]; ring`; then the FSR proof is `rw [hkw, neg_apply_sub_smul, hww]; ring` with no sign manipulation.",
+   "issue": "`electronMethod_Q2_of_collinear_finalState` needs the bilinear expansion in the orientation `-g (k - z\u2022w) (k - z\u2022w)`, which `neg_apply_smul_sub` does not provide, so the proof reshapes the goal with `rw [\u2190 neg_sub (z \u2022 w), \u2190 neg_sub w]` plus `simp only [map_neg, LinearMap.neg_apply, neg_neg]` and no comment explaining the sign flip. The reusable fact (the same expansion with the scaling on the second argument) is hidden inside this proof, and the four lines obscure why the proof works.",
+   "line": "499"
+  },
+  {
+   "evidence": "Radiative.lean:497-498; `hk' : g e.kPrime e.kPrime = 0` and `hkw : e.kPrime = z \u2022 w` give only `z * (z * g w w) = 0`, so the goal is reached solely through `mul_eq_zero` with `hz : z \u2260 0` inside the simp call.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Make the cancellation explicit, e.g. `have h : z * (z * g w w) = 0 := by rw [hkw] at hk'; simpa only [map_smul, LinearMap.smul_apply, smul_eq_mul] using hk'` followed by `have hww : g w w = 0 := by field_simp at h; exact h` (or `rcases mul_eq_zero.1 h` with `hz`), or add a comment stating that `k'\u00b2 = z\u00b2 w\u00b2` and `z \u2260 0`.",
+   "issue": "`have hww : g w w = 0 := by simpa [hkw, hz] using hk'` is a terse simpa that silently does the whole nontrivial step: it must rewrite `k' = z \u2022 w`, push `map_smul`/`smul_eq_mul` to get `z * (z * g w w) = 0`, then split with `mul_eq_zero` and discharge both `z = 0` disjuncts from `hz`. The reason the massless-`k'` hypothesis transfers to `w` is invisible and depends on simp's normal form for the scaled bilinear application.",
+   "line": "497"
+  }
+ ],
+ "head_sha": "7419d563e087b03540bb99ab2cb1ec1d7dc29f77",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7e18262c37025e80f4e27e224ca89d27b34196adb463d01157e54188a6af4eb1",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T195246Z-180-proof-quality-ab91b2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T19:52:46Z",
+ "submitted_by": "veprbl",
+ "summary": "Proofs are generally robust (field_simp/ring/nlinarith, local projection lemmas, no change/show, nothing over 50 lines), and the earlier cross-wrapper rfl restatements are now rewrite chains. Two issues remain in electronMethod_Q2_of_collinear_finalState: the mirrored orientation of neg_apply_smul_sub is reconstructed inline by undocumented sign juggling instead of being a lemma, and an undocumented terse simpa performs a nonzero-divisor cancellation.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "replies.json",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e920c0979151ee09f313bf40c04e034105e98eb5a23fd22167c49f97c97a75d0",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 84508,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 84508,
+  "cache_read_input_tokens": 255617,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3784,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3784,
+    "cache_read_input_tokens": 83947,
+    "input_tokens": 2,
+    "output_tokens": 2171,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19111,
+  "output_tokens_details": {
+   "thinking_tokens": 16841
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

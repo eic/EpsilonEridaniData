@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.758159,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 257.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 99192,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 99192,
+    "cache_read_input_tokens": 476038,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2428,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2428,
+      "cache_read_input_tokens": 99987,
+      "input_tokens": 2,
+      "output_tokens": 6878,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21126,
+    "output_tokens_details": {
+     "thinking_tokens": 17170
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 1.758159,
+ "dedupe_key": "eic/EpsilonEridani|180|7419d563e087b03540bb99ab2cb1ec1d7dc29f77|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2175d46dff60b44fa8aa73e0e652a8c9c21d63fe7f2165311b89562a1f8c3d72",
+ "diff_sha256": "2175d46dff60b44fa8aa73e0e652a8c9c21d63fe7f2165311b89562a1f8c3d72",
+ "duration_s": 257.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib `LinearAlgebra/BilinearForm/Basic.lean:114`: `theorem neg_apply (x y : M\u2081) : (-B\u2081) x y = -B\u2081 x y`; diagonal-evaluation convention marks the repeat, `Analysis/InnerProductSpace/Defs.lean:304`: `theorem inner_sub_sub_self (x y : F) : \u27eax - y, x - y\u27eb = \u2026`. Grep shows no EpsilonEridani type among the lemma's arguments (`theorem neg_apply_smul_sub (g : Bilin V) (u v : V) (z : \u211d)`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "fix": "Move it to the `LinearMap.BilinForm` namespace and mark the repeated argument, e.g. state `g (z \u2022 u - v) (z \u2022 u - v) = \u2026` as `LinearMap.BilinForm.apply_smul_sub_self` (keeping the negated form is fine, but then avoid the `neg_apply` prefix), and update the two uses in `Radiative.lean:371,501`.",
+   "issue": "`neg_apply_smul_sub` is a general `LinearMap.BilinForm` identity (no DIS content; all arguments are Mathlib types) named against upstream usage: in Mathlib `neg_apply` on a bilinear form means applying the *negated form*, not negating the scalar result, and the name omits that both slots carry the same vector, so it reads as `(-g) (z\u2022u) (sub \u2026)` rather than `-g (z\u2022u-v) (z\u2022u-v)`. It is also in the `EpsilonEridani\u2026Kinematics` namespace although its first (and only non-vector/scalar) explicit argument is `g : Bilin V = LinearMap.BilinForm \u211d V`, so `g.neg_apply_smul_sub` does not elaborate and it cannot be upstreamed without renaming.",
+   "line": "34"
+  },
+  {
+   "evidence": "AccessMethods.lean:188 `ofTransfer_x_eq \u2026 = (ofTransfer \u2026).Q2 / (2 * g p k * (ofTransfer \u2026).y)`; 235 `sigmaMethod_x_eq_div` same shape; 256 `mixedMethod_x_eq` same shape; 248 `sigmaMethod_x_eq \u2026 = (electronMethod \u2026).Q2 * (g p (pX - p) + g p kPrime) / (2 * g p k * g p (pX - p))`; 272 `theorem ElectronMethodData.electronMethod_eq \u2026 : electronMethod g k p kPrime = \u27e8d.xBjElectron M, d.q2Electron, d.yElectron\u27e9`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "Use one suffix for the `Q\u00b2 / (2 (p\u00b7k) y)` form across the three lemmas (e.g. `ofTransfer_x_eq_Q2_div`, `sigmaMethod_x_eq_Q2_div`, `mixedMethod_x_eq_Q2_div`), give the momentum-level pair a distinguishing suffix instead of bare `_eq`, and rename `ElectronMethodData.electronMethod_eq` to name its right-hand side as its neighbours do (e.g. `electronMethod_eq_xBjElectron_q2Electron_yElectron`).",
+   "issue": "The bare `_eq` suffix names three different statement shapes in the same section. `ofTransfer_x_eq` (188), `sigmaMethod_x_eq_div` (235) and `mixedMethod_x_eq` (256) have the *same* conclusion `x = Q\u00b2 / (2 (p\u00b7k) y)` under three different names, while `sigmaMethod_x_eq` (248) and `sigmaMethod_y_eq` (242) denote something else (the momentum-level formula). A consumer reading `mixedMethod_x_eq` by analogy with `sigmaMethod_x_eq` gets a different statement. `ElectronMethodData.electronMethod_eq` (272) has the same defect next to neighbours that do spell their right-hand side (`ofTransfer_eq_xBj_Q2_yInel` 183, `electronMethod_eq_xBj_Q2_yInel` 264), and its dot-notation form `d.electronMethod_eq` advertises `d` as the subject when the conclusion's subject is `electronMethod g k p kPrime`.",
+   "line": "248"
+  }
+ ],
+ "head_sha": "7419d563e087b03540bb99ab2cb1ec1d7dc29f77",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9236445134c68d6a4d28224fe05bcdfc67b92005be96f9d89a82e48341d6dd0c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T194529Z-180-naming-80514c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T19:45:29Z",
+ "submitted_by": "veprbl",
+ "summary": "Names in the new radiative module match their conclusions and no notation is introduced, but the general bilinear-form lemma `neg_apply_smul_sub` is both named against upstream `BilinForm.neg_apply` semantics and filed outside the type's namespace, and the `_eq` suffix is used inconsistently across the parallel reconstruction lemmas in AccessMethods.lean.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/QuadraticForm/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8cf6924a4e549aacf4ee4491f3bf89daf50f067d1d59a124b1905471e4bf2e26",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 99192,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 99192,
+  "cache_read_input_tokens": 476038,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2428,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2428,
+    "cache_read_input_tokens": 99987,
+    "input_tokens": 2,
+    "output_tokens": 6878,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21126,
+  "output_tokens_details": {
+   "thinking_tokens": 17170
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
