@@ -1,0 +1,208 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6336425,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 216.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 176321,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 176321,
+    "cache_read_input_tokens": 951885,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5150,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5150,
+      "cache_read_input_tokens": 144104,
+      "input_tokens": 2,
+      "output_tokens": 6251,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15776,
+    "output_tokens_details": {
+     "thinking_tokens": 11773
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.633643,
+ "dedupe_key": "eic/EpsilonEridani|170|7af0aa45dff9f8afcb5db4b4f3dbcee2dec7b282|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "7a7206f5034b05246426040808720ccce979a2bb3ccc9e93633313569096155c",
+ "diff_sha256": "7a7206f5034b05246426040808720ccce979a2bb3ccc9e93633313569096155c",
+ "duration_s": 216.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 246-273: each statement's only non-upstream constants are `Species.flavorPair`, `Species.conj`, `ValenceContent.valence/conj/IsValenceFlavor`, all defined in `Species.lean` / `ValenceContent.lean`; the proofs cite only `Finset.image_inter`, `Finset.image_sdiff`, `Species.image_conj_flavorPair`, `C.image_conj_valence`, `C.mem_valence_conj`, `IsValenceFlavor.{quark,antiquark}_mem_iff`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Move all four to `EpsilonEridani/Particles/Parton/ValenceContent.lean` as public declarations in the `ValenceContent` namespace (e.g. `ValenceContent.image_conj_inter_valence`, `ValenceContent.inter_valence_conj_eq_sdiff`), and drop `private` here.",
+   "issue": "`image_conj_inter_valence` (246), `image_conj_sdiff_valence` (252), `inter_valence_conj_eq_sdiff` (258) and `sdiff_valence_conj_eq_inter` (269) are `private` here, but none mentions `Frag`, `D` or anything from fragmentation: they are statements about `Species.flavorPair`, `C.valence`, `C.conj` and `C.IsValenceFlavor` only, proved from Finset/Species/ValenceContent lemmas alone. Generality is a reason to relocate and export, not to hide.",
+   "line": 246
+  },
+  {
+   "evidence": "Symmetries.lean:155-190 defines `favored`/`unfavored` and proves only `favored_nonneg`/`unfavored_nonneg`; `Assumptions` (Basic.lean:45-47) has both a `support` and a `nonneg` field, and `MomentumSumRule` (MomentumSumRule.lean:78) consumes a `Frag`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Add `Assumptions.favored : Assumptions D \u2192 Assumptions (favored C D)` and `Assumptions.unfavored`, with `support` from `Finset.sum_eq_zero fun s _ => hD.support h s z Q2 hz`, and derive the two `*_nonneg` lemmas from them (or drop them).",
+   "issue": "`favored C D` and `unfavored C D` are themselves of type `Frag Hadron Flavor` (`Frag Hadron Flavor := Hadron \u2192 Flavor \u2192 \u211d \u2192 \u211d \u2192 \u211d`, Basic.lean:42), yet the file only proves the `nonneg` half of `Assumptions` (`favored_nonneg`, `unfavored_nonneg`); nothing says the combinations vanish off `[0,1]`. A consumer cannot conclude `Assumptions (favored C D)` and so cannot feed the combinations to `zMoment`/`MomentumSumRule` machinery \u2014 which is exactly what the remaining half of \u00a70.4's last bullet (non-singlet evolution) needs.",
+   "line": 183
+  },
+  {
+   "evidence": "ValenceContent.lean:136-141 (`PionFlavor ... deriving DecidableEq`), 161-168 (`inductive Pion where ... | minus`, no `deriving`); MomentumSumRule.lean:78 `def MomentumSumRule [Fintype Hadron]`; Species.lean:105-118 `instance [Fintype Flavor] : Fintype (Species Flavor)`, `card`, `sum_univ` all need `Fintype Flavor`; roadmap README lines 533-535 and 1129-1131 use the pion triplet in flavour sums.",
+   "file": "EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "fix": "Add `deriving DecidableEq, Fintype` to `Pion` and `Fintype` to `PionFlavor` (or supply the instances explicitly next to the definitions).",
+   "issue": "`Pion` is published with no `deriving` clause at all (no `DecidableEq`, no `Fintype`) and `PionFlavor` derives only `DecidableEq`. The pion triplet is the roadmap's worked instance, but with no `Fintype Pion` a consumer cannot even state `MomentumSumRule D` for `D : Frag Pion (Species PionFlavor)` (`MomentumSumRule [Fintype Hadron]`), and with no `Fintype PionFlavor` no flavour sum \u2014 `Species.sum_univ`, `Species.card`, the \u00a70.2 flavour decomposition, the Layer 1 pion cross-section example \u2014 can be instantiated. These instances have no canonical home other than this file.",
+   "line": 162
+  },
+  {
+   "evidence": "Species.lean:204-208 and ValenceContent.lean:77-83 are plain `theorem`s; Symmetries.lean:249-250, 255-256 rewrite with them explicitly, as does ValenceContent.lean's own `IsValenceFlavor.conj` chain.",
+   "file": "EpsilonEridani/Particles/Parton/Species.lean",
+   "fix": "Mark both `@[simp]`. Both orient left-to-right to strictly fewer operations (`image` is eliminated), and neither RHS can re-trigger the other or `conj_conj`, so they cannot loop.",
+   "issue": "`Species.image_conj_flavorPair` and `ValenceContent.image_conj_valence` are the characteristic normal-form lemmas for pushing `Finset.image conj` through the two Finsets this PR introduces, and neither carries `@[simp]`; every use in the PR has to `rw` them by hand.",
+   "line": 205
+  }
+ ],
+ "head_sha": "7af0aa45dff9f8afcb5db4b4f3dbcee2dec7b282",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 170,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3d67ed2dc23bcf1685237e114dc7f9edd30971659efd17ecd9c6077c48e1b74f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261031T152530Z-170-api-design-33edb5",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T15:25:30Z",
+ "submitted_by": "wdconinc",
+ "summary": "The symmetry and combination API is largely complete and bodies are kept unexposed, but four general valence-content lemmas are hidden as `private` in the fragmentation file, `favored`/`unfavored` are only given half of `Assumptions`, and the published pion types carry no `Fintype`/`DecidableEq`, blocking every downstream hadron or flavour sum.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "defdbec35699f4fbb9106a1e15991d5f67dfa4cae09e8578d0fd97d597feb1db",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 176321,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 176321,
+  "cache_read_input_tokens": 951885,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5150,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5150,
+    "cache_read_input_tokens": 144104,
+    "input_tokens": 2,
+    "output_tokens": 6251,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15776,
+  "output_tokens_details": {
+   "thinking_tokens": 11773
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
