@@ -1,0 +1,211 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1109425,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 298.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 104149,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 104149,
+    "cache_read_input_tokens": 970015,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 946,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 946,
+      "cache_read_input_tokens": 106426,
+      "input_tokens": 2,
+      "output_tokens": 5625,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23373,
+    "output_tokens_details": {
+     "thinking_tokens": 18942
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "cost_usd": 2.110943,
+ "dedupe_key": "eic/EpsilonEridani|174|541637ae8807058e687fd8e66e48bb4726299c1d|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "098437a2f42e3b0e755e848d5c10d5cc9cb2693630e31bc90e7d24db210fbe34",
+ "diff_sha256": "098437a2f42e3b0e755e848d5c10d5cc9cb2693630e31bc90e7d24db210fbe34",
+ "duration_s": 298.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 87 `theorem besselK_zero_eq (x : \u211d) : besselK 0 x = \u222b t in Ioi (0 : \u211d), exp (-(x * cosh t))`; line 337 `private theorem besselK_one_eq {x : \u211d} (hx : 0 < x) : besselK 1 x = exp (-x) / x + \u222b ...`; roadmap `Photoproduction/README.md:384` states both integral definitions. grep for `besselK` shows no other public statement with the `cosh t` order factor.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "fix": "Add the public parallel `besselK_one_eq (x : \u211d) : besselK 1 x = \u222b t in Ioi (0:\u211d), exp (-(x * cosh t)) * cosh t` (one `simp [besselK_def]`), and rename the private helper at line 337 to something like `besselK_one_eq_add_integral`.",
+   "issue": "The PR exposes the \u03bd=0 integral representation (`besselK_zero_eq`, plus `integrableOn_besselK_zero_integrand`) but no public counterpart for K\u2081, although roadmap \u00a70.5 names both defining integrals (`K\u2080(x) = \u222b\u2080^\u221e exp(\u2212x cosh t) dt` and `K\u2081(x) = \u222b\u2080^\u221e exp(\u2212x cosh t) cosh t dt`). `besselK_def 1 x` yields `cosh (1 * t)`, not `cosh t`, so the roadmap's form of K\u2081 is nowhere in the public surface; worse, the canonical name `besselK_one_eq` is occupied by a private lemma asserting a different fact (`K\u2081 x = exp (-x)/x + \u222b exp (-(x cosh t)) exp (-t)`), so the public restatement cannot take its natural name.",
+   "line": 87
+  },
+  {
+   "evidence": "Flux/Basic.lean:78 defines the profile for all `\u03be : \u211d`; lines 103, 165, 186, 175 all assume `0 < \u03be`. BesselK/Basic.lean:145 `besselK_of_nonpos` and :166 `besselK_nonneg`, motivated at BesselK/Basic.lean:31-33; the local `have hnonneg` at Flux/Basic.lean:189 shows the nonnegativity step is already proved but left unexposed and conditioned on `0 < y`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "fix": "Add `@[simp] theorem photonFluxProfile_of_nonpos {\u03be : \u211d} (h\u03be : \u03be \u2264 0) : photonFluxProfile \u03be = 0` (from `photonFluxProfile_def` and `besselK_of_nonpos`) and `theorem photonFluxProfile_nonneg (\u03be : \u211d) : 0 \u2264 photonFluxProfile \u03be`, the hypothesis-free companion of `photonFluxProfile_pos`.",
+   "issue": "`photonFluxProfile` is total on \u211d with an unexposed body, but every statement about it carries `0 < \u03be`: there is no `photonFluxProfile_of_nonpos` (its value is `0` for `\u03be \u2264 0`) and no unconditional `photonFluxProfile_nonneg`. Its model `besselK` in the imported file provides exactly this pair (`besselK_of_nonpos`, `besselK_nonneg`) and its docstring gives the reason \u2014 \"so that statements on the whole real line need no domain hypothesis where `0` is harmless\". A consumer bounding or integrating the profile on a set not known to lie in `Ioi 0` must route through `photonFluxProfile_def` plus `besselK_of_nonpos` by hand.",
+   "line": 78
+  }
+ ],
+ "head_sha": "541637ae8807058e687fd8e66e48bb4726299c1d",
+ "merge_base_sha": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 174,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4b9ca7e163b730bb67bfe9390e1823c2374a0959b000e505723746481bf56ac4",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261101T232549Z-174-api-design-3e107a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T23:25:49Z",
+ "submitted_by": "veprbl",
+ "summary": "No compatibility residue and no over-exposure: the deleted bound leaves no alias, bodies stay unexposed, and the Flux surface is confined to roadmap products. Two characteristic-API gaps: the \u03bd=0 integral restatement is added without the K\u2081 parallel the roadmap names (whose canonical name is squatted by a private lemma stating something else), and the total definition `photonFluxProfile` lacks the junk-value/unconditional-nonnegativity pair its model `besselK` provides.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e00c025a46eef50dc49528d674f34ca50631e09e82f842fa60e6a1954aa10db6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 104149,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 104149,
+  "cache_read_input_tokens": 970015,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 946,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 946,
+    "cache_read_input_tokens": 106426,
+    "input_tokens": 2,
+    "output_tokens": 5625,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23373,
+  "output_tokens_details": {
+   "thinking_tokens": 18942
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

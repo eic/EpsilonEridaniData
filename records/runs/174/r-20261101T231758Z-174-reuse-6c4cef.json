@@ -1,0 +1,194 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.651443,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 177.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 97818,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 97818,
+    "cache_read_input_tokens": 628596,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1138,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1138,
+      "cache_read_input_tokens": 99903,
+      "input_tokens": 2,
+      "output_tokens": 4323,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14355,
+    "output_tokens_details": {
+     "thinking_tokens": 10286
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "cost_usd": 1.651443,
+ "dedupe_key": "eic/EpsilonEridani|174|541637ae8807058e687fd8e66e48bb4726299c1d|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "098437a2f42e3b0e755e848d5c10d5cc9cb2693630e31bc90e7d24db210fbe34",
+ "diff_sha256": "098437a2f42e3b0e755e848d5c10d5cc9cb2693630e31bc90e7d24db210fbe34",
+ "duration_s": 177.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 139-142 (`simpa using integrableOn_besselK_integrand 0 hx`, generic lemma at line 131) and lines 86-88 (`simp [besselK_def]`, generic lemma at line 83); grep for the two names in `code/` shows uses only at lines 454 and 486 of the same file, and nowhere in `EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean`.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "fix": "Delete both public declarations and inline them in the one proof that uses them: `have hint : IntegrableOn (fun t \u21a6 exp (-(x * cosh t))) (Ioi 0) := by simpa using integrableOn_besselK_integrand 0 hx`, and open the final rewrite with `rw [besselK_def]` followed by `simp only [zero_mul, cosh_zero, mul_one]` before `hsplit`. Drop the two bullets from the module docstring accordingly.",
+   "issue": "`integrableOn_besselK_zero_integrand` is a thin public wrapper of the existing `integrableOn_besselK_integrand` at \u03bd = 0 (its whole proof is `simpa using integrableOn_besselK_integrand 0 hx`), with exactly one consumer, `hint` at line 454 inside `besselK_zero_le_log_two_div_add_exp_neg_one`. Same pattern at line 87: `besselK_zero_eq` is the \u03bd = 0 instance of `besselK_def` up to `cosh (0 * t) = 1` (proof `simp [besselK_def]`), used only at line 486.",
+   "line": "140"
+  }
+ ],
+ "head_sha": "541637ae8807058e687fd8e66e48bb4726299c1d",
+ "merge_base_sha": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 174,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "141dcb9e232a0e381c2de0b884dd91c46478541cd92a375d57bacc1df00d6c4c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261101T231758Z-174-reuse-6c4cef",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T23:17:58Z",
+ "submitted_by": "veprbl",
+ "summary": "No duplication of upstream material: Mathlib has only besselJ (first kind) and Bessel potentials, and no equivalent-photon flux exists in Mathlib, TauCeti or Physlib; the profile/spectrum layering and the deletion of the superseded log bound are both clean. Only defect is two new public \u03bd = 0 restatements of existing generic BesselK lemmas, each used once in the same file.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Bessel.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/SpecialFunctions/Hyperbolic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5beacd9b0447484ef7a6eaa97c34fac73698383771d07de2cd81d40148c80fb6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 97818,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 97818,
+  "cache_read_input_tokens": 628596,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1138,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1138,
+    "cache_read_input_tokens": 99903,
+    "input_tokens": 2,
+    "output_tokens": 4323,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14355,
+  "output_tokens_details": {
+   "thinking_tokens": 10286
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

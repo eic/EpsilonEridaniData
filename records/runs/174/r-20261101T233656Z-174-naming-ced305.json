@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.5935685,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 195.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 94467,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 94467,
+    "cache_read_input_tokens": 477407,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4952,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4952,
+      "cache_read_input_tokens": 92738,
+      "input_tokens": 2,
+      "output_tokens": 5112,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16405,
+    "output_tokens_details": {
+     "thinking_tokens": 12594
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "cost_usd": 1.593568,
+ "dedupe_key": "eic/EpsilonEridani|174|541637ae8807058e687fd8e66e48bb4726299c1d|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "098437a2f42e3b0e755e848d5c10d5cc9cb2693630e31bc90e7d24db210fbe34",
+ "diff_sha256": "098437a2f42e3b0e755e848d5c10d5cc9cb2693630e31bc90e7d24db210fbe34",
+ "duration_s": 195.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 284-285: `theorem hasDerivAt_besselK_sub_one (\u03bd : \u211d) \u2026 HasDerivAt (besselK \u03bd) (-besselK (\u03bd - 1) x - \u03bd / x * besselK \u03bd x) x`; contrast line 290 `hasDerivAt_besselK_zero \u2026 HasDerivAt (besselK 0) (-besselK 1 x) x` and line 295 `hasDerivAt_besselK_one \u2026 HasDerivAt (besselK 1) \u2026`. Repo-wide grep for `theorem hasDerivAt_` shows the function-naming pattern (`hasDerivAt_photonFluxProfile`, `hasDerivAt_neg_photonFluxProfile`, `hasDerivAt_bfklFlow`, `hasDerivAt_twoScaleStructureFunction`).",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "fix": "Rename so the suffix cannot be read as the order of the differentiated function, e.g. `hasDerivAt_besselK_neg_besselK_sub_one` (naming the derivative value's leading term) or `hasDerivAt_besselK_of_order_sub_one`; update the module-docstring entry at line 46 and the three uses in Flux/Basic.lean's derivation chain accordingly.",
+   "issue": "`hasDerivAt_besselK_sub_one` differentiates `besselK \u03bd`, not `besselK (\u03bd - 1)`; the `sub_one` refers to the order inside the derivative value. Every other `hasDerivAt_*` in the repo uses the suffix for the differentiated function, including the two declarations immediately below it (`hasDerivAt_besselK_zero` at line 290, `hasDerivAt_besselK_one` at line 295), so the name reads as the derivative of K_{\u03bd-1}.",
+   "line": "284"
+  },
+  {
+   "evidence": "Line 154-155: `theorem integrableOn_mul_besselK_one_sq \u2026 IntegrableOn (fun t \u21a6 t * besselK 1 t ^ 2) (Ioi \u03be)`. Mathlib spells the identity factor out: `Mathlib/NumberTheory/Chebyshev.lean:622` `theorem integrableOn_theta_div_id_mul_log_sq`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "fix": "Rename to `integrableOn_id_mul_besselK_one_sq` (and update the module-docstring reference at line 43).",
+   "issue": "`integrableOn_mul_besselK_one_sq` names a product whose left factor is omitted; the function is `fun t \u21a6 t * besselK 1 t ^ 2`, so the reader cannot recover the identity factor from the name.",
+   "line": "154"
+  }
+ ],
+ "head_sha": "541637ae8807058e687fd8e66e48bb4726299c1d",
+ "merge_base_sha": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 174,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "db9f9648d5215998a1b094c2f2208140fd3c2e4fe4639c78234a17411bb5939c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261101T233656Z-174-naming-ced305",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T23:36:56Z",
+ "submitted_by": "veprbl",
+ "summary": "Names and the (absent) notation are otherwise conventional and correctly namespaced, but `hasDerivAt_besselK_sub_one` misidentifies the differentiated function against the repo's own `hasDerivAt_*` pattern, and `integrableOn_mul_besselK_one_sq` leaves the `mul` dangling.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1867a87aacc1800697ba764783ca88626a67f37a6588b8853c577e5d1239a401",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 94467,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 94467,
+  "cache_read_input_tokens": 477407,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4952,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4952,
+    "cache_read_input_tokens": 92738,
+    "input_tokens": 2,
+    "output_tokens": 5112,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16405,
+  "output_tokens_details": {
+   "thinking_tokens": 12594
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
