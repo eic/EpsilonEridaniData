@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.013285,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 183.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 52956,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 52956,
+    "cache_read_input_tokens": 233190,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8743,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8743,
+      "cache_read_input_tokens": 47436,
+      "input_tokens": 2,
+      "output_tokens": 7281,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14682,
+    "output_tokens_details": {
+     "thinking_tokens": 10598
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.013285,
+ "dedupe_key": "eic/EpsilonEridani|198|b51e4c995ba340e97fa9fc71536e82831024d2a2|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4839328c978b536444e7d45b41dd9b3e7b3bc0b4ac85a7d0f52833350f11255c",
+ "diff_sha256": "4839328c978b536444e7d45b41dd9b3e7b3bc0b4ac85a7d0f52833350f11255c",
+ "duration_s": 183.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 121-134: `have hlim (c : \u03b9 \u2192 \u211d) : Tendsto (fun x => \u2211 i, c i * (q i x Q2 / w x)) l (\ud835\udcdd (\u2211 i, c i * \u03c1 i))` then `refine ((hlim _).div (hlim _) h\u03c1).congr' ?_`; the only swap facts used are `Equiv.symm_swap`. `[DecidableEq \u03b9]` (line 93) is required solely to write `Equiv.swap`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Isospin.lean",
+   "fix": "State it for two charge vectors: `theorem tendsto_f2LO_div_f2LO {e e' : \u03b9 \u2192 \u211d} \u2026 (h\u03c1 : \u2211 i, e' i ^ 2 * \u03c1 i \u2260 0) : Tendsto (fun x => f2LO e q x Q2 / f2LO e' q x Q2) l (\ud835\udcdd ((\u2211 i, e i ^ 2 * \u03c1 i) / \u2211 i, e' i ^ 2 * \u03c1 i))`, with no `DecidableEq`, and obtain the neutron case by `simp only [f2LO_comap, Equiv.symm_swap]` at the use site (or as a one-line corollary). The two-charge-vector form is also what the remaining 2.4 item 'charged-current and neutral-current structure functions agree in the flavour-blind limit' needs.",
+   "issue": "`tendsto_f2LO_div_f2LO_comap_swap` is stated for `comap (Equiv.swap u d)`, but nothing in the proof uses the swap: `hlim (c : \u03b9 \u2192 \u211d)` (line 121) is applied to two arbitrary coefficient vectors and `Equiv.symm_swap` (line 132) is only bookkeeping. The `u d : \u03b9` arguments and the `[DecidableEq \u03b9]` of line 93 are needless strengthenings.",
+   "line": "115"
+  },
+  {
+   "evidence": "Lines 170-181 evaluate the flavour sums by `simp only [LightFlavor.sum_univ, \u2026]` / `norm_num` / `field_simp`; nothing about the collapse at `r = t = 0` uses the flavour count or the values `2/3, -1/3` beyond `e u ^ 2 / e d ^ 2 = 4`. The PR already follows the general-first pattern for the difference (`f2LO_sub_f2LO_comap_swap` at line 98 \u2192 `f2LO_charge_sub_f2LO_charge_comap_swap` at line 149) but not for the limit.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Isospin.lean",
+   "fix": "Add the general-`\u03b9` lemma and derive the light-flavour `\u2192 4` from it: `theorem tendsto_f2LO_div_f2LO_comap_swap_of_tendsto_zero {e : \u03b9 \u2192 \u211d} {q : Pdf \u03b9} {u d : \u03b9} (hx : \u2200\u1da0 x in l, x \u2260 0) (hu : \u2200\u1da0 x in l, q u x Q2 \u2260 0) (hd : e d \u2260 0) (h : \u2200 i, i \u2260 u \u2192 Tendsto (fun x => q i x Q2 / q u x Q2) l (\ud835\udcdd 0)) : Tendsto (\u2026 ) l (\ud835\udcdd (e u ^ 2 / e d ^ 2))`. It follows from the general lemma with `w := q u` and `\u03c1 i := if i = u then 1 else 0` (then `\u2211 i, e i ^ 2 * \u03c1 i = e u ^ 2` and `\u2211 i, e (Equiv.swap u d i) ^ 2 * \u03c1 i = e d ^ 2` by `Equiv.swap_apply_left`), needs no `u \u2260 d`, and reduces line 194 to a `simpa`. Keep the `(r, t)` lemma for the non-zero-ratio case.",
+   "issue": "The mathematical content of `tendsto_f2LO_charge_div_f2LO_charge_comap_swap_nhdsLT_one` \u2014 every density other than up is negligible against up, hence the ratio tends to `e_u\u00b2/e_d\u00b2` \u2014 holds for an arbitrary `Fintype` flavour type and arbitrary charges, but is proved only for the three `LightFlavor` charges, by ad-hoc enumeration inside `tendsto_f2LO_charge_div_f2LO_charge_comap_swap` (`LightFlavor.sum_univ` + `norm_num`, lines 170-181). A four-flavour target (the charged-current half of Layer 2.4, roadmap README lines 570-573: `u, c, d\u0304, s\u0304`) must re-prove it.",
+   "line": "186"
+  }
+ ],
+ "head_sha": "b51e4c995ba340e97fa9fc71536e82831024d2a2",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 198,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1bd6ea11a5fab15b89213e730dc8be4a76f71407335ed33ee30ad46789013680",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261101T174951Z-198-generality-45f900",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T17:49:51Z",
+ "submitted_by": "veprbl",
+ "summary": "The difference formula is correctly general-first, but the limiting-ratio lemma carries an unused `Equiv.swap` (and the `[DecidableEq \u03b9]` it forces) when its proof is generic in two charge vectors, and the charge/flavour-count-independent `e_u\u00b2/e_d\u00b2` collapse behind the `\u2192 4` statement is proved only for `LightFlavor`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/Isospin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "55e7fd24357ee88f2d6e458e474c9273c34cc71cd1612c86a6daf031b215c8ef",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 52956,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 52956,
+  "cache_read_input_tokens": 233190,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8743,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8743,
+    "cache_read_input_tokens": 47436,
+    "input_tokens": 2,
+    "output_tokens": 7281,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14682,
+  "output_tokens_details": {
+   "thinking_tokens": 10598
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

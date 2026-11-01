@@ -1,0 +1,214 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.2710024999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 194.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 63576,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 63576,
+    "cache_read_input_tokens": 554475,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3998,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3998,
+      "cache_read_input_tokens": 62801,
+      "input_tokens": 2,
+      "output_tokens": 2850,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14315,
+    "output_tokens_details": {
+     "thinking_tokens": 10140
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.271002,
+ "dedupe_key": "eic/EpsilonEridani|198|b51e4c995ba340e97fa9fc71536e82831024d2a2|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4839328c978b536444e7d45b41dd9b3e7b3bc0b4ac85a7d0f52833350f11255c",
+ "diff_sha256": "4839328c978b536444e7d45b41dd9b3e7b3bc0b4ac85a7d0f52833350f11255c",
+ "duration_s": 194.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Particles/Parton/PDF/Basic.lean:169,174,178,183,220 all carry `@[simp]`; Isospin.lean:87 has no attribute, and Isospin.lean:101,132 both do `rw [f2LO_comap, Equiv.symm_swap]` manually. Mathlib/Logic/Equiv/Basic.lean:670-671 `@[simp] theorem symm_swap`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Isospin.lean",
+   "fix": "Mark `@[simp] theorem f2LO_comap`. The RHS contains no `comap`, so it terminates, and with `Equiv.symm_swap` (already simp) the neutron's `f2LO e (comap (Equiv.swap u d) q)` then normalises to `f2LO (e \u2218 Equiv.swap u d) q` automatically.",
+   "issue": "`f2LO_comap` is the characteristic interaction of `f2LO` with `comap` but carries no `@[simp]`. Every sibling comap lemma in the PDF API is simp (`comap_apply`, `comap_id`, `comap_comap`, `mellinMoment_comap`, `SumRuleAssumptions.comap_valenceTarget`), so consumers computing F\u2082 of a relabelled density must rewrite by hand; the PR itself does this twice (lines 101, 132).",
+   "line": "87"
+  },
+  {
+   "evidence": "CrossSection.lean:48 `@[expose] public section`, :123 `noncomputable def f2LO`; Isospin.lean:89 `simp only [f2LO, comap_apply, Function.comp_apply]`, :102 and :133 `simp only [f2LO, Function.comp_apply]`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Isospin.lean",
+   "fix": "Add the missing lemma in CrossSection.lean next to `f2LO` \u2014 `theorem f2LO_def (charge : Flavor \u2192 \u211d) (q : Flavor \u2192 \u211d \u2192 \u211d \u2192 \u211d) (x Q2 : \u211d) : f2LO charge q x Q2 = x * \u2211 f, charge f ^ 2 * q f x Q2 := (rfl)` \u2014 and replace the three `simp only [f2LO]` with `rw`/`simp only [f2LO_def]`. Do not mark it `@[simp]`, so it does not fight `f2LO_comap`.",
+   "issue": "All three general proofs unfold the definition of `f2LO` (`simp only [f2LO]` at lines 89, 102, 133), relying on CrossSection.lean's `@[expose] public section` rather than on a characteristic restatement; no `f2LO_def`/`f2LO_apply` exists anywhere (grep for `f2LO` finds only `f2LO`, `f2LO_nonneg`, `loNCdSigma_f2LO_nonneg`). New public API proved by defeq-unfolding pins `f2LO`'s body and leaves consumers no way to reason about F\u2082 without unfolding.",
+   "line": "89"
+  }
+ ],
+ "head_sha": "b51e4c995ba340e97fa9fc71536e82831024d2a2",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 198,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b2da6ee52a8645aa7079c3bd0706c5fb3e7d55c7358cec3f5a246eb56cc41986",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261101T174637Z-198-api-design-1ca28d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T17:46:37Z",
+ "submitted_by": "veprbl",
+ "summary": "Surface is minimal and free of compatibility artifacts, but the file's characteristic lemma `f2LO_comap` carries no automation annotation although its direct sibling `mellinMoment_comap` is `@[simp]`, and all three proofs reach through `f2LO`'s exposed body because no `f2LO_def` restatement exists.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/Isospin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4f3b69844c6ec0a17b5edd8781c7784e97a71f5198a71b5678a3fb1c555dfa8f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 63576,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 63576,
+  "cache_read_input_tokens": 554475,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3998,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3998,
+    "cache_read_input_tokens": 62801,
+    "input_tokens": 2,
+    "output_tokens": 2850,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14315,
+  "output_tokens_details": {
+   "thinking_tokens": 10140
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
