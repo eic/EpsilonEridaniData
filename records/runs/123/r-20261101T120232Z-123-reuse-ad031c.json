@@ -1,0 +1,249 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8943465000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 216.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 99141,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 99141,
+    "cache_read_input_tokens": 953203,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6959,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6959,
+      "cache_read_input_tokens": 95405,
+      "input_tokens": 2,
+      "output_tokens": 3828,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17047,
+    "output_tokens_details": {
+     "thinking_tokens": 11607
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.894347,
+ "dedupe_key": "eic/EpsilonEridani|123|8258808a35d83baad82b9e2751190e915afa5d4c|reuse|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "0cd72f752ff2da2ffb5c1d6e1000a6d1f128fc77b9c18802864ceea86ed71104",
+ "diff_sha256": "0cd72f752ff2da2ffb5c1d6e1000a6d1f128fc77b9c18802864ceea86ed71104",
+ "duration_s": 216.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The fields and their docstrings at 185-190 are character-identical to 160-163 and 179-180. Unlike the analogous flat bundles upstream of this PR, nothing outside the new file consumes it: grep for `Assumptions` under `code/EpsilonEridani/Particles/Parton/GTMD` returns only Average.lean:184,193,198,205,289. The justification quoted in the section docstring does not transfer \u2014 `TMD/Basic.lean:47-50` states the TMD field set is frozen because `TMD.Reduction` and `Unified.Basic` already take it as a hypothesis, which is not the case for a structure introduced in this diff.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Declare it by extension instead of copying: `structure Assumptions (f : VectorTmd Flavor) : Prop extends IsVectorTmdDensity f, Regularity f` \u2014 then `.toIsVectorTmdDensity`/`.toRegularity` replace the two projection lemmas and `assumptions_iff` becomes `\u27e8fun h => \u27e8h.1, h.2\u27e9, fun h => \u27e8h.1, h.2\u27e9\u27e9`. Or drop `Assumptions`, `assumptions_iff` and both projections and give `assumptions_azimuthalAverage` the two hypotheses `(h\u2081 : IsVectorTmdDensity f) (h\u2082 : Regularity f)`, since its body already only uses `isTmdDensity_azimuthalAverage h\u2081` and `regularity_azimuthalAverage h\u2082`.",
+   "issue": "`Assumptions` (lines 184-190) duplicates field-for-field `IsVectorTmdDensity.supportX`/`.nonneg` (lines 161,163) and `Regularity.continuousKT` (line 180), all new in this PR, and then needs `Assumptions.isVectorTmdDensity` (193), `Assumptions.regularity` (198) and `assumptions_iff` (204) purely to translate between the copy and the originals.",
+   "line": "184"
+  }
+ ],
+ "head_sha": "8258808a35d83baad82b9e2751190e915afa5d4c",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "c34f5486390b0829c5e072f8f7c5d562e721e96af7da5fc0659a31eda1c14e6b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261101T120232Z-123-reuse-ad031c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T12:02:32Z",
+ "submitted_by": "veprbl",
+ "summary": "The circle-average and transverse-plane material has no upstream replacement and delegates correctly to Mathlib's `Real.circleAverage`/`circleMap` API. One in-diff duplication remains: the new `Assumptions` structure restates verbatim the fields of `IsVectorTmdDensity` and `Regularity` declared 20 lines above it, with three helper declarations existing only to mediate that copy.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/SIDIS/Asymmetries/Harmonics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Geometry/Sphere/Circle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Geometry/Sphere/LinearIsometry.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/SIDIS/Asymmetries/Harmonics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 25,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c8bf2f9a03c8d3b68660b3947179166c8d6171adaed2475bf045ba84f2810884",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 99141,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 99141,
+  "cache_read_input_tokens": 953203,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6959,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6959,
+    "cache_read_input_tokens": 95405,
+    "input_tokens": 2,
+    "output_tokens": 3828,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17047,
+  "output_tokens_details": {
+   "thinking_tokens": 11607
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
