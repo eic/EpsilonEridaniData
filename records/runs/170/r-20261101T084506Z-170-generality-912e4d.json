@@ -1,0 +1,184 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.447953,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 191.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 174731,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 174731,
+    "cache_read_input_tokens": 665246,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1663,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1663,
+      "cache_read_input_tokens": 146836,
+      "input_tokens": 2,
+      "output_tokens": 3321,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14718,
+    "output_tokens_details": {
+     "thinking_tokens": 10848
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.447953,
+ "dedupe_key": "eic/EpsilonEridani|170|7af0aa45dff9f8afcb5db4b4f3dbcee2dec7b282|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "7a7206f5034b05246426040808720ccce979a2bb3ccc9e93633313569096155c",
+ "diff_sha256": "7a7206f5034b05246426040808720ccce979a2bb3ccc9e93633313569096155c",
+ "duration_s": 191.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Symmetries.lean:157 `\u2211 s \u2208 Species.flavorPair i \u2229 C.valence h, D h s z Q2` and ValenceContent.lean:97 `Xor (Species.quark i \u2208 C.valence h) (Species.antiquark i \u2208 C.valence h)`: no occurrence of `C.conj` or `C.mem_valence_conj` in any of the listed declarations.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Parameterise the splitting on the valence assignment alone \u2014 either take `(v : Hadron \u2192 Finset (Species Flavor))` in `favored`/`unfavored`/`IsValenceFlavor`/`valenceStepFrag`, or keep only `valence` in `ValenceContent` and make the conjugation compatibility a separate hypothesis (`conj : Hadron \u2192 Hadron`, `Function.Involutive conj`, `\u2200 h s, s \u2208 valence (conj h) \u2194 Species.conj s \u2208 valence h`) supplied by the lemmas that actually need it: `image_conj_inter_valence`, `image_conj_sdiff_valence`, `inter_valence_conj_eq_sdiff`, `sdiff_valence_conj_eq_inter`, `favored_partonConj`, `unfavored_partonConj`, `favored_conj_of_chargeConjRelation`, `unfavored_conj_of_chargeConjRelation`, `IsValenceFlavor.conj`, `chargeConjRelation_valenceStepFrag`.",
+   "issue": "`favored`, `unfavored` and everything derived from them (`favored_def`\u2026`favored_sub_unfavored_eq_of_antiquark_mem`, `valenceStepFrag` and its five lemmas, and `ValenceContent.IsValenceFlavor` with `isValenceFlavor_iff`, `isValenceFlavor_of_quark_mem`, `isValenceFlavor_of_antiquark_mem`, `antiquark_mem_iff`, `quark_mem_iff` in ValenceContent.lean:95-118) take the full `ValenceContent`, which bundles an antiparticle involution `conj` plus `conj_involutive` and `mem_valence_conj`, but use only `C.valence`. The favoured combination of a hadron whose antiparticle is not in the `Hadron` type (a lone proton or K\u207a) cannot be stated at all, since `mem_valence_conj` is unsatisfiable there.",
+   "line": 155
+  },
+  {
+   "evidence": "Basic.lean:219-222 uses `h\u03c4` only in `rw [h\u03c4 h] at h\u2081 h\u2082`; `Function.Involutive.surjective` is at upstream/mathlib/Mathlib/Logic/Function/Basic.lean:1058, so the existing uses (Symmetries.lean:428,437) stay one token longer.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "fix": "State it as `lemma Invariant.apply_eq_apply (h\u03c4 : Function.Surjective \u03c4) \u2026`; obtain `h\u2080` with `\u03c4 h\u2080 = h` from `h\u03c4 h` and rewrite `h\u03c3.apply h\u2080 i`, `h\u03c3'.apply h\u2080 i`. The two pion call sites become `Pion.conj_involutive.surjective`.",
+   "issue": "`Invariant.apply_eq_apply` assumes `Function.Involutive \u03c4`, stronger than the proof needs: it only uses that `h` has a `\u03c4`-preimage. This excludes a flavour relabelling of order > 2 (a cyclic u\u2192d\u2192s permutation induces a 3-cycle on the meson multiplet), for which the conclusion still holds.",
+   "line": 216
+  },
+  {
+   "evidence": "Symmetries.lean:185 `Finset.sum_nonneg fun s _ => hD.nonneg h s z Q2 hz\u2080 hz\u2081` is the entire proof; Basic.lean:64 `zMoment_nonneg {D} (hD : \u2200 z \u2208 Icc (0 : \u211d) 1, 0 \u2264 D h i z Q2)` takes the pointwise hypothesis rather than `Assumptions`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Weaken the hypothesis to the pointwise form, e.g. `(hD : \u2200 s, 0 \u2264 D h s z Q2)`, matching the nearby precedent `zMoment_nonneg`; `Assumptions` users pass `fun s => hD.nonneg h s z Q2 hz\u2080 hz\u2081`.",
+   "issue": "`favored_nonneg` and `unfavored_nonneg` (line 188) take the whole `Assumptions D` bundle but use only `hD.nonneg` at the single `z` of the statement; the `support` field is never used, and the statement is already restricted to `0 \u2264 z \u2264 1`.",
+   "line": 183
+  }
+ ],
+ "head_sha": "7af0aa45dff9f8afcb5db4b4f3dbcee2dec7b282",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 170,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fd87834424b41e9c721b570c3aaef8c0844c7e0d43139f19b8be801b13a9ed31",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261101T084506Z-170-generality-912e4d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T08:45:06Z",
+ "submitted_by": "wdconinc",
+ "summary": "The favoured/unfavoured splitting is stated over the whole multiplet structure although it only needs the valence assignment, so it cannot be written down for a hadron type not closed under conjugation; `Invariant.apply_eq_apply` assumes an involution where surjectivity suffices, excluding non-involutive flavour permutations.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Logic/Function/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "95a3b728709470a7084bfcb3a015b5f7d450519b704deb4e21defe4f66a1493f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 174731,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 174731,
+  "cache_read_input_tokens": 665246,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1663,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1663,
+    "cache_read_input_tokens": 146836,
+    "input_tokens": 2,
+    "output_tokens": 3321,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14718,
+  "output_tokens_details": {
+   "thinking_tokens": 10848
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

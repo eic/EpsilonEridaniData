@@ -1,0 +1,257 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.511508,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 300.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 193206,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 193206,
+    "cache_read_input_tokens": 2049656,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5540,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5540,
+      "cache_read_input_tokens": 160567,
+      "input_tokens": 2,
+      "output_tokens": 1841,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22178,
+    "output_tokens_details": {
+     "thinking_tokens": 16790
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 3.511508,
+ "dedupe_key": "eic/EpsilonEridani|170|7af0aa45dff9f8afcb5db4b4f3dbcee2dec7b282|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "7a7206f5034b05246426040808720ccce979a2bb3ccc9e93633313569096155c",
+ "diff_sha256": "7a7206f5034b05246426040808720ccce979a2bb3ccc9e93633313569096155c",
+ "duration_s": 300.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`EpsilonEridani/Particles/Fragmentation/Basic.lean:196` `lemma invariant_iff : Invariant \u03c4 \u03c3 D \u2194 \u2200 h i z Q2, D (\u03c4 h) (\u03c3 i) z Q2 = D h i z Q2`; Symmetries.lean:104 and :116 are each the bare proof term `invariant_iff`. grep for `chargeConjRelation_iff|flavorRelation_iff` across `EpsilonEridani/` returns only their own declarations.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Delete both theorems. Since `ChargeConjRelation`/`FlavorRelation` are `abbrev`s, `invariant_iff` (and `Invariant.apply`, which the file already uses at lines 298 and 307) applies to them directly with no bridging lemma.",
+   "issue": "`chargeConjRelation_iff` (line 102) and `flavorRelation_iff` (line 114) restate `Fragmentation.invariant_iff` with a reducible `abbrev` unfolded; both proofs are literally the term `invariant_iff`, and neither has any consumer in the repo.",
+   "line": 102
+  },
+  {
+   "evidence": "`upstream/mathlib/Mathlib/Basic/Logic/Basic.lean:435` `theorem xor_iff_iff_not : Xor a b \u2194 (a \u2194 \u00acb)` and `:437` `theorem xor_iff_not_iff' : Xor a b \u2194 (\u00aca \u2194 b)` (implicit `a b`); `ValenceContent.lean:89-90` defines `IsValenceFlavor h i := Xor (quark i \u2208 C.valence h) (antiquark i \u2208 C.valence h)`, so `a := quark \u2208 \u2026`, `b := antiquark \u2208 \u2026` matches both statements verbatim. The file already reuses `xor_comm` at line 128.",
+   "file": "EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "fix": "Prove them from the located lemmas: `IsValenceFlavor.quark_mem_iff hi := xor_iff_iff_not.1 hi` and `IsValenceFlavor.antiquark_mem_iff hi := (xor_iff_not_iff'.1 hi).symm`, dropping the `rcases`/`iff_of_false`/`iff_not_comm` plumbing.",
+   "issue": "`IsValenceFlavor.antiquark_mem_iff` (case-split proof, lines 112\u2013116) and `IsValenceFlavor.quark_mem_iff` (line 120) re-derive Mathlib's `Xor` characterisations, which apply directly since `IsValenceFlavor` unfolds to `Xor`.",
+   "line": 112
+  }
+ ],
+ "head_sha": "7af0aa45dff9f8afcb5db4b4f3dbcee2dec7b282",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 170,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "01956076885f57383e18943c066429e72f96ea4bf6e397c0f8daaf6744b0cc6d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261101T083305Z-170-reuse-18b1fa",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T08:33:05Z",
+ "submitted_by": "wdconinc",
+ "summary": "Material is genuinely new and reuses Finset/Species API well, but two declarations restate lemmas that already exist: `chargeConjRelation_iff`/`flavorRelation_iff` are verbatim copies of the new `invariant_iff`, and `IsValenceFlavor.antiquark_mem_iff`/`quark_mem_iff` re-prove Mathlib's `Xor` lemmas by hand.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Basic/Logic/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 25,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ec060dfa69bcb35aed45661f92725e138201fec7a612336b36b8d26edca55a31",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 193206,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 193206,
+  "cache_read_input_tokens": 2049656,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5540,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5540,
+    "cache_read_input_tokens": 160567,
+    "input_tokens": 2,
+    "output_tokens": 1841,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22178,
+  "output_tokens_details": {
+   "thinking_tokens": 16790
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
