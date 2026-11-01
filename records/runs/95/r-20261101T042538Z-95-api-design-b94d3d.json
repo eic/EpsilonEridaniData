@@ -1,0 +1,270 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2101080000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 321.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 94095,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 94095,
+    "cache_read_input_tokens": 1235656,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 36,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6648,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6648,
+      "cache_read_input_tokens": 90670,
+      "input_tokens": 2,
+      "output_tokens": 2475,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 26046,
+    "output_tokens_details": {
+     "thinking_tokens": 18774
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.210108,
+ "dedupe_key": "eic/EpsilonEridani|95|c78e9288c7449a900fbdc56b44bc7f8bb33abb3c|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "3e3550e34117b25ddccd6f279b6f95510076c4b109824bc7a9d4ec7f388171e9",
+ "diff_sha256": "3e3550e34117b25ddccd6f279b6f95510076c4b109824bc7a9d4ec7f388171e9",
+ "duration_s": 321.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`upstream/mathlib/Mathlib/Analysis/Fourier/AddCircle.lean:514`: `theorem fourierCoeff_fourier {T : \u211d} [hT : Fact (0 < T)] (n : \u2124) : fourierCoeff (T := T) (fourier n) = Pi.single n 1`. The only haar-related lemma in the PR is `anisotropyCoeff_withDensity` (Collective/Basic.lean:293); grep of the diff shows no `anisotropyCoeff` lemma with `haarAddCircle` alone, and Mathlib has no `fourierCoeff_const`/`fourierCoeff_one` to chain through (grep for `fourierCoeff_const|fourierCoeff_one` returns no hits in Mathlib).",
+   "file": "EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "fix": "Add `anisotropyCoeff_haarAddCircle` (under the existing `[Fact (0 < T)]`): `anisotropyCoeff haarAddCircle n = Pi.single n 1 0` (equivalently `1` at `n = 0`, `0` otherwise), proved from Mathlib's `fourierCoeff_fourier` since `fourierCoeff f 0 = \u222b fourier 0 t \u2022 f t \u2202haarAddCircle = \u222b f`. Tag it `@[simp]`.",
+   "issue": "`anisotropyCoeff` has no lemma giving its value on the isotropic distribution, so nothing in the API expresses `V_n = 0` for `n \u2260 0` (the meaning of \"anisotropy\"); `anisotropyCoeff_withDensity` only relates it to `fourierCoeff` of a density, and `norm_anisotropyCoeff_le_one` only bounds it. A consumer must unfold `anisotropyCoeff_def`.",
+   "line": "258"
+  },
+  {
+   "evidence": "Collective/Basic.lean:170-173: `theorem card_mul_card_sub_one_pos (h : 1 < Fintype.card \u03b9) : (0 : \u211d) < Fintype.card \u03b9 * (Fintype.card \u03b9 - 1)`, proved by `exact_mod_cast` + `nlinarith` with no reference to `qVector`; the PR's own `EpsilonEridani/Mathematics/Algebra/BigOperators/Finset.lean:38` states the matching `sum_sum_erase_const' ... = #s * (#s - 1) * c`.",
+   "file": "EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "fix": "Move it to `EpsilonEridani/Mathematics/Algebra/BigOperators/Finset.lean` next to `Finset.sum_sum_erase_const'`, which already carries the same `#s * (#s - 1)` pair count, and import it here.",
+   "issue": "`card_mul_card_sub_one_pos` is general infrastructure \u2014 its statement mentions only `Fintype.card` and `\u211d`, and its proof does not depend on the Q-vector \u2014 yet it is exported as `EpsilonEridani.Nuclear.Medium.Collective.card_mul_card_sub_one_pos`, a generic arithmetic name under a nuclear-physics namespace.",
+   "line": "170"
+  }
+ ],
+ "head_sha": "c78e9288c7449a900fbdc56b44bc7f8bb33abb3c",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 95,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7c3607c447beec82f733d0b06d1f66d7688f9c66a16ebe9b741b263b1482dad5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261101T042538Z-95-api-design-b94d3d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T04:25:38Z",
+ "submitted_by": "veprbl",
+ "summary": "The surface is otherwise minimal and well-annotated with unexposed bodies, but `anisotropyCoeff` is missing the characteristic lemma fixing its value on the isotropic (Haar) distribution, and a general `Fintype.card` positivity fact is exposed under the physics namespace instead of the Mathematics file this PR creates for the same pair count.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Nuclear/Medium/Collective/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Fourier/AddCircle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Fourier/AddCircle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Algebra/BigOperators/Finset.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Fourier/AddCircle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Fourier/AddCircle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex/CircleAddChar.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Complex/Circle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Fourier/AddCircle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/NuclearMedium/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/SIDIS/Asymmetries/Harmonics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Fourier/AddCircle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Fourier/AddCircle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 28,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0b6da53fd94f049f6c190328cc5d6deeda495b594bcc28efda51a5ed6ca1628e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 94095,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 94095,
+  "cache_read_input_tokens": 1235656,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 36,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6648,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6648,
+    "cache_read_input_tokens": 90670,
+    "input_tokens": 2,
+    "output_tokens": 2475,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 26046,
+  "output_tokens_details": {
+   "thinking_tokens": 18774
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
