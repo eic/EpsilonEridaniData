@@ -1,0 +1,267 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.7045074999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 256.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 203736,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 203736,
+    "cache_read_input_tokens": 2352235,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 36,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2543,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2543,
+      "cache_read_input_tokens": 181854,
+      "input_tokens": 2,
+      "output_tokens": 4295,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19634,
+    "output_tokens_details": {
+     "thinking_tokens": 13541
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 3.704507,
+ "dedupe_key": "eic/EpsilonEridani|199|33e6bc2183ee910af0fb72eaf7f5078c3ed54b40|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c9535ddec6cc39b671f61b3b526548a0b78a87b8261020df7e1151b63fea5f0a",
+ "diff_sha256": "c9535ddec6cc39b671f61b3b526548a0b78a87b8261020df7e1151b63fea5f0a",
+ "duration_s": 256.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `pauliMatrix (Sum.inr`: SU2Generators.lean:61 `(1 / 2 : \u2102) * pauliMatrix (Sum.inr a) i j`; SpinDensityMatrix.lean:394 `(1 / 2 : \u2102) \u2022 PauliMatrix.pauliMatrix (Sum.inr k)`. SU2Generators.lean:103 docstring: \"The fundamental `su(2)` Casimir: `\u03a3\u2090 (\u03c3\u1d43/2)(\u03c3\u1d43/2) = (3/4) \u00b7 1`\".",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "Keep one definition. Put the matrix-valued `spinHalf` in a module both consumers can import, delete `su2GenEntry`, set `genEntry := fun a i j => spinHalf a i j` in `su2NormalizedData`, and prove `SU2FundamentalStatement` from `sum_spinHalf_mul_self` (`congrFun\u2082`/`Matrix.ext_iff` plus `Matrix.sum_apply`, `Matrix.mul_apply`, `Matrix.one_apply`) instead of the `fin_cases` bash at SU2Generators.lean:104.",
+   "issue": "`spinHalf k = (1/2 : \u2102) \u2022 PauliMatrix.pauliMatrix (Sum.inr k)` duplicates `EpsilonEridani.QFT.QCD.RepresentationColor.su2GenEntry a i j = (1/2 : \u2102) * pauliMatrix (Sum.inr a) i j` (EpsilonEridani/QFT/QCD/SU2Generators.lean:60), which is the same object up to currying (`Matrix.smul_apply` is rfl). Likewise `sum_spinHalf_mul_self` (line 397), `\u2211 k, spinHalf k * spinHalf k = (3/4 : \u2102) \u2022 1`, duplicates `SU2FundamentalStatement`/`su2FundamentalStatement` (SU2Generators.lean:83-86, 104-109), the entrywise `\u2211 a \u2211 k (\u03c3\u1d43/2)\u1d62\u2096 (\u03c3\u1d43/2)\u2096\u2c7c = (3/4) \u03b4\u1d62\u2c7c`. The repo now carries two \u03c3\u1d43/2's and two proofs of the same Casimir.",
+   "line": "393"
+  },
+  {
+   "evidence": "crossProductMatrix \u03c9 = !![0, -\u03c9 2, \u03c9 1; \u03c9 2, 0, -\u03c9 0; -\u03c9 1, \u03c9 0, 0]; at \u03c9 = (1,0,0) this is !![0,0,0;0,0,-1;0,1,0], and I \u2022 it is `spinOne 0 = !![0,0,0;0,0,-I;0,I,0]` (SpinDensityMatrix.lean:150); same check passes for k = 1 and k = 2.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "Define `spinOne k := Complex.I \u2022 (Matrix.crossProductMatrix (Pi.single k 1)).map (\u2191)` (or at minimum add that identification as a lemma), and derive `spinOne_apply_swap`/`spinOne_apply_self` from `crossProductMatrix_transpose` via `Matrix.transpose_map` instead of case bashes. This also makes `crossProductMatrix_mulVec` (`[\u03c9]\u2093 *\u1d65 v = \u03c9 \u2a2f\u2083 v`) available, which is the rotation-generator content the docstring at line 147 asserts.",
+   "issue": "`spinOne` hard-codes matrices that Physlib already has: `Matrix.crossProductMatrix` (upstream/Physlib/Physlib/Mathematics/Modules/CrossProductMatrix.lean:28), the \ud835\udd98\ud835\udd94(3) hat map. Entry by entry, `spinOne k = Complex.I \u2022 ((Matrix.crossProductMatrix (Pi.single k 1)).map (\u2191\u00b7 : \u211d \u2192 \u2102))` for k = 0,1,2. Consequently `spinOne_apply_swap` (line 162) restates `crossProductMatrix_transpose` (`(crossProductMatrix \u03c9)\u1d40 = -crossProductMatrix \u03c9`, line 41) and `spinOne_apply_self` (line 167) is its diagonal case, each re-proved by a fresh `fin_cases` bash. EpsilonEridani also already tabulates the same \u03b5 symbol as `epsilon3` (EpsilonEridani/QFT/QCD/SU2Generators.lean:52).",
+   "line": "149"
+  }
+ ],
+ "head_sha": "33e6bc2183ee910af0fb72eaf7f5078c3ed54b40",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 199,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0a7fe7932a9a1e20052233eb01153b12ecb49eb485edc937069985d46daa8f82",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261101T083204Z-199-reuse-08fa25",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T08:32:04Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new spin-one-half material re-defines \u03c3\u1d43/2 and re-proves its 3/4 Casimir, both of which already exist in EpsilonEridani's SU2Generators.lean, and `spinOne` re-tabulates the \ud835\udd98\ud835\udd94(3) hat matrices that Physlib already provides as `Matrix.crossProductMatrix`. The rest of the PR (polarizations, decomposition, positivity bounds, the RCLike PosSemidef bound) is new and reuses upstream API.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/QuantumMechanics/Operators/AngularMomentum.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/QuantumMechanics/Operators/AngularMomentum/DimThree.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/QuantumMechanics/AngularMomentum/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Mathematics/Modules/CrossProductMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/Mathematics/LeviCivita/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/QuantumMechanics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/QuantumMechanics/AngularMomentum/Addition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/SU2Generators.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 27,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3967a410177df79d99ac86460cb566b4651053bd067e83a08dc810a32fb5a4c5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 203736,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 203736,
+  "cache_read_input_tokens": 2352235,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 36,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2543,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2543,
+    "cache_read_input_tokens": 181854,
+    "input_tokens": 2,
+    "output_tokens": 4295,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19634,
+  "output_tokens_details": {
+   "thinking_tokens": 13541
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,211 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6858840000000006,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 229.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 177509,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 177509,
+    "cache_read_input_tokens": 949908,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3644,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3644,
+      "cache_read_input_tokens": 145387,
+      "input_tokens": 2,
+      "output_tokens": 6408,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17430,
+    "output_tokens_details": {
+     "thinking_tokens": 13177
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 2.685884,
+ "dedupe_key": "eic/EpsilonEridani|199|33e6bc2183ee910af0fb72eaf7f5078c3ed54b40|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c9535ddec6cc39b671f61b3b526548a0b78a87b8261020df7e1151b63fea5f0a",
+ "diff_sha256": "c9535ddec6cc39b671f61b3b526548a0b78a87b8261020df7e1151b63fea5f0a",
+ "duration_s": 229.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 271-274 and 291-293 both mention `spinOne` in every occurrence of `tensorOperator`; adjacent lemmas do mark it (`tensorOperator_spinOne_apply` line 212, `trace_tensorOperator_spinOne` line 222, `tensorPolarization_spinOne` line 248).",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "Mark the specialization as the siblings do: `trace_tensorOperator_mul_tensorOperator_spinOne`, `sum_tensorPolarization_smul_tensorOperator_spinOne`, `trace_spinOne_mul_tensorOperator_spinOne`.",
+   "issue": "`trace_tensorOperator_mul_tensorOperator` (line 271) and `sum_tensorPolarization_smul_tensorOperator` (line 291) are stated only for `tensorOperator spinOne`, but their names carry no `spinOne` marker, so they read as the general-`S` statements the same file sets up in `section General`. `trace_spinOne_mul_tensorOperator` (line 264) likewise hides that its tensor operator is `tensorOperator spinOne`.",
+   "line": "271"
+  },
+  {
+   "evidence": "`upstream/Physlib/PhyslibAlpha/QuantumMechanics/AngularMomentum/WignerEckart.lean:79: structure IsTensorOperator` and `.../WignerEckartIrreducible.lean:185: structure IsTensorOperatorOf`; `roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md:454-456` \"### 1.2 The tensor operator and the d-state probability \u2026 on the two-nucleon spin-orbital space\".",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "Qualify the name, e.g. `tensorPolarizationOperator` (matching `tensorPolarization`) or `spinTensorOperator`, and update the derived lemma names.",
+   "issue": "`tensorOperator` takes the unqualified term for one specific Cartesian rank-two combination. PhyslibAlpha already uses \"tensor operator\" for the general Wigner-Eckart notion, and the LightNuclei roadmap reserves \"the tensor operator\" for the two-nucleon S\u2081\u2082 of \u00a71.2, which this project will add next.",
+   "line": "95"
+  },
+  {
+   "evidence": "`upstream/Physlib/Physlib/Relativity/PauliMatrices/Basic.lean:86: lemma pauliMatrix_mul_self` \u2014 Physlib names the matrix-valued family `pauliMatrix`, not `pauli`; naming.md rule 3.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "Rename to `spinOneMatrix` / `spinHalfMatrix`, following the upstream analogue, and update the dependent lemma names.",
+   "issue": "`spinOne : Fin 3 \u2192 Matrix (Fin 3) (Fin 3) \u2102` (line 149) and `spinHalf` (line 393) return matrices but are named after a spin value, so derived names read as statements about a spin rather than a matrix (`trace_spinOne`, `isHermitian_spinOne`). Convention rule 3: a function is named as though it were a term of its return type.",
+   "line": "149"
+  },
+  {
+   "evidence": "`upstream/mathlib/Mathlib/Data/Matrix/Basis.lean:301: theorem diag_single_same : diag (single i i c) = Pi.single i c` and `:331: theorem single_mul_single_same`; the proofs here already call `trace_single_eq_same` / `single_apply_same` (lines 378, 385).",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "Use `_single_same` in these three names, reserving `_self` for the repeated index.",
+   "issue": "`vectorPolarization_spinOne_single_self` (370), `tensorPolarization_spinOne_single_self` (376) and `tensorPolarization_spinOne_single_of_ne` (383) use `_self` for `single k k`, while `_self` elsewhere in this file means a repeated polarization index (`tensorPolarization_spinOne_self` 257, `spinOne_apply_self` 167, `sum_tensorOperator_self` 127). Mathlib spells the diagonal `single` case `_same`.",
+   "line": "370"
+  }
+ ],
+ "head_sha": "33e6bc2183ee910af0fb72eaf7f5078c3ed54b40",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 199,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fdc35717df6f27a706063505c9e23bc5ff00106d569b8b653583ff8dfa09cca4",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261101T084804Z-199-naming-a301a7",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T08:48:04Z",
+ "submitted_by": "wdconinc",
+ "summary": "No notation is introduced and the `Matrix.PosSemidef` addition is correctly namespaced, but several spin-one-specific lemmas carry names that advertise the general-`S` case developed in the same file, the `tensorOperator` name claims terminology PhyslibAlpha and the roadmap already use for other objects, and the matrix-valued definitions are not named after their return values.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/QuantumMechanics/AngularMomentum/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/PauliMatrices/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ed5b2c4742d9a0497502867b71ab21bf8bc3621caaadcfed530eaf48024489df",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 177509,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 177509,
+  "cache_read_input_tokens": 949908,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3644,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3644,
+    "cache_read_input_tokens": 145387,
+    "input_tokens": 2,
+    "output_tokens": 6408,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17430,
+  "output_tokens_details": {
+   "thinking_tokens": 13177
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
