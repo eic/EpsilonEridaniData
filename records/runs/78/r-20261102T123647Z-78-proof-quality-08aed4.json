@@ -1,0 +1,177 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.9395695000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 160.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 51861,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 51861,
+    "cache_read_input_tokens": 201799,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5915,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5915,
+      "cache_read_input_tokens": 49169,
+      "input_tokens": 2,
+      "output_tokens": 4039,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12800,
+    "output_tokens_details": {
+     "thinking_tokens": 9620
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "765d66a3b8b088d76f898e3758d111ccdd82bbd1",
+ "cost_usd": 0.93957,
+ "dedupe_key": "eic/EpsilonEridani|78|ffade54f753d464945a60bf60466af62d231e048|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "cd48d3ffc60ac04bd95f7173179cf9bdbff14aaca244ff2b7e451e5f128ce348",
+ "diff_sha256": "cd48d3ffc60ac04bd95f7173179cf9bdbff14aaca244ff2b7e451e5f128ce348",
+ "duration_s": 160.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Exclusive/Kinematics/Basic.lean:59-60 `def Q2 (g : Bilin V) (K : ExclKinematics V) : \u211d := - g K.q K.q`; Kinematics/Basic.lean:71-72 `def Q2 ... := - g K.q K.q`. Contrast the sibling `tMom_toExclKinematics` (line 192), which does route through `delta_toExclKinematics` rather than `rfl`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "fix": "Prove it through the existing projection lemma: `rw [ExclKinematics.Q2, DisKinematics.Q2, toExclKinematics_q]` (or `simp only [...]`), so the proof states why the two scales agree instead of relying on exposed bodies matching.",
+   "issue": "`Q2_toExclKinematics` is proved by `(rfl)`, which holds only because `ExclKinematics.Q2` and `DisKinematics.Q2` happen to have identical bodies (`- g K.q K.q`); the defeq spans two unrelated definitions in different namespaces and is undocumented.",
+   "line": 200
+  },
+  {
+   "evidence": "Line 206: `rw [MX2, pX, add_comm K.q, Bilin.apply_add_self g hg, tMom, DisKinematics.Q2]`; the only reason it is unambiguous today is that the RHS `2 * g (deltaTarget K) K.q - K.Q2 g + tMom g K` contains no `K.q + _`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "fix": "Either give both arguments, `add_comm K.q (deltaTarget K)`, or drop `add_comm` and flip the cross term explicitly: `rw [MX2, pX, Bilin.apply_add_self g hg, hg.eq K.q (deltaTarget K), tMom, DisKinematics.Q2]; ring`.",
+   "issue": "`rw [MX2, pX, add_comm K.q, ...]` leaves the second summand of `add_comm` to be guessed from the first match, so the step silently retargets if any other `K.q + _` subterm appears in the goal.",
+   "line": 206
+  }
+ ],
+ "head_sha": "ffade54f753d464945a60bf60466af62d231e048",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 78,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "edf3a0af9f73a96e52cb27c5a9b9f699aa3f032ae1d0d176d81044dd004a2699",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261102T123647Z-78-proof-quality-08aed4",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-02T12:36:47Z",
+ "submitted_by": "veprbl",
+ "summary": "Proofs are short, factored and free of show/change, but Q2_toExclKinematics closes an across-structure claim by bare rfl on two independently written definitions, and one rw uses an underdetermined add_comm.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1aa482b1f1f034f039ed3ef38c94c54d1b7a9b253c1d0d65e06cc78a40e35691",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 51861,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 51861,
+  "cache_read_input_tokens": 201799,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5915,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5915,
+    "cache_read_input_tokens": 49169,
+    "input_tokens": 2,
+    "output_tokens": 4039,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12800,
+  "output_tokens_details": {
+   "thinking_tokens": 9620
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

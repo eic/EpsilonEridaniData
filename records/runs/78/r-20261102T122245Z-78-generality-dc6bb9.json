@@ -1,0 +1,211 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.712487,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 237.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 92256,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 92256,
+    "cache_read_input_tokens": 692694,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7640,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7640,
+      "cache_read_input_tokens": 87839,
+      "input_tokens": 2,
+      "output_tokens": 1801,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17738,
+    "output_tokens_details": {
+     "thinking_tokens": 14272
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "765d66a3b8b088d76f898e3758d111ccdd82bbd1",
+ "cost_usd": 1.712487,
+ "dedupe_key": "eic/EpsilonEridani|78|ffade54f753d464945a60bf60466af62d231e048|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "cd48d3ffc60ac04bd95f7173179cf9bdbff14aaca244ff2b7e451e5f128ce348",
+ "diff_sha256": "cd48d3ffc60ac04bd95f7173179cf9bdbff14aaca244ff2b7e451e5f128ce348",
+ "duration_s": 237.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -c toExclKinematics` over `EpsilonEridani/` \u2192 26 hits, all in this new file; lines 202\u2013299 (`MX2_eq_\u2026` through `MX2_congr`) use `deltaTarget`/`pX` directly and never the bridge. `ExclKinematics` (Exclusive/Kinematics/Basic.lean:32\u201352) has fields `phiL phiH : \u211d` with no defining relation, and documents `qPrime` as \"the produced real photon (DVCS) or meson (DVMP)\", not a mass-selected system.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "fix": "Drop `toExclKinematics` and the eleven lemmas, and state the sign-independence of `t` directly: `lemma tMom_eq_pPrime_sub_p_sq (g) (K) : tMom g K = g (K.pPrime - K.p) (K.pPrime - K.p)`, proved from `deltaTarget` and `neg_sub` with `map_neg`. If the exclusive layer really is to be reused (roadmap: diffraction \"reuses rather than re-derives\" the exclusive `t`), then make the diffractive invariants go through the bridge instead of defining them in parallel and reconciling afterwards \u2014 not both.",
+   "issue": "`toExclKinematics` plus its eleven companion lemmas (`toExclKinematics_p` \u2026 `toExclKinematics_phiH`, `delta_toExclKinematics`, `tMom_toExclKinematics`, `Q2_toExclKinematics`, lines 147\u2013200) are used nowhere \u2014 grep for `toExclKinematics` yields hits only inside this file, all within the bridge block. The only fact they deliver is that `t` is sign-convention independent, and the bridge requires inventing `phiL phiH : \u211d`, which the `ExclKinematics` record constrains by nothing, so they never specialize to any diffractive datum. Roadmap \u00a70.1 asks for the variables and the four identities, not an embedding into the exclusive record.",
+   "line": "147"
+  }
+ ],
+ "head_sha": "ffade54f753d464945a60bf60466af62d231e048",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 78,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "03152cfdb834a2db8c57bb71ee106ebc200b509478193dc6277fdeee94c6a139",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261102T122245Z-78-generality-dc6bb9",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-02T12:22:45Z",
+ "submitted_by": "veprbl",
+ "summary": "The diffractive variables themselves sit at the right level (momenta, no positivity assumptions, every hypothesis used). The `toExclKinematics` bridge, however, is twelve declarations of abstraction with no use in the PR, no roadmap need in \u00a70.1, and two parameters that never specialize.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "bd3fb84280c62c7a084dfa43adc87479e9495a28c4b48dcd91868b319f49757b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 92256,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 92256,
+  "cache_read_input_tokens": 692694,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7640,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7640,
+    "cache_read_input_tokens": 87839,
+    "input_tokens": 2,
+    "output_tokens": 1801,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17738,
+  "output_tokens_details": {
+   "thinking_tokens": 14272
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
