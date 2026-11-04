@@ -1,0 +1,192 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.8090345000000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 167.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 203800,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 203800,
+    "cache_read_input_tokens": 911109,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2674,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2674,
+      "cache_read_input_tokens": 170764,
+      "input_tokens": 2,
+      "output_tokens": 2244,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12616,
+    "output_tokens_details": {
+     "thinking_tokens": 9403
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.809035,
+ "dedupe_key": "eic/EpsilonEridani|170|59f92b3eac7c41194a6e4e36b6980b47c852dc11|reuse|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "b5774bdd63c5e85bc566e300dd135ec9896005f13c68cbec20d6d780b9531df3",
+ "diff_sha256": "b5774bdd63c5e85bc566e300dd135ec9896005f13c68cbec20d6d780b9531df3",
+ "duration_s": 167.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`HadronMultiplet.image_conj_inter_valence` (line 150): `(Species.flavorPair i \u2229 C.valence h).image Species.conj = Species.flavorPair i \u2229 C.valence (C.conj h)`; `IsValenceFlavor.image_conj_inter_valence` (line 104): `(Species.flavorPair i \u2229 valence h).image Species.conj = Species.flavorPair i \\ valence h`. Instantiating the second at `valence := C.valence` and chaining the first backwards gives the stated goal verbatim.",
+   "file": "EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "fix": "Delete it (and then `IsValenceFlavor.antiquark_mem_iff`/`quark_mem_iff` at lines 92 and 98, whose only use is this proof), or replace the proof body with `(C.image_conj_inter_valence h i).symm.trans hi.image_conj_inter_valence`.",
+   "issue": "`IsValenceFlavor.inter_valence_conj_eq_sdiff` re-proves by `ext`/`simp`/`rcases` exactly the composite of two lemmas sitting above it in the same file, and nothing in the repo uses it (grep for `inter_valence_conj_eq_sdiff` in `EpsilonEridani/` hits only this declaration and its mention in the module docstring at line 48).",
+   "line": 180
+  },
+  {
+   "evidence": "`EpsilonEridani/Particles/Fragmentation/Basic.lean:103-106` declares `@[simp] lemma indicatorUnitInterval_of_notMem ... : indicatorUnitInterval f h i z Q2 = 0`. Grep for `valenceStepFrag_eq_zero` in `EpsilonEridani/` returns only lines 363-368 (the declaration); by contrast `valenceStepFrag_apply_of_mem`/`_of_notMem` are used at lines 401-410 and do resolve the `if`, so they earn their place.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Delete it; a caller needing the value off the unit interval uses `valenceStepFrag_def` together with `indicatorUnitInterval_of_notMem`, as this proof itself does.",
+   "issue": "`valenceStepFrag_eq_zero` is a `@[simp]` restatement of `Fragmentation.indicatorUnitInterval_of_notMem` for this one family \u2014 its proof is `rw [valenceStepFrag_def, indicatorUnitInterval_of_notMem _ hz]` and nothing else \u2014 and it has no consumer, so it only adds a second simp route to the same fact.",
+   "line": 365
+  }
+ ],
+ "head_sha": "59f92b3eac7c41194a6e4e36b6980b47c852dc11",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 170,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "7339dce9c15972e3bb38541cf00bac991ca9e62cbb32ee763b70554ae62efa52",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261104T125202Z-170-reuse-6f7d37",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-04T12:52:02Z",
+ "submitted_by": "wdconinc",
+ "summary": "The two prior findings are fixed and the new material is genuinely new (no Mathlib/Physlib/TauCeti/EpsilonEridani counterpart for Species.map, flavorPair, ValenceContent or the favoured/unfavoured split; the two-index Fragmentation.comap is not covered by the single-index PDF.comap). Two declarations in the diff still re-derive what neighbouring lemmas already provide and have no consumer.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3e3eb3f67bc63eba089a5a326baba137e433e8b18fab3589f886a25ea026c642",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 203800,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 203800,
+  "cache_read_input_tokens": 911109,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2674,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2674,
+    "cache_read_input_tokens": 170764,
+    "input_tokens": 2,
+    "output_tokens": 2244,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12616,
+  "output_tokens_details": {
+   "thinking_tokens": 9403
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
