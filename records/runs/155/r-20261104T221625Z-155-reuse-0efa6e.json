@@ -1,0 +1,239 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6475105,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 174.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 161596,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 161596,
+    "cache_read_input_tokens": 1404371,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1318,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1318,
+      "cache_read_input_tokens": 141330,
+      "input_tokens": 2,
+      "output_tokens": 1979,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13169,
+    "output_tokens_details": {
+     "thinking_tokens": 8007
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7094dfe8b0e20bdd6d152b78d77186ea8094a382",
+ "cost_usd": 2.647511,
+ "dedupe_key": "eic/EpsilonEridani|155|77ac707ffe4bb2dd0c0a16026d091f5912f92915|reuse|claude-opus-5|30e3cfe49d22c07d|production|4",
+ "diff_blob": "43f95288a573de3f02a3b2ca812dd159bddb7f7a802b68954df54b0ce31627b8",
+ "diff_sha256": "43f95288a573de3f02a3b2ca812dd159bddb7f7a802b68954df54b0ce31627b8",
+ "duration_s": 174.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 211-212 vs 384-385 and 246-248 vs 418-420 are the same proof terms; 219-223 vs 390-394 the same tactic block; 252-256 vs 424-428 differ only in the region name. Grep for the four names over ./code returns only the declaration sites plus the single internal use noted.",
+   "file": "EpsilonEridani/Mathematics/OrderedSimplexIntegral.lean",
+   "fix": "Delete all four. If any is later wanted, derive it from `preimage_comp_rev_orderedRegion` (398) plus the ordered version instead of copying the proof, e.g. `descendingRegion_eq_empty`: `rw [\u2190 preimage_comp_rev_orderedRegion, orderedRegion_eq_empty h, Set.preimage_empty]`, and `integrableOn_descendingRegion`: `rw [\u2190 preimage_comp_rev_orderedRegion]; exact ((volume_preserving_comp_rev n).integrableOn_comp_preimage (measurableEmbedding_comp_rev n)).2 (integrableOn_orderedRegion ...)` \u2014 the same route `measurableSet_descendingRegion` (412), `setIntegral_descendingRegion` (433) and `volume_descendingRegion` (443) already take.",
+   "issue": "`descendingRegion_zero` (384), `descendingRegion_eq_empty` (390), `descendingRegion_subset_Icc` (418) and `integrableOn_descendingRegion` (424) are verbatim copies of `orderedRegion_zero` (211), `orderedRegion_eq_empty` (219), `orderedRegion_subset_Icc` (246) and `integrableOn_orderedRegion` (252) \u2014 identical proof terms with only the region name changed \u2014 and none of the four is used anywhere: grep over ./code finds `descendingRegion_zero`, `descendingRegion_eq_empty` and `integrableOn_descendingRegion` only at their own declarations, and `descendingRegion_subset_Icc` only inside `integrableOn_descendingRegion`. They are also absent from the module docstring's listing (lines 70-76).",
+   "line": "384"
+  }
+ ],
+ "head_sha": "77ac707ffe4bb2dd0c0a16026d091f5912f92915",
+ "merge_base_sha": "74f99fc7671738951b67f376ec39f1fc6a8f24ae",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 155,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "8d6ba758c6da9d337daefef57ca97c9ed5fc264bbbab2054d0fa18b0de291517",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 4,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261104T221625Z-155-reuse-0efa6e",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-04T22:16:25Z",
+ "submitted_by": "wdconinc",
+ "summary": "The ordered-region, strict-monotonicity-measurability and Fin.rev material has no upstream counterpart and reuses the right Mathlib API. But four descending-region lemmas are byte-identical copies of their ordered-region counterparts with no consumer in or outside the file.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/StrictMono.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/FinRev.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/OrderedSimplexIntegral.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/Prod.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 23,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2697c4097a7daca05b11e8eb49ffcb6fae4c3cb11cc7b613c33f3bb6fdc4067d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 161596,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 161596,
+  "cache_read_input_tokens": 1404371,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1318,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1318,
+    "cache_read_input_tokens": 141330,
+    "input_tokens": 2,
+    "output_tokens": 1979,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13169,
+  "output_tokens_details": {
+   "thinking_tokens": 8007
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
