@@ -1,0 +1,205 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.9712739999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 216.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 181180,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 181180,
+    "cache_read_input_tokens": 1541438,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2579,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2579,
+      "cache_read_input_tokens": 157897,
+      "input_tokens": 2,
+      "output_tokens": 3596,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15545,
+    "output_tokens_details": {
+     "thinking_tokens": 11510
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.971274,
+ "dedupe_key": "eic/EpsilonEridani|123|910dac45bad288fefc1b10cb64edb823f7768657|api-design|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "7a480c7646049a7a8ddfddf3e173166780aa248f2449fe438ee72516f51a4949",
+ "diff_sha256": "7a480c7646049a7a8ddfddf3e173166780aa248f2449fe438ee72516f51a4949",
+ "duration_s": 216.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Average.lean:184 `def azimuthalAverage ... := fun i x kT Q2 \u03b6 => if kT < 0 then 0 else ...`; Average.lean:251 `simpa only [azimuthalAverage] using hite`. The PR already added `circleAverageTransverse_def` (Average.lean:93-98) for exactly this purpose, with a comment explaining the `(rfl)`; `azimuthalAverage` is the one definition in the PR without the counterpart.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Add `lemma azimuthalAverage_def (f : VectorTmd Flavor) (i : Flavor) (x Q2 \u03b6 : \u211d) : (fun kT => azimuthalAverage f i x kT Q2 \u03b6) = fun kT => if kT < 0 then 0 else circleAverageTransverse (f i x \u00b7 Q2 \u03b6) kT := (rfl)` \u2014 with the same `(rfl)` note as `circleAverageTransverse_def` \u2014 and rewrite with it in `regularity_azimuthalAverage` instead of `simp only [azimuthalAverage]`.",
+   "issue": "`azimuthalAverage` has no `_def` lemma, so the whole-function (`fun kT => ...`) form of a slice is unreachable through the API: `regularity_azimuthalAverage` closes its goal with `simpa only [azimuthalAverage] using hite`, i.e. by delta-unfolding the `@[expose]`d body. `azimuthalAverage_of_neg`/`_of_nonneg` are pointwise only and cannot produce the `ite`-form any measurability or continuity consumer needs.",
+   "line": 251
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean:217 `@[fun_prop] theorem Continuous.circleAverage {f : \u2102 \u2192 E} (hf : Continuous f) : Continuous (Real.circleAverage f c)`; the attribute is already in use in this repo at EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean:139,143.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Add `@[fun_prop]` to `Continuous.circleAverageTransverse`.",
+   "issue": "`Continuous.circleAverageTransverse` is not tagged `@[fun_prop]`, although it is a direct transport of a Mathlib lemma that is, so `fun_prop` cannot discharge continuity of a transverse circle average even where it discharges the \u2102-sided original.",
+   "line": 167
+  }
+ ],
+ "head_sha": "910dac45bad288fefc1b10cb64edb823f7768657",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "6e90a1ac52a3529c7733bd70aca9fffa43327d1aafb67f864443daff050a173d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261104T123644Z-123-api-design-f8afd1",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-04T12:36:44Z",
+ "submitted_by": "wdconinc",
+ "summary": "The exported surface is now reachable and the circle-average transport is largely complete, but `azimuthalAverage` ships without a `_def`, so the file's own regularity proof delta-unfolds the exposed body instead of using the interface, and the continuity transport drops the `@[fun_prop]` tag its Mathlib original carries.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex/CircleMap.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c6555919e4445fd56d28e034a2e70c00458bcc25603e8d90029f0c066d251d81",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 181180,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 181180,
+  "cache_read_input_tokens": 1541438,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2579,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2579,
+    "cache_read_input_tokens": 157897,
+    "input_tokens": 2,
+    "output_tokens": 3596,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15545,
+  "output_tokens_details": {
+   "thinking_tokens": 11510
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
