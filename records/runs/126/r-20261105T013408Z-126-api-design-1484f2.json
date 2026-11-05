@@ -1,0 +1,189 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.79591,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 275.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 183174,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 183174,
+    "cache_read_input_tokens": 934810,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2878,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2878,
+      "cache_read_input_tokens": 152922,
+      "input_tokens": 2,
+      "output_tokens": 5487,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19867,
+    "output_tokens_details": {
+     "thinking_tokens": 16062
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.79591,
+ "dedupe_key": "eic/EpsilonEridani|126|ea5b14c62dabc40a4c85fde32c052ea5e26f8478|api-design|claude-opus-5|30e3cfe49d22c07d|production|7",
+ "diff_blob": "3c1c0496d7e44cd2ba8fd55daa0f72809dff7cdb0242bb97944146575f2ba364",
+ "diff_sha256": "3c1c0496d7e44cd2ba8fd55daa0f72809dff7cdb0242bb97944146575f2ba364",
+ "duration_s": 275.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `IsReal` over `code/EpsilonEridani` matches only Basic.lean:19,92,96,335 \u2014 no hit in InvariantMass.lean, which contains six `_of_realPhoton*`/`_of_masslessTarget` theorems (:177, :187, :195, :206, :260, :286, :298, :318, :324, :330, :337). Basic.lean:92 `def IsReal (k : PhotonKinematics) : Prop := k.virtuality = 0`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add the two bridge lemmas in the `Kinematics` namespace and use them: forward, `hn`, `h\u03b3`, `hq : q.timeComponent = \u03b3.energy`, `hq' : q.spatialPart = \u03b3.energy \u2022 n` \u22a2 `\u03b3.IsReal` (one line via `minkowskiProduct_self_eq_zero_of_timeComponent_eq_of_spatialPart_eq_smul`, MinkowskiProductExtensions.lean:66); converse, `hn`, `h\u03b3`, `hq`, `hq' : q.spatialPart = a \u2022 n`, `\u03b3.IsReal`, `0 \u2264 a`, `0 < \u03b3.energy` \u22a2 `a = \u03b3.energy` (from `\u27eaq,q\u27eb\u2098 = (q\u2070+a)(q\u2070-a) = 0`, MinkowskiProductExtensions.lean:57), so the real-photon and massless-target forms become reachable from the file's own realness predicate.",
+   "issue": "`minkowskiProduct_add_self_of_realPhoton_energyFraction` (:260), `exp_two_mul_rapidity_of_realPhoton_energyFraction` (:286) and `energyFraction_eq_exp_rapidity_mul_sub_div_sqrt_of_realPhoton` (:298) take `\u03b3 : PhotonKinematics` and are named/documented as real-photon statements, but leave `\u03b3.virtuality` entirely unconstrained \u2014 unlike their collinear siblings (:237, :249), which carry `h\u03b3 : \u03b3.virtuality = -\u27eaq, q\u27eb\u2098`. `PhotonKinematics.IsReal` appears nowhere in the file, so a consumer holding `\u03b3.IsReal` with `h\u03b3` has no proved route to `q.spatialPart = \u03b3.energy \u2022 n`, and nothing certifies that the configuration these lemmas call real satisfies `\u03b3.IsReal`. The roadmap target asks for interchange \"by a proved equality rather than by convention\"; here the realness is convention only.",
+   "line": "260"
+  }
+ ],
+ "head_sha": "ea5b14c62dabc40a4c85fde32c052ea5e26f8478",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "da5a41514cb15a2440895c95cdb5c17f257886a44adc14a7e6c5571d4aab3935",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 7,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261105T013408Z-126-api-design-1484f2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-05T01:34:08Z",
+ "submitted_by": "wdconinc",
+ "summary": "Both prior findings are addressed. Remaining gap: the six `realPhoton`/`masslessTarget` relations call a configuration \"a real photon\" purely by name \u2014 `PhotonKinematics.IsReal` is never referenced in the new file, so neither direction of the link between the project's realness predicate and the null collinear four-momentum is proved.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "45f8b9742cae727f7e61206f3283b92cddec855a858d54dc26e5dc6f4330f37c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 183174,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 183174,
+  "cache_read_input_tokens": 934810,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2878,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2878,
+    "cache_read_input_tokens": 152922,
+    "input_tokens": 2,
+    "output_tokens": 5487,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19867,
+  "output_tokens_details": {
+   "thinking_tokens": 16062
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
