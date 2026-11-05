@@ -1,0 +1,206 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.0309265,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 281.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 199217,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 199217,
+    "cache_read_input_tokens": 1039833,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4216,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4216,
+      "cache_read_input_tokens": 161967,
+      "input_tokens": 2,
+      "output_tokens": 12042,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20750,
+    "output_tokens_details": {
+     "thinking_tokens": 17135
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 3.030927,
+ "dedupe_key": "eic/EpsilonEridani|170|bbde69f1ba97a245a3d6a71dbf00e827f13e632d|api-design|claude-opus-5|30e3cfe49d22c07d|production|4",
+ "diff_blob": "9b68a22097e2c4cbf592d37df38ff567c307412e920b34c0b61096db9979157a",
+ "diff_sha256": "9b68a22097e2c4cbf592d37df38ff567c307412e920b34c0b61096db9979157a",
+ "duration_s": 281.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:50 defines `zMoment`; the PR adds `zMoment_comap` (Basic.lean:177) and `zMoment_partonConj` (Symmetries.lean:135). Grep for `zMoment` in Symmetries.lean returns only `zMoment_partonConj`; grep for `zMoment_congr` over EpsilonEridani/ returns nothing, while `mellinMoment_congr` exists for `Pdf`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Add `zMoment_favored`/`zMoment_unfavored` on a valence flavour (`zMoment (favored valence D) n h i Q2 = zMoment D n h (Species.quark i) Q2` under `IsValenceFlavor` plus the quark/antiquark orientation), mirroring `zMoment_partonConj`; or add a `zMoment_congr` in `Fragmentation/Basic.lean` next to `zMoment_comap`, analogous to `PDF.mellinMoment_congr` (PDF/Basic.lean:160).",
+   "issue": "`Assumptions.favored`/`Assumptions.unfavored` (192, 199) declare the combinations to be fragmentation families, but no lemma connects `favored`/`unfavored` to `zMoment`, and `Fragmentation` has no `zMoment_congr`; since `favored`'s body is unexposed, a consumer cannot reach moment space at all without redoing the integral congruence by hand.",
+   "line": 192
+  },
+  {
+   "evidence": "Symmetries.lean:153 `def favored`, :166 `favored_def` (no attribute), :463\u2013519 the ten lemmas (no attribute); ValenceContent.lean:255,259,264 `@[simp] Pion.valence_*`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Mark the ten `favored_pion_*`/`unfavored_pion_*` lemmas `@[simp]`; they are strictly simplifying and cannot loop.",
+   "issue": "None of the ten pion evaluation lemmas carries `@[simp]` (463, 469, 475, 481, 487, 493, 499, 505, 511, 517), although each rewrites `favored/unfavored Pion.valence D ...` to a single `D` application and is the only way to evaluate it: `favored_def` is not simp and the body is not exposed (`public section`, no `@[expose]`, line 85). `Pion.valence_plus/zero/minus` are simp, so a consumer's `simp` makes no progress on a `favored` goal.",
+   "line": 463
+  },
+  {
+   "evidence": "Species.lean:194 `def flavorPair` under `public section` (line 51, no `@[expose]`), :197 `flavorPair_def` unannotated, :207/:214 the two image lemmas unannotated while :201 `mem_flavorPair` is `@[simp]`.",
+   "file": "EpsilonEridani/Particles/Parton/Species.lean",
+   "fix": "Mark `image_conj_flavorPair` and `image_map_flavorPair` `@[simp]`; both have strictly simpler right-hand sides (`flavorPair i`, `flavorPair (\u03c1 i)`) and cannot loop.",
+   "issue": "`image_conj_flavorPair` (207) and `image_map_flavorPair` (214) are the only public handles on `(flavorPair i).image conj` / `.image (map \u03c1)` \u2014 `flavorPair`'s body is unexposed and `flavorPair_def` is not simp \u2014 yet neither is `@[simp]`, so these normal-form rewrites must be applied by hand downstream (as in Symmetries.lean:349, 370 and ValenceContent.lean:154, 162).",
+   "line": 207
+  }
+ ],
+ "head_sha": "bbde69f1ba97a245a3d6a71dbf00e827f13e632d",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 170,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "5420b6476f2eeb6b1b3a1efe39a289660f68e15d47fde939571ab53420cbb0ac",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261105T095931Z-170-api-design-dd01b6",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-05T09:59:31Z",
+ "submitted_by": "wdconinc",
+ "summary": "The characteristic API for `favored`/`unfavored`, `Invariant` and `Species.map`/`flavorPair` is otherwise complete and the three prior findings are fixed, but the combinations have no interaction with `zMoment` (the only analytic operation on `Frag`), and several characteristic lemmas that are the sole unfolding-free entry points carry no `@[simp]`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e5a11d06c354378904af8c9c993a8f2ee6f7a9ef2db7fea5468d6c3e6372ca91",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 199217,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 199217,
+  "cache_read_input_tokens": 1039833,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4216,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4216,
+    "cache_read_input_tokens": 161967,
+    "input_tokens": 2,
+    "output_tokens": 12042,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20750,
+  "output_tokens_details": {
+   "thinking_tokens": 17135
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
