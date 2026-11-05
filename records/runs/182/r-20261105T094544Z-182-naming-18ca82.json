@@ -1,0 +1,210 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.255114500000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 306.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 210710,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 210710,
+    "cache_read_input_tokens": 1178229,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5765,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5765,
+      "cache_read_input_tokens": 166982,
+      "input_tokens": 2,
+      "output_tokens": 1878,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22352,
+    "output_tokens_details": {
+     "thinking_tokens": 18869
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "cost_usd": 3.255115,
+ "dedupe_key": "eic/EpsilonEridani|182|8ddbd1204dbfbe32dda1106acb8fe880674d201c|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ce5dc6ef2caf8b876d956d0ba8a1c633630cb1d455d4cce642279112c8444644",
+ "diff_sha256": "ce5dc6ef2caf8b876d956d0ba8a1c633630cb1d455d4cce642279112c8444644",
+ "duration_s": 306.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "LeadingOrder.lean:196 `theorem pgg_deltaCoeff_eq_beta0 : (pgg c).deltaCoeff = beta0 c / 2`; QCD/Basic.lean:93 `def beta0 (cf : ColorFactors) : \u211d := (11 / 3) * cf.cA - (4 / 3) * cf.tF * cf.nF`, so `deltaCoeff` is half of it. Mathlib `_eq_X` names assert the RHS is `X` (e.g. `harmonic_eq_sum_Icc`, Mathlib/NumberTheory/Harmonic/Bounds.lean:21).",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "fix": "Rename to `pgg_deltaCoeff_eq_beta0_div_two` and update the two references in the module docstring (lines 38 and 54) and in `pgg_deltaCoeff_eq_beta0`'s own docstring.",
+   "issue": "`pgg_deltaCoeff_eq_beta0` advertises an equality with `beta0`, but the statement is `(pgg c).deltaCoeff = beta0 c / 2`; the name omits the factor 1/2 that the whole point of the lemma turns on.",
+   "line": 196
+  },
+  {
+   "evidence": "NormalForm.lean:104 `noncomputable def pair (P : KernelForm) (\u03c6 : \u211d \u2192 \u211d) : \u211d`; Mathlib/Data/Nat/Pairing.lean:37 `def pair (a b : \u2115) : \u2115`, Mathlib/Data/Set/Insert.lean:375 `pair_comm : ({a, b} : Set \u03b1) = {b, a}`; Mathlib's name for a duality application is `dualPairing` (Mathlib/LinearAlgebra/Dual/Lemmas.lean:628, Mathlib/Analysis/Normed/Lp/lpHolder.lean:264). NormalForm.lean:49/54/141/153 themselves say \"the pairing\".",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "fix": "Rename the definition to `KernelForm.pairing` (or `eval`/`apply`) and carry the prefix through `pair_def`, `pair_pow`, `pair_congr_ae_left/right`, `pair_smul`, and `pair_pqq`/`pair_pgg` in LeadingOrder.lean; also update the reference in Evolution/QCDCore.lean:61.",
+   "issue": "`KernelForm.pair P \u03c6` names a duality pairing `\u27e8P, \u03c6\u27e9`, but `pair` in Lean/Mathlib uniformly means constructing or denoting a two-element object (`Nat.pair`, `ZFSet.pair`, `SimpleFunc.pair`, `Set.pair_comm`), so `P.pair \u03c6` reads as \"the pair of P and \u03c6\". The file's own docstrings call it \"the pairing\" throughout.",
+   "line": 104
+  }
+ ],
+ "head_sha": "8ddbd1204dbfbe32dda1106acb8fe880674d201c",
+ "merge_base_sha": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 182,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3358ca654ac79934de61362ec8737a8e09cf6add3c17b5d699746c8d94ac23ed",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261105T094544Z-182-naming-18ca82",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-05T09:45:44Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names are mostly conclusion-describing and consistent with the file's neighbours, but one theorem name overstates its statement (`_eq_beta0` for `= beta0 / 2`) and the core operation `KernelForm.pair` uses a word that means \"two-element construction\" everywhere in Lean/Mathlib rather than a duality pairing.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Convolution/Mellin.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Convolution/Mellin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fce182e7f66821a0300e3b5bde60cca469e8f24aa2f8354a48fe0bcc179cbb49",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 210710,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 210710,
+  "cache_read_input_tokens": 1178229,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5765,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5765,
+    "cache_read_input_tokens": 166982,
+    "input_tokens": 2,
+    "output_tokens": 1878,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22352,
+  "output_tokens_details": {
+   "thinking_tokens": 18869
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
