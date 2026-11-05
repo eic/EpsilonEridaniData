@@ -1,0 +1,242 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.729936,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 209.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 160241,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 160241,
+    "cache_read_input_tokens": 1504022,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3455,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3455,
+      "cache_read_input_tokens": 143197,
+      "input_tokens": 2,
+      "output_tokens": 3046,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15015,
+    "output_tokens_details": {
+     "thinking_tokens": 9915
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 2.729936,
+ "dedupe_key": "eic/EpsilonEridani|169|0b6b18d88d67d5d6cb1fe2ecf6c789a1ad163621|api-design|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "0d539b4464c3215d0b4f24ebe913107acdd27cc23e4a905bbdc9bc1b4c497c5a",
+ "diff_sha256": "0d539b4464c3215d0b4f24ebe913107acdd27cc23e4a905bbdc9bc1b4c497c5a",
+ "duration_s": 209.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -n 'private' Determinacy.lean` \u2192 lines 79, 83, 97, 104; roadmap/EpsilonEridaniRoadmaps/GeneralizedPartonDistributions/README.md:450-451.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Determinacy.lean",
+   "fix": "Make `polynomialModel` public together with its characteristic lemmas `assumptions_polynomialModel`, `polynomialModel_H_of_mem_Icc` and `mellinMomentH_polynomialModel` (the moment formula is the computational handle, so the body still need not be exposed).",
+   "issue": "The entire counterexample family is private (`polynomialModel` l.79, `assumptions_polynomialModel` l.83, `polynomialModel_H_of_mem_Icc` l.97, `mellinMomentH_polynomialModel` l.104). The only public statement, `exists_models_mellinMomentH_eq_and_H_not_ae_eq`, is existential, so no consumer can name the family the roadmap asks for ('state clearly that determinacy from finitely many moments fails, with the explicit finite-dimensional family of counterexamples', roadmap README l.450-451), nor reuse the first nonzero model in the repo known to satisfy `GPD.Assumptions`.",
+   "line": 79
+  },
+  {
+   "evidence": "Statement at l.142-145 concludes `\u2203 p, p \u2260 0 \u2227 p.natDegree \u2264 N + 1 \u2227 \u00ac \u2026 \u2227 \u2200 n \u2264 N, \u2026 = 0`; no `Submodule`/`finrank` appears anywhere in the file.",
+   "file": "EpsilonEridani/Mathematics/MomentDeterminacy.lean",
+   "fix": "Either state the family \u2014 e.g. the submodule of `Polynomial.degreeLT \u211d (N + 2)` annihilated by the moments of order `0, \u2026, N`, with `0 < Module.finrank` \u2014 and derive the existential from it, or delete the subspace/dimension claim from both docstrings.",
+   "issue": "The docstring of `exists_polynomial_ne_zero_setIntegral_Icc_pow_mul_eq_zero` asserts 'The counterexamples therefore form a nonzero subspace of an explicit `(N + 2)`-dimensional space of polynomials' (repeated at l.27-28 of the module docstring), but the statement produces a single polynomial; nothing in the API expresses the subspace or any dimension count.",
+   "line": 139
+  },
+  {
+   "evidence": "`grep -n 'mellinMomentH' Determinacy.lean` shows the only determinacy statement is `ae_eq_of_forall_mellinMomentGpd_eq` (l.67); Moments.lean l.59-64 defines `mellinMomentH`/`mellinMomentE` as defs with no bridging lemma to `mellinMomentGpd`.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Determinacy.lean",
+   "fix": "Add the public `Model`-level corollary `ae_eq_of_forall_mellinMomentH_eq` (and `\u2026_mellinMomentE_eq`, since `Model` carries both) so the two halves of the module speak the same language without unfolding.",
+   "issue": "Determinacy is exposed only for `mellinMomentGpd`, while the sharpness theorem (l.132) is stated for `mellinMomentH`. The docstring papers over this ('`mellinMomentH M` \u2026 is `mellinMomentGpd` of `M.H` by definition'), which forces a consumer holding `mellinMomentH` hypotheses to rely on unfolding the def \u2014 the file's own proofs do exactly that (`rw [mellinMomentH, mellinMomentGpd]`, l.115, 149, 155).",
+   "line": 67
+  },
+  {
+   "evidence": "`Model.zero` and `@[simp] Model.zero_H` are at Ambiguity.lean:185-191; grepping `Assumptions` across `GPD/` finds no instance for `Model.zero` other than the inline term at Determinacy.lean:144-146.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Determinacy.lean",
+   "fix": "Add a public `Model.assumptions_zero (Flavor : Type) : Assumptions (Model.zero Flavor)` next to `Model.zero`/`Model.zero_H` in `GPD/Ambiguity.lean` and use it here.",
+   "issue": "`Assumptions (Model.zero Flavor)` is a general reusable fact about the public `Model.zero`, but it is proved as an anonymous structure instance inside the proof body, so it is unavailable to any consumer. No such lemma exists elsewhere in the repo.",
+   "line": 144
+  },
+  {
+   "evidence": "l.192-193: `theorem setIntegral_Icc_sub_midpoint_eq_zero (hab : a \u2264 b) : \u222b x in Icc a b, (x - (a + b) / 2) = 0`, versus the conclusion at l.143-145.",
+   "file": "EpsilonEridani/Mathematics/MomentDeterminacy.lean",
+   "fix": "State it for `Polynomial.X - Polynomial.C ((a + b) / 2)` in the conclusion shape of `exists_polynomial_ne_zero_setIntegral_Icc_pow_mul_eq_zero` (moment clause plus not-a.e.-zero), or drop the 'counterexample' framing from the docstrings.",
+   "issue": "`setIntegral_Icc_sub_midpoint_eq_zero` is advertised (l.43, l.190) as 'the lowest counterexample, explicitly', but its statement is a bare integral of `x - (a+b)/2`: no `Polynomial \u211d`, no `\u2200 n \u2264 0, \u222b x^n * p.eval x = 0`, no `\u00ac ae_eq 0`. It cannot be used as a witness for the theorem it claims to instantiate.",
+   "line": 192
+  }
+ ],
+ "head_sha": "0b6b18d88d67d5d6cb1fe2ecf6c789a1ad163621",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 169,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "cda1a2c3940c133133f5a10a163e0db0ddafa3377d2afa7a49b34fb9a8f66d7f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261105T182735Z-169-api-design-ab7a04",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-05T18:27:35Z",
+ "submitted_by": "wdconinc",
+ "summary": "The explicit counterexample family that the roadmap names as the deliverable is entirely private, so the only public statement is a bare existential; docstrings in both files claim a subspace/dimension and an \"explicit lowest counterexample\" that the statements do not provide. Determinacy is also missing the `Model`-level form that pairs with the sharpness theorem.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MomentDeterminacy.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Determinacy.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Probability/Moments/VanishingMoments.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Moments.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Deconvolution/Uniqueness.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7ff65c6c62d1f3925d673b84f98ccfaf36ea5b2f84b9f1322e8c6f2856565ff6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 160241,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 160241,
+  "cache_read_input_tokens": 1504022,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3455,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3455,
+    "cache_read_input_tokens": 143197,
+    "input_tokens": 2,
+    "output_tokens": 3046,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15015,
+  "output_tokens_details": {
+   "thinking_tokens": 9915
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
