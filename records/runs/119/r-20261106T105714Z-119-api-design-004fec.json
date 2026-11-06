@@ -1,0 +1,194 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.915008,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 172.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 119949,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 119949,
+    "cache_read_input_tokens": 836336,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 740,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 740,
+      "cache_read_input_tokens": 111618,
+      "input_tokens": 2,
+      "output_tokens": 3050,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11890,
+    "output_tokens_details": {
+     "thinking_tokens": 8292
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.915008,
+ "dedupe_key": "eic/EpsilonEridani|119|5f500c74259f133aa7273943d4f1da70a988d6e8|api-design|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "2e75c6ab91c4798481aafec9c069bd36fa1740910c8cc1b430a464ee47073e4f",
+ "diff_sha256": "2e75c6ab91c4798481aafec9c069bd36fa1740910c8cc1b430a464ee47073e4f",
+ "duration_s": 172.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Diffractive/Basic.lean:98` `def MX2 (g : Bilin V) (K : ExclKinematics V)` vs `:74,:83,:90` `(K : DisKinematics V)`; roadmap `Diffraction/README.md:273-279` lists `\u0394 = P - P'`, `\u03be`, `\u03b2`, `M_X\u00b2 = (q + \u0394)\u00b2`, `M_Y\u00b2 = P'\u00b2` as variables of `q`, `P`, `P'` alone, with `:288` making that y-independence an explicit theorem of the layer.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Define `MX2 (g : Bilin V) (K : DisKinematics V) : \u211d := g (K.q + (K.p - K.pPrime)) (K.q + (K.p - K.pPrime))` with the matching `MX2_def`, using the same inline `\u0394 = K.p - K.pPrime` as `xi`/`beta`. All four definitions then sit on one record, and `\u03b2 = Q\u00b2 / (Q\u00b2 + M_X\u00b2 \u2212 t)` becomes statable in this PR with `t` written inline as `g (K.p - K.pPrime) (K.p - K.pPrime)` \u2014 no bridge needed, so this does not reopen the scope rubric's block. Drop `MX2_eq_q_sub_delta_sq` and let the `M_X\u00b2 = q'\u00b2` identification land with the `ExclKinematics extends DisKinematics` PR.",
+   "issue": "`MX2` takes `ExclKinematics V` while `xi`, `beta`, `MY2` take `DisKinematics V`. Nothing in the repo connects the two records (`ExclKinematics` at `Exclusive/Kinematics/Basic.lean:32` is standalone; `toDisKinematics` exists only for `PolarizedKinematics`), so the \u00a70.1 surface ships in two mutually unusable halves: no consumer can combine `M_X\u00b2` with `\u03be`, `\u03b2`, `M_Y\u00b2` or `x`. The roadmap defines `M_X\u00b2 = (q + \u0394)\u00b2` (README.md:279), a function of `q`, `P`, `P'` alone, exactly like the other three; the PR inverts this, making `q'\u00b2` the definition and the roadmap's defining form a derived lemma, which is what forces the record split.",
+   "line": "98"
+  }
+ ],
+ "head_sha": "5f500c74259f133aa7273943d4f1da70a988d6e8",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 119,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "07586b842b97370c35edcae1974c3347a08505e57da109412993dcf23a832afe",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261106T105714Z-119-api-design-004fec",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-06T10:57:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, bodies are unexposed, and each definition has a non-simp `_def`, matching repo convention. But `MX2` is stated on `ExclKinematics` while `xi`, `beta`, `MY2` and `xBj` live on `DisKinematics`, and nothing maps between the two records, so no consumer can use `M_X\u00b2` with any other variable this PR ships.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2501db8ebcfab8cdfd3ee0150c3232b89859228aca56beb27a6b7f612bbd71de",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 119949,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 119949,
+  "cache_read_input_tokens": 836336,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 740,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 740,
+    "cache_read_input_tokens": 111618,
+    "input_tokens": 2,
+    "output_tokens": 3050,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11890,
+  "output_tokens_details": {
+   "thinking_tokens": 8292
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
