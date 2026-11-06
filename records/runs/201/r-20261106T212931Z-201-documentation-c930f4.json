@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5321854999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 178.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 170888,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 170888,
+    "cache_read_input_tokens": 1037511,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 481,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 481,
+      "cache_read_input_tokens": 141253,
+      "input_tokens": 2,
+      "output_tokens": 1727,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12178,
+    "output_tokens_details": {
+     "thinking_tokens": 8556
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 2.532185,
+ "dedupe_key": "eic/EpsilonEridani|201|575eb84df5417ec90b76c7a68223223b2600b2cb|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "95ff2177ae01b2e9e0e1dc33d31f54c7eef292058b96e88f582cc581d16facf3",
+ "diff_sha256": "95ff2177ae01b2e9e0e1dc33d31f54c7eef292058b96e88f582cc581d16facf3",
+ "duration_s": 178.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "module_graph.py:326,335-336; roadmap Hadronization/Suggested.lean:2-8; code/EpsilonEridani/Particles/Fragmentation/Basic.lean exists, so `direct` is non-empty.",
+   "file": "scripts/module_graph.py",
+   "fix": "Either document the second rule (first section of a roadmap file also links to the modules that file imports) in the module docstring and relabel those edges/headings in the viewer, or drop the `direct` contribution so the single documented rule holds.",
+   "issue": "The docstring says roadmap files \"import the empty `EpsilonEridani` root, so their imports say nothing; an edge `M -> layer` instead means a signature or docstring in that section names a declaration that module `M` defines\". `read_roadmaps` also attaches every directly imported library module to the file's first section (`for m in direct if n == 0 else []: uses[m]`, line 335). This fires today: roadmap/EpsilonEridaniRoadmaps/Hadronization/Suggested.lean imports 7 real EpsilonEridani modules (lines 2-8), so its \"Layer 0\" node gets 7 import-derived edges presented as naming edges with an empty name list. Same wrong claim in the viewer: module_graph.html:512 (\"A dashed yellow arrow means a roadmap layer's suggested signatures or docstrings name a declaration that module defines\"), :468 (\"Roadmap layers naming it\") and :478 (\"Library modules it names\").",
+   "line": 17
+  },
+  {
+   "evidence": "module_graph.py:299-306; test_module_graph.py `test_field_falls_back_to_its_type_but_not_to_a_variable` asserts `{\"EpsilonEridani.QFT.DIS.Kin.q\": \"EpsilonEridani.QFT.DIS.Kin\"}`.",
+   "file": "scripts/module_graph.py",
+   "fix": "Say that an unindexed name falls back to its longest indexed prefix (\u22652 components), so a field or constructor links to the module defining its parent, and keep the \"no edge\" caveat only for names with no indexed prefix.",
+   "issue": "\"a name the index misses (a structure field, an auto-generated lemma) draws no edge\" is wrong for fields and constructors: `resolve` deliberately falls back to the longest indexed prefix (lines 296-306), so `Kin.q` resolves to `Kin` and does draw an edge to the defining module \u2014 as its own test asserts.",
+   "line": 21
+  },
+  {
+   "evidence": "module_graph.py:385-448 (no docstring); generated_assets.py adds \"module-graph.json\" to OTHER_ASSETS.",
+   "file": "scripts/module_graph.py",
+   "fix": "Add a docstring on `build_graph` listing the node kinds and the fields each carries, and the edge kinds (`import` with `public`/`meta`/`redundant`, `roadmap` with `names`).",
+   "issue": "`build_graph`, the function producing the published `module-graph.json`, has no docstring, and nothing documents the node/edge schema (`kind`, `dir`, `upstream_namespace`, `redundant`, `names`, `used_by_roadmaps`, `pins`, `package_order`). The JSON is shipped as a site asset, so consumers have only the source to go on.",
+   "line": 385
+  },
+  {
+   "evidence": "module_graph.py:213-214; test_module_graph.py `test_opened_namespaces` asserts `open scoped Real` yields nothing.",
+   "file": "scripts/module_graph.py",
+   "fix": "State that `open scoped` is excluded (and why), or return those namespaces too.",
+   "issue": "`opened_namespaces` docstring claims \"Every namespace a file brings into scope with `open`\", but `open scoped X` lines are skipped outright (lines 213-214), so those namespaces are not returned and are not used as resolution prefixes.",
+   "line": 204
+  }
+ ],
+ "head_sha": "575eb84df5417ec90b76c7a68223223b2600b2cb",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 201,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "31f0828990af4b568f36d5b77609d107e3e770ff3ec30b92f0c8d731f325c684",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261106T212931Z-201-documentation-c930f4",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-06T21:29:31Z",
+ "submitted_by": "wdconinc",
+ "summary": "The module docstring and the viewer's own legend state a rule for roadmap edges that the code does not follow: edges are also drawn from a roadmap file's direct library imports, and structure-field names do resolve rather than being dropped. The main graph builder and the published JSON schema are undocumented.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/scripts/module_graph.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/module_graph.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/module_graph.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "roadmap/EpsilonEridaniRoadmaps",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/module_graph.html",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/module_graph.html",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e76ef3417f69053b44945df61e6b003e788e94a048540b3474d04180f1de5699",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 170888,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 170888,
+  "cache_read_input_tokens": 1037511,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 481,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 481,
+    "cache_read_input_tokens": 141253,
+    "input_tokens": 2,
+    "output_tokens": 1727,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12178,
+  "output_tokens_details": {
+   "thinking_tokens": 8556
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

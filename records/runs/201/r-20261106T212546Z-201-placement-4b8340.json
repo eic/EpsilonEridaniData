@@ -1,0 +1,205 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6594249999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 174.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 177687,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 177687,
+    "cache_read_input_tokens": 1188740,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 596,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 596,
+      "cache_read_input_tokens": 147521,
+      "input_tokens": 2,
+      "output_tokens": 2147,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11523,
+    "output_tokens_details": {
+     "thinking_tokens": 8302
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 2.659425,
+ "dedupe_key": "eic/EpsilonEridani|201|575eb84df5417ec90b76c7a68223223b2600b2cb|placement|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "95ff2177ae01b2e9e0e1dc33d31f54c7eef292058b96e88f582cc581d16facf3",
+ "diff_sha256": "95ff2177ae01b2e9e0e1dc33d31f54c7eef292058b96e88f582cc581d16facf3",
+ "duration_s": 174.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": ".github/workflows/pages.yml:359-364 (allowlist comment); web/static_files/progress.js + web/static_files/progress.json (committed front end + committed fallback data) vs. scripts/generated_assets.py:25-26 adding module-graph.html to the carried assets.",
+   "file": ".github/workflows/pages.yml",
+   "fix": "Follow the Progress precedent: commit the viewer shell as web/static_files/module-graph.html (front end, like web/static_files/progress.js) and have it `fetch(\"module-graph.json\")` at runtime; keep only `module-graph.json` in scripts/generated_assets.py OTHER_ASSETS and in the copy step. scripts/module_graph.py can keep emitting the inlined HTML for local `--out-dir` use.",
+   "issue": "The viewer's HTML/CSS/JS (scripts/module_graph.html, ~565 lines) reaches the site only inside the generated `module-graph.html`, carried by the data artifact. pages.yml:359-364 states the opposite rule for exactly these files: \"static_files also holds site.js, progress.js, style.css and the icons -- the front end, which belongs to the commit whose HTML is being served... Data travels; the front end does not.\" Consequence: the `Modules` nav link added in web/Site/Theme.lean:32 404s on any deploy where build-data has not produced or restored the file (including the first deploy after merge if the generator fails), and a viewer fix on main is invisible until build-data next succeeds.",
+   "line": 345
+  },
+  {
+   "evidence": "grep: `code/scripts/lean_source.py:167:def strip_comments_and_strings`, `:326:def declarations`, `:355:def scopes`, `:461:def qualified_declarations`; `code/scripts/check-expired-upstream-shims.py:25:from lean_source import qualified_declarations, strip_comments_and_strings`; lean_source.py:363 recognises `mutual`, module_graph.py:85 END_RE pops unconditionally.",
+   "file": "scripts/module_graph.py",
+   "fix": "Move the generic parsing into scripts/lean_source.py \u2014 add the doc-comment-preserving option (`keep_docs`) to `strip_comments_and_strings` and the missing keywords (`axiom`, `irreducible_def`) to DECLARATION_KEYWORDS \u2014 and build the index in module_graph.py from `lean_source.qualified_declarations`. Keep only the graph-specific helpers (`parse_imports`, `opened_namespaces`, `layer_sections`, `resolve`) here.",
+   "issue": "`strip_comments` (lines 96-148) and `declarations` (lines 173-200, with NAMESPACE_RE/SECTION_RE/END_RE/DECL_RE at lines 76-86) are a second, independent Lean source parser. scripts/lean_source.py is the declared home for this (\"Shared command-level Lean source parser... shared by repository hygiene checks\") and already provides `strip_comments_and_strings`, `declarations`, `scopes`, `update_scope` and `qualified_declarations`, used by scripts/check-expired-upstream-shims.py:25 and scripts/lint-dot-notation.py:4. The fork is weaker (no `mutual`, `end Foo` always pops one frame, keyword set differs), so the graph's declaration index and the lint can disagree about what a module defines, which is what the roadmap-layer edges are resolved against.",
+   "line": 96
+  }
+ ],
+ "head_sha": "575eb84df5417ec90b76c7a68223223b2600b2cb",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 201,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f2f1e2be57b5fe3cb7305d6125fd6639ebd585c37f3965b106f18e664a6af7a9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261106T212546Z-201-placement-4b8340",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-06T21:25:46Z",
+ "submitted_by": "wdconinc",
+ "summary": "No Lean library material moves here, and the Theme nav link and script/template placement follow existing conventions; two placement issues remain: the viewer front end is shipped as generated data instead of being committed under web/static_files, and the Lean source parser is forked instead of living in scripts/lean_source.py.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/chart_style.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/generated_assets.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/web",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/web/Site/Theme.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lean_source.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pages.yml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/module_graph.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2d76fdf707fa4c137964bf91750ddb5cb62133517f28e2997ce672771e0e2285",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 177687,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 177687,
+  "cache_read_input_tokens": 1188740,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 596,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 596,
+    "cache_read_input_tokens": 147521,
+    "input_tokens": 2,
+    "output_tokens": 2147,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11523,
+  "output_tokens_details": {
+   "thinking_tokens": 8302
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
