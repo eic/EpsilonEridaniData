@@ -1,0 +1,200 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.545431,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 199.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 154490,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 154490,
+    "cache_read_input_tokens": 1269102,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 13004,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 13004,
+      "cache_read_input_tokens": 131140,
+      "input_tokens": 2,
+      "output_tokens": 4093,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14634,
+    "output_tokens_details": {
+     "thinking_tokens": 11260
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 2.545431,
+ "dedupe_key": "eic/EpsilonEridani|198|685673acaeb80f0b5f5a8ffec718fcd13f352725|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "5e69c837b790ddc94f4a28534aeabc51dde4a95020a4c9305e233a8340df6617",
+ "diff_sha256": "5e69c837b790ddc94f4a28534aeabc51dde4a95020a4c9305e233a8340df6617",
+ "duration_s": 199.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "L94 `@[simp]`; L96 RHS `f2LO (e \u2218 \u03c3.symm) q x Q2`; upstream/mathlib/Mathlib/Logic/Equiv/Basic.lean:670-671 `@[simp] theorem symm_swap`. The file's own proof at L207 must run `simp only [f2LO_comap, Equiv.symm_swap]` on the goal to make it match, i.e. the mismatch already bites inside the file.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Isospin.lean",
+   "fix": "Drop `@[simp]` from `f2LO_comap` and keep it as an explicit rewrite (the RHS introduces an unapplied `Function.comp` that simp cannot normalise further), or else restate all five results above in the `f2LO (e \u2218 Equiv.swap u d) q` form so the stated API matches the simp normal form.",
+   "issue": "`@[simp] f2LO_comap` rewrites `f2LO e (comap \u03c3 q)` to `f2LO (e \u2218 \u03c3.symm) q`, so with Mathlib's `@[simp] Equiv.symm_swap` every statement of this file that mentions `comap (Equiv.swap u d)` is left out of simp-normal form: `f2LO_sub_f2LO_comap_swap` (L128), `tendsto_f2LO_div_f2LO_comap_swap_of_tendsto_zero` (L145), `f2LO_charge_sub_f2LO_charge_comap_swap` (L172), `tendsto_f2LO_charge_div_f2LO_charge_comap_swap` (L182) and `tendsto_f2LO_charge_div_f2LO_charge_comap_swap_nhdsLT_one` (L213). A consumer who runs `simp` on a goal containing the neutron's `F\u2082` can no longer `rw` the difference formula that is this PR's product for Layer 3.4.",
+   "line": "94"
+  },
+  {
+   "evidence": "CrossSection.lean:123 `def f2LO` and :128 `theorem f2LO_def` are in `namespace DIS` (L53); Isospin.lean:77 opens `namespace Inclusive`, and the statements at L95-96 and L106-111 use only `\u03c3 : \u03ba \u2243 \u03b9`, `e e' : \u03b9 \u2192 \u211d`, `q : Pdf \u03b9` \u2014 no `Equiv.swap`, no `LightFlavor`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Isospin.lean",
+   "fix": "Move both to `EpsilonEridani/QFT/Scattering/DIS/CrossSection.lean` beside the `f2LO_def` this PR adds (the limit lemma needs only `Filter`/`Topology` imports), or at minimum state them under `namespace DIS` rather than `DIS.Inclusive`.",
+   "issue": "`f2LO_comap` (L95) and `tendsto_f2LO_div_f2LO` (L106) mention no isospin, no swap and no neutron \u2014 they are general `f2LO` lemmas for an arbitrary relabelling bijection and for two arbitrary charge assignments \u2014 yet they are published in `DIS.Inclusive`, while the rest of the `f2LO` API (`f2LO_def`, `f2LO_nonneg`, `loNCdSigma_f2LO_nonneg`) lives in `DIS`. The canonical post-PR surface for one definition is split across two namespaces.",
+   "line": "95"
+  }
+ ],
+ "head_sha": "685673acaeb80f0b5f5a8ffec718fcd13f352725",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 198,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b11605a93a8384b615b232e571b8f813c50bded941fda62e3df5cdb18c42ee3b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261106T100832Z-198-api-design-d038bb",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-06T10:08:32Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and bodies stay unexposed, but the new `@[simp]` on `f2LO_comap` rewrites away the `comap` form in which every headline result of the file is stated, and the general (isospin-free) `f2LO` lemmas are published in a different namespace from the rest of the `f2LO` API.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/Isospin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d9ad93de1291ae3f1d37ca5550872a1320a43d4bd214da550e3bb67c8d290192",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 154490,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 154490,
+  "cache_read_input_tokens": 1269102,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 13004,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 13004,
+    "cache_read_input_tokens": 131140,
+    "input_tokens": 2,
+    "output_tokens": 4093,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14634,
+  "output_tokens_details": {
+   "thinking_tokens": 11260
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
