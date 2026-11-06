@@ -1,0 +1,197 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.35636,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 220.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 157938,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 157938,
+    "cache_read_input_tokens": 723750,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5505,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5505,
+      "cache_read_input_tokens": 138501,
+      "input_tokens": 2,
+      "output_tokens": 6883,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16601,
+    "output_tokens_details": {
+     "thinking_tokens": 13072
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 2.35636,
+ "dedupe_key": "eic/EpsilonEridani|193|521351be8f445e39a81e322ec5899f8c8a870f9d|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "976b9af6572c701b2c60718083adbcb5334053fd552e7fea7289588242bf2c24",
+ "diff_sha256": "976b9af6572c701b2c60718083adbcb5334053fd552e7fea7289588242bf2c24",
+ "duration_s": 220.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "No `@[expose]` in the file; contrast `EpsilonEridani/Mathematics/LieAlgebra/Casimir.lean:85` `@[expose] public section`. The file itself needs the operator form it does not export: `trace_spinSingletProj` uses `rw [spinSingletProj, ...]` (line 238), `spinTripletProj_eq` uses `rw [spinTripletProj, spinSingletProj]` (line 133), `casimir_spinGen_eq` uses `simp only [spinGen, ...]` (line 290). Repo convention: `ColorDecomposition.lean:203 colorSingletState_def ... := (rfl)`, `Scales.lean:119 velocity_def := (rfl)`.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "fix": "Add `spinGen_def`, `spinSingletProj_def`, `spinTripletProj_def`, each `:= (rfl)`, keeping the bodies unexposed.",
+   "issue": "`spinGen` (90), `spinSingletProj` (111) and `spinTripletProj` (116) sit in a plain `public section` with no `@[expose]`, so their bodies are not visible downstream, and no `*_def` lemma exposes the operator-level form. Only pointwise `*_apply` lemmas and `spinTripletProj_eq` are exported, so a consumer cannot rewrite `spinSingletProj` to `(2:\u2102)\u207b\u00b9 \u2022 (1 - comm)` or `spinGen i` to `(2:\u2102)\u207b\u00b9 \u2022 toEuclideanLin (pauliMatrix (Sum.inr i))` in any multiplicative/trace goal without going through `TensorProduct.ext'`.",
+   "line": "90"
+  },
+  {
+   "evidence": "The Casimir\u2013projector products are stated from both sides: `casimir_spinGen_mul_spinSingletProj` (303), `casimir_spinGen_mul_spinTripletProj` (310), `spinSingletProj_mul_casimir_spinGen` (317), `spinTripletProj_mul_casimir_spinGen` (324); the exchange lemmas have no right-multiplied counterpart.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "fix": "Add `spinSingletProj_mul_comm` and `spinTripletProj_mul_comm` (`@[simp]`), mirroring the two-sided Casimir lemmas.",
+   "issue": "`comm_mul_spinSingletProj` (188) and `comm_mul_spinTripletProj` (198) are `@[simp]` but only cover `P\u2081\u2082 * P`; `spinSingletProj * (comm).toLinearMap` and `spinTripletProj * (comm).toLinearMap` have no lemma and are left unnormalised by simp, even though both equal `-P\u2080` and `P\u2081` respectively (`C\u00b2 = 1`). The file develops both sides everywhere else.",
+   "line": "188"
+  }
+ ],
+ "head_sha": "521351be8f445e39a81e322ec5899f8c8a870f9d",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 193,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5ac62a8459c60e5975c4749243793ecdf6bbd9a5c68ebdba8f406170f64a7597",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261106T221348Z-193-api-design-fc7f3a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-06T22:13:48Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and free of compatibility artifacts, but the three new definitions ship with hidden bodies and no operator-level `*_def` restatement, and the exchange-operator lemmas are given only from the left while the parallel Casimir lemmas are given from both sides.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/PauliMatrices/RelationsExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/QuarkoniaAndExotics/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LieAlgebra/Casimir.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/PauliMatrices/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8dad950a247d849138f9491d60a61e42f39f6e3d13894c6346d069ace3b622f5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 157938,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 157938,
+  "cache_read_input_tokens": 723750,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5505,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5505,
+    "cache_read_input_tokens": 138501,
+    "input_tokens": 2,
+    "output_tokens": 6883,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16601,
+  "output_tokens_details": {
+   "thinking_tokens": 13072
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
