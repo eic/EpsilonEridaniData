@@ -1,0 +1,235 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.818448999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 310.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 211752,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 211752,
+    "cache_read_input_tokens": 2268468,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1969,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1969,
+      "cache_read_input_tokens": 181518,
+      "input_tokens": 2,
+      "output_tokens": 2032,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22661,
+    "output_tokens_details": {
+     "thinking_tokens": 16766
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 3.818449,
+ "dedupe_key": "eic/EpsilonEridani|120|e787f4f447b0440793182deb9a981640f714f896|generality|claude-opus-5|30e3cfe49d22c07d|production|7",
+ "diff_blob": "0301aefc62f80ecf5679fbcd0f341ddf3e6b782e308c1dcc09698801d3868a10",
+ "diff_sha256": "0301aefc62f80ecf5679fbcd0f341ddf3e6b782e308c1dcc09698801d3868a10",
+ "duration_s": 310.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Tensors/Basic.lean:686-701 vs Tensor.lean:350-367: field-for-field identical shape (V, V, \u22600, =0, V, V, =0, \u22600). Tensors/Basic.lean:710 and Tensor.lean:373 both discharge `linearIndependent_pair_of_probes` from the four fields in the same order, confirming the two bundles are the same datum at different `B\u2081`, `B\u2082`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Put the generic bundle next to the lemma in `EpsilonEridani/Mathematics/LinearAlgebra/BilinearMap.lean`, e.g. `structure LinearMap.SeparatingProbes (B\u2081 B\u2082 : M \u2192\u2097[R] N \u2192\u2097[R] P) where v\u2081 : M; w\u2081 : N; apply\u2081_ne_zero : B\u2081 v\u2081 w\u2081 \u2260 0; apply\u2082_eq_zero : B\u2082 v\u2081 w\u2081 = 0; v\u2082 : M; w\u2082 : N; apply\u2081_eq_zero : B\u2081 v\u2082 w\u2082 = 0; apply\u2082_ne_zero : B\u2082 v\u2082 w\u2082 \u2260 0`, restate `linearIndependent_pair_of_probes` to take it, and define both `UniquenessAssumptions g K := SeparatingProbes (transverseMetric g K) (Bilin.rankOne g (pTransverse g K) (pTransverse g K))` and `SpinUniquenessAssumptions \u03b5 K := SeparatingProbes (spinStructureOne \u03b5 K) (spinStructureTwo \u03b5 K)`, updating `uniquenessWit` / `spinUniquenessWit` and the two `linearIndependent_*` lemmas. (`pT_outer_zero`'s `g pT vF1 * g pT wF1 = 0` is already accepted as `Bilin.rankOne g pT pT vF1 wF1 = 0` by the current call at Tensors/Basic.lean:710, so the shapes do match.)",
+   "issue": "`SpinUniquenessAssumptions \u03b5 K` (vOne/wOne/structureOne_ne_zero/structureTwo_eq_zero + vTwo/wTwo/structureOne_eq_zero/structureTwo_ne_zero) is a second copy of `Tensors.Hadronic.UniquenessAssumptions g K` (Tensors/Basic.lean:686: vF1/wF1/transverse_nonzero/pT_outer_zero + vF2/wF2/transverse_zero/pT_outer_nonzero). Both are the same abstract datum \u2014 two probe pairs separating two bilinear maps `B\u2081`, `B\u2082` \u2014 instantiated at `(transverseMetric g K, Bilin.rankOne g pT pT)` and `(spinStructureOne \u03b5 K, spinStructureTwo \u03b5 K)`. The PR already recognised the shared content by extracting `LinearMap.linearIndependent_pair_of_probes` (BilinearMap.lean:35) and consuming both structures through it (Tensors/Basic.lean:710, Tensor.lean:373), but left the hypothesis bundle duplicated, so each new pair of covariant structures grows another copy and probes bundled for one cannot be used with the other's lemmas.",
+   "line": 350
+  }
+ ],
+ "head_sha": "e787f4f447b0440793182deb9a981640f714f896",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "220b0d0ad920a5d4af8bc7b658f7d8c5fe155697a1f0e4b6202753537c18d4ed",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 7,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261106T111537Z-120-generality-e5f76a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-06T11:15:37Z",
+ "submitted_by": "wdconinc",
+ "summary": "Statements sit at their natural level: hypotheses are minimal, special cases are derived rather than reproved, and the shared non-degeneracy argument was correctly factored into LinearMap.linearIndependent_pair_of_probes. The remaining half of that factoring was not done: the probe-pair hypothesis bundle is now duplicated as two identically-shaped structures.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Module/Torsion/Free.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Module/Torsion/Free.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Module/Torsion/Free.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Module/Torsion/Free.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/LinearIndependent",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/LinearIndependent/Lemmas.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7b08eba62d25b1ac1b014d56816426b7ccbdc1bbe1abdcb4493b2ea1b3ba78ec",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 211752,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 211752,
+  "cache_read_input_tokens": 2268468,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1969,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1969,
+    "cache_read_input_tokens": 181518,
+    "input_tokens": 2,
+    "output_tokens": 2032,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22661,
+  "output_tokens_details": {
+   "thinking_tokens": 16766
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
