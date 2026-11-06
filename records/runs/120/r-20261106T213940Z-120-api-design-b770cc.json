@@ -1,0 +1,232 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.6796684999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 261.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 217684,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 217684,
+    "cache_read_input_tokens": 2054207,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2266,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2266,
+      "cache_read_input_tokens": 182119,
+      "input_tokens": 2,
+      "output_tokens": 2547,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19023,
+    "output_tokens_details": {
+     "thinking_tokens": 14768
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 3.679668,
+ "dedupe_key": "eic/EpsilonEridani|120|8692e6d3123d347114945715b587cc70475788da|api-design|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "35351605cfe96c3093151eab816356a45fecc375c55b1ed4d0df74b305c4345f",
+ "diff_sha256": "35351605cfe96c3093151eab816356a45fecc375c55b1ed4d0df74b305c4345f",
+ "duration_s": 261.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The same PR refactors the F1F2 side the other way: `UniquenessAssumptions` is an abbrev (Tensors/Basic.lean:686) and `fromF1F2_ne_zero` (:698) and `decomposition_unique` (:716) call `hU.linearIndependent` with no wrapper lemma. Two names for one fact, inconsistent within the PR.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Delete `linearIndependent_spinStructure`; use `hU.linearIndependent` at the call sites (`linearIndependent_spinStructure_kWit4` :494 becomes `spinUniquenessWit.linearIndependent`).",
+   "issue": "`linearIndependent_spinStructure \u03b5 K hU := hU.linearIndependent` is a second public name for `LinearMap.SeparatingProbes.linearIndependent`, with the same statement and a one-term proof. `SpinUniquenessAssumptions` is an `abbrev` (:350), so `hU.linearIndependent` resolves directly.",
+   "line": 355
+  },
+  {
+   "evidence": "Grep of the file: the only lemmas are `bilinMap_apply`, `_apply_self`, `isAlt_bilinMap`, `_apply_left/right_eq_zero`, `_update_smul`, `_pair_smul_snd`, `neg_bilinMap`, `_update_neg`, `_pair_neg_snd`, `_update_sub`, `_pair_sub_snd`. No `add`.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "fix": "Add `bilinMap_update_add` (from `f.map_update_add`, same proof shape as `bilinMap_update_sub`) and `@[simp] bilinMap_pair_add_snd`, or narrow the docstring claim to the operations actually covered.",
+   "issue": "The module docstring advertises \"it is linear in each fixed vector\", but the file supplies only `bilinMap_update_smul` (:87), `bilinMap_update_sub` (:149), `bilinMap_pair_smul_snd` (:98), `bilinMap_pair_sub_snd` (:160) and the `neg` pair \u2014 there is no additivity lemma at all. A consumer with `\u03b5.bilinMap ![q, x + y]` has no lemma and `simp` cannot split it.",
+   "line": 33
+  },
+  {
+   "evidence": "The direct in-repo precedent for this construction supplies all four: `lMuNuOdd_apply_k_left_eq_zero` (Tensors/Basic.lean:281), `_kPrime_left_eq_zero` (:286), `_k_right_eq_zero` (:291), `_kPrime_right_eq_zero` (:296). Tensor.lean:155-174 passes index `0` in all four conservation lemmas; index `1` is never used.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Add the two lemmas, one line each: `\u03b5.bilinMap_apply_left_eq_zero ![K.q, K.S] 1 w` and `\u03b5.bilinMap_apply_right_eq_zero ![K.q, K.S] 1 v`, marked `@[simp]` like the `q` pair.",
+   "issue": "`spinStructureOne` gets `_conserved_left`/`_conserved_right` for the fixed vector `K.q` (index 0) but nothing for the other fixed vector `K.S` (index 1): `spinStructureOne \u03b5 K K.S w = 0` and `spinStructureOne \u03b5 K v K.S = 0` are unavailable. Since `spinStructureOne`'s body is (correctly) unexposed, a consumer must go through `spinStructureOne_apply` and raw `\u03b5.map_eq_zero_of_eq` to get them.",
+   "line": 153
+  }
+ ],
+ "head_sha": "8692e6d3123d347114945715b587cc70475788da",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "d96c6ad122daceb14f4f79e7622fe93009f18de9daf5cde45dcdfcdb06684d48",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261106T213940Z-120-api-design-b770cc",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-06T21:39:40Z",
+ "submitted_by": "wdconinc",
+ "summary": "Bodies are now unexposed and the witness scaffolding is private, resolving the earlier findings. Remaining: a duplicate linear-independence name that the PR's own F1F2 refactor shows is unnecessary, and two gaps in the characteristic API (no additivity for `bilinMap`, no vanishing lemma on the spin slot).",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "dcd4eadf97be6e20e6794b5a91fe89cb53ee61f6d6b0cae8e7d377ea50673f34",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 217684,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 217684,
+  "cache_read_input_tokens": 2054207,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2266,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2266,
+    "cache_read_input_tokens": 182119,
+    "input_tokens": 2,
+    "output_tokens": 2547,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19023,
+  "output_tokens_details": {
+   "thinking_tokens": 14768
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
