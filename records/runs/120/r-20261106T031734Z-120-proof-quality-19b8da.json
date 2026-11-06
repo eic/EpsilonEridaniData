@@ -1,0 +1,194 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6403220000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 240.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 178777,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 178777,
+    "cache_read_input_tokens": 800244,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8992,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8992,
+      "cache_read_input_tokens": 141888,
+      "input_tokens": 2,
+      "output_tokens": 5147,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18094,
+    "output_tokens_details": {
+     "thinking_tokens": 14599
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.640322,
+ "dedupe_key": "eic/EpsilonEridani|120|9725647b191cf02001b7150fa765c756e6aaa2d9|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|5",
+ "diff_blob": "deeb1d1d6788fd5769a086d1df924173f2fe967185d4a12c8930ace8ec1ab369",
+ "diff_sha256": "deeb1d1d6788fd5769a086d1df924173f2fe967185d4a12c8930ace8ec1ab369",
+ "duration_s": 240.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "BilinMap.lean:115-117; `bilinMap` is `LinearMap.mk\u2082 ...` (BilinMap.lean:49-54). Mathlib proves `AlternatingMap.neg_apply` as a `@[simp]` lemma rather than leaving the defeq implicit (upstream/mathlib/Mathlib/LinearAlgebra/Alternating/Basic.lean).",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "fix": "Prove it from the `_apply` lemmas, e.g. `LinearMap.ext\u2082 fun v w => by simp [bilinMap_apply]` (using `AlternatingMap.neg_apply`, `LinearMap.neg_apply`), or keep `rfl` with a comment naming the defeq relied on.",
+   "issue": "`bilinMap_neg` closes with `LinearMap.ext\u2082 fun _ _ => rfl`, which only typechecks by unfolding `LinearMap.mk\u2082` inside `bilinMap` and then both the `AlternatingMap` and `LinearMap` `Neg` instances through their `DFunLike` coercions. None of this is stated or documented, and explicit lemmas exist.",
+   "line": 117
+  },
+  {
+   "evidence": "Tensor.lean:360-365 with `fromG1G2` defined at Tensor.lean:212-214; Tensors/Basic.lean:719-722 and 735-738 with `fromF1F2` defined at Tensors/Basic.lean:621-623.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Make the unfolding explicit before invoking `eq_of_pair`, e.g. `simp only [fromG1G2] at h` (resp. `simp only [fromF1F2] at hzero` / on the two sides in `decomposition_unique`), so the coefficients being cancelled are visible in the proof text.",
+   "issue": "`hLI.eq_of_pair h` is applied to `h : fromG1G2 \u03b5 K g\u2081 g\u2082 = fromG1G2 \u03b5 K g\u2081' g\u2082'`; the metavariables `s, t, s', t'` are solved only by delta-unfolding `fromG1G2` into `(\u221aM/(p\u00b7q) * g\u2081) \u2022 E\u2081 + (\u221aM/(p\u00b7q)\u00b2 * g\u2082) \u2022 E\u2082`. Nothing in the script says where the subsequent `h1`, `h2` shapes come from. Same pattern at Tensors/Basic.lean:720-721 (`hzero.trans (by simp)` unified against `?s \u2022 transverseMetric + ?t \u2022 rankOne`) and Tensors/Basic.lean:737-738.",
+   "line": 362
+  },
+  {
+   "evidence": "Tensor.lean:439 `lemma kWit4_p_q : \u03b7Wit kWit4.p kWit4.q = 1 := by simp`; grep for `kWit4_p_q` across ./code returns only that definition line, and Tensor.lean:492-493 passes `(by simp)` for the `hpq` argument of `fromG1G2_ne_zero` (Tensor.lean:369-371).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Use the lemma at the call site (`by rw [kWit4_p_q]; norm_num`), or delete `kWit4_p_q` if the `simp` normal form is meant to carry it.",
+   "issue": "`fromG1G2_kWit4_ne_zero` discharges `\u03b7Wit kWit4.p kWit4.q \u2260 0` with an anonymous `(by simp)`, while `kWit4_p_q` states exactly `\u03b7Wit kWit4.p kWit4.q = 1` and has no use anywhere in the repo, so the named fact is dead and the call site is opaque.",
+   "line": 493
+  }
+ ],
+ "head_sha": "9725647b191cf02001b7150fa765c756e6aaa2d9",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "5390b3e444e353d1d4981e5946a7160b7de7400a9a6212ecf95044d6585d8c00",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 5,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261106T031734Z-120-proof-quality-19b8da",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-06T03:17:34Z",
+ "submitted_by": "wdconinc",
+ "summary": "The prior defeq finding in bilinMap_update_neg is fixed and the determinant/witness proofs are robust. Three smaller issues remain: an undocumented rfl through the Neg instances in bilinMap_neg, three proofs that obtain their coefficients only by delta-unfolding fromG1G2/fromF1F2 during unification with eq_of_pair, and a named witness lemma replaced by an opaque by simp at its only call site.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Matrix/Determinant.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/SesquilinearForm",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ea2aa35f4ec38ec9285c78f238be514178ddc3734df4d44f461e4bb815e7a0d9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 178777,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 178777,
+  "cache_read_input_tokens": 800244,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8992,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8992,
+    "cache_read_input_tokens": 141888,
+    "input_tokens": 2,
+    "output_tokens": 5147,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18094,
+  "output_tokens_details": {
+   "thinking_tokens": 14599
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
