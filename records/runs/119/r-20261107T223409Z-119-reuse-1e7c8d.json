@@ -1,0 +1,244 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0275425,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 253.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 100071,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 100071,
+    "cache_read_input_tokens": 1077595,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1207,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1207,
+      "cache_read_input_tokens": 102087,
+      "input_tokens": 2,
+      "output_tokens": 2502,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19515,
+    "output_tokens_details": {
+     "thinking_tokens": 13540
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.027543,
+ "dedupe_key": "eic/EpsilonEridani|119|b1a3c444d0e40908d2dd0b6f2dade11987718155|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4aebac263c905c86ade8fbbbc07b532c707f57ac2f0ffa59f242f9a20e10d8cd",
+ "diff_sha256": "4aebac263c905c86ade8fbbbc07b532c707f57ac2f0ffa59f242f9a20e10d8cd",
+ "duration_s": 253.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`lemma IsSymm.polarization (x y : M) (hB : B.IsSymm) : B x y = (B (x + y) (x + y) - B x x - B y y) / 2` at upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean:138, under `[Field R] [NeZero (2 : R)] [Module R M]`. It applies here: `Bilin V := LinearMap.BilinForm \u211d V` (Kinematics/Basic.lean:29), `hSymm` is `LinearMap.BilinForm.IsSymm` (Properties.lean:88, field `eq`, as used by `hSymm.eq` in Kinematics/Basic.lean:94), `NeZero (2 : \u211d)` comes from `NeZero.charZero_ofNat` (Mathlib/Algebra/CharZero/Defs.lean:121), and the file transitively imports Mathlib via DIS.Kinematics.Basic (`public import Mathlib`, Kinematics/Basic.lean:8). The clone: Kinematics/Basic.lean:79-95 versus Diffractive/Basic.lean:110-132.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Replace the calc with the located lemma: `have h := hSymm.polarization K.q (K.p - K.pPrime); rw [MX2_def]; linarith` (polarization gives `g q \u0394 = (g (q+\u0394) (q+\u0394) - g q q - g \u0394 \u0394)/2`, which is the goal rearranged). Also state the cross term as `2 * g (K.p - K.pPrime) K.q`, matching `beta`'s denominator, so `beta_eq_of_MX2` (line 143) no longer needs a second `rw [hSymm.eq (K.p - K.pPrime) K.q]` to undo the orientation MX2_expand's last step introduced. The change is confined to the new file; refactoring W2_expand onto the same lemma is a separate matter, not required here.",
+   "issue": "MX2_expand's 19-line calc proof re-derives Mathlib's polarization identity for a symmetric bilinear form, and is a near-clone of the already-merged DisKinematics.W2_expand (same `hSymm : g.IsSymm`, same `rw [map_add, LinearMap.add_apply]` steps, same three-step calc) with only `p + q` replaced by `q + (p - pPrime)`. Inside it, the `hq` step also re-derives the left-additivity the first calc step already established.",
+   "line": "110"
+  }
+ ],
+ "head_sha": "b1a3c444d0e40908d2dd0b6f2dade11987718155",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 119,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f99f22a779d782ef2f9a6ca8aa202070d6d9a4f106046c15dfee12f339af0648",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261107T223409Z-119-reuse-1e7c8d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T22:34:09Z",
+ "submitted_by": "veprbl",
+ "summary": "The new material (\u03be, \u03b2, M_X\u00b2, M_Y\u00b2, x = \u03be\u03b2) is genuinely new and reuses DisKinematics.Q2/xBj rather than redefining the inclusive variables. One proof re-derives an existing Mathlib lemma in a 19-line calc that also clones the merged DisKinematics.W2_expand.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "replies.json",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/QuadraticForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/CharZero/Defs.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 24,
+  "trace_truncated": false
+ },
+ "transcript_blob": "282a982f83d64be559d7e703dcd3e2886903a8dfb917c4c5f73f49f492c80cb5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 100071,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 100071,
+  "cache_read_input_tokens": 1077595,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1207,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1207,
+    "cache_read_input_tokens": 102087,
+    "input_tokens": 2,
+    "output_tokens": 2502,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19515,
+  "output_tokens_details": {
+   "thinking_tokens": 13540
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,236 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4105675,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 253.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 64731,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 64731,
+    "cache_read_input_tokens": 536005,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3745,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3745,
+      "cache_read_input_tokens": 64209,
+      "input_tokens": 2,
+      "output_tokens": 5475,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19805,
+    "output_tokens_details": {
+     "thinking_tokens": 14781
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.410567,
+ "dedupe_key": "eic/EpsilonEridani|119|b1a3c444d0e40908d2dd0b6f2dade11987718155|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4aebac263c905c86ade8fbbbc07b532c707f57ac2f0ffa59f242f9a20e10d8cd",
+ "diff_sha256": "4aebac263c905c86ade8fbbbc07b532c707f57ac2f0ffa59f242f9a20e10d8cd",
+ "duration_s": 253.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap `Diffraction/README.md:276` `- t = \u0394\u00b2;`; `Exclusive/Kinematics/Basic.lean:68 def tMom`; `Kinematics/TargetMass.lean:63 def M2`; the only occurrence of `t` in the new API is the inline expression at line 138.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Add `tMom (g) (K) := g (K.p - K.pPrime) (K.p - K.pPrime)` with a `tMom_def := (rfl)` and restate `beta_eq_of_MX2` with it. Putting it on `DisKinematics` (next to `M2` in `Kinematics/TargetMass.lean`) lets the announced `ExclKinematics extends DisKinematics` bridge subsume `ExclKinematics.tMom` instead of leaving two names for \u0394\u00b2 on one record.",
+   "issue": "`t = \u0394\u00b2` is an explicitly named \u00a70.1 variable but gets no declaration, so the layer's headline relation is stated with the raw bilinear `g (K.p - K.pPrime) (K.p - K.pPrime)` inline, and every consumer of `t` (0.2's `t \u2264 0` and `t_min`, 1.1's `F\u2082^{D(4)}(\u03b2, Q\u00b2, \u03be, t)`, 1.2's `t`-integration) must respell it.",
+   "line": 138
+  },
+  {
+   "evidence": "`Kinematics/Basic.lean:98 lemma W2_eq_with_Q2` is the upstream sibling of `W2_expand`, which line 107 names as `MX2_expand`'s counterpart; roadmap `Diffraction/README.md:285` \"Equivalently `M_X\u00b2 = Q\u00b2(1/\u03b2 - 1) + t`\".",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Add `MX2_eq_with_Q2 : MX2 g K = -K.Q2 g + 2 * g K.q (K.p - K.pPrime) + g (K.p - K.pPrime) (K.p - K.pPrime)` (parallel to `DisKinematics.W2_eq_with_Q2`) and the inverse form `MX2 g K = K.Q2 g * (1 / beta g K - 1) + t` under the needed non-degeneracy.",
+   "issue": "`MX2_expand` leaves `g K.q K.q` where the rest of the API speaks in `Q2`, and the roadmap's equivalent form `M_X\u00b2 = Q\u00b2(1/\u03b2 \u2212 1) + t` has no declaration; a consumer must redo the `Q2`-substitution and invert `beta_eq_of_MX2` by hand.",
+   "line": 110
+  },
+  {
+   "evidence": "roadmap `Diffraction/README.md:288` \"- The `y`-independence of `\u03be`, `\u03b2` and `t`: they are functions of `q`, `P`, `P'` alone.\"; `Kinematics/Basic.lean:32-45` shows `k`/`kPrime` are separate fields constrained only by `hq : q = k - kPrime`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "fix": "Expose congruence lemmas, e.g. `xi_congr`/`beta_congr`: given `K\u2081.p = K\u2082.p`, `K\u2081.pPrime = K\u2082.pPrime`, `K\u2081.q = K\u2082.q`, conclude `xi g K\u2081 = xi g K\u2082` (one-line `simp [xi_def, ...]`).",
+   "issue": "The \u00a70.1 theorem that `\u03be`, `\u03b2` (and `t`) are functions of `q`, `P`, `P'` alone is asserted only in prose (module docstring, lines 17-19) and not stated. It is not vacuous in this encoding: `DisKinematics` also carries `k`, `kPrime`, so two records can share `p`, `pPrime`, `q` and differ elsewhere.",
+   "line": 0
+  }
+ ],
+ "head_sha": "b1a3c444d0e40908d2dd0b6f2dade11987718155",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 119,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "175d76aaf8072d8559374774836824048b873b30e32febe2ff0470f120a8ba10",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261107T224017Z-119-api-design-d1348d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T22:40:17Z",
+ "submitted_by": "veprbl",
+ "summary": "Bodies are correctly unexposed with `(rfl)`-backed `_def` lemmas and nothing is over-exposed or compatibility-only, but three explicit \u00a70.1 products are missing from the surface: a named `t = \u0394\u00b2`, the `Q\u00b2`/inverse form of `M_X\u00b2`, and the y-independence statement.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "861f13f3ba84c0fb402e8adfa8ecd68e7b9f7caf3b798f190238b243dbfdaebd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 64731,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 64731,
+  "cache_read_input_tokens": 536005,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3745,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3745,
+    "cache_read_input_tokens": 64209,
+    "input_tokens": 2,
+    "output_tokens": 5475,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19805,
+  "output_tokens_details": {
+   "thinking_tokens": 14781
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
