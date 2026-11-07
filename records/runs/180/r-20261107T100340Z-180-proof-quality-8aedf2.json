@@ -1,0 +1,204 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.8812925000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 303.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 187214,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 187214,
+    "cache_read_input_tokens": 880245,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8233,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8233,
+      "cache_read_input_tokens": 151105,
+      "input_tokens": 2,
+      "output_tokens": 3559,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22758,
+    "output_tokens_details": {
+     "thinking_tokens": 18133
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 2.881293,
+ "dedupe_key": "eic/EpsilonEridani|180|107eede6fe7e03580b7c275d6fcb8dd01db75ed2|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "600c8046fcda9a35dacb842e5773ca61bd38e6dceb74a5b2cf91759377d459fd",
+ "diff_sha256": "600c8046fcda9a35dacb842e5773ca61bd38e6dceb74a5b2cf91759377d459fd",
+ "duration_s": 303.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`ext` on `@[ext] structure ReconstructedInvariants` (AccessMethods.lean:162) yields goals in projection form, so these `exact`s type-check only up to delta. The needed lemmas exist and are used elsewhere: `sigmaMethod_Q2` (AccessMethods.lean:277), `mixedMethod_Q2`/`mixedMethod_y` (AccessMethods.lean:285), `TrueInvariants.toReconstructedInvariants_x/_Q2` (Radiative.lean:317), `_y` (Radiative.lean:236).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Prefix each with the available lemma, e.g. `rw [TrueInvariants.toReconstructedInvariants_x]; exact \u2026` at 234, `rw [sigmaMethod_Q2]; exact hQ` at 320, `rw [mixedMethod_y, TrueInvariants.toReconstructedInvariants_y]; exact hy` at 334, and at 296 finish through `trueInvariants_x/_Q2/_y` + `toReconstructedInvariants_*` instead of `rwa`.",
+   "issue": "Six component goals are discharged by definitional unfolding of the method/invariant wrappers rather than by the generated projection lemmas: 234-235 (`exact e.hadronicMethod_x_eq_trueInvariants_x g .finalState` / `_Q2_` need `toReconstructedInvariants.x \u2261 t.x`), 296 (`rwa ... at hK` needs `(trueInvariants g l).toReconstructedInvariants \u2261 \u27e8(hardKinematics l).xBj g, \u2026\u27e9`, i.e. delta on two defs plus structure eta), 320 and 333 (`exact hQ` needs `sigmaMethod.Q2 \u2261 electronMethod.Q2`, `mixedMethod.Q2 \u2261 electronMethod.Q2`), 321 and 334 (`exact hy` needs `toReconstructedInvariants.y \u2261 t.y`, `mixedMethod.y \u2261 hadronicMethod.y`). The file is inconsistent about this: line 236 rewrites with `TrueInvariants.toReconstructedInvariants_y` for exactly the same step.",
+   "line": 234
+  },
+  {
+   "evidence": "`@[simps (rhsMd := .default)] def electronMethod` (AccessMethods.lean:199) generates `electronMethod_Q2 : (electronMethod g k p kPrime).Q2 = -g (k - kPrime) (k - kPrime)`, used by name at Radiative.lean:377, 428 and 537.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "State `hQ` as `(electronMethod g k p kPrime).Q2 = d.q2Electron` and open its proof with `rw [electronMethod_Q2]`, or write `\u00b7 rw [electronMethod_Q2]; exact hQ`.",
+   "issue": "Same pattern: `hQ : -g (k - kPrime) (k - kPrime) = d.q2Electron` (line 306) is passed by `exact hQ` to the goal `(electronMethod g k p kPrime).Q2 = d.q2Electron`, which holds only by unfolding `electronMethod` through `ofTransfer` to its `Q2` field, while line 311 of the same proof rewrites with `electronMethod_x` by name.",
+   "line": 314
+  },
+  {
+   "evidence": "Chain at Radiative.lean:498-499; `left_eq_add` (Mathlib/Algebra/Ring/MinimalAxioms.lean:58) and `add_sub_left_comm` (Mathlib/LinearAlgebra/Eigenspace/Basic.lean:671) are upstream names; `module` is defined at Mathlib/Tactic/Module.lean:762 and `linear_combination (norm := module) h` is exercised at MathlibTest/module.lean:161.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Use the module automation, e.g. `constructor <;> intro h <;> linear_combination (norm := module) h`, and close line 506 with `module`-based normalization after `rw [photon_eq_smul_kPrime_add_photon_iff.1 hcol]`.",
+   "issue": "`photon_eq_smul_kPrime_add_photon_iff` is proved by a seven-step chain of upstream rewrites (`smul_add, sub_smul, one_smul, add_sub_left_comm, left_eq_add, sub_eq_zero, eq_comm`) for a goal that is plain module arithmetic; the chain both obscures why the iff holds and breaks on any rename of `left_eq_add`/`add_sub_left_comm` (`left_eq_add` is itself a recent Mathlib rename). `kPrime_eq_smul_leptonOut_of_collinear_finalState` (line 506) has the same shape.",
+   "line": 496
+  }
+ ],
+ "head_sha": "107eede6fe7e03580b7c275d6fcb8dd01db75ed2",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "c20acf4e2c72b9453000621fa9c43be7c33b2b011aafa69b4ba0add18e06aaf1",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261107T100340Z-180-proof-quality-8aedf2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T10:03:40Z",
+ "submitted_by": "wdconinc",
+ "summary": "Several component goals are closed by delta-unfolding the method definitions (sigmaMethod.Q2 \u2261 electronMethod.Q2, mixedMethod.y \u2261 hadronicMethod.y, toReconstructedInvariants.x \u2261 t.x) even though the @[simps] lemmas exist and are used on neighbouring lines, and one iff is proved by a seven-step chain of upstream rewrites. Both are one-line fixes.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Tactic",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Tactic/Module.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "dfdf919cd467790f4b6c0b1d83941a8c43b3a645ebbd1f403c40c70936fe3b14",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 187214,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 187214,
+  "cache_read_input_tokens": 880245,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8233,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8233,
+    "cache_read_input_tokens": 151105,
+    "input_tokens": 2,
+    "output_tokens": 3559,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22758,
+  "output_tokens_details": {
+   "thinking_tokens": 18133
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

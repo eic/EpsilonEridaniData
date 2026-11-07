@@ -1,0 +1,231 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.4407700000000006,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 194.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 211003,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 211003,
+    "cache_read_input_tokens": 2008230,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2224,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2224,
+      "cache_read_input_tokens": 179175,
+      "input_tokens": 2,
+      "output_tokens": 2794,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13059,
+    "output_tokens_details": {
+     "thinking_tokens": 7903
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 3.44077,
+ "dedupe_key": "eic/EpsilonEridani|180|107eede6fe7e03580b7c275d6fcb8dd01db75ed2|reuse|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "600c8046fcda9a35dacb842e5773ca61bd38e6dceb74a5b2cf91759377d459fd",
+ "diff_sha256": "600c8046fcda9a35dacb842e5773ca61bd38e6dceb74a5b2cf91759377d459fd",
+ "duration_s": 194.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep over code/ for `_x_eq_Q2_div` returns only the declaration sites 188, 223, 230, 261, 282 plus Radiative.lean:316,472 \u2014 the latter two use `sigmaMethod_x_eq_Q2_div` only. AccessMethods.lean:226-227 and 233-234 are the same `exact ReconstructedInvariants.ofTransfer_x_eq_Q2_div g k p _ hpk`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "Delete both; a caller writes the one-line `exact ReconstructedInvariants.ofTransfer_x_eq_Q2_div g k p _ hpk` after `electronMethod_eq_ofTransfer`/`hadronicMethod_eq_ofTransfer`. With them gone, `hadronicMethod_eq_ofTransfer` (218-220, `rw [hadronicMethod]`, i.e. rfl) also loses its only consumer and should go too; `electronMethod_eq_ofTransfer` stays, used at line 292. (`mixedMethod_x_eq_Q2_div` is not affected: its `x` is `Q\u00b2_e / (2 p\u00b7q_h)` and the lemma states the non-trivial cancellation.)",
+   "issue": "`electronMethod_x_eq_Q2_div` (223-227) and `hadronicMethod_x_eq_Q2_div` (230-234) are literal instances of `ReconstructedInvariants.ofTransfer_x_eq_Q2_div` (188-190) at `q = k - kPrime` and `q = pX - p`; each proof is `rw [..._eq_ofTransfer]; exact ReconstructedInvariants.ofTransfer_x_eq_Q2_div g k p _ hpk`. Neither has a consumer anywhere in the repo.",
+   "line": "223"
+  },
+  {
+   "evidence": "AccessMethods.lean:270 `rw [sigmaMethod_y, SigmaMethodData.ySigma]`; 277-279 `rw [sigmaMethod_x_eq_Q2_div, sigmaMethod_Q2, sigmaMethod_y_eq_div_add]; simp only [...]; ring`; repo-wide grep for `sigmaMethod_x_eq_mul_add_div` returns only line 274.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "Delete both; `sigmaMethod_y` plus the definition of `SigmaMethodData.ySigma` already gives the `y_\u03a3 = (p\u00b7q_h)/(p\u00b7q_h + p\u00b7k')` form, and `sigmaMethod_x_eq_Q2_div` (261-264, which does have consumers at Radiative.lean:316,472) gives the `x_\u03a3` form.",
+   "issue": "`sigmaMethod_y_eq_div_add` (268-270) restates the `@[simps]` projection `sigmaMethod_y` with `SigmaMethodData.ySigma` unfolded (its proof is `rw [sigmaMethod_y, SigmaMethodData.ySigma]`), and `sigmaMethod_x_eq_mul_add_div` (274-279) is the `ring` composite of `sigmaMethod_x_eq_Q2_div` and that unfolding. Neither is used outside this file; grep finds `sigmaMethod_y_eq_div_add` only at line 277 inside the composite, and `sigmaMethod_x_eq_mul_add_div` only at its declaration.",
+   "line": "268"
+  }
+ ],
+ "head_sha": "107eede6fe7e03580b7c275d6fcb8dd01db75ed2",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "18e29c3b67761806dbffda5e2294ebb78fc63ee62b2498002bcbcf758fbde9f3",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261107T095650Z-180-reuse-ee1421",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T09:56:50Z",
+ "submitted_by": "wdconinc",
+ "summary": "The electron/hadronic/Sigma reconstruction now shares ReconstructedInvariants.ofTransfer, and the previously contested sigmaMethod/mixedMethod point no longer holds. What remains are public lemmas that are literal instances or two-rewrite composites of lemmas introduced a few lines above them, none with a consumer in the repo.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/SesquilinearForm/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Generator/DISEvent.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2e634c7eabba6fb5758a4b4123bf0e45f826beca898f10482a470dbac85fe1ac",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 211003,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 211003,
+  "cache_read_input_tokens": 2008230,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2224,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2224,
+    "cache_read_input_tokens": 179175,
+    "input_tokens": 2,
+    "output_tokens": 2794,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13059,
+  "output_tokens_details": {
+   "thinking_tokens": 7903
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
