@@ -1,0 +1,186 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.062545,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 159.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 62090,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 62090,
+    "cache_read_input_tokens": 248020,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6458,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6458,
+      "cache_read_input_tokens": 58855,
+      "input_tokens": 2,
+      "output_tokens": 5494,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12703,
+    "output_tokens_details": {
+     "thinking_tokens": 9506
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "cost_usd": 1.062545,
+ "dedupe_key": "eic/EpsilonEridani|172|b7dc173897b0c9117e332284410136a032a06897|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "aa3483e6b5d3a871e7cd929f57ac8a084b79f4a329763651d9aaa0061e295b68",
+ "diff_sha256": "aa3483e6b5d3a871e7cd929f57ac8a084b79f4a329763651d9aaa0061e295b68",
+ "duration_s": 159.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`smulScheme` (line 327) is not exposed and proves `smulScheme_merge ... := (rfl)` (line 332) the same way, so exposure is not needed for the `(rfl)` proof. `grep -r '@\\[expose\\]' EpsilonEridani` shows every other occurrence is a file-level `@[expose] public section`; this is the only per-declaration one in the repo.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "Drop `@[expose]`; keep `eScheme_merge` as the simp characterization.",
+   "issue": "`@[expose] def eScheme` exposes the body with no consumer that must unfold or compute; `eScheme_merge` (line 247) already characterizes it.",
+   "line": "242"
+  },
+  {
+   "evidence": "Mathlib's analogue is simp: `upstream/mathlib/Mathlib/Topology/ContinuousOn.lean:47-48` `@[simp] theorem continuousOn_univ {f : \u03b1 \u2192 \u03b2} : ContinuousOn f univ \u2194 Continuous f`.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "Add `@[simp]` to `isCollinearExactOn_univ`.",
+   "issue": "`isCollinearExactOn_univ` is the normal-form bridge between the set-restricted and global predicates but carries no `@[simp]`, so goals stated as `IsCollinearExactOn R Set.univ` do not normalize.",
+   "line": "170"
+  },
+  {
+   "evidence": "Lines 253-274 prove every other `eScheme` condition; `ContinuousAdd V` is the hypothesis already used for this purpose in `Observable/Basic.lean:376` (`isInfraredSafe_multisetSum`).",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "Add `theorem continuous_eScheme_merge [AddCommMonoid V] [TopologicalSpace V] [ContinuousAdd V] (a : V) : Continuous ((eScheme V).merge a)` (and/or the `ContinuousAt` form) so `isUnital_eScheme.tendsto_cons` is directly applicable.",
+   "issue": "`IsUnital.tendsto_cons` requires `ContinuousAt (R.merge a) 0`, but no lemma supplies it for `eScheme`, so the file's infrared result cannot be instantiated at the default scheme without the consumer redoing the topology \u2014 while every other condition is instantiated (`isAdditive_eScheme`, `isUnital_eScheme`, `isPosHomogeneous_eScheme`, `isCollinearExact_eScheme`).",
+   "line": "404"
+  },
+  {
+   "evidence": "The file itself applies the raw hypothesis in-module (`hadd a 0 0 b`, line 287; `hhom z hz0`, line 221), which only works where the body is visible; outside the module `R.IsAdditive` is opaque (`public section` with no `@[expose]` on these defs).",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "Add `IsAdditive.merge_add_add (hadd) (a\u2081 a\u2082 b\u2081 b\u2082)` and `IsPosHomogeneous.merge_smul_smul (hhom) {c} (hc : 0 \u2264 c) (a b)` mirroring `IsUnital.merge_zero`.",
+   "issue": "`IsAdditive` and `IsPosHomogeneous` (line 116) get only `Iff.rfl` `_def` lemmas while `IsUnital` gets dot-notation eliminators (`IsUnital.merge_zero`, `.zero_merge`, lines 102-106). Since the predicate bodies are unexposed, an importer cannot apply the hypothesis as a function and must route every use through `isAdditive_def`/`isPosHomogeneous_def`.",
+   "line": "84"
+  }
+ ],
+ "head_sha": "b7dc173897b0c9117e332284410136a032a06897",
+ "merge_base_sha": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 172,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2797b43fd4b28cf8490c587361b9871348b3759429ee157d704f902c27bf5c2c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261108T034455Z-172-api-design-e2b2cc",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-08T03:44:55Z",
+ "submitted_by": "veprbl",
+ "summary": "The surface is otherwise minimal and the characteristic lemmas are present, but `eScheme`'s body is exposed without need, the `_univ` bridge lacks `@[simp]`, and the `E` scheme is missing the continuity lemma that the file's own infrared theorem requires.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Observable/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "318eb2242d23ad55b8964b07e054e8b49b2a155ffdddfb28a37399c61cd0a291",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 62090,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 62090,
+  "cache_read_input_tokens": 248020,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6458,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6458,
+    "cache_read_input_tokens": 58855,
+    "input_tokens": 2,
+    "output_tokens": 5494,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12703,
+  "output_tokens_details": {
+   "thinking_tokens": 9506
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

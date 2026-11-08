@@ -1,0 +1,178 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.991787,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 139.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 63309,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 63309,
+    "cache_read_input_tokens": 136314,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3380,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3380,
+      "cache_read_input_tokens": 63152,
+      "input_tokens": 2,
+      "output_tokens": 4041,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11620,
+    "output_tokens_details": {
+     "thinking_tokens": 8665
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "cost_usd": 0.991787,
+ "dedupe_key": "eic/EpsilonEridani|172|b7dc173897b0c9117e332284410136a032a06897|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "aa3483e6b5d3a871e7cd929f57ac8a084b79f4a329763651d9aaa0061e295b68",
+ "diff_sha256": "aa3483e6b5d3a871e7cd929f57ac8a084b79f4a329763651d9aaa0061e295b68",
+ "duration_s": 139.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 241 vs. lines 46-49 (\"The schemes rescaling a merged pair ... the set is what lets them meet the criterion\"); lines 176-177, 198-200 and 382-385 all quantify over `{R : RecombinationScheme V}`.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "Restrict the claim to the `eScheme`-specific results, e.g. \"does not satisfy the lemmas proved for `eScheme` below\", or delete the clause.",
+   "issue": "`eScheme` docstring claims a masslessness-restoring scheme \"inherits none of the theorems proved here\". False: `isLinearMap_uncurry_iff`, `IsPosHomogeneous.isCollinearExactOn_iff` and `IsCollinearExact.isCollinearSafe_iff` are stated for an arbitrary `R : RecombinationScheme V`. It also contradicts the module docstring (lines 46-49), which says exactly such a scheme meets the `isCollinearExactOn_iff` criterion proved in this file.",
+   "line": 241
+  },
+  {
+   "evidence": "Grep for `Recombination.lean` shows `massless` at lines 22, 46, 48, 127, 195-197, 239-241; no `p`-scheme, `E\u2080`-scheme, `Frame` or mass structure occurs in the file, and its `variable` lines (112, 265, 320, 374) assume only `AddCommGroup`/`Module \u211d`.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "State the criterion abstractly (a set on which the rescaling factor is trivial / closed under positive rescaling). If the `p`-scheme motivation is kept, keep it once in the module docstring, flagged as motivation for a scheme not yet defined and naming the bilinear form that makes \"massless\" meaningful.",
+   "issue": "Four docstrings assert, as established fact, properties of frame-rescaling schemes that are not defined in the repository, and speak of \"massless momenta\" although `V` here carries only `[AddCommGroup V] [Module \u211d V]` \u2014 no metric, so masslessness is undefined (`Basic.lean` defines mass only relative to a chosen `LinearMap.BilinForm`). Same problem at lines 46-49 (module), 195-197 (`IsPosHomogeneous.isCollinearExactOn_iff`), 239-241 (`eScheme`). A reader cannot check \"can only have this for a set of massless momenta\" or \"meets it on the massless momenta\" against anything in the library.",
+   "line": 127
+  },
+  {
+   "evidence": "Line 353: `theorem not_isCollinearExact_smulScheme [Nontrivial V] {c : \u211d} (hc : c \u2260 1)`; line 336 `smulScheme_one : smulScheme V 1 = eScheme V`.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "Add \"on a nontrivial `V`\" in both places, and \"for `c \u2260 1`\" in the module docstring.",
+   "issue": "`smulScheme`'s docstring says \"For `c \u2260 1` it is additive, positively homogeneous of degree one and symmetric and still not collinear exact\", omitting the `[Nontrivial V]` hypothesis that `not_isCollinearExact_smulScheme` requires; on a trivial `V` the scheme is exact. The module docstring (lines 39-41) is worse: it says `smulScheme` \"has all three and merges a collinear pair into `c \u2022 p` (`not_isCollinearExact_smulScheme`)\" with neither `c \u2260 1` nor nontriviality.",
+   "line": 324
+  },
+  {
+   "evidence": "Lines 364-366 `not_isUnital_smulScheme ... {c : \u211d} (hc : c \u2260 1)` holds for every `c \u2260 1`, including `c < 1`.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "Replace with a direction-neutral statement: a non-unital scheme changes a pseudojet's momentum when an infinitely soft particle is merged into it.",
+   "issue": "`IsUnital` docstring concludes \"so a scheme that is not unital manufactures momentum out of an infinitely soft particle\". A non-unital scheme can equally destroy momentum \u2014 the file's own `not_isUnital_smulScheme` applies to `c = 1/2`, which halves it.",
+   "line": 88
+  },
+  {
+   "evidence": "Grep shows `clustering`/`distance measure` in `EpsilonEridani/QFT/Jets/` occur only in this file's prose; `Basic.lean:158` defines `IsCollinearSafe (O : Multiset V \u2192 X)` as an observable predicate, and no `Clustering` declaration exists.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "Call `J` an observable, matching `Basic.lean`, and drop the appeals to an undefined distance measure from the declaration docstrings (one sentence of motivation in the module docstring is enough).",
+   "issue": "`IsCollinearExact.isCollinearSafe_iff` and `IsUnital.tendsto_cons` (line 396) describe `J : Multiset V \u2192 X` as a \"clustering\" and justify their hypotheses by what \"a distance measure vanishing on collinear pairs\" delivers; neither notion exists in the repository, and `IsCollinearSafe` is `Basic.lean`'s predicate on observables, with `J` here an arbitrary function.",
+   "line": 376
+  }
+ ],
+ "head_sha": "b7dc173897b0c9117e332284410136a032a06897",
+ "merge_base_sha": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 172,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "664fe0b03be8e952b313362b98fd8638183e820cc646e81f987a5c4e973c4735",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261108T035813Z-172-documentation-9c7dc4",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-08T03:58:13Z",
+ "submitted_by": "veprbl",
+ "summary": "The module docstring and most declaration docstrings are substantive and accurate, but several overclaim: `eScheme`'s docstring contradicts the module docstring about what a rescaling scheme inherits, four docstrings assert unproven properties of `p`/`E\u2080`-type schemes and of \"masslessness\" that has no meaning for this file's `V`, and the `smulScheme` and `IsUnital` docstrings state consequences the file's own theorems do not support.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Observable/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5e6720dcf4fdbbbdd3411a1edc3a196ba8f87cb96fefe321d3f2a90d78c17e78",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 63309,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 63309,
+  "cache_read_input_tokens": 136314,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3380,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3380,
+    "cache_read_input_tokens": 63152,
+    "input_tokens": 2,
+    "output_tokens": 4041,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11620,
+  "output_tokens_details": {
+   "thinking_tokens": 8665
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,164 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.041293,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 175.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 59701,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 59701,
+    "cache_read_input_tokens": 132386,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3863,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3863,
+      "cache_read_input_tokens": 59061,
+      "input_tokens": 2,
+      "output_tokens": 2583,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15122,
+    "output_tokens_details": {
+     "thinking_tokens": 12578
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "cost_usd": 1.041293,
+ "dedupe_key": "eic/EpsilonEridani|172|b7dc173897b0c9117e332284410136a032a06897|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "aa3483e6b5d3a871e7cd929f57ac8a084b79f4a329763651d9aaa0061e295b68",
+ "diff_sha256": "aa3483e6b5d3a871e7cd929f57ac8a084b79f4a329763651d9aaa0061e295b68",
+ "duration_s": 175.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 181-190: `let f : V \u00d7 V \u2192+ V := AddMonoidHom.mk' (fun x => R.merge x.1 x.2) ...`, `refine \u27e8f.map_add, fun c x => ?_\u27e9`, `_ = -c \u2022 -R.merge x.1 x.2 := congrArg _ (f.map_neg x)`. `IsLinearMap.map_add`'s expected type mentions the unbundled lambda, not `\u21d1f`.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "State `IsAdditive.merge_zero_zero : R.merge 0 0 = 0` and `IsAdditive.merge_neg : R.merge (-a) (-b) = -R.merge a b` in the `AddCommGroup`/`Module` section and use them; prove the `map_add` field directly with `fun x y => by simpa using hadd x.1 y.1 x.2 y.2` and drop the `let f`.",
+   "issue": "`isLinearMap_uncurry_iff` builds `let f : V \u00d7 V \u2192+ V := AddMonoidHom.mk' ...` only to reuse `f.map_add` (line 183) and `f.map_neg` (line 190). Both are consumed against goals stated in terms of `fun x : V \u00d7 V => R.merge x.1 x.2`, so they typecheck only by unfolding the `DFunLike` coercion of `AddMonoidHom.mk'` \u2014 undocumented defeq across a bundled wrapper. It also hides two reusable consequences of `IsAdditive` inside this proof: `R.merge 0 0 = 0` (from `hadd 0 0 0 0` plus cancellation) and `R.merge (-a) (-b) = -R.merge a b`.",
+   "line": "181"
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/Algebra/Module/Defs.lean:142: `theorem neg_smul_neg : -r \u2022 -x = r \u2022 x := by rw [neg_smul, smul_neg, neg_neg]` with `(r : R) (x : M)` explicit; line 188 already uses `rw [neg_smul_neg, neg_smul_neg]`.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "Replace the chain with `neg_smul_neg c _`.",
+   "issue": "The last calc step `_ = c \u2022 R.merge x.1 x.2 := by rw [smul_neg, neg_smul, neg_neg]` is a three-lemma chain that is exactly `neg_smul_neg`, the single lemma the same proof already applies three lines earlier (line 188).",
+   "line": "191"
+  },
+  {
+   "evidence": "Lines 409-412: `rw [\u2190 h0]` makes the limit `\ud835\udcdd (J (R.merge a 0 ::\u2098 t))`, and `hR.merge_zero a` is then passed as a simp lemma in line 412, rewriting it back to `\ud835\udcdd (J (a ::\u2098 t))`.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "Delete `h0` and `rw [\u2190 h0]`; keep `refine Tendsto.congr' (hJ.mono fun p hp => hp.symm) ?_` followed by the `simpa`.",
+   "issue": "In `IsUnital.tendsto_cons`, `have h0` and `rw [\u2190 h0]` are dead: `Tendsto.congr'` changes only the function, and the closing `simpa [Function.comp_def, hR.merge_zero a]` already normalises `R.merge a 0` to `a` on both sides, so the rewrite is undone by the step that follows it. The round trip obscures why the proof works.",
+   "line": "409"
+  }
+ ],
+ "head_sha": "b7dc173897b0c9117e332284410136a032a06897",
+ "merge_base_sha": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 172,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "496de1f1b758a754fa5ab47a00fc9b54d5a1a13d0a8ba670e2a9cfc6a687107a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261108T040033Z-172-proof-quality-b2ed87",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-08T04:00:33Z",
+ "submitted_by": "veprbl",
+ "summary": "Proofs are mostly short and robust, but `isLinearMap_uncurry_iff` routes additivity through an ad-hoc bundled `AddMonoidHom` and consumes its lemmas through coercion unfolding, hiding two reusable facts about `IsAdditive`, and contains a brittle rewrite chain that duplicates a lemma it already uses. One dead rewrite in `tendsto_cons`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Observable/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Module/Defs.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c7bbf86c98fd9c618b3e8eeeb9e85b6cd44fc6852b7870cc3a63ea21d68d1efd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 59701,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 59701,
+  "cache_read_input_tokens": 132386,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3863,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3863,
+    "cache_read_input_tokens": 59061,
+    "input_tokens": 2,
+    "output_tokens": 2583,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15122,
+  "output_tokens_details": {
+   "thinking_tokens": 12578
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
