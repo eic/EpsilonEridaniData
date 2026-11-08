@@ -1,0 +1,189 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.0943825,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 335.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 182909,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 182909,
+    "cache_read_input_tokens": 1310315,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2969,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2969,
+      "cache_read_input_tokens": 159014,
+      "input_tokens": 2,
+      "output_tokens": 7748,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24401,
+    "output_tokens_details": {
+     "thinking_tokens": 20401
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 3.094383,
+ "dedupe_key": "eic/EpsilonEridani|104|f38f2609dbfc99f4888098fe703ac1b8e85221a1|correctness|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "f9cf4ab19b9f5ccaf178fab296e5a34b89240bbca9971c61c33824b5573ee6d8",
+ "diff_sha256": "f9cf4ab19b9f5ccaf178fab296e5a34b89240bbca9971c61c33824b5573ee6d8",
+ "duration_s": 335.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "ComplexSpinDensity.lean:225-227 lists only `mat idxMM idxMM = mat idxPP idxPP`, `mat idxMP idxMP = mat idxPM idxPM`, `mat idxMM idxPP = mat idxPP idxMM`; the structure at ComplexSpinDensity.lean:86-91 has only `mat` and `posSemidef`, so entries such as `mat idxPP idxPM` are unconstrained. The docstring at ComplexSpinDensity.lean:216 asserts the full relation `A_{\u039b\u03bb,\u039b'\u03bb'} = A_{-\u039b-\u03bb,-\u039b'-\u03bb'}`.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Define `IsParityInvariant \u03c1 := \u03c1.mat.submatrix Fin.rev Fin.rev = \u03c1.mat` (`Fin.rev` is exactly the helicity flip idxPP\u2194idxMM, idxPM\u2194idxMP), keep the three current equations as derived lemmas, and restate `isParityInvariant_iff` as the surviving forward implication (plus a converse carrying the remaining imaginary-part equalities, or under `IsTimeReversalInvariant`). Strengthening `SpinDensity.IsParityInvariant` the same way keeps `isParityInvariant_toSpinDensityC_iff` true, since `\u211d \u2192 \u2102` is injective entrywise. Alternatively, add the forward selection rule (vanishing of the single-flip entries) as a hypothesis wherever parity is consumed, which makes the restricted relation equivalent to full parity.",
+   "issue": "`IsParityInvariant` is three equations among the entries that forward J_z conservation allows, but `SpinDensityC` never imposes that the other entries vanish. A matrix with a nonzero single-flip entry (e.g. `mat idxPP idxPM \u2260 mat idxMM idxMP`) satisfies the predicate while violating the relation `A_{\u039b\u03bb,\u039b'\u03bb'} = A_{-\u039b-\u03bb,-\u039b'-\u03bb'}` printed in its own docstring \u2014 and those are precisely the T-odd (Sivers/Boer-Mulders-type) entries the old Positivity.lean note gives as the reason for moving to \u2102. `isParityInvariant_iff` is likewise true only for the restricted predicate: with the full relation its right-to-left direction fails.",
+   "line": 225
+  }
+ ],
+ "head_sha": "f38f2609dbfc99f4888098fe703ac1b8e85221a1",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 104,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "03c3876f8c6852d181a655275371ab62feefef021ed03fef4cca7b9d7de88018",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261108T142235Z-104-correctness-5fab3b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-08T14:22:35Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new PSD lemmas, the real/complex transfer, the Soffer bound and the saturating witness all check out mathematically and physically. One defect: SpinDensityC.IsParityInvariant states the parity relation only on the four collinear-allowed entries, so it does not express parity for exactly the matrices SpinDensityC exists to host.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/Matrix/PosSemidef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c1d757f163896fa8f35ac0e79c33a3e2a6e84ae59390e83bcfe262f7ce110910",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 182909,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 182909,
+  "cache_read_input_tokens": 1310315,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2969,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2969,
+    "cache_read_input_tokens": 159014,
+    "input_tokens": 2,
+    "output_tokens": 7748,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24401,
+  "output_tokens_details": {
+   "thinking_tokens": 20401
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
