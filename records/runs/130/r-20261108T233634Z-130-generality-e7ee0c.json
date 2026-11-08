@@ -1,0 +1,225 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.274821,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 157.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 61148,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 61148,
+    "cache_read_input_tokens": 721442,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1113,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1113,
+      "cache_read_input_tokens": 63258,
+      "input_tokens": 2,
+      "output_tokens": 2756,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12098,
+    "output_tokens_details": {
+     "thinking_tokens": 7224
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "cost_usd": 1.274821,
+ "dedupe_key": "eic/EpsilonEridani|130|3147f7ac7475d6d8be8343e0da8e6bea2440d1b1|generality|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "111f9ebb7ee2d81b6292412781fb5d25a930b7b747e9a63fc9e5fd4a41df83fb",
+ "diff_sha256": "111f9ebb7ee2d81b6292412781fb5d25a930b7b747e9a63fc9e5fd4a41df83fb",
+ "duration_s": 157.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Physlib `Vector/Basic.lean:414` defines `ofTemporalComponent t = t \u2022 basis (Sum.inl 0)`; `timeComponent_basis_sum_inl` (line 389) and `spatialPart_basis_sum_inl` (line 348) already give the two primitives immediately, and `apply_sub` (line 150) / `apply_smul` (line 142) are `@[simp]`. BasicExtensions.lean:53 and :60 instead call `simp [ofTemporalComponent, basis_apply]` on the composite.",
+   "file": "EpsilonEridani/Relativity/Causality/BasicExtensions.lean",
+   "fix": "Add the two primitives `@[simp] lemma timeComponent_ofTemporalComponent (t : \u211d) : (ofTemporalComponent t : Vector d).timeComponent = t` and `@[simp] lemma spatialPart_ofTemporalComponent (t : \u211d) : (ofTemporalComponent t : Vector d).spatialPart = 0`, then get both current lemmas by `simp` (via Physlib's simp lemma `apply_sub`), and state the spatial one as `(v - ofTemporalComponent t).spatialPart = v.spatialPart`.",
+   "issue": "`timeComponent_sub_ofTemporalComponent` (line 51) and `spatialPart_sub_ofTemporalComponent` (line 57) each unfold `ofTemporalComponent` and `basis_apply` for the special instance `v - ofTemporalComponent v.timeComponent`, while the general facts they rest on \u2014 `(ofTemporalComponent t : Vector d).timeComponent = t` and `(ofTemporalComponent t).spatialPart = 0` \u2014 exist nowhere (grep of `upstream/Physlib` finds `ofTemporalComponent` only at its definition, `Vector/Basic.lean:414`, and at use sites; no component lemmas). `spatialPart_sub_ofTemporalComponent` is additionally specialized for no reason: it holds for `v - ofTemporalComponent t` with any `t`. The resulting API is unusable for any later `ofTemporalComponent` computation (e.g. 0.3's boundary-point work) without re-unfolding the definition, and it is this composite shape that forces the simp-normal-form caveat in the line 47 docstring.",
+   "line": 51
+  }
+ ],
+ "head_sha": "3147f7ac7475d6d8be8343e0da8e6bea2440d1b1",
+ "merge_base_sha": "bfe8fdb3279de1c45eb1f5b9713f44f0c016f84c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 130,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "4297bd842b304c453e225e5699768fe1ec506266cbdff1aa9ee870f28bdc1e44",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261108T233634Z-130-generality-e7ee0c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-08T23:36:34Z",
+ "submitted_by": "veprbl",
+ "summary": "The analytic corollary, the Wick-rotation API and the three uniqueness statements sit at the natural level with no unused or over-strong hypotheses; the prior round's over-strong spacelike hypothesis and duplicated zero-time-component proof are fixed. The two new component lemmas about `ofTemporalComponent` are stated only in a doubly specialized form and prove it by unfolding the definition instead of deriving it from the general component facts.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Causality/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Analytic/Complexification/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Analytic/Complexification/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Analytic/Uniqueness.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Continuation/Uniqueness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f393f11b3fe32cd4d60d9f517906828ae5b842312dee8bf693900b9d25a1a380",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 61148,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 61148,
+  "cache_read_input_tokens": 721442,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1113,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1113,
+    "cache_read_input_tokens": 63258,
+    "input_tokens": 2,
+    "output_tokens": 2756,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12098,
+  "output_tokens_details": {
+   "thinking_tokens": 7224
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
