@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.987481,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 245.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 198704,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 198704,
+    "cache_read_input_tokens": 1025502,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4982,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4982,
+      "cache_read_input_tokens": 162059,
+      "input_tokens": 2,
+      "output_tokens": 5361,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19504,
+    "output_tokens_details": {
+     "thinking_tokens": 14706
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 2.987481,
+ "dedupe_key": "eic/EpsilonEridani|104|8c1d6823238cbe259bc08235ad5bcc9419377e1a|naming|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "7687d116c643736f2e1f0f7fcc9220cc8ef0e93e67b321367dd61a311ca9dc0d",
+ "diff_sha256": "7687d116c643736f2e1f0f7fcc9220cc8ef0e93e67b321367dd61a311ca9dc0d",
+ "duration_s": 245.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Mathlib/LinearAlgebra/Matrix/PosDef.lean:310`: `lemma of_dotProduct_mulVec_nonneg {M} (hM1 : M.IsHermitian) (hM2 : \u2200 x, 0 \u2264 star x \u2b1d\u1d65 (M *\u1d65 x)) : M.PosSemidef`, inside `namespace PosSemidef` (line 304). `grep -E '(lemma|theorem) posSemidef_of_' upstream/mathlib/Mathlib` \u2192 no matches.",
+   "file": "EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "fix": "Rename to `Matrix.PosSemidef.of_submatrix_dotProduct_mulVec_nonneg`, matching `PosSemidef.of_dotProduct_mulVec_nonneg` (hermitian hypothesis left unnamed there too). The file's own implementation note targets `Mathlib/Analysis/Matrix/PosDef.lean`, where the sibling lives.",
+   "issue": "`Matrix.posSemidef_of_isHermitian_of_submatrix` is the arbitrary-index generalisation of Mathlib's `Matrix.PosSemidef.of_dotProduct_mulVec_nonneg` (same two hypotheses) but sits in root `Matrix` under a `posSemidef_of_*` form Mathlib never uses, and its second `of_` clause names an object (`submatrix`) instead of the hypothesis `0 \u2264 star x \u2b1d\u1d65 (M.submatrix v v *\u1d65 x)`; the name reads as \"PSD from a submatrix\".",
+   "line": "74"
+  },
+  {
+   "evidence": "Line 379 `lemma toSpinDensityC_re {\u03c1 : SpinDensityC} (h : \u03c1.IsTimeReversalInvariant) : \u03c1.re.toSpinDensityC = \u03c1` vs line 319 `lemma IsTimeReversalInvariant.map_re_map_ofReal {\u03c1 : SpinDensityC} (h : \u03c1.IsTimeReversalInvariant)`; line 391 must spell `toSpinDensityC_re \u03c1.2` rather than `\u03c1.2.toSpinDensityC_re`.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Move it to `SpinDensityC.IsTimeReversalInvariant.toSpinDensityC_re`, matching `IsTimeReversalInvariant.im_transversity` (line 314) and `IsTimeReversalInvariant.map_re_map_ofReal` (line 319).",
+   "issue": "`SpinDensityC.toSpinDensityC_re` takes `(h : \u03c1.IsTimeReversalInvariant)` as its first explicit argument but is filed one namespace up, so `h.toSpinDensityC_re` does not elaborate, unlike its two siblings of identical shape.",
+   "line": "379"
+  },
+  {
+   "evidence": "Line 231 `mat_idxMM_eq_mat_idxPP : \u03c1.mat idxMM idxMM = \u03c1.mat idxPP idxPP` next to line 241 `mat_idxMM_idxPP_eq_mat_idxPP_idxMM : \u03c1.mat idxMM idxPP = \u03c1.mat idxPP idxMM`.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Spell both indices consistently: `mat_idxMM_idxMM_eq_mat_idxPP_idxPP` and `mat_idxMP_idxMP_eq_mat_idxPM_idxPM`.",
+   "issue": "`IsParityInvariant.mat_idxMM_eq_mat_idxPP` (and `mat_idxMP_eq_mat_idxPM`, line 236) encode a two-index matrix entry with one index, while the sibling accessor in the same block spells both; `mat_idxMM` therefore means the diagonal entry in one name and half an off-diagonal entry in another.",
+   "line": "231"
+  },
+  {
+   "evidence": "Line 408 `transversity_sofferSaturating : sofferSaturating.transversity = Complex.I` (a value) vs line 420 `two_mul_norm_transversity_sofferSaturating : 2 * \u2016sofferSaturating.transversity\u2016 = sofferSaturating.f1 + sofferSaturating.deltaQ`.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Name it for the full equality, e.g. `two_mul_norm_transversity_eq_f1_add_deltaQ_sofferSaturating`, or `soffer_bound_sofferSaturating_eq` to say it is the saturation of `soffer_bound`.",
+   "issue": "`two_mul_norm_transversity_sofferSaturating` follows the file's `<quantity>_sofferSaturating` value-lemma pattern but states a relation between two quantities, not a value, so the name omits the `= f\u2081 + \u0394q` side entirely.",
+   "line": "420"
+  }
+ ],
+ "head_sha": "8c1d6823238cbe259bc08235ad5bcc9419377e1a",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 104,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "7e21e0690fb784711e8d99f9e4e212c7a94ab35ec8d52342ba8c25cb1beae634",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261108T175052Z-104-naming-ebda16",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-08T17:50:52Z",
+ "submitted_by": "wdconinc",
+ "summary": "Density names follow the roadmap's binding convention and no name overstates its statement, but the new PSD constructor diverges in both namespace and hypothesis naming from the Mathlib lemma it generalises, and three smaller names are inconsistent with their own siblings.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "942761a8e46a7cff78b3e519f2c72d468d825cd1d30824d7f4f9087eeef258b6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 198704,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 198704,
+  "cache_read_input_tokens": 1025502,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4982,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4982,
+    "cache_read_input_tokens": 162059,
+    "input_tokens": 2,
+    "output_tokens": 5361,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19504,
+  "output_tokens_details": {
+   "thinking_tokens": 14706
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
