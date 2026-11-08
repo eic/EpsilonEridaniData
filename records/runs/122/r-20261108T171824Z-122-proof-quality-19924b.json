@@ -1,0 +1,162 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6589985,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 171.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 119094,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 119094,
+    "cache_read_input_tokens": 323767,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1051,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1051,
+      "cache_read_input_tokens": 108900,
+      "input_tokens": 2,
+      "output_tokens": 6720,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12245,
+    "output_tokens_details": {
+     "thinking_tokens": 9754
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.658999,
+ "dedupe_key": "eic/EpsilonEridani|122|0618ae084a2135eaadd6759780449e5917a75144|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "e6a35d3169117afc38ec35ad93417a2a8e92da21d43a20e45fddafe21c9c2860",
+ "diff_sha256": "e6a35d3169117afc38ec35ad93417a2a8e92da21d43a20e45fddafe21c9c2860",
+ "duration_s": 171.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 202-204: `rw [x_def, ofExcl_Q2, ofExcl_Pq, DisKinematics.xBj, ExclKinematics.Q2_toDisKinematics, ExclKinematics.toDisKinematics_p, ExclKinematics.toDisKinematics_q]`; `@[simp]` attributes at lines 166, 174, 181, 189 and at Exclusive/Kinematics/Basic.lean:64,74.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Replace the chain with `simp [x_def, DisKinematics.xBj]` (or `simp only` listing just those two), leaving the simp set to apply the projection lemmas.",
+   "issue": "`ofExcl_x` is proved by a seven-lemma `rw` chain, but `ofExcl_Q2`/`ofExcl_Pq` (lines 181, 166), `Q2_toDisKinematics` (Exclusive/Kinematics/Basic.lean:74) and `toDisKinematics_p/_q` (`@[simps]`, line 64) are all simp lemmas already; the chain also unfolds `DisKinematics.xBj` via its equation lemma, unlike every other unfold in the file which goes through a stated `_def` lemma.",
+   "line": 202
+  },
+  {
+   "evidence": "Lines 164-193 versus `@[simps] def toDisKinematics` at Exclusive/Kinematics/Basic.lean:64-71.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Tag `ofExcl` with `@[simps]` (Prop fields are skipped, so it emits exactly these four data lemmas) and delete lines 164-193.",
+   "issue": "`ofExcl_Pq`, `ofExcl_Dq`, `ofExcl_Q2`, `ofExcl_t` are four hand-written `rfl` projection lemmas, each re-listing the four hypotheses of `ofExcl`; the same PR uses `@[simps]` for the analogous `toDisKinematics` wrapper (Exclusive/Kinematics/Basic.lean:64), so the boilerplate is generated there but inlined here.",
+   "line": 166
+  }
+ ],
+ "head_sha": "0618ae084a2135eaadd6759780449e5917a75144",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 122,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "09fc4492ad9d19bc8b96116bd1e026979cd8b19050f3518c54bce2907cc2bfaf",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261108T171824Z-122-proof-quality-19924b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-08T17:18:24Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are short, documented and free of undocumented defeq; the one exception is `ofExcl_x`, which hand-replays a seven-step rewrite chain whose components are all already simp lemmas, including an equation-lemma unfold of `DisKinematics.xBj`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "de02b66ea2362c5cb90a075c1a5caaa2db17e52e313f5045bab3e3667c5dbb85",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 119094,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 119094,
+  "cache_read_input_tokens": 323767,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1051,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1051,
+    "cache_read_input_tokens": 108900,
+    "input_tokens": 2,
+    "output_tokens": 6720,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12245,
+  "output_tokens_details": {
+   "thinking_tokens": 9754
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

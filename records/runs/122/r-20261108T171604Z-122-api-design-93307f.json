@@ -1,0 +1,208 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6728864999999993,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 244.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 164688,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 164688,
+    "cache_read_input_tokens": 1220643,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1742,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1742,
+      "cache_read_input_tokens": 153224,
+      "input_tokens": 2,
+      "output_tokens": 8341,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16623,
+    "output_tokens_details": {
+     "thinking_tokens": 12960
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.672886,
+ "dedupe_key": "eic/EpsilonEridani|122|0618ae084a2135eaadd6759780449e5917a75144|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "e6a35d3169117afc38ec35ad93417a2a8e92da21d43a20e45fddafe21c9c2860",
+ "diff_sha256": "e6a35d3169117afc38ec35ad93417a2a8e92da21d43a20e45fddafe21c9c2860",
+ "duration_s": 244.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`ofExcl_Pq/Dq/Q2/t/x` at lines 166\u2013204 are the only lemmas about `ofExcl`; grep for `ofExcl_xi`, `ofExcl_beta`, `ofExcl_absT` in the PR returns nothing. `def x`/`xi`/`beta`/`absT` at lines 86, 92, 98, 105 sit under `public section` (line 37) with no `@[expose]`, unlike `Exclusive/Kinematics/Basic.lean:18` which is `@[expose] public section`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Add `@[simp] theorem ofExcl_xi \u2026 : (ofExcl g K hPq hDq hQ2 ht).xi = -g K.delta K.q / g K.p K.q`, `@[simp] theorem ofExcl_beta \u2026 = K.Q2 g / (2 * -g K.delta K.q)` and `@[simp] theorem ofExcl_absT \u2026 = -K.tMom g`, each provable by `rw [xi_def, ofExcl_Dq, ofExcl_Pq]` and analogues, so all four derived quantities of the bridge are characterised uniformly.",
+   "issue": "`ofExcl` is characterised on `Pq/Dq/Q2/t` and on `x` (`ofExcl_x`, line 199) but not on the other operations in scope: there is no `ofExcl_xi`, `ofExcl_beta` or `ofExcl_absT`. Those are the Layer 0.1 definitions of \u03be and \u03b2 in terms of momenta that Layer 0.2\u20130.3 (`x \u2264 \u03be \u2264 1`, `t \u2264 0` on the region, the gap\u2013\u03be bound) will state about real events. The file is `public section` without `@[expose]`, so the bodies of `xi`/`beta`/`absT` are unavailable downstream, and `xi_def`/`beta_def`/`absT_eq_neg_t` (lines 95, 101, 108) are not `@[simp]`: a consumer must hand-rewrite with `_def` before the `ofExcl_*` field lemmas can fire. Worse, `ofExcl_x` *is* `@[simp]`, so `simp` rewrites `(ofExcl \u2026).x` to `K.toDisKinematics.xBj g` while leaving `(ofExcl \u2026).xi * (ofExcl \u2026).beta` untouched, breaking the file's own identity `x_eq_xi_mul_beta` (line 134) on the bridge.",
+   "line": 199
+  }
+ ],
+ "head_sha": "0618ae084a2135eaadd6759780449e5917a75144",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 122,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "97292435c86282d00b9483003e18c545bbdb949a4fff49c7ef5e0efa0763327b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261108T171604Z-122-api-design-93307f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-08T17:16:04Z",
+ "submitted_by": "wdconinc",
+ "summary": "The bridge `Invariants.ofExcl` characterises only `.x` among the derived quantities; `.xi`, `.beta` and `.absT` have no lemma, and since their bodies are unexposed and `xi_def`/`beta_def`/`absT_eq_neg_t` are not simp, `simp` cannot compute them for an exclusive event. Otherwise the surface is minimal, bodies are hidden, and the characteristic lemmas and `@[ext]` are in place.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a28c4981128e171b3244c6e49766ede3e38130e7ebe17c0fb43c39fe30a2d87e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 164688,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 164688,
+  "cache_read_input_tokens": 1220643,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1742,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1742,
+    "cache_read_input_tokens": 153224,
+    "input_tokens": 2,
+    "output_tokens": 8341,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16623,
+  "output_tokens_details": {
+   "thinking_tokens": 12960
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
