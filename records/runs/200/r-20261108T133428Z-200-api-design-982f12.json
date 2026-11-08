@@ -1,0 +1,204 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.5048664999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 248.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 83352,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 83352,
+    "cache_read_input_tokens": 326103,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2523,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2523,
+      "cache_read_input_tokens": 84052,
+      "input_tokens": 2,
+      "output_tokens": 4206,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20329,
+    "output_tokens_details": {
+     "thinking_tokens": 15881
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.504866,
+ "dedupe_key": "eic/EpsilonEridani|200|6c08486be7bd55f10f836128e88b731bd41260e0|api-design|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "869989070156d86f63346cc40664eb8303fdd7833b1b30bf9d7edcc743b15992",
+ "diff_sha256": "869989070156d86f63346cc40664eb8303fdd7833b1b30bf9d7edcc743b15992",
+ "duration_s": 248.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 157 `def exchangeSign : \u2124\u02e3 := c.parity * (-1) ^ (c.S + 1) * (-1) ^ (T + 1)` (no `@[expose]`); line 163 `theorem exchangeSign_eq_neg_one_pow` unannotated, while lines 146, 149, 176 carry `@[simp]`; `grep exchangeSign` in the docstring's `Main results` (lines 70-83) shows no entry.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/Channel.lean",
+   "fix": "Tag `exchangeSign_eq_neg_one_pow` with `@[simp]` (RHS `(-1) ^ (c.L + c.S + T)` contains no `exchangeSign`, so it cannot loop, and it fires before/independently of `pauliAllowed_iff_odd` whose LHS is `PauliAllowed`), and add it to the `Main results` list.",
+   "issue": "`exchangeSign` is a listed main definition with an unexposed body, and its characteristic lemma `exchangeSign_eq_neg_one_pow` carries no `@[simp]` and is not in `## Main results`. `simp` therefore makes no progress on any goal mentioning `exchangeSign` directly (e.g. `c.exchangeSign T = 1`), only on `PauliAllowed`, which is the only internal consumer.",
+   "line": "163"
+  },
+  {
+   "evidence": "Line 124 `variable (c : ChannelLabel) (T : \u2115)`; line 252 `theorem pauliAllowed_iff_of_L_add_two {c c' : ChannelLabel} (hS : c.S = c'.S)` has no `T` binder, versus line 228 `{c c' : ChannelLabel} {T : \u2115}` and line 264 `{c : ChannelLabel} {T : \u2115}`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/Channel.lean",
+   "fix": "Bind `{T : \u2115}` locally in `pauliAllowed_iff_of_L_add_two` as `eq_or_S_eq_one_and_L_add_two` and `pauliAllowed_iff_isospin_eq_zero` already do; `T` unifies from the goal in every rewrite use.",
+   "issue": "`pauliAllowed_iff_of_L_add_two` picks up the section variable `T : \u2115` (line 124) as an explicit *leading* argument, so its public signature is `(T : \u2115) {c c'} (hS) (hL)`. Its two siblings bind their own `{T : \u2115}` implicitly. The same parameter is explicit-first in one lemma and implicit in the others, so `pauliAllowed_iff_of_L_add_two hS hL` fails where the sibling form works.",
+   "line": "252"
+  },
+  {
+   "evidence": "Line 231 conclusion vs. docstring line 225 \"the spin-triplet pair `\u00b3(J-1)_J`, `\u00b3(J+1)_J`\" and `Main results` line 77 \"form the pair `\u00b3(J-1)_J`, `\u00b3(J+1)_J`\"; derivable since `J \u2264 L+S` and `L \u2264 J+S` with `S = 1` give `|L-J| \u2264 1`, and `L' = L+2` then forces `L = J-1`, `L' = J+1` \u2014 but no exported lemma states it. Line 133 `L_eq_J_of_S_eq_zero` is the singlet-only counterpart.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/Channel.lean",
+   "fix": "Strengthen each disjunct to name the orbital values, e.g. `c.S = 1 \u2227 c'.S = 1 \u2227 (c.L + 1 = c.J \u2227 c.J + 1 = c'.L \u2228 c'.L + 1 = c.J \u2227 c.J + 1 = c.L)`; alternatively export the triplet companion to `L_eq_J_of_S_eq_zero` (for `c.S = 1`: `c.J \u2264 c.L + 1 \u2227 c.L \u2264 c.J + 1`) and derive the identification from it.",
+   "issue": "`eq_or_S_eq_one_and_L_add_two` concludes only `c.S = 1 \u2227 c'.S = 1 \u2227 (c.L + 2 = c'.L \u2228 c'.L + 2 = c.L)`, but its docstring and the `Main results` entry advertise the pair `\u00b3(J-1)_J`, `\u00b3(J+1)_J`. The `L = J \u2213 1` identification follows from `triangle` with `S = 1`, so every consumer of the advertised reading must redo that omega; the file supplies the singlet companion `L_eq_J_of_S_eq_zero` but no triplet analogue.",
+   "line": "228"
+  }
+ ],
+ "head_sha": "6c08486be7bd55f10f836128e88b731bd41260e0",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 200,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "0980ca8d03eef69976d23d7da85092e2ee208fb5dc599e56ed995c24542810e7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "94e5c1df98a238e9f8ebf986c3f521c505eb6546",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261108T133428Z-200-api-design-982f12",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-08T13:34:28Z",
+ "submitted_by": "veprbl",
+ "summary": "The surface is minimal, bodies are unexposed, `@[ext]` carries no free data, and the `@[expose] section` for the derived `DecidableEq` is justified by the author's probe \u2014 not re-fired. Three gaps remain: `exchangeSign` has no simp normal form, `pauliAllowed_iff_of_L_add_two` binds `T` explicitly while its siblings bind it implicitly, and `eq_or_S_eq_one_and_L_add_two` concludes less than its docstring advertises.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/Channel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Interference/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c4826a7768b1179009daa6feacd9d115f6fe8bb293f51fa2d4eaef9e8a3237dc",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 83352,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 83352,
+  "cache_read_input_tokens": 326103,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2523,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2523,
+    "cache_read_input_tokens": 84052,
+    "input_tokens": 2,
+    "output_tokens": 4206,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20329,
+  "output_tokens_details": {
+   "thinking_tokens": 15881
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
