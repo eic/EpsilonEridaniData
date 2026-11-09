@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.206447,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 228.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 63490,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 63490,
+    "cache_read_input_tokens": 243074,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1010,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1010,
+      "cache_read_input_tokens": 65703,
+      "input_tokens": 2,
+      "output_tokens": 10899,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17998,
+    "output_tokens_details": {
+     "thinking_tokens": 14546
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b867b8c63ff3ff682d3ff741ea206e5ad2d2177f",
+ "cost_usd": 1.206447,
+ "dedupe_key": "eic/EpsilonEridani|193|19638be75a512ea8301d63f9e3161236d8553a3e|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "7aa07b503d7e768d3e56cfbf0e47cd2e907323725ca782096e1193ffbc47381e",
+ "diff_sha256": "7aa07b503d7e768d3e56cfbf0e47cd2e907323725ca782096e1193ffbc47381e",
+ "duration_s": 228.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`EpsilonEridani/Mathematics/LieAlgebra/Casimir.lean:68-72`: \"We therefore do not build any form into `LieModule.casimir`: it takes two families `b` and `b'` \u2026 but it deserves the name \\\"Casimir\\\" only when the two families are dual with respect to an invariant form\"; `def casimir (b b' : \u03b9 \u2192 L)` at line 105, applied at SpinDecomposition.lean:283 with `spinGen : Fin 3 \u2192 Module.End \u2102 \u2102\u00b2`.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "fix": "State in the module docstring that this is `\u03a3\u1d62 S\u1d62\u00b2` for the su(2) generators `spinGen`, taken via the general `casimir` construction with `L` the whole of `Module.End \u2102 \u2102\u00b2`, so the centrality lemmas of `Casimir.lean` do not apply and the commutation statements here are proved directly. While editing line 279, drop the derivation sentence (\"It follows from `S\u00b2 = 3/2 + (\u03c3(1)\u00b7\u03c3(2))/2` and the exchange identity \u2026\") \u2014 it describes the proof and is already in the module docstring.",
+   "issue": "Line 50 (\"The total-spin Casimir of the pair is `LieModule.casimir \u2102 _ _ spinGen spinGen`\") and the docstring of `casimir_spinGen_eq` (line 279) call this object \"the Casimir\" without qualification, but here `L = Module.End \u2102 \u2102\u00b2` (finrank 4) and `b = b' = spinGen` is a 3-element family, so it can never satisfy the duality/expansion hypotheses that the imported `Casimir.lean` says the name requires; a reader will wrongly expect `LieModule.commute_toEnd_casimir` to apply to it.",
+   "line": "50"
+  },
+  {
+   "evidence": "`theorem commute_toEnd_spinSingletProj (X : Module.End \u2102 \u2102\u00b2) : Commute (LieModule.toEnd \u2102 _ (\u2102\u00b2 \u2297[\u2102] \u2102\u00b2) X) spinSingletProj` (lines 264-265); the docstring names no hypothesis or quantifier.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "fix": "E.g. \"For every operator `X` on `\u2102\u00b2`, the pair action `X \u2297 1 + 1 \u2297 X` commutes with the singlet projector, so the singlet channel is an invariant subspace \u2014 in particular under the total spin `X = spinGen i`.\" Same for the triplet, and for the Main-results entry at lines 63-64.",
+   "issue": "\"The singlet channel is invariant under the action of the pair\" (line 263) and the same wording for the triplet (line 271) never mention the variable `X`: the statements hold for *every* operator `X` on `\u2102\u00b2`, which is both stronger and more specific than the docstring, and \"the action of the pair\" misnames the action *on* the pair.",
+   "line": "263"
+  },
+  {
+   "evidence": "PR description: \"The spin space is `EuclideanSpace \u2102 (Fin 2)` rather than `Fin 2 \u2192 \u2102` because \u2026 the `Pi.addCommMonoid`/`Pi.addCommGroup` instance mismatch keeps `Module.End \u2102 (V \u2297 V)` from being recognised as a ring\"; no such note appears in lines 15-74 or elsewhere in the file, whereas the comparable bracket gotcha is documented at lines 256-259.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "fix": "Add an `## Implementation notes` paragraph stating the reason, next to the existing note on `LieRing.ofAssociativeRing`.",
+   "issue": "The module docstring nowhere records why the spin space is `EuclideanSpace \u2102 (Fin 2)` rather than `Fin 2 \u2192 \u2102`; that rationale (the `Pi` instance mismatch blocking the ring structure on `Module.End \u2102 (V \u2297 V)`, on which every `mul`/idempotent lemma in the file depends) exists only in the PR description, which the source does not carry.",
+   "line": "15"
+  }
+ ],
+ "head_sha": "19638be75a512ea8301d63f9e3161236d8553a3e",
+ "merge_base_sha": "77ddb4653b2f7bb8d520c8def286dbf142c9c851",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 193,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "30b2375a987a3c2e50d0beffd236336ba08168fa3cf33e216d77aa2a198a41f7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261109T044143Z-193-documentation-81c90c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-09T04:41:43Z",
+ "submitted_by": "veprbl",
+ "summary": "Both files have module docstrings and every public declaration is documented, with references and cross-references that check out. Three docstrings are less honest or less informative than the statements they head: the \"total-spin Casimir\" label hides that `spinGen` is not a dual basis of the `L` it is applied to, the `commute_toEnd_*` docs drop the quantifier over `X`, and the non-obvious choice of `EuclideanSpace \u2102 (Fin 2)` is documented only in the PR description.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Bispinors/Pauli/RelationsExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LieAlgebra/Casimir.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Lie/OfAssociative.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d8dd4f7e56003d44726dbb0e716aae5f466e22b6d95fc1d861ee7881e4442fca",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 63490,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 63490,
+  "cache_read_input_tokens": 243074,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1010,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1010,
+    "cache_read_input_tokens": 65703,
+    "input_tokens": 2,
+    "output_tokens": 10899,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17998,
+  "output_tokens_details": {
+   "thinking_tokens": 14546
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

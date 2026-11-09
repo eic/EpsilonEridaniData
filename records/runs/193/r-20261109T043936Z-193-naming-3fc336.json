@@ -1,0 +1,230 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9677314999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 228.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 104608,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 104608,
+    "cache_read_input_tokens": 940493,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3406,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3406,
+      "cache_read_input_tokens": 104425,
+      "input_tokens": 2,
+      "output_tokens": 1736,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18051,
+    "output_tokens_details": {
+     "thinking_tokens": 13272
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b867b8c63ff3ff682d3ff741ea206e5ad2d2177f",
+ "cost_usd": 1.967731,
+ "dedupe_key": "eic/EpsilonEridani|193|19638be75a512ea8301d63f9e3161236d8553a3e|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "7aa07b503d7e768d3e56cfbf0e47cd2e907323725ca782096e1193ffbc47381e",
+ "diff_sha256": "7aa07b503d7e768d3e56cfbf0e47cd2e907323725ca782096e1193ffbc47381e",
+ "duration_s": 228.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib precedent for exactly this: `upstream/mathlib/Mathlib/RingTheory/PicardGroup.lean:629: theorem tensorProductComm_eq_refl : TensorProduct.comm R M M = .refl ..` (in namespace `Module.Invertible`, i.e. outside `TensorProduct`). No prior EpsilonEridani lemma names `TensorProduct.comm` as `comm`: grep for `comm_mul|tensorProductComm` across `code/EpsilonEridani` hits only this PR.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "fix": "Rename to `tensorProductComm_mul_spinSingletProj` / `tensorProductComm_mul_spinTripletProj` (naming-conventions: a namespaced definition keeps its namespace prepended in lowerCamelCase when the bare name is ambiguous), and update the `## Main results` entry at line 60 and the proof references at lines 211 and 221.",
+   "issue": "`comm_mul_spinSingletProj` (line 188) and `comm_mul_spinTripletProj` (line 198) use bare `comm` for `TensorProduct.comm`. Their full names are `EpsilonEridani.QFT.Quarkonium.comm_mul_spinSingletProj`, where `comm` is the reserved axiomatic word for commutativity (naming-conventions, \"Axiomatic descriptions\": `comm`, `assoc`, `left_comm`), so the name reads as a commutativity lemma about `*` \u2014 `add_comm` is used with that meaning in this same file at line 144.",
+   "line": "188"
+  },
+  {
+   "evidence": "Statement at lines 47-51 is `\u2211 i : Fin 3, TensorProduct.map (toEuclideanLin (pauliMatrix (Sum.inr i))) \u2026`; the `_inr`/`pauliMatrix` segments match Physlib precedent (`upstream/Physlib/Physlib/Relativity/PauliMatrices/Basic.lean:58 pauliMatrix_inl_zero_eq_one`, `:86 pauliMatrix_mul_self`), only the `map` segment is ambiguous.",
+   "file": "EpsilonEridani/Relativity/Bispinors/Pauli/RelationsExtensions.lean",
+   "fix": "Rename to `sum_tensorProductMap_toEuclideanLin_pauliMatrix_inr` (or otherwise disambiguate the `TensorProduct.map` factor), and update the `## Main results` line 31 plus the cross-references in `SpinDecomposition.lean` lines 35 and 286.",
+   "issue": "Same defect in `PauliMatrix.sum_map_toEuclideanLin_pauliMatrix_inr`: `map` is the namespace-stripped `TensorProduct.map`, but a `map_` segment in a Mathlib-style name means application of a morphism (`map_add`, `map_sum`), and `sum_map` already has an unrelated meaning (`Finset.prod_map`/`sum_map`, `upstream/mathlib/Mathlib/Algebra/BigOperators/Group/Finset/Defs.lean:395`). The name is upstream-bound (`PauliMatrix` namespace, PhyslibAlpha-eligible), so the ambiguity is permanent.",
+   "line": "47"
+  }
+ ],
+ "head_sha": "19638be75a512ea8301d63f9e3161236d8553a3e",
+ "merge_base_sha": "77ddb4653b2f7bb8d520c8def286dbf142c9c851",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 193,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "48768a7405ef825646625e2a046c8535bd2c67d3d2c7dac77029586d4c05399a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261109T043936Z-193-naming-3fc336",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-09T04:39:36Z",
+ "submitted_by": "veprbl",
+ "summary": "Names mostly mirror the sibling `ColorDecomposition.lean` well, but two declarations strip the `TensorProduct` namespace off `comm` and `map`, producing globally ambiguous names that read as commutativity/morphism-map lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Bispinors/Pauli/RelationsExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Bispinors/Pauli",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/PauliMatrices/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Bispinors/Pauli/Relations.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/TensorProduct",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/PicardGroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/BigOperators",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Bispinors/Pauli/Relations.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e53a5c8c14fe464028c52246f009035110ac6455d60389768c1937e48ab8ef2b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 104608,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 104608,
+  "cache_read_input_tokens": 940493,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3406,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3406,
+    "cache_read_input_tokens": 104425,
+    "input_tokens": 2,
+    "output_tokens": 1736,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18051,
+  "output_tokens_details": {
+   "thinking_tokens": 13272
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
