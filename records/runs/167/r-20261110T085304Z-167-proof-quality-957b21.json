@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.2243779999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 207.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 66973,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 66973,
+    "cache_read_input_tokens": 275226,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1146,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1146,
+      "cache_read_input_tokens": 69050,
+      "input_tokens": 2,
+      "output_tokens": 4472,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16679,
+    "output_tokens_details": {
+     "thinking_tokens": 12995
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 1.224378,
+ "dedupe_key": "eic/EpsilonEridani|167|284f575a25b21e59fcebdc351d6fd4ec8c791404|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "664c22199fd5fc45c5fead18656366511fa07fdb75497591e9dfeb096c215a48",
+ "diff_sha256": "664c22199fd5fc45c5fead18656366511fa07fdb75497591e9dfeb096c215a48",
+ "duration_s": 207.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 149-150 `def IsOneLoopRGSolution ... := IsIntegralCurveOn f (fun _ a => -\u03b2\u2080 * a ^ 2) s`; `upstream/mathlib/Mathlib/Analysis/ODE/Basic.lean:44-45` `def IsIntegralCurveOn ... := \u2200 t \u2208 s, HasDerivWithinAt \u03b3 (v t (\u03b3 t)) s t`. Grep of the head file for `isOneLoopRGSolution_iff|IsOneLoopRGSolution\\.(hasDerivAt|mono)` returns nothing.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "fix": "Add the bridge the description promises \u2014 `theorem isOneLoopRGSolution_iff : IsOneLoopRGSolution \u03b2\u2080 s f \u2194 IsIntegralCurveOn f (fun _ a => -\u03b2\u2080 * a ^ 2) s := Iff.rfl`, plus `IsOneLoopRGSolution.hasDerivWithinAt`/`.hasDerivAt` and `.mono` \u2014 and route lines 167, 174, 219-220 and 250 through them.",
+   "issue": "`IsOneLoopRGSolution` is a `def` wrapping `IsIntegralCurveOn`, and proofs move between the two purely by defeq, with no intro/elim/restriction lemma and no comment: line 167 inhabits `IsOneLoopRGSolution` with a bare `fun _ ht => ...` (two layers of unfolding), line 174 hands `IsIntegralCurveOn.mono`'s result to a goal stated as `IsOneLoopRGSolution`, and lines 219-220 and 250 apply `hf` as a function to get a `HasDerivWithinAt`. The PR description claims `isOneLoopRGSolution_iff`, `IsOneLoopRGSolution.hasDerivAt` and `.mono` exist; they are not in the file.",
+   "line": "174"
+  },
+  {
+   "evidence": "Lines 136-138, 267-268, 401-402 each open with a `have key`/`hkey` closed by `field_simp` (+`ring`) restating the same reciprocal identity in a different arrangement.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "fix": "Prove `inv_oneLoopCoupling (ha : a\u2080 \u2260 0) : (oneLoopCoupling \u03b2\u2080 a\u2080 t)\u207b\u00b9 = a\u2080\u207b\u00b9 + \u03b2\u2080 * t` once and derive the three sites from it. The hypothesis `1 + \u03b2\u2080 * a\u2080 * t \u2260 0` is not needed: when it vanishes, `a\u2080 \u2260 0` gives `\u03b2\u2080 * t = -a\u2080\u207b\u00b9`, so both sides are `0`.",
+   "issue": "The identity `(oneLoopCoupling \u03b2\u2080 a\u2080 t)\u207b\u00b9 = a\u2080\u207b\u00b9 + \u03b2\u2080 * t` \u2014 the whole content of the explicit solution \u2014 is re-derived by ad-hoc `field_simp`/`ring` three times: `key` at 136-138 (`oneLoopCoupling_eq_inv`), `hkey` at 267-268 (`eqOn_oneLoopCoupling`), `key` at 401-402 (`add_landauLogScale_oneLoopCoupling`); the `key` at 385-389 is the same computation at denominator level.",
+   "line": "136"
+  },
+  {
+   "evidence": "Lines 119-130: after `have key : \u03b2\u2080 * a\u2080 * landauLogScale \u03b2\u2080 a\u2080 = -1`, each branch multiplies the hypothesis by hand and rewrites `key` into it before `linarith`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "fix": "Keep `key` and close both directions with arithmetic automation, e.g. `constructor <;> intro h' <;> nlinarith [key, h]`, rather than the explicit multiplication-and-rewrite chain.",
+   "issue": "`landauLogScale_lt_iff` spends 12 lines on a hand-rolled two-direction argument (`mul_lt_mul_of_pos_left`, `by_contra` + `not_lt.1` + `mul_le_mul_of_nonneg_left`, two `rw ... at this`) for a fact that is linear arithmetic once the cancellation `\u03b2\u2080 * a\u2080 * landauLogScale \u03b2\u2080 a\u2080 = -1` is in hand.",
+   "line": "117"
+  }
+ ],
+ "head_sha": "284f575a25b21e59fcebdc351d6fd4ec8c791404",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 167,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7b380a5cdb9473242fc43b9f95dd9db1bc87ad668812f5ae3136ddd7c657d1b4",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261110T085304Z-167-proof-quality-957b21",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-10T08:53:04Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs cross the `IsOneLoopRGSolution` wrapper into Mathlib's `IsIntegralCurveOn` by undocumented definitional unfolding at four sites, and the same reciprocal-is-affine identity is re-derived by ad-hoc `field_simp` in three places instead of being a reusable lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "18b6b0141eb71ee3b841ac6b7b8c4f30e5e0495e196efdb02015aa661b36e1c2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 66973,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 66973,
+  "cache_read_input_tokens": 275226,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1146,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1146,
+    "cache_read_input_tokens": 69050,
+    "input_tokens": 2,
+    "output_tokens": 4472,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16679,
+  "output_tokens_details": {
+   "thinking_tokens": 12995
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

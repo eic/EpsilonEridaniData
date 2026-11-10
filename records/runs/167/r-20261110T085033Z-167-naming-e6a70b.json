@@ -1,0 +1,200 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0420884999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 344.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 104373,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 104373,
+    "cache_read_input_tokens": 687617,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4326,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4326,
+      "cache_read_input_tokens": 103270,
+      "input_tokens": 2,
+      "output_tokens": 5758,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 26178,
+    "output_tokens_details": {
+     "thinking_tokens": 22080
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.042088,
+ "dedupe_key": "eic/EpsilonEridani|167|284f575a25b21e59fcebdc351d6fd4ec8c791404|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "664c22199fd5fc45c5fead18656366511fa07fdb75497591e9dfeb096c215a48",
+ "diff_sha256": "664c22199fd5fc45c5fead18656366511fa07fdb75497591e9dfeb096c215a48",
+ "duration_s": 344.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Evolution/Basic.lean:221-222 `/-- Running coupling profile used by the evolution equation, as a function of `Q2`. -/ abbrev RunningCoupling : Type := \u211d \u2192 \u211d`; Basic.lean:228-232 fixes the `\u03b1s/(2\u03c0)` prefactor and warns that `a_s = \u03b1s/(4\u03c0)` rescales the kernels; Evolution/QCDCore.lean:35 `def qcdRunningCoupling (cf) (lambdaQCD2) : RunningCoupling := fun Q2 => QCD.oneLoopAlphaS cf Q2 lambdaQCD2`; OneLoopCoupling.lean:51-53 disambiguates only `QCD.oneLoopAlphaS`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "fix": "Give the name the variable and/or normalisation, in the namespace's own idiom \u2014 `dglapRhsLogScale` and `IsDGLAPLogScaleEquation` use `LogScale` for the evolution variable \u2014 e.g. `oneLoopCouplingLogScale` or `oneLoopA4`, renaming the dependent lemmas (`hasDerivAt_...`, `strictAntiOn_...`, `tendsto_..._atTop_zero`, `oneLoopCoupling_log_eq_inv`, the two `suN` corollaries) to match. Failing a rename, extend the module docstring's distinction paragraph to state that this is not an `Evolution.RunningCoupling` and must not be supplied to the DGLAP predicates.",
+   "issue": "`oneLoopCoupling` is defined in namespace `Evolution`, which already has `abbrev RunningCoupling : Type := \u211d \u2192 \u211d` documented as the coupling \"as a function of `Q2`\" in the `\u03b1_s/(2\u03c0)` convention. Partially applied, `oneLoopCoupling \u03b2\u2080 a\u2080 : \u211d \u2192 \u211d` is reducibly a `RunningCoupling`, so `IsDGLAPLogScaleEquation P (oneLoopCoupling \u03b2\u2080 a\u2080) f` and `dglapRhsLogScale P (oneLoopCoupling \u03b2\u2080 a\u2080) ...` elaborate while being wrong twice over: the argument is `t = log (Q\u00b2/\u03bc\u2080\u00b2)`, not `Q\u00b2`, and the normalisation is `a\u2084 = \u03b1_s/(4\u03c0)`, not `\u03b1_s`. The name signals neither. The module docstring disambiguates only `QCD.oneLoopAlphaS`, which is in a different namespace, and says nothing about the same-namespace `RunningCoupling`/`qcdRunningCoupling`.",
+   "line": 82
+  }
+ ],
+ "head_sha": "284f575a25b21e59fcebdc351d6fd4ec8c791404",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 167,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "27a2fed32cc98cae0824b94603d254bfe251ebcfc5d079d30491faeeb1faf2b0",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261110T085033Z-167-naming-e6a70b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-10T08:50:33Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names are otherwise accurate, conclusion-first and Mathlib-conforming, and no notation is introduced. The one problem is that `oneLoopCoupling` lands in a namespace where `RunningCoupling` already names a coupling of the opposite convention, and the two are the same reducible type.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/QCDCore.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/Suggested.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e5af182f2a7246f076021da4609e0349b4b4f8ccf0b43c56408f655aba2aab58",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 104373,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 104373,
+  "cache_read_input_tokens": 687617,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4326,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4326,
+    "cache_read_input_tokens": 103270,
+    "input_tokens": 2,
+    "output_tokens": 5758,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 26178,
+  "output_tokens_details": {
+   "thinking_tokens": 22080
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

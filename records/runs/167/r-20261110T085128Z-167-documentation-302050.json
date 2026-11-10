@@ -1,0 +1,184 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.2502194999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 190.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 68996,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 68996,
+    "cache_read_input_tokens": 367459,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5362,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5362,
+      "cache_read_input_tokens": 66857,
+      "input_tokens": 2,
+      "output_tokens": 3127,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15058,
+    "output_tokens_details": {
+     "thinking_tokens": 12060
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 1.250219,
+ "dedupe_key": "eic/EpsilonEridani|167|284f575a25b21e59fcebdc351d6fd4ec8c791404|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "664c22199fd5fc45c5fead18656366511fa07fdb75497591e9dfeb096c215a48",
+ "diff_sha256": "664c22199fd5fc45c5fead18656366511fa07fdb75497591e9dfeb096c215a48",
+ "duration_s": 190.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 37-41 vs. the statements at lines 279-281 (`t\u2080 + landauLogScale \u03b2\u2080 (f t\u2080) \u2209 s`, hypothesis `h\u2080 : f t\u2080 \u2260 0`) and 297-300 (`0 < f t\u2080`).",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "fix": "Restrict the claim to what is proved, e.g. \"through which the solution itself does not continue: no nowhere-zero solution has its own Landau log-scale in its domain\".",
+   "issue": "Module docstring overclaims: \"it blows up at the finite value `landauLogScale \u03b2\u2080 a\u2080` ..., through which no solution of the truncated equation continues\". The cited theorems require the solution to be nonzero (`add_landauLogScale_notMem`, hypothesis `f t\u2080 \u2260 0`) or positive (`subset_Ioi_add_landauLogScale`, `0 < f t\u2080`) and speak of a solution's *own* Landau log-scale; `f \u2261 0` solves `da/dt = -\u03b2\u2080 a\u00b2` on all of \u211d and passes through that point, as does `oneLoopCoupling \u03b2\u2080 b\u2080` for any `b\u2080` with `t_\u039b(b\u2080) \u2260 t_\u039b(a\u2080)`.",
+   "line": 37
+  },
+  {
+   "evidence": "Line 97 `def landauLogScale (\u03b2\u2080 a\u2080 : \u211d) : \u211d := -(\u03b2\u2080 * a\u2080)\u207b\u00b9` with `(0 : \u211d)\u207b\u00b9 = 0`; line 104 hypothesis `(h : \u03b2\u2080 * a\u2080 \u2260 0)`; line 365 hypotheses `(h\u03b2 : 0 < \u03b2\u2080) (ha : 0 < a\u2080)`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "fix": "Qualify both docstrings: the defining property holds for `\u03b2\u2080 * a\u2080 \u2260 0` (divergence for `0 < \u03b2\u2080`, `0 < a\u2080`); the value is junk otherwise.",
+   "issue": "`landauLogScale`'s docstring states unconditionally that it is \"the value ... at which the denominator of `oneLoopCoupling \u03b2\u2080 a\u2080` vanishes\", but for `\u03b2\u2080 * a\u2080 = 0` the definition returns `-(0)\u207b\u00b9 = 0` while the denominator is identically `1`; the file's own `one_add_mul_landauLogScale_eq_zero` carries the hypothesis `\u03b2\u2080 * a\u2080 \u2260 0`. Same issue at line 409: `landauScaleSq` is called \"the scale at which the one-loop coupling diverges\", a property proved only for `0 < \u03b2\u2080`, `0 < a\u2080` (`tendsto_oneLoopCoupling_nhdsGT_landauLogScale`) and false in the degenerate case.",
+   "line": 93
+  },
+  {
+   "evidence": "Glob finds only `Evolution/OneLoopCoupling.lean`; grep for `isOneLoopRGSolution_iff|IsOneLoopRGSolution\\.(mono|hasDerivAt)` over ./code returns no matches; line 174 calls `IsIntegralCurveOn.mono` directly.",
+   "file": "",
+   "fix": "Correct the file name/size and drop the three nonexistent names (the file instead relies on Mathlib's `HasDerivWithinAt.hasDerivAt` and `IsIntegralCurveOn.mono`, which the `IsOneLoopRGSolution` docstring already points to).",
+   "issue": "The PR description documents the change inaccurately: it names the added file `EpsilonEridani/QFT/Factorization/Evolution/RunningCoupling.lean` (427 lines) while the file added is `Evolution/OneLoopCoupling.lean` (483 lines), and it states that `isOneLoopRGSolution_iff`, `IsOneLoopRGSolution.hasDerivAt` and `IsOneLoopRGSolution.mono` are provided as introduction/elimination/restriction rules \u2014 none of those declarations exist.",
+   "line": 0
+  }
+ ],
+ "head_sha": "284f575a25b21e59fcebdc351d6fd4ec8c791404",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 167,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6960dfaaadb35bf222290645346f3d9380f4083d634799f41eedd52f275c0ffb",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261110T085128Z-167-documentation-302050",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-10T08:51:28Z",
+ "submitted_by": "wdconinc",
+ "summary": "The module docstring is substantive, mathematical and free of roadmap/process narrative, and all four public definitions are documented. Two accuracy problems: the module summary claims no solution continues through the Landau log-scale (false for the zero solution and for solutions with a different reference value), and two definition docstrings state their defining property unconditionally where it holds only for `\u03b2\u2080 * a\u2080 \u2260 0`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "67dc53818294d71c1c68956b527efc3459d4db9205e2eb802466b6e2e1c105d6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 68996,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 68996,
+  "cache_read_input_tokens": 367459,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5362,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5362,
+    "cache_read_input_tokens": 66857,
+    "input_tokens": 2,
+    "output_tokens": 3127,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15058,
+  "output_tokens_details": {
+   "thinking_tokens": 12060
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
