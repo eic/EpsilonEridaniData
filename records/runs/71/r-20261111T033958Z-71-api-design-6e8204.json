@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.341746,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 247.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 158727,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 158727,
+    "cache_read_input_tokens": 572812,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5105,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5105,
+      "cache_read_input_tokens": 122998,
+      "input_tokens": 2,
+      "output_tokens": 6966,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18720,
+    "output_tokens_details": {
+     "thinking_tokens": 15356
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "cost_usd": 2.341746,
+ "dedupe_key": "eic/EpsilonEridani|71|28227cde7ce3815c205316abc549cc3ab172e210|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a1fda068a407b9077ba25ecc370d067b98a1d4e3e50fd20a43cd970f6f62ac23",
+ "diff_sha256": "a1fda068a407b9077ba25ecc370d067b98a1d4e3e50fd20a43cd970f6f62ac23",
+ "duration_s": 247.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "ParityOdd.lean:346-368 declares only `aOfBasis`, `aOfBasis_eq_det` (not `@[simp]`) and `parityOddAssumptions_aOfBasis`; the `conserved_left` field is the sole annihilation statement. BilinMap.lean:69-79 has the simp lemmas that would apply if the body were visible. Basic.lean:288-311 gives the leptonic side all six.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Add `@[simp]` lemmas `aOfBasis_apply_p_left_eq_zero`, `aOfBasis_apply_p_right_eq_zero`, `aOfBasis_apply_q_left_eq_zero`, `aOfBasis_apply_q_right_eq_zero` and `aOfBasis_apply_self`, each one line from `AlternatingMap.bilinMap_apply_left_eq_zero ![K.p, K.q] 0/1` etc., mirroring `Leptonic.lMuNuOdd_apply_k_left_eq_zero` \u2026 `lMuNuOdd_apply_self`. Cleanest: split off `aOfForm (\u03b5 : V [\u22c0^Fin 4]\u2192\u2097[\u211d] \u211d) K := \u03b5.bilinMap ![K.p, K.q]` carrying those lemmas (nothing in them uses the basis) and set `aOfBasis b K := aOfForm b.det K`; that also gives the hadronic counterpart of `lMuNuOdd` that the Layer 1.1 `L^{\u03bc\u03bd}W_{\u03bc\u03bd}` contraction needs with a shared `\u03b5`.",
+   "issue": "`aOfBasis` has no lemma for its annihilation of `K.p` (nor simp forms for `K.q` or the diagonal). The module is `public section` without `@[expose]` (line 79), so the body is hidden and the `AlternatingMap.bilinMap_apply_left_eq_zero` / `_right_eq_zero` / `bilinMap_apply_self` simp lemmas cannot fire on `aOfBasis b K K.p w`. The only route to `A K.p v = 0` is `ParityOddAssumptions.apply_p_eq_zero`, which needs `g.IsSymm` plus `SpectatorPartners` \u2014 hypotheses `aOfBasis` does not require. Roadmap convention 6 names annihilation of `p` and `q` as a defining property of `A`.",
+   "line": 346
+  },
+  {
+   "evidence": "ParityOdd.lean:426-427 `aFour K := aOfBasis (Pi.basisFun \u211d (Fin 4)) K`; 430-432 `aFour_eq_det \u2026 := aOfBasis_eq_det ..`; 448-450 `parityOddAssumptions_aFour \u2026 := parityOddAssumptions_aOfBasis g (Pi.basisFun \u211d (Fin 4)) K`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Drop `aFour`, `aFour_eq_det` and `parityOddAssumptions_aFour`; state `aFour_kFour_apply` and the witness results about `aOfBasis (Pi.basisFun \u211d (Fin 4)) kFour` directly. If a short witness name is wanted, keep `aFour` specialised to `kFour` only and delete the two duplicated general lemmas.",
+   "issue": "`Witness.aFour` is a bare specialization of `aOfBasis` (`aOfBasis (Pi.basisFun \u211d (Fin 4)) K`), and `aFour_eq_det` / `parityOddAssumptions_aFour` are literal re-exports of `aOfBasis_eq_det` / `parityOddAssumptions_aOfBasis`. This publishes a second canonical name for the same object on `\u211d\u2074`, with two duplicate lemmas, so downstream statements can be written against either and will not rewrite into each other without unfolding (the body is not exposed).",
+   "line": 426
+  },
+  {
+   "evidence": "ParityOdd.lean:79 `public section` (no `@[expose]`); 408-418 define `kFour` with `pPrime`, `k`, `kPrime` and export only `kFour_p`, `kFour_q`. Contrast Basic.lean:82 `@[expose] public section` covering `kWit` (Basic.lean:1271-1281).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Add `@[simp] lemma kFour_k : kFour.k = ![0, 0, 0, 1] := (rfl)`, `kFour_kPrime` and `kFour_pPrime`, matching the `(rfl)` style already used for `kFour_p`/`kFour_q`.",
+   "issue": "`kFour` has five fields but only `kFour_p` and `kFour_q` accessor lemmas, and the module is `public section` without `@[expose]`, so `kFour.k`, `kFour.kPrime` and `kFour.pPrime` are unreachable downstream \u2014 the values cannot be recovered without unfolding. (The analogous `kWit` in `Tensors/Basic.lean` gets away with two lemmas only because that file is `@[expose] public section`.) The roadmap's four-dimensional acceptance example contracts the leptonic tensor against this witness and needs the lepton momenta.",
+   "line": 408
+  }
+ ],
+ "head_sha": "28227cde7ce3815c205316abc549cc3ab172e210",
+ "merge_base_sha": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4773dee176510af5475033fbfde50f1a279a587faf244df36fa9c92de419b63f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261111T033958Z-71-api-design-6e8204",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-11T03:39:58Z",
+ "submitted_by": "wdconinc",
+ "summary": "The parity-odd core (`ParityOddAssumptions`, `exists_half_turn`, `SpectatorPair`/`SpectatorPlane`, the uniqueness theorems) is well shaped and `@[ext]`-clean, but `aOfBasis` ships without the annihilation lemmas that characterise it while its body is unexposed, and the `Witness` section re-exports `aOfBasis` under a second name with duplicate lemmas and an incomplete accessor set for `kFour`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d62f3f4d52169b651597d44c9cb3993399ebeeef7549ac9090d8b0513607c966",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 158727,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 158727,
+  "cache_read_input_tokens": 572812,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5105,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5105,
+    "cache_read_input_tokens": 122998,
+    "input_tokens": 2,
+    "output_tokens": 6966,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18720,
+  "output_tokens_details": {
+   "thinking_tokens": 15356
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

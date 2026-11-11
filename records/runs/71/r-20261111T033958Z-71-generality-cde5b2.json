@@ -1,0 +1,192 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.402335,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 242.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 160022,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 160022,
+    "cache_read_input_tokens": 689550,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7244,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7244,
+      "cache_read_input_tokens": 122992,
+      "input_tokens": 2,
+      "output_tokens": 4088,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18290,
+    "output_tokens_details": {
+     "thinking_tokens": 14124
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "cost_usd": 2.402335,
+ "dedupe_key": "eic/EpsilonEridani|71|28227cde7ce3815c205316abc549cc3ab172e210|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a1fda068a407b9077ba25ecc370d067b98a1d4e3e50fd20a43cd970f6f62ac23",
+ "diff_sha256": "a1fda068a407b9077ba25ecc370d067b98a1d4e3e50fd20a43cd970f6f62ac23",
+ "duration_s": 242.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "ParityOdd.lean:361-368: `conserved_left v := AlternatingMap.bilinMap_apply_left_eq_zero _ ![K.p, K.q] 1 v` and `isAlt := AlternatingMap.isAlt_bilinMap _ _` \u2014 both general in the form (Mathematics/LinearAlgebra/Alternating/BilinMap.lean:64, :70). Roadmap convention 6 supplies the parity-odd structure as data, and 0.3 bullet 1 requires building `A` from `Relativity.Tensors.RealTensor.Metrics.LeviCivita`'s volume form, which is an alternating form and not `b.det` of any basis in the library, so `aOfBasis` as stated is not reusable for that target.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Define `aOfAlt (\u03b5 : V [\u22c0^Fin 4]\u2192\u2097[\u211d] \u211d) (K : DisKinematics V) : Bilin V := \u03b5.bilinMap ![K.p, K.q]`, mirroring `lMuNuOdd`; state `isAlt`/`conserved_left` for it with no basis at all, and state proper covariance as `parityOddAssumptions_aOfAlt (g) (\u03b5) (b : Module.Basis (Fin 4) \u211d V) (K)`, proved by `\u03b5 = \u03b5 b \u2022 b.det` (`AlternatingMap.eq_smul_basis_det`, upstream/mathlib/Mathlib/LinearAlgebra/Determinant.lean:650) followed by the present `Basis.det_comp` argument. Keep `aOfBasis b K := aOfAlt b.det K` as the derived special case if it is still wanted.",
+   "issue": "`aOfBasis (b : Module.Basis (Fin 4) \u211d V)` takes a basis where the natural datum is the alternating four-form itself. Two of the three `ParityOddAssumptions` fields (`isAlt`, `conserved_left`) are proved from the generic `AlternatingMap.bilinMap` API and use nothing about `b`; only `proper_covariant` touches `Basis.det_comp`. The basis is therefore a hypothesis stronger than the construction needs, and it is inconsistent with the leptonic side of the same development, `Leptonic.lMuNuOdd (\u03b5 : V [\u22c0^Fin 4]\u2192\u2097[\u211d] \u211d) K := \u03b5.bilinMap ![K.k, K.kPrime]` (Tensors/Basic.lean:275).",
+   "line": 346
+  },
+  {
+   "evidence": "ParityOdd.lean:180-186 and 217-221 are the two copies; `exists_half_turn` (Tensors/Basic.lean:1063) already returns `f u = -u \u2227 f u' = -u'`, and `f` is linear, so on a `SpectatorPlane` it reverses the whole span of `e\u2081`, `e\u2082` \u2014 the fact the `_of_spectatorPlane` copy re-derives through `apply_eq_mul_apply_e\u2081_e\u2082`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Prove one lemma `apply_pTransverse_eq_zero` from `SpectatorSplitting g K` plus `hrev : \u2200 u, g K.q u = 0 \u2192 g (pTransverse g K) u = 0 \u2192 \u2203 f, IsKinematicStabilizer g K f \u2227 LinearMap.det f = 1 \u2227 f u = -u`, with its three corollaries; then supply `hrev` from `SpectatorPartners` (via `exists_half_turn`) and from `SpectatorPlane` (via the single `e\u2081`,`e\u2082` half-turn, which negates `c\u2081 \u2022 e\u2081 + c\u2082 \u2022 e\u2082`) as two short lemmas. That removes four duplicated proofs and leaves `SpectatorPartners` justified by its own instance lemma rather than by a second copy of the argument.",
+   "issue": "The same four conclusions (`W p_T v = 0`, `W p v = 0`, and the two right-slot flips) are proved twice: once under `SpectatorPartners` (lines 175-213) and once under `SpectatorPlane` (lines 217-240). Both proofs run through the identical core \u2014 a determinant-one stabilizer that fixes `p_T` and reverses the spectator, fed to `Bilin.apply_eq_zero_of_apply_eq_self_of_apply_eq_neg`. Under a `SpectatorPlane` the single half-turn built from `e\u2081`, `e\u2082` already reverses *every* vector of the plane, so both bundles are instances of one hypothesis. `SpectatorPartners` and its `partner` field (Tensors/Basic.lean:1150-1156) exist only to support the first copy: grep shows `partner` is used nowhere but `apply_pTransverse_eq_zero`, and `spectatorPartners_kFour` is consumed only through `toSpectatorSplitting` and `self_ne_zero_of_spectator` (ParityOdd.lean:517-518).",
+   "line": 175
+  }
+ ],
+ "head_sha": "28227cde7ce3815c205316abc549cc3ab172e210",
+ "merge_base_sha": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "97bcb4eeb21d770a8f108e0a89cd7bfdf3c772ddf050b81d4101bd3ac6756a20",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261111T033958Z-71-generality-cde5b2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-11T03:39:58Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two generality defects: the canonical parity-odd structure is tied to a basis where the repo's own idiom (and the Layer 0.3 target) wants an arbitrary alternating four-form, and the `p_T`/`p` annihilation results are proved twice over two incomparable hypothesis bundles, one of which (`SpectatorPartners`) exists only to carry that duplicate proof.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "<outside-workspace>",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "eb26d73062179256bcfe276329f1524bb709db535df9dd01bff6c683e6170542",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 160022,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 160022,
+  "cache_read_input_tokens": 689550,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7244,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7244,
+    "cache_read_input_tokens": 122992,
+    "input_tokens": 2,
+    "output_tokens": 4088,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18290,
+  "output_tokens_details": {
+   "thinking_tokens": 14124
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

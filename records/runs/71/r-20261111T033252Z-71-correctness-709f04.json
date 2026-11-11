@@ -1,0 +1,190 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.958807,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 425.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 172975,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 172975,
+    "cache_read_input_tokens": 887564,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 9230,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 9230,
+      "cache_read_input_tokens": 133387,
+      "input_tokens": 2,
+      "output_tokens": 10932,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 31407,
+    "output_tokens_details": {
+     "thinking_tokens": 27635
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "cost_usd": 2.958807,
+ "dedupe_key": "eic/EpsilonEridani|71|28227cde7ce3815c205316abc549cc3ab172e210|correctness|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a1fda068a407b9077ba25ecc370d067b98a1d4e3e50fd20a43cd970f6f62ac23",
+ "diff_sha256": "a1fda068a407b9077ba25ecc370d067b98a1d4e3e50fd20a43cd970f6f62ac23",
+ "duration_s": 425.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`gFour_apply v w = v 0 * w 0 - v 1 * w 1 - v 2 * w 2 - v 3 * w 3` with p = ![1,0,0,0], q = ![0,0,0,1] gives 0; `xBj g K = K.Q2 g / (2 * g K.p K.q)` in Kinematics/Basic.lean:84; the `kFour` docstring itself concedes \"p\u00b7q = 0 ... nor \u03bd or x_Bj, which are undefined here\"; roadmap Layer 0.4 defines F\u2082, F\u2083 by multiplying by p\u00b7q, and the Layer 0 Examples list asks for a four-dimensional witness with all three coefficients nonzero.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Move p off the q-orthogonal direction, e.g. `p := ![1, 0, 0, -4/5]` (still timelike: g p p = 9/25 > 0; p\u00b7q = 4/5 > 0; x_Bj = 5/8). Since p_T = p - (p\u00b7q/q\u00b7q) \u2022 q = ![1,0,0,0] is unchanged, `pTransverse_kFour`, `spectatorPlaneFour`, `aFour_kFour_apply` (row-reduce p against q in the determinant), `gFour_self_ne_zero_of_spectator` and `spectatorPartners_kFour` go through with at most a `norm_num`.",
+   "issue": "`kFour` takes p = ![1,0,0,0], q = ![0,0,0,1], so `gFour kFour.p kFour.q = 0`. The sole witness for the whole parity-odd development therefore sits at \u03bd = p\u00b7q = 0: `DisKinematics.xBj = Q2 / (2 * g p q)` evaluates to the junk value 0, outside the physical region of `Kinematics.Bounds`, and the roadmap's normalisations `F\u2082 := (p\u00b7q) W\u2082`, `F\u2083 := (p\u00b7q) W\u2083` (0.4) collapse there, so the Layer-0 example \"a four-dimensional witness ... with all three coefficients nonzero\" cannot be built on these kinematics and `kFour` will have to be replaced.",
+   "line": 408
+  }
+ ],
+ "head_sha": "28227cde7ce3815c205316abc549cc3ab172e210",
+ "merge_base_sha": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "96918f6f902cefef3eedae8331356d9b015708b62df4a27c44ff9b268a3c99f2",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261111T033252Z-71-correctness-709f04",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-11T03:32:52Z",
+ "submitted_by": "wdconinc",
+ "summary": "The mathematics checks out: the half-turn argument, the parity-odd one-dimensionality, the full-covariance vanishing theorem, and the \u211d\u2074 determinant contraction are all correctly stated and non-vacuous, and the departure to `IsProperLorentzCovariant` is forced rather than a weakening. The one defect is the witness kinematics `kFour`, which sits at p\u00b7q = 0, a point where the DIS invariants are junk and on which the roadmap's own Layer-0 example cannot be completed.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Transvection/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a216ffd34e858e93898c777b882560a326bb6802b3dee82f20c5eaf7a6c1d883",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 172975,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 172975,
+  "cache_read_input_tokens": 887564,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 9230,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 9230,
+    "cache_read_input_tokens": 133387,
+    "input_tokens": 2,
+    "output_tokens": 10932,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 31407,
+  "output_tokens_details": {
+   "thinking_tokens": 27635
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

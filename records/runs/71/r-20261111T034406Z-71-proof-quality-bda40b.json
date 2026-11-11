@@ -1,0 +1,203 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0089645,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 260.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 130134,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 130134,
+    "cache_read_input_tokens": 408209,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5634,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5634,
+      "cache_read_input_tokens": 94462,
+      "input_tokens": 2,
+      "output_tokens": 9259,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20138,
+    "output_tokens_details": {
+     "thinking_tokens": 16037
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "cost_usd": 2.008964,
+ "dedupe_key": "eic/EpsilonEridani|71|28227cde7ce3815c205316abc549cc3ab172e210|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a1fda068a407b9077ba25ecc370d067b98a1d4e3e50fd20a43cd970f6f62ac23",
+ "diff_sha256": "a1fda068a407b9077ba25ecc370d067b98a1d4e3e50fd20a43cd970f6f62ac23",
+ "duration_s": 260.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 439-443: `rw [aFour_eq_det, Module.Basis.det_apply]` / `simp [Module.Basis.toMatrix_apply, ...]` / `ring`. Contrast line 394 `simp only [gFour, Matrix.toBilin'_apply', ...]` followed by `ring`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Make the `simp` a `simp only [...]` with the lemmas actually needed (the rest of the file already does this, e.g. `gFour_apply` at line 394), so that only the listed rewrites can affect the goal handed to `ring`.",
+   "issue": "`aFour_kFour_apply` uses a non-terminal full `simp` with an ad-hoc lemma list (`Matrix.det_succ_row_zero`, `Fin.sum_univ_succ`, and both `Fin.succAbove_of_le_castSucc` and `Fin.succAbove_of_castSucc_lt`) whose output shape the following `ring` depends on; any change to the default simp set or to the `succAbove` normal form breaks the step in a way that is hard to diagnose.",
+   "line": 440
+  },
+  {
+   "evidence": "Lines 1182-1208, in particular `generalize c\u2081 \u2022 hP.e\u2081 + c\u2082 \u2022 hP.e\u2082 = s at hss hsu' hsq hsT hv'` (1192) and `generalize (-(c\u2082 * g hP.e\u2082 hP.e\u2082)) \u2022 hP.e\u2081 + (c\u2081 * g hP.e\u2081 hP.e\u2081) \u2022 hP.e\u2082 = u' at hsu' hu'u' hu'q hu'T` (1193-1194).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Extract a `SpectatorPair` lemma \u2014 given `c\u2081 c\u2082` not both zero, there is `u'` with `g (c\u2081 \u2022 e\u2081 + c\u2082 \u2022 e\u2082) u' = 0`, `u'` spectator, and `g u' u' = g e\u2081 e\u2081 * g e\u2082 e\u2082 * g (c\u2081 \u2022 e\u2081 + c\u2082 \u2022 e\u2082) (c\u2081 \u2022 e\u2081 + c\u2082 \u2022 e\u2082)` \u2014 and let `spectatorPartners` apply it; use `set ... with` rather than `generalize ... at` for the remaining abbreviation.",
+   "issue": "`SpectatorPlane.spectatorPartners` inlines the whole orthogonal-partner construction in a spectator plane (the partner `(-(c\u2082 * g e\u2082 e\u2082)) \u2022 e\u2081 + (c\u2081 * g e\u2081 e\u2081) \u2022 e\u2082` and its norm `g e\u2081 e\u2081 * g e\u2082 e\u2082 * g u u`), a reusable `SpectatorPair` fact, and keeps it manageable only via two `generalize ... at` steps over five and four hypotheses. `generalize ... at` drops the defining equation and requires the abbreviated term to occur syntactically in every listed hypothesis, so a change in how `apply_smul_add_smul` or `span` normalises breaks the script.",
+   "line": 1180
+  },
+  {
+   "evidence": "Lines 162-163 (`h\u2081`, `h\u2082` for `e\u2081`, `e\u2082`) and lines 185-186 in `apply_pTransverse_eq_zero`, all of the form `Bilin.apply_eq_zero_of_apply_eq_self_of_apply_eq_neg (hW.proper_covariant f hf hdet _ _) (stabilizer_fixes_pTransverse g K hf) hf\u2026`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Add `ParityOddAssumptions.apply_pTransverse_eq_zero_of_apply_eq_neg (hW) {f} (hf : IsKinematicStabilizer g K f) (hdet : LinearMap.det f = 1) {u} (hfu : f u = -u) : W (pTransverse g K) u = 0` and call it at all three sites.",
+   "issue": "The idiom \"a determinant-one stabilizer reversing a spectator `u` kills `W p_T u`\" \u2014 `hW.proper_covariant f hf hdet` + `stabilizer_fixes_pTransverse` + `Bilin.apply_eq_zero_of_apply_eq_self_of_apply_eq_neg` \u2014 is spelled out three times instead of being a lemma.",
+   "line": 162
+  }
+ ],
+ "head_sha": "28227cde7ce3815c205316abc549cc3ab172e210",
+ "merge_base_sha": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "01959bb7889ef5e2689a9e7534705ab987ff7d986131c59dddaefcdd8c7ae345",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261111T034406Z-71-proof-quality-bda40b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-11T03:44:06Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly clean simp only/ring scripts, but three spots are brittle or hide reusable content: a non-terminal full `simp` feeding a `ring`, an inlined orthogonal-partner construction propped up by two `generalize ... at` steps, and a half-turn idiom repeated at three call sites.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Transvection/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0649a75aa35f40ddcd4459a71d9360ba0756e2e67f0424ba93c1210c9628599d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 130134,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 130134,
+  "cache_read_input_tokens": 408209,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5634,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5634,
+    "cache_read_input_tokens": 94462,
+    "input_tokens": 2,
+    "output_tokens": 9259,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20138,
+  "output_tokens_details": {
+   "thinking_tokens": 16037
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
