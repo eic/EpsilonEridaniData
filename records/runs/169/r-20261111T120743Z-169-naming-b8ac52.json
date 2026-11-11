@@ -1,0 +1,199 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.622306,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 213.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 177891,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 177891,
+    "cache_read_input_tokens": 853282,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1989,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1989,
+      "cache_read_input_tokens": 151009,
+      "input_tokens": 2,
+      "output_tokens": 2770,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16667,
+    "output_tokens_details": {
+     "thinking_tokens": 12923
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 2.622306,
+ "dedupe_key": "eic/EpsilonEridani|169|255e014362bc94b1fdeca3a1267c61ab1fff1d0d|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "100c2bf394596d476378b95b0742b8c610edc12f8a3b62e7bb2339e4d8654914",
+ "diff_sha256": "100c2bf394596d476378b95b0742b8c610edc12f8a3b62e7bb2339e4d8654914",
+ "duration_s": 213.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `Ambiguity.lean:185: def Model.zero (Flavor : Type) : Model Flavor where`; `DoubleDistribution.lean:114: def Model.ofDoubleDistribution`; `Determinacy.lean:109: def polynomialModel (p : Polynomial \u211d) (Flavor : Type) : Model Flavor where`.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Determinacy.lean",
+   "fix": "Rename to `Model.ofPolynomial`, and rename the dependents to match the `Model.zero_H` / `Model.assumptions_zero` pattern: `assumptions_polynomialModel` \u2192 `Model.assumptions_ofPolynomial`, `polynomialModel_H_of_mem_Icc` \u2192 `Model.ofPolynomial_H_of_mem_Icc`, `mellinMomentH_polynomialModel` \u2192 `mellinMomentH_ofPolynomial`.",
+   "issue": "`polynomialModel` is a `Model Flavor`-valued constructor, but every other model constructor in the same directory lives in the `Model` namespace: `Model.zero` (GPD/Ambiguity.lean:185) and `Model.ofDoubleDistribution` (GPD/DoubleDistribution.lean:114), which is exactly the same shape (build a `Model` from data). The statement at line 175 juxtaposes `Model.zero Flavor` with `polynomialModel p Flavor`, two conventions for the same kind of object, and consumers looking under `GPD.Model` for constructors will not find it.",
+   "line": 109
+  },
+  {
+   "evidence": "`Ambiguity.lean:194: lemma Model.assumptions_zero (Flavor : Type) : Assumptions (Model.zero Flavor)` vs `Determinacy.lean:114: lemma assumptions_polynomialModel (p : Polynomial \u211d) (Flavor : Type) : Assumptions (polynomialModel p Flavor)`.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Determinacy.lean",
+   "fix": "Put both under `Model` alongside the constructors: `Model.assumptions_zero` and `Model.assumptions_ofPolynomial` (follows from the rename above).",
+   "issue": "The two `Assumptions`-discharging lemmas added by this PR are named under different schemes: `Model.assumptions_zero` (Ambiguity.lean:194, in the `Model` namespace) versus `assumptions_polynomialModel` (here, at GPD level). Identical statements about sibling models should be found in one place.",
+   "line": 114
+  },
+  {
+   "evidence": "`MomentDeterminacy.lean:68: theorem integrableOn_Icc_pow_mul (hf : IntegrableOn f (Icc a b)) (n : \u2115)`; upstream precedent `Mathlib/MeasureTheory/Function/LocallyIntegrable.lean:740: theorem IntegrableOn.continuousOn_mul`, used on line 70.",
+   "file": "EpsilonEridani/Mathematics/MomentDeterminacy.lean",
+   "fix": "Declare it as `MeasureTheory.IntegrableOn.pow_mul` (the `Icc a b` is fixed by the hypothesis type), mirroring `IntegrableOn.continuousOn_mul`, the Mathlib lemma it wraps.",
+   "issue": "`integrableOn_Icc_pow_mul` is a generic Mathlib-shaped lemma whose first explicit argument is `hf : IntegrableOn f (Icc a b)`, so it is dot notation on Mathlib's `IntegrableOn` but is declared flat in `EpsilonEridani`. Callers must write `integrableOn_Icc_pow_mul hf n` rather than `hf.pow_mul n`, and the declaration cannot be upstreamed without renaming. No `IntegrableOn.pow_mul` exists in Mathlib to clash with (grep for `IntegrableOn\\.(pow|pow_mul)` returns nothing).",
+   "line": 68
+  }
+ ],
+ "head_sha": "255e014362bc94b1fdeca3a1267c61ab1fff1d0d",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 169,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5161fc7cdb674c6d7c605405e563e67dd01ced8a02be2c3a0cca5d7ae911360c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261111T120743Z-169-naming-b8ac52",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-11T12:07:43Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two naming issues: the new GPD model constructor breaks the `Model.*` constructor convention used by its immediate neighbours (and so splits the two `Assumptions` lemmas added in this PR across two schemes), and the generic integrability helper is dot-notation material on Mathlib's `IntegrableOn` but is filed as a flat `EpsilonEridani` lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MomentDeterminacy.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Determinacy.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Probability/Moments/VanishingMoments.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ea06dbea074a6cd1e9bb81296c39573f75c63bb20f6e104a2c6c338f09082cf9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 177891,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 177891,
+  "cache_read_input_tokens": 853282,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1989,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1989,
+    "cache_read_input_tokens": 151009,
+    "input_tokens": 2,
+    "output_tokens": 2770,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16667,
+  "output_tokens_details": {
+   "thinking_tokens": 12923
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
