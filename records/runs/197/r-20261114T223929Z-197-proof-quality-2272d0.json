@@ -1,0 +1,234 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.526982,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 231.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 70066,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 70066,
+    "cache_read_input_tokens": 660254,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 467,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 467,
+      "cache_read_input_tokens": 72822,
+      "input_tokens": 2,
+      "output_tokens": 4653,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19843,
+    "output_tokens_details": {
+     "thinking_tokens": 14138
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.526982,
+ "dedupe_key": "eic/EpsilonEridani|197|eb8d36bb8c80ed47e1d2df625ced045d4b80c032|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a756ab357db4f0779ef7743e9b3a92aac28b7b629ef1e0e9a611e84bbf28e698",
+ "diff_sha256": "a756ab357db4f0779ef7743e9b3a92aac28b7b629ef1e0e9a611e84bbf28e698",
+ "duration_s": 231.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Data/Fin/VecNotation.lean:151 `@[simp] Fin.snoc_vecEmpty`, :167 `@[simp] Fin.snoc_vecCons`, :285 `@[simp] cons_val_fin_one`; Mathlib/Tactic/Simproc/VecPerm.lean:85 `simproc_decl vecPerm (_ \u2218 (_ : Fin _ \u2192 Fin _))` with the documented example `![a,b,c] \u2218 Equiv.swap 0 1 = ![b,a,c]`.",
+   "file": "EpsilonEridani/QFT/SmallX/Dipole/Quadrupole.lean",
+   "fix": "Replace the `rfl` closers with the named lemmas: `Fin.snoc_vecCons`/`Fin.snoc_vecEmpty` for the snoc goals, `Matrix.cons_val_fin_one` plus `Subsingleton.elim i 0` for `multipoleS_fin_one`, and `simp [vecPerm]` (or `Function.comp` + `Matrix.cons_val_*`) for the `Fin.rev` goals; state the tuple identity as an explicit `have ... := by simp [...]` instead of relying on `congr 1`'s output shape.",
+   "issue": "`congr 1 <;> funext i <;> fin_cases i <;> rfl` closes `Fin.snoc ![z] x = ![z, x]` by reducing `Fin.snoc`'s `dite`/`cast` on numerals; same pattern at Quadrupole.lean:131 (`![y,w] \u2218 Fin.rev = ![w,y]`), Operator.lean:78 (`![x 0] = x`) and the trailing bare `rfl` at Operator.lean:91 (`(![y] \u2218 Fin.rev) 0 = y`). Both the `congr 1` goal shape and the defeq are undocumented and break on any change to those definitions.",
+   "line": 93
+  },
+  {
+   "evidence": "Multipole.lean:148-152; the new List file already exists for exactly this kind of index-telescoping fact (List/Basic.lean:33 `prod_ofFn_mul_mul_inv`), and `List.prod_inv_reverse` (upstream/mathlib/Mathlib/Algebra/BigOperators/Group/List/Basic.lean:312) gives the lemma in two lines.",
+   "file": "EpsilonEridani/QFT/SmallX/Dipole/Multipole.lean",
+   "fix": "Add the general lemma to the new `EpsilonEridani/Mathematics/Algebra/BigOperators/Group/List/Basic.lean` next to `prod_ofFn_mul_mul_inv`, e.g. `(List.ofFn fun i => (f i.rev)\u207b\u00b9).prod = ((List.ofFn f).prod)\u207b\u00b9` for `f : Fin n \u2192 G`, and make `multipoleS_reverse` a one-line application of it.",
+   "issue": "`multipoleS_reverse`'s `h` is an eight-lemma positional chain (`List.ofFn_eq_map` applied twice at different positions, `\u2190 List.map_reverse`, `List.finRange_reverse`, `List.map_map`) finished by a catch-all `simp`; the reusable fact it hides \u2014 the inverse/star of a `List.ofFn` product equals the product reindexed by `Fin.rev` \u2014 is general group algebra.",
+   "line": 148
+  },
+  {
+   "evidence": "Multipole.lean:129 versus Multipole.lean:180-181, where `simp only [..., Unitary.star_eq_inv, _root_.mul_inv_rev, inv_inv, mul_assoc, inv_mul_cancel_left]` performs the same cancellation robustly; `Unitary.star_eq_inv` is upstream/mathlib/Mathlib/Algebra/Star/Unitary.lean:116.",
+   "file": "EpsilonEridani/QFT/SmallX/Dipole/Multipole.lean",
+   "fix": "Use the stable normalising set the same file already uses in `key`: `simp only [Unitary.star_eq_inv, mul_assoc, inv_mul_cancel_left]` (unitaryGroup is a group, so this closes the cancellation without positional rewrites).",
+   "issue": "`rw [\u2190 mul_assoc, mul_assoc (U x\u2080), \u2190 mul_assoc (star (U z)), Unitary.star_mul_self, one_mul]` reassociates by explicit position, so it depends on the exact parenthesisation left by the preceding `simp only [List.ofFn_succ, ..., List.prod_cons]`.",
+   "line": 129
+  }
+ ],
+ "head_sha": "eb8d36bb8c80ed47e1d2df625ced045d4b80c032",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 197,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1489b24763ef336ad4df3e68c1684b3f3e4fb762490fbdca58b8611829e1fcc9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261114T223929Z-197-proof-quality-2272d0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T22:39:29Z",
+ "submitted_by": "veprbl",
+ "summary": "Four proofs close tuple-reindexing goals by bare `rfl` after `congr 1`, relying on reduction of `Fin.snoc`/`Fin.rev`/`vecCons` rather than the existing named lemmas; two further proofs use positional rewrite chains where a reusable lemma or a stable simp set is available.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/Multipole.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/Quadrupole.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Algebra/BigOperators/Group/List/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/Operator.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Star",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Star/Unitary.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Fin",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Fin/VecNotation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Tactic/Simproc/VecPerm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Tactic/Simproc/VecPerm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Fin/VecNotation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Fin/VecNotation.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c52823f44e0422a397158385252992614c274f3b4977438d0647dfd48b54a2e5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 70066,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 70066,
+  "cache_read_input_tokens": 660254,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 467,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 467,
+    "cache_read_input_tokens": 72822,
+    "input_tokens": 2,
+    "output_tokens": 4653,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19843,
+  "output_tokens_details": {
+   "thinking_tokens": 14138
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

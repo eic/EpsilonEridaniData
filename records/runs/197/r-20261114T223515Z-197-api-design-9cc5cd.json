@@ -1,0 +1,252 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2333524999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 358.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 87416,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 87416,
+    "cache_read_input_tokens": 1232535,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 40,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1929,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1929,
+      "cache_read_input_tokens": 88710,
+      "input_tokens": 2,
+      "output_tokens": 2652,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 29709,
+    "output_tokens_details": {
+     "thinking_tokens": 23959
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 2.233352,
+ "dedupe_key": "eic/EpsilonEridani|197|eb8d36bb8c80ed47e1d2df625ced045d4b80c032|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a756ab357db4f0779ef7743e9b3a92aac28b7b629ef1e0e9a611e84bbf28e698",
+ "diff_sha256": "a756ab357db4f0779ef7743e9b3a92aac28b7b629ef1e0e9a611e84bbf28e698",
+ "duration_s": 358.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Quadrupole.lean:53` is `public section`, not `@[expose] public section` (contrast `EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean:50`); `Quadrupole.lean:68-69` defines `quadrupoleS := multipoleS U ![x, z] ![y, w]`; `Quadrupole.lean:79-81` is the only bridge and its RHS applies `x` and `y` to literals.",
+   "file": "EpsilonEridani/QFT/SmallX/Dipole/Quadrupole.lean",
+   "fix": "Add `theorem quadrupoleS_eq_multipoleS (U : WilsonConfiguration Nc) (x y z w) : quadrupoleS U x y z w = multipoleS U ![x, z] ![y, w] := (rfl)`.",
+   "issue": "`quadrupoleS` is defined as `multipoleS U ![x, z] ![y, w]` but the file uses plain `public section`, so the body is not unfoldable downstream, and no lemma states the identification. `multipoleS_fin_two : multipoleS U x y = quadrupoleS U (x 0) (y 0) (x 1) (y 1)` cannot be used right-to-left on a `quadrupoleS U x y z w` goal (the pattern `quadrupoleS U (?x 0) (?y 0) (?x 1) (?y 1)` is not first-order). A consumer holding a quadrupole therefore has no route to `multipoleS_cons_eq_snoc`, `multipoleS_cons_self_mid`, `multipoleS_reverse`, or any future general-`n` result such as the Layer 5.3 hierarchy bounds.",
+   "line": "69"
+  },
+  {
+   "evidence": "`Operator.lean:49` is plain `public section`; `Operator.lean:64-65` defines `dipoleS := multipoleS U ![x] ![y]`; `Operator.lean:68-71` `dipoleS_def` states only the normalised-trace form.",
+   "file": "EpsilonEridani/QFT/SmallX/Dipole/Operator.lean",
+   "fix": "Add `theorem dipoleS_eq_multipoleS (U : WilsonConfiguration Nc) (x y) : dipoleS U x y = multipoleS U ![x] ![y] := (rfl)`.",
+   "issue": "Same gap for the dipole: `dipoleS U x y := multipoleS U ![x] ![y]` with an unexposed body, and `multipoleS_fin_one` (line 75) is likewise unusable right-to-left. `dipoleS_def` only gives the trace formula, not the `multipoleS` form, so a `dipoleS` goal cannot be fed to any general correlator lemma.",
+   "line": "65"
+  },
+  {
+   "evidence": "`upstream/mathlib/Mathlib/Data/Fin/VecNotation.lean:146-147` `@[simp] lemma Fin.cons_vecEmpty : Fin.cons x ![] = ![x]` and `:160-162` `@[simp] lemma Fin.cons_vecCons : Fin.cons x (vecCons y p) = vecCons x (vecCons y p)`, with the docstring \"We don't want to always simplify `Fin.cons` to `vecCons`\"; `Matrix.vecCons` is a plain `def`, so it is not unfolded for discrimination-tree keys. Correspondingly, `Quadrupole.lean:100,114` invoke these lemmas in term mode rather than via `simp`.",
+   "file": "EpsilonEridani/QFT/SmallX/Dipole/Multipole.lean",
+   "fix": "Add the hypothesis form, e.g. `theorem multipoleS_of_head_eq (U) {n} {x y : Fin (n + 1) \u2192 EuclideanSpace \u211d (Fin 2)} (h : x 0 = y 0) : multipoleS U x y = multipoleS U (Fin.tail x) (Fin.tail y)` (and the corresponding `y 0 = x 1` variant), carrying the `@[simp]` attribute there instead of on the `Fin.cons` patterns.",
+   "issue": "`multipoleS_cons_self_left` and `multipoleS_cons_self_mid` (line 124) are stated only as `Fin.cons` patterns, so they are inapplicable to the two shapes that actually occur: a vector literal (`![a, b, c]` is `Matrix.vecCons`, a distinct head symbol, and Mathlib's simp set normalises `Fin.cons x ![\u2026]` *to* `![\u2026]`) and a bare `x : Fin (n + 1) \u2192 EuclideanSpace \u211d (Fin 2)`. The `@[simp]` annotations therefore fire in neither case, and general-`n` consumers have no usable cancellation lemma.",
+   "line": "116"
+  }
+ ],
+ "head_sha": "eb8d36bb8c80ed47e1d2df625ced045d4b80c032",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 197,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "473dd1199e09ab86547f4915972ba461bb7814af10dabec04cd2ecbbd33c0f05",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261114T223515Z-197-api-design-9cc5cd",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T22:35:15Z",
+ "submitted_by": "veprbl",
+ "summary": "The general correlator's API is one-directional: with def bodies unexposed, nothing lets a consumer rewrite dipoleS or quadrupoleS back into multipoleS, so no general-n lemma can be applied at n = 1, 2. The general coincidence lemmas are also only stated as Fin.cons patterns, a form their @[simp] annotation cannot match in either realistic argument shape.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/Multipole.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/Quadrupole.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/Operator.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/WilsonLine.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/UnitaryTrace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Algebra/BigOperators/Group/List/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SmallXAndSaturation/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SmallXAndSaturation/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Fin/VecNotation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 23,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b47c05322c1a693ac68175173ef36d77134e0f7b5ffc254c8dc2d46bdb40f7a8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 87416,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 87416,
+  "cache_read_input_tokens": 1232535,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 40,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1929,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1929,
+    "cache_read_input_tokens": 88710,
+    "input_tokens": 2,
+    "output_tokens": 2652,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 29709,
+  "output_tokens_details": {
+   "thinking_tokens": 23959
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
