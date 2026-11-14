@@ -1,0 +1,184 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.0556739999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 153.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 60894,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 60894,
+    "cache_read_input_tokens": 283428,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5597,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5597,
+      "cache_read_input_tokens": 58520,
+      "input_tokens": 2,
+      "output_tokens": 3388,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12198,
+    "output_tokens_details": {
+     "thinking_tokens": 8824
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.055674,
+ "dedupe_key": "eic/EpsilonEridani|196|d490195863ea8156c21d29551f58a1ed06919360|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a85adb2263c137374b275163af45d5521e022e123a4d901fe63131248d9b8462",
+ "diff_sha256": "a85adb2263c137374b275163af45d5521e022e123a4d901fe63131248d9b8462",
+ "duration_s": 153.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "File lines 23-25 vs `roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md:722`: \"`\u03b2 (1-z)^{\u03b2-1} exp(...)/\u0393(1+\u03b2)` with `\u03b2 = 2\u03b1(L-1)/\u03c0`\".",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/ExponentiatedRadiator.lean",
+   "fix": "Say explicitly that `\u03b2` here is the exponent appearing in `(1-z)^(\u03b2-1)`, and that the cited references (and the roadmap) write the same radiator with exponent `\u03b2_ref/2`, so `\u03b2 = \u03b2_ref/2`.",
+   "issue": "The docstring fixes the physical meaning of `\u03b2` as `\u03b2 = (\u03b1/\u03c0) ln (Q\u00b2/m\u00b2)` and hedges that \"conventions differ in the non-logarithmic constant added to the logarithm\" \u2014 but the cited Kuraev-Fadin/Skrzypek radiator is written with exponent `\u03b2/2` for `\u03b2 = (2\u03b1/\u03c0)(ln(Q\u00b2/m\u00b2) - 1)`, and the roadmap \u00a72.4 likewise uses `\u03b2 = 2\u03b1(L-1)/\u03c0`, i.e. twice this file's `\u03b2`. A reader instantiating `exponentiatedRadiator \u03b2 z` with the references' `\u03b2` gets the wrong density; the hedge covers only the additive constant, not the factor 2.",
+   "line": "23"
+  },
+  {
+   "evidence": "Docstring line 43 vs `one_lt_integral_exponentiatedRadiator` (line 162) hypotheses `h\u03b2 : 0 < \u03b2`, `h\u03b21 : \u03b2 \u2264 1`; `\u0393(1+\u03b2)` grows without bound while `exp (\u03b2 (3/4 - \u03b3_E))` grows only exponentially with rate < 1.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/ExponentiatedRadiator.lean",
+   "fix": "Scope the sentence to the physical range, e.g. \"for `0 < \u03b2 \u2264 1` the Gribov-Lipatov form overstates the total probability\".",
+   "issue": "\"The Gribov-Lipatov form alone overstates the total probability.\" is stated unrestrictedly, but the proved statement is confined to `0 < \u03b2 \u2264 1` and the claim is false beyond it: at `\u03b2 = 5`, `exp(5(3/4 - \u03b3_E))/\u0393(6) \u2248 2.38/120 \u2248 0.02 < 1`.",
+   "line": "43"
+  },
+  {
+   "evidence": "Lines 159-161; the proof body (lines 166-175) uses exactly these two steps via `Real.Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma` and `eulerMascheroniConstant_lt_two_thirds`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/ExponentiatedRadiator.lean",
+   "fix": "Keep the statement (zeroth moment `exp (\u03b2 (3/4 - \u03b3_E)) / \u0393(1 + \u03b2)` exceeds one for `0 < \u03b2 \u2264 1`) and what it means for normalisation; move the log-convexity/`\u03b3_E < 3/4` argument into proof comments if it is worth recording.",
+   "issue": "The docstring of `one_lt_integral_exponentiatedRadiator` is a proof sketch after its first clause: \"`exp (\u03b2 (3/4 - \u03b3_E)) > 1` because `\u03b3_E < 3/4`, while `\u0393(1 + \u03b2) \u2264 1` on `[1, 2]` by log-convexity of the Gamma function between `\u0393(1) = \u0393(2) = 1`\". Docstrings should describe the result, not the route to it.",
+   "line": "159"
+  }
+ ],
+ "head_sha": "d490195863ea8156c21d29551f58a1ed06919360",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 196,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "084d5088ae4b910024b489d20c77a0757d1949d16892c4c8589f77461ef97bc1",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "45efbb0bea06f7d088f3a61c49e2a6cf5ebe9238",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261114T000030Z-196-documentation-73bf91",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T00:00:30Z",
+ "submitted_by": "veprbl",
+ "summary": "Module and declaration docstrings are mostly accurate, but the radiator file identifies its exponent `\u03b2` with a convention that differs by a factor of two from the cited references and the roadmap without saying so, asserts the non-normalisation claim outside the range where it holds, and documents the proof of `one_lt_integral_exponentiatedRadiator` instead of its content.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/ExponentiatedRadiator.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Convolution/Mellin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Distributions/Beta.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Distributions/Beta.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d0b4a1d77311d447ef204354306d7674ab767d361c0b6d3b976a9b0c4ed48388",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 60894,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 60894,
+  "cache_read_input_tokens": 283428,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5597,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5597,
+    "cache_read_input_tokens": 58520,
+    "input_tokens": 2,
+    "output_tokens": 3388,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12198,
+  "output_tokens_details": {
+   "thinking_tokens": 8824
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
