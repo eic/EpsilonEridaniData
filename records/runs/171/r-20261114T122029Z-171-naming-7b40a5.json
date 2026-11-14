@@ -1,0 +1,211 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6411845,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 225.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 90363,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 90363,
+    "cache_read_input_tokens": 569529,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2091,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2091,
+      "cache_read_input_tokens": 91495,
+      "input_tokens": 2,
+      "output_tokens": 2445,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18108,
+    "output_tokens_details": {
+     "thinking_tokens": 13947
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 1.641185,
+ "dedupe_key": "eic/EpsilonEridani|171|8497d100303acf82cd699e884686096d45886557|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ec1a1255f5d6691ab0780cf3f60c59f2393b0e4ff07ad17bff55f75e5129f0b9",
+ "diff_sha256": "ec1a1255f5d6691ab0780cf3f60c59f2393b0e4ff07ad17bff55f75e5129f0b9",
+ "duration_s": 225.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Upstream `HasLaw` lemma names always carry the law: `Mathlib/Probability/Distributions/Poisson/Basic.lean:186 IndepFun.hasLaw_add_poissonMeasure`, `Mathlib/Probability/Distributions/Bernoulli.lean:198 hasLaw_indicator_bernoulliMeasure`, `Mathlib/Probability/HasLaw.lean:229 hasLaw_dirac_of_ae_eq`; the Gaussian transformation lemmas put it first (`Gaussian/Real.lean:383 gaussianReal_add_const`). Naming rule: the name describes the conclusion.",
+   "file": "EpsilonEridani/Mathematics/Probability/InverseTransform.lean",
+   "fix": "Append the law, measure-last as upstream does: `hasLaw_neg_log_one_sub_div_expMeasure`, `hasLaw_neg_log_div_expMeasure`, `hasLaw_add_log_div_emissionLaw_const` (or `hasLaw_emissionLaw_const`), `hasLaw_emissionLaw_of_isQuantileFunction`.",
+   "issue": "`hasLaw_neg_log_one_sub_div` (line 182) and `hasLaw_neg_log_div` (line 202) name only the random variable; the conclusion's law (`expMeasure r`) \u2014 the entire content \u2014 is absent, so in the root `EpsilonEridani` namespace the names say nothing about the exponential distribution. Same pattern at `EpsilonEridani/QFT/Shower/EmissionScale.lean:245` (`hasLaw_add_log_div`, omitting `emissionLaw` and the constant kernel, while the sibling `isQuantileFunction_emissionCdf_const` does record both) and, more mildly, at EmissionScale.lean:205 (`hasLaw_of_isQuantileFunction`).",
+   "line": 182
+  },
+  {
+   "evidence": "Upstream analogues name the measure and the invariance: `Mathlib/MeasureTheory/Measure/Lebesgue/Basic.lean:319 Real.map_volume_mul_left`, `Mathlib/MeasureTheory/Measure/Lebesgue/Integral.lean:85 Measure.map_neg_eq_self`; the same fact on the subtype is `unitInterval.measurePreserving_symm` (`Mathlib/MeasureTheory/Constructions/UnitInterval.lean:66`).",
+   "file": "EpsilonEridani/Mathematics/Probability/InverseTransform.lean",
+   "fix": "Rename to `map_one_sub_volume_restrict_Icc_eq_self` (or `Real.map_volume_restrict_Icc_one_sub_eq_self`), following the upstream pattern of naming the measure and the `eq_self` conclusion.",
+   "issue": "`map_one_sub_restrict_Icc` never names the measure it is about (`volume`), nor that the conclusion is invariance: `restrict_Icc` alone does not determine which measure is restricted, and the name reads as a computation of a pushforward rather than `\u2026 = self`.",
+   "line": 188
+  },
+  {
+   "evidence": "Naming conventions: \"`_`-separated strings in a lemma name correspond to a definition name or connective\"; a namespaced/compound definition is referenced in `lowerCamelCase`. `grep -n 'sudakovDensity' code/` returns nothing, and the adjacent file already uses the camelCase form for an unnamed expression (`Sudakov.lean:178 vetoDensity_eq`).",
+   "file": "EpsilonEridani/QFT/Shower/EmissionScale.lean",
+   "fix": "Either introduce `noncomputable def sudakovDensity (K : \u211d \u2192 \u211d) (T t : \u211d) : \u211d := K t * sudakov K t T` and use it in `emissionLaw` and these four names, or name them after the expression (`mul_sudakov_nonneg`, `continuous_mul_sudakov`, \u2026).",
+   "issue": "`sudakov_density_nonneg` (96), `continuous_sudakov_density` (116), `integrableOn_sudakov_density` (122) and `setIntegral_Iic_sudakov_density` (140) are named for a `sudakov_density` declaration that does not exist \u2014 the subject is the bare expression `fun t => K t * sudakov K t T` \u2014 and the snake separation misparses as a lemma about `sudakov` plus the word `density`. A consumer greps for `sudakovDensity` and finds nothing.",
+   "line": 96
+  },
+  {
+   "evidence": "`grep -rn 'setIntegral_Iic' upstream/mathlib/Mathlib` returns nothing; the lemma invoked in its own proof is `MeasureTheory.integral_Iic_of_hasDerivAt_of_tendsto'` (`Mathlib/MeasureTheory/Integral/IntegralEqImproper.lean:1005`).",
+   "file": "EpsilonEridani/QFT/Shower/EmissionScale.lean",
+   "fix": "Rename to `integral_Iic_sudakovDensity` (consistent with the previous finding's chosen spelling).",
+   "issue": "`setIntegral_Iic_sudakov_density` uses the `setIntegral_` prefix for a statement about `\u222b t in Iic x, \u2026`; upstream reserves `integral_Iic_` for integrals over `Iic`, so the lemma is not where a reader looks for it.",
+   "line": 140
+  }
+ ],
+ "head_sha": "8497d100303acf82cd699e884686096d45886557",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 171,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "91c5bdd5de5d6928e519c2709dcc513f1301ce63030927de39e7057ee61c8ef9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261114T122029Z-171-naming-7b40a5",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T12:20:29Z",
+ "submitted_by": "veprbl",
+ "summary": "The `HasLaw` lemmas are named only after the sampler function and omit the law they conclude, contrary to upstream precedent; `map_one_sub_restrict_Icc` omits the measure it is about; and four public lemmas are named for a `sudakov_density` declaration that does not exist.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/InverseTransform.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Shower/EmissionScale.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Distributions/Gaussian/Real.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Shower/Sudakov.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Constructions/UnitInterval.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Distributions/Poisson/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "469d40c70031ac2caa7b94822fbf197dce16f3778dbefbfb03550af7d8dcc17c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 90363,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 90363,
+  "cache_read_input_tokens": 569529,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2091,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2091,
+    "cache_read_input_tokens": 91495,
+    "input_tokens": 2,
+    "output_tokens": 2445,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18108,
+  "output_tokens_details": {
+   "thinking_tokens": 13947
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,258 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.061602,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 291.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 94598,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 94598,
+    "cache_read_input_tokens": 1056374,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5231,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5231,
+      "cache_read_input_tokens": 92590,
+      "input_tokens": 2,
+      "output_tokens": 5938,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23491,
+    "output_tokens_details": {
+     "thinking_tokens": 16887
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "cost_usd": 2.061602,
+ "dedupe_key": "eic/EpsilonEridani|171|8497d100303acf82cd699e884686096d45886557|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ec1a1255f5d6691ab0780cf3f60c59f2393b0e4ff07ad17bff55f75e5129f0b9",
+ "diff_sha256": "ec1a1255f5d6691ab0780cf3f60c59f2393b0e4ff07ad17bff55f75e5129f0b9",
+ "duration_s": 291.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "EmissionScale.lean:152 `private theorem emissionLaw_Iic_eq_lintegral`; the only other public statements about `emissionLaw` are `emissionLaw_Iic` (l.161) and `isProbabilityMeasure_emissionLaw` (l.180).",
+   "file": "EpsilonEridani/QFT/Shower/EmissionScale.lean",
+   "fix": "Drop `private` and state it for an arbitrary measurable set: `theorem emissionLaw_apply {s : Set \u211d} (hs : MeasurableSet s) : emissionLaw K T s = \u222b\u207b t in s \u2229 Iic T, ENNReal.ofReal (K t * sudakov K t T)`, with the `Iic` form as the specialisation used in the file.",
+   "issue": "`emissionLaw_Iic_eq_lintegral` is `private`, so the only public values of `emissionLaw` are on `Iic` (`emissionLaw_Iic`, under `hK`/`hK0`/`hdiv`). A consumer that needs the mass of an `Ioc` proposal interval or an integral against the one-step law (Layer 2.2's chain of proposals) must `rw [emissionLaw]` and unfold the `withDensity` body.",
+   "line": "152"
+  },
+  {
+   "evidence": "EmissionScale.lean:112 `rw [sudakov, Real.one_le_exp_iff, neg_nonneg, ...]`; EmissionScale.lean:143-145 `have hzero : Tendsto ... := by simpa [sudakov, Function.comp_def]`; Sudakov.lean:138 `sudakov_le_one` is the only bound currently exported.",
+   "file": "EpsilonEridani/QFT/Shower/EmissionScale.lean",
+   "fix": "Add to `Sudakov.lean` beside `sudakov_le_one`: `one_le_sudakov (h : \u222b s in t..T, K s \u2264 0) : 1 \u2264 sudakov K t T` and `tendsto_sudakov_atBot (hdiv : Tendsto (fun t => \u222b s in t..T, K s) atBot atTop) : Tendsto (fun t => sudakov K t T) atBot (\ud835\udcdd 0)`, and use them instead of `rw [sudakov]`/`simpa [sudakov]`.",
+   "issue": "Two reusable facts about `sudakov` are unfolded inline for want of lemmas: `emissionCdf_of_ge` proves `1 \u2264 sudakov K x T` by `rw [sudakov, Real.one_le_exp_iff, ...]` \u2014 the missing dual of the existing `sudakov_le_one` \u2014 and `setIntegral_Iic_sudakov_density` hides `Tendsto (fun t => sudakov K t T) atBot (\ud835\udcdd 0)` in a local `have` proved by `simpa [sudakov]` (l.143-145). The latter is the Convention-6 statement that the no-emission probability vanishes at `-\u221e`, needed again by any later layer.",
+   "line": "112"
+  },
+  {
+   "evidence": "EmissionScale.lean:234-235 `have hsud : sudakov (fun _ => r) x T = Real.exp (-((T - x) * r)) := by rw [sudakov, intervalIntegral.integral_const, smul_eq_mul]`; `grep -n sudakov` shows no evaluation lemma in Sudakov.lean (only `sudakov_self`, `sudakov_pos`, `sudakov_le_one`).",
+   "file": "EpsilonEridani/QFT/Shower/EmissionScale.lean",
+   "fix": "Export `sudakov_const (r t T : \u211d) : sudakov (fun _ => r) t T = Real.exp (-((T - t) * r))` in `Sudakov.lean` and `emissionCdf_const (hx : x \u2264 T) : emissionCdf (fun _ => r) T x = Real.exp (-((T - x) * r))` here, and use them in `isQuantileFunction_emissionCdf_const`.",
+   "issue": "The constant-kernel section claims \"every ingredient is in closed form\", but no closed form is exported: `sudakov (fun _ => r) x T = Real.exp (-((T - x) * r))` exists only as the local `have hsud` inside `isQuantileFunction_emissionCdf_const`, so `emissionCdf (fun _ => r) T` and the law in `hasLaw_add_log_div` stay opaque to consumers (Layer 6's correspondence and the roadmap's exponential example both want the closed form).",
+   "line": "234"
+  },
+  {
+   "evidence": "Repo convention: `EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean:139 @[fun_prop] lemma continuous_Yplus`; Mathlib tags the analogous `unitInterval.measurable_symm` (`Mathlib/MeasureTheory/Constructions/UnitInterval.lean:49`) the same way.",
+   "file": "EpsilonEridani/QFT/Shower/Sudakov.lean",
+   "fix": "Tag both `@[fun_prop]`.",
+   "issue": "`continuous_sudakov` and `continuous_sudakov_density` (EmissionScale.lean:116) are the lemmas automation should use to discharge continuity/integrability side goals downstream, but carry no `@[fun_prop]`; the PR itself chains them by hand (`hK.mul (continuous_sudakov hK T)`, `hcont.integrableOn_Ioc`, `hcont.intervalIntegrable`).",
+   "line": "144"
+  }
+ ],
+ "head_sha": "8497d100303acf82cd699e884686096d45886557",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 171,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4d82f8b0feacebd3d9d092c4305a5b0640fdf4a3396dba8ab0a9ceccde7f9fa0",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261114T121758Z-171-api-design-d1d1ba",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T12:17:58Z",
+ "submitted_by": "veprbl",
+ "summary": "The quantile-function API is complete and correctly scoped, but `emissionLaw` has no public lemma for its value on any set other than `Iic` (the only such lemma is `private`), and three reusable facts about `sudakov` are obtained by unfolding its body inside proofs instead of being exported. The new continuity lemmas also lack `@[fun_prop]`, which this repo uses for exactly such lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/InverseTransform.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Shower/EmissionScale.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Shower/Sudakov.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/EventGeneration/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/EventGeneration/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Constructions/UnitInterval.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/EventGeneration/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/HasLaw.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Measure/Restrict.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 23,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7e0782a61b86a91f48e7c81e2a6d9e94b4e60f0d2942ec54ce7d397f18ad936a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 94598,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 94598,
+  "cache_read_input_tokens": 1056374,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5231,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5231,
+    "cache_read_input_tokens": 92590,
+    "input_tokens": 2,
+    "output_tokens": 5938,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23491,
+  "output_tokens_details": {
+   "thinking_tokens": 16887
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
