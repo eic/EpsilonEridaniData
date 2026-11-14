@@ -1,0 +1,232 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3514260000000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 348.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 120027,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 120027,
+    "cache_read_input_tokens": 1004982,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2747,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2747,
+      "cache_read_input_tokens": 94686,
+      "input_tokens": 2,
+      "output_tokens": 7197,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 25941,
+    "output_tokens_details": {
+     "thinking_tokens": 20815
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "cost_usd": 2.351426,
+ "dedupe_key": "eic/EpsilonEridani|103|954eb4aff9713199133a50fca1ae0929fc9bfe7e|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a67a49aab0d4153d339d3a4ec7014019e46b411192f3aa02751538afde1d2a7c",
+ "diff_sha256": "a67a49aab0d4153d339d3a4ec7014019e46b411192f3aa02751538afde1d2a7c",
+ "duration_s": 348.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 148-162 carry the `energy`/`spatialPart` rows of the table; the only `spatialNorm` lemmas in the file are `_def` (187), `_nonneg` (192), `_pos_iff` (197), `_smul` (202), `_eq_sqrt_energy_sq_sub` (207), `_eq_abs_energy_of_massless` (214), `_eq_of_n_eq_smul` (279).",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Add `@[simp] theorem spatialNorm_n : F.spatialNorm F.n = 0` and `@[simp] theorem spatialNorm_spatialPart (p : V) : F.spatialNorm (F.spatialPart p) = F.spatialNorm p`, both one-liners from `spatialNorm_def` with `spatialPart_n` / `spatialPart_spatialPart`.",
+   "issue": "`spatialNorm`'s body is unexposed (file is `public section`, no `@[expose]`), and the file supplies `@[simp] energy_n`, `@[simp] spatialPart_n`, `@[simp] energy_spatialPart`, `@[simp] spatialPart_spatialPart` but no `spatialNorm` counterparts, so `simp` cannot prove `F.spatialNorm F.n = 0` or `F.spatialNorm (F.spatialPart p) = F.spatialNorm p`; every consumer must `rw [spatialNorm_def]` first.",
+   "line": "184"
+  },
+  {
+   "evidence": "`upstream/mathlib/Mathlib/Algebra/Order/Group/Unbundled/Basic.lean:82`: `@[to_additive (attr := simp) Left.neg_pos_iff ...]`, i.e. `0 < -a \u2194 a < 0` is a simp lemma and applies at `\u211d`.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "State it as `0 < F.spatialNorm p \u2194 g (F.spatialPart p) (F.spatialPart p) < 0`, or drop the `@[simp]`.",
+   "issue": "`@[simp] spatialNorm_pos_iff` has RHS `0 < -g (F.spatialPart p) (F.spatialPart p)`, which the Mathlib simp set immediately rewrites further, so the stated right-hand side is never the form a goal ends up in.",
+   "line": "196"
+  }
+ ],
+ "head_sha": "954eb4aff9713199133a50fca1ae0929fc9bfe7e",
+ "merge_base_sha": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "bd5f66a4bf7cc26a4121ac9f1c6aed2e317c4d382034e39df148f75d12cccb66",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261114T220544Z-103-api-design-d9591f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T22:05:44Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, free of compatibility artifacts, with bodies unexposed and the projection API complete. Only the `spatialNorm` row of the file's own characteristic table is missing, and one simp lemma is stated off normal form.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/RootSystem",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Order/Group",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "87d177472795dc6a45cc1c5462ebe297529ba211fc6a39bfcb6e06bf21a7e013",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 120027,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 120027,
+  "cache_read_input_tokens": 1004982,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2747,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2747,
+    "cache_read_input_tokens": 94686,
+    "input_tokens": 2,
+    "output_tokens": 7197,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 25941,
+  "output_tokens_details": {
+   "thinking_tokens": 20815
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

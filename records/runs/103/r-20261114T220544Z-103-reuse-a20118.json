@@ -1,0 +1,290 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.9949939999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 327.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 149169,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 149169,
+    "cache_read_input_tokens": 1808338,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3021,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3021,
+      "cache_read_input_tokens": 123527,
+      "input_tokens": 2,
+      "output_tokens": 1693,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23957,
+    "output_tokens_details": {
+     "thinking_tokens": 16318
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "cost_usd": 2.994994,
+ "dedupe_key": "eic/EpsilonEridani|103|954eb4aff9713199133a50fca1ae0929fc9bfe7e|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a67a49aab0d4153d339d3a4ec7014019e46b411192f3aa02751538afde1d2a7c",
+ "diff_sha256": "a67a49aab0d4153d339d3a4ec7014019e46b411192f3aa02751538afde1d2a7c",
+ "duration_s": 327.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/LinearAlgebra/BilinearForm/Hom.lean:270-277 `def linMulLin (f g : M \u2192\u2097[R] R) : BilinForm R M := (LinearMap.mul R R).compl\u2081\u2082 f g` / `linMulLin_apply (x y) : linMulLin f g x y = f x * g y := rfl`; `Bilin V` is `abbrev Bilin V := LinearMap.BilinForm \u211d V` (DIS/Kinematics/Basic.lean:36), so `g a, g b : V \u2192\u2097[\u211d] \u211d` fit `linMulLin` directly.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "fix": "`def rankOne (g : Bilin V) (a b : V) : Bilin V := LinearMap.BilinForm.linMulLin (g a) (g b)`; `rankOne_apply` remains `rfl` (it is `linMulLin_apply`), and `rankOne_isSymm` is unchanged. Update the docstring, which currently advertises `LinearMap.smulRight`.",
+   "issue": "`rankOne g a b := (g a).smulRight (g b)` re-assembles the bilinear form `(v,w) \u21a6 f v * g w`, which Mathlib already provides as `LinearMap.BilinForm.linMulLin` (Mathlib/LinearAlgebra/BilinearForm/Hom.lean:271, with `linMulLin_apply : linMulLin f g x y = f x * g y := rfl` at line 276). The PR rewrote this definition, so it should use the named BilinForm combinator rather than a fresh `smulRight` assembly.",
+   "line": 141
+  }
+ ],
+ "head_sha": "954eb4aff9713199133a50fca1ae0929fc9bfe7e",
+ "merge_base_sha": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6cc70c992406721ed2a5da44fcd42b0b4f99b3ff3169b27351801d1b39e9b2f7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261114T220544Z-103-reuse-a20118",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T22:05:44Z",
+ "submitted_by": "wdconinc",
+ "summary": "The Frame/projOrthogonal material is genuinely new and reuses Mathlib (`Module.preReflection`, `Submodule.orthogonalBilin_span_singleton`, `ne_zero_of_not_isOrtho_self`) and the generic projection at the DIS call sites. One reuse miss: the re-authored `Bilin.rankOne` rebuilds Mathlib's `LinearMap.BilinForm.linMulLin`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Observable/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Reflection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/SpaceAndTime/ReferenceFrame/API-map.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Numerics/FourMom.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Velocity/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/RootSystem",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Hom.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 33,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5a7353b92f4ba688c5deaceb8f3cc232018d814e3b72058f76def57a759a0fa7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 149169,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 149169,
+  "cache_read_input_tokens": 1808338,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3021,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3021,
+    "cache_read_input_tokens": 123527,
+    "input_tokens": 2,
+    "output_tokens": 1693,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23957,
+  "output_tokens_details": {
+   "thinking_tokens": 16318
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
