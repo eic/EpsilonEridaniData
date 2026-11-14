@@ -1,0 +1,217 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5252060000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 268.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 150633,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 150633,
+    "cache_read_input_tokens": 1005712,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4163,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4163,
+      "cache_read_input_tokens": 119721,
+      "input_tokens": 2,
+      "output_tokens": 1355,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20636,
+    "output_tokens_details": {
+     "thinking_tokens": 16479
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0a7149508a4713bce25eafa0c658694e4cae78d",
+ "cost_usd": 2.525206,
+ "dedupe_key": "eic/EpsilonEridani|92|6ea754cc56e22c4d1a10d73629183bc5cd3fa9ff|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "f229b840de51baad6b5b4558c19548b1892b5bee71a69f3efe7a77edb1faf20d",
+ "diff_sha256": "f229b840de51baad6b5b4558c19548b1892b5bee71a69f3efe7a77edb1faf20d",
+ "duration_s": 268.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib splits on the *written* LHS: `Complex.I_re : I.re = 0` (Mathlib/Basic/Complex/Basic.lean:244) and `Complex.I_im` (line 248) are instance-first because the LHS is `I.re`; `normSq_I` (line 552), `arg_I`, `norm_I`, `conj_I` are function-first because the LHS is `normSq I`. Here every statement is written `proton.neutronNumber = 0`, `proton.massNumber = 1`, i.e. uniformly dot form, so all fifteen should take the same order. Rubric: \"Check adjacent declarations first: consistency beats a theoretically better name.\"",
+   "file": "EpsilonEridani/Particles/Nuclei/Basic.lean",
+   "fix": "Rename the five to `proton_neutronNumber`, `neutron_neutronNumber`, `deuteron_neutronNumber`, `carbon12_neutronNumber`, `lead208_neutronNumber`, matching the adjacent block. (The `isIsoscalar_<nucleus>` lemmas are correct as-is under the predicate-as-prefix rule and should not change.)",
+   "issue": "`neutronNumber_proton`/`_neutron`/`_deuteron`/`_carbon12`/`_lead208` (lines 126\u2013130) put the function first, while the ten adjacent lemmas at lines 115\u2013124 (`proton_massNumber`, `lead208_protonNumber`, \u2026) put the instance first \u2014 yet all fifteen have the same written LHS shape `<nucleus>.<fn>`. Guessing `lead208_neutronNumber` by analogy with `lead208_massNumber` fails.",
+   "line": "126"
+  },
+  {
+   "evidence": "Vendored naming addendum: \"`_apply`: evaluates a function or bundled map at an argument (`foo x = \u2026`).\" All three take `(x : Space)` and conclude `\u2026 .density x = \u2026`; `density : Space \u2192 \u211d` is the structure field (line 99).",
+   "file": "EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "fix": "Rename to `hardSphere_density_apply`, `gaussian_density_apply`, `woodsSaxon_density_apply`.",
+   "issue": "`hardSphere_density`, `gaussian_density` (398) and `woodsSaxon_density` (401) state the *applied* form `(hardSphere nuc R hR).density x = \u2026`, but carry no `_apply`. The bare `_density` name belongs to the unapplied `(hardSphere nuc R hR).density = fun x => \u2026`.",
+   "line": "395"
+  }
+ ],
+ "head_sha": "6ea754cc56e22c4d1a10d73629183bc5cd3fa9ff",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 92,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8dd6a010fa1dd2875d7c10038b12741a66f5e2b6dc3e1261fb96350bf00a5940",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261114T221802Z-92-naming-253849",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T22:18:02Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names are mostly accurate and match their statement strength, with no notation introduced. Two naming defects: the neutron-number instance lemmas are ordered opposite to the adjacent mass/proton-number ones despite an identical LHS shape, and the three bundled-profile projection lemmas are pointwise but lack `_apply`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Density/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Sigmoid.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/NuclearPartonDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/NuclearPartonDistributions/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/KroneckerDelta/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Distribution/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a0b67da97c0f11143c61ab4f2913fec68475390153982255c512e901e95fb5eb",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 150633,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 150633,
+  "cache_read_input_tokens": 1005712,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4163,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4163,
+    "cache_read_input_tokens": 119721,
+    "input_tokens": 2,
+    "output_tokens": 1355,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20636,
+  "output_tokens_details": {
+   "thinking_tokens": 16479
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
