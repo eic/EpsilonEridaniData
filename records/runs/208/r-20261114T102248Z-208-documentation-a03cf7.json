@@ -1,0 +1,183 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.2634355000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 153.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 89441,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 89441,
+    "cache_read_input_tokens": 132421,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7977,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7977,
+      "cache_read_input_tokens": 66834,
+      "input_tokens": 2,
+      "output_tokens": 6360,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12111,
+    "output_tokens_details": {
+     "thinking_tokens": 9077
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8b52f6a293d930d2445354db8480a605944ea0b1",
+ "cost_usd": 1.263436,
+ "dedupe_key": "eic/EpsilonEridani|208|dd368d96d0e8108ee5d532a11ccc042f85a4f336|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "976355437a975f400159268ea7ceb4806d2023959e13887ba119e82d542608cf",
+ "diff_sha256": "976355437a975f400159268ea7ceb4806d2023959e13887ba119e82d542608cf",
+ "duration_s": 153.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Statement at line 127-128: `(ofQuantumNumbers t3 q s2).c1 f = 2 * t3 * f.gV`, with `f.gV` free; contrast line 260-261 `(smTreeLevelCouplings s2).c1Up = -1 / 2 + 4 / 3 * s2`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/LowEnergyCouplings.lean",
+   "fix": "Scope the claim to the lepton factor: \"it does not depend on the lepton's charge `q` or on the lepton's `s2` argument; the sin\u00b2\u03b8_W dependence of `C\u2081` is entirely in `f.gV`\".",
+   "issue": "Docstring of `c1_ofQuantumNumbers_left` says C\u2081 \"does not depend on the lepton's charge or on `sin\u00b2\u03b8_W`\". C\u2081 = 2\u00b7t3\u00b7f.gV does depend on sin\u00b2\u03b8_W through `f.gV` \u2014 this very file proves `smTreeLevelCouplings_c1Up = -1/2 + 4/3*s2`.",
+   "line": 123
+  },
+  {
+   "evidence": "Lines 135-137 vs. lines 278-279.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/LowEnergyCouplings.lean",
+   "fix": "Say the dependence dropped is on the right-hand fermion's charge and `s2` argument only.",
+   "issue": "Same overclaim in `c2_ofQuantumNumbers_right`: \"It does not depend on the fermion's charge or on `sin\u00b2\u03b8_W`\", while the statement is `\u2113.c2 (ofQuantumNumbers t3 q s2) = 2 * \u2113.gV * t3` and `\u2113.gV` carries sin\u00b2\u03b8_W (`smTreeLevelCouplings_c2Up = -1/2 + 2*s2`, line 279).",
+   "line": 131
+  },
+  {
+   "evidence": "Lines 51-52 of the module docstring.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/LowEnergyCouplings.lean",
+   "fix": "Reword in step with the two declaration docstrings above.",
+   "issue": "Module docstring repeats the claim for `c1_ofQuantumNumbers_left`: \"not through its charge or `sin\u00b2\u03b8_W`\", readable as C\u2081 being sin\u00b2\u03b8_W-independent.",
+   "line": 51
+  },
+  {
+   "evidence": "Lines 14-21; the quoted values `C_{1u} = -1/2 + 4/3 s2`, `C_{1d} = 1/2 - 2/3 s2` are the PDG ones, which are defined from PDG's `-L` convention.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/LowEnergyCouplings.lean",
+   "fix": "Write `-L_PV = (G_F/\u221a2)[\u2026]` as PDG does, or state explicitly that the display is the effective interaction Hamiltonian.",
+   "issue": "The module docstring presents `(G_F/\u221a2)[C\u2081 (\u2113\u0304\u03b3^\u03bc\u03b3\u2075\u2113)(f\u0304\u03b3_\u03bcf) + C\u2082 \u2026]` as the contact interaction \"in the normalisation of the Particle Data Group\". PDG defines C\u2081q, C\u2082q by `-L = (G_F/\u221a2)[\u2026]`, so as written the displayed interaction is sign-flipped relative to the cited source that fixes the sign of C\u2081.",
+   "line": 13
+  },
+  {
+   "evidence": "grep for `weakCharge` in the repo returns only `leptonWeakCharge`/`protonWeakCharge`/`neutronWeakCharge`/`nuclearWeakCharge`; `end NeutralCurrentCouplings` is at line 246, before the `smTreeLevelCouplings_*` theorems (lines 258-350).",
+   "file": "",
+   "fix": "Update the table to `FermionNeutralCurrentCouplings.leptonWeakCharge`, `leptonWeakCharge_eq_four_mul_gA_mul_gV`, `Electroweak.smTreeLevelCouplings_electron_leptonWeakCharge`, `Electroweak.smTreeLevelCouplings_electron_leptonWeakCharge_eq_zero_iff`, and drop the `NeutralCurrentCouplings.` prefix from the `smTreeLevelCouplings_*` names.",
+   "issue": "The PR description's removed\u2192replacement table names declarations that do not exist: `FermionNeutralCurrentCouplings.weakCharge`, `weakCharge_eq_four_mul_gA_mul_gV`, `NeutralCurrentCouplings.smTreeLevelCouplings_electron_weakCharge`, `NeutralCurrentCouplings.smTreeLevelCouplings_electron_weakCharge_eq_zero_iff`; and the `smTreeLevelCouplings_*` lemmas are not in the `NeutralCurrentCouplings` namespace. This is the only migration guide for the deleted `Parameters` API.",
+   "line": 0
+  }
+ ],
+ "head_sha": "dd368d96d0e8108ee5d532a11ccc042f85a4f336",
+ "merge_base_sha": "8b52f6a293d930d2445354db8480a605944ea0b1",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 208,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8309f9173fc09e711205377fded59912453fdb56ab87fc7ef91152407a8328aa",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261114T102248Z-208-documentation-a03cf7",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T10:22:48Z",
+ "submitted_by": "wdconinc",
+ "summary": "The module docstring and most declaration docstrings are accurate and well-scoped (no roadmap/process narrative, references kept in file). Three docstrings claim independence from sin\u00b2\u03b8_W that the statements do not have, the PDG normalisation is quoted with the wrong overall sign, and the PR description's old\u2192new migration table names declarations that do not exist.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/LowEnergyCouplings.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Couplings.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d43ef9638b0b4fc754b2bb73a52685cf7a0066b3c6f5a8c95c80534fa1343e88",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 89441,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 89441,
+  "cache_read_input_tokens": 132421,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7977,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7977,
+    "cache_read_input_tokens": 66834,
+    "input_tokens": 2,
+    "output_tokens": 6360,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12111,
+  "output_tokens_details": {
+   "thinking_tokens": 9077
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
