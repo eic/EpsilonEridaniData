@@ -1,0 +1,247 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.8301019999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 301.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 202723,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 202723,
+    "cache_read_input_tokens": 2459984,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 36,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5044,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5044,
+      "cache_read_input_tokens": 178310,
+      "input_tokens": 2,
+      "output_tokens": 6119,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22908,
+    "output_tokens_details": {
+     "thinking_tokens": 17348
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 3.830102,
+ "dedupe_key": "eic/EpsilonEridani|203|4a2a263bcf90e2beeb78ba85cef0a77082f8af84|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4a7992652139698ff5d42da0e8c4896c7fd54653efa713f5f47739ceeda62536",
+ "diff_sha256": "4a7992652139698ff5d42da0e8c4896c7fd54653efa713f5f47739ceeda62536",
+ "duration_s": 301.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 299-304: `rw [variance, Matrix.toQuadraticForm', LinearMap.BilinMap.polar_toQuadraticMap, Matrix.toLinearMap\u2082'_apply', Matrix.toLinearMap\u2082'_apply', \u2190 covarianceForm_apply, \u2190 covarianceForm_apply, D.covarianceForm_comm c' c, two_mul]`; `variance_apply` (line 289) already gives the same content through `Matrix.toQuadraticForm'_apply` (upstream/TauCeti/TauCeti/LinearAlgebra/Matrix/ToQuadraticForm.lean:44).",
+   "file": "EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "fix": "Prove `variance_add` first from `covarianceForm_self` plus `map_add`/`LinearMap.add_apply` and `covarianceForm_comm` (pure bilinearity, no unfolding), then get `polar_variance` by `rw [QuadraticMap.polar, variance_add]; ring`. Alternatively prove it from `variance_apply`, `covarianceForm_apply`, `add_mulVec`/`dotProduct_add`/`add_dotProduct` and `covarianceForm_comm`.",
+   "issue": "`polar_variance` is a nine-element `rw` chain that unfolds `variance` and the upstream definition `Matrix.toQuadraticForm'` (via its equation lemma) and then `Matrix.toLinearMap\u2082'_apply'` twice, only to rewrite back to `covarianceForm_apply`; it abandons the file's own abstraction and breaks on any restatement of `toQuadraticForm'`/`toLinearMap\u2082'`. `variance_add` (line 307) is then derived from it, so the dependency runs opposite to the stated design (\"linearity in each functional is Mathlib's `map_add`\").",
+   "line": 302
+  },
+  {
+   "evidence": "Mathlib/Probability/Moments/Covariance.lean:317 `covariance_map_fun \u2026 : cov[X, Y; \u03bc.map Z] = cov[fun \u03c9 \u21a6 X (Z \u03c9), fun \u03c9 \u21a6 Y (Z \u03c9); \u03bc]`; Mathlib/Analysis/Normed/Lp/PiLp.lean:141 `lemma toLp_apply (x : \u2200 i, \u03b1 i) (i : \u03b9) : toLp p x i = x i := rfl`.",
+   "file": "EpsilonEridani/Mathematics/Probability/Moments/CovarianceMatrix.lean",
+   "fix": "Rewrite with `covariance_map_fun \u2026` and close the coordinate step with `simp only [PiLp.toLp_apply]` (or state `h` in the shape `covariance_map_fun` produces and rewrite), rather than letting defeq across the `WithLp` wrapper do it.",
+   "issue": "The `have h` asserts `cov[fun z => z i, fun z => z j; \u03bc.map fun \u03c9 => WithLp.toLp 2 (X \u00b7 \u03c9)] = cov[X i, X j; \u03bc]` from `covariance_map_fun`, whose RHS is `cov[fun \u03c9 => (WithLp.toLp 2 (X \u00b7 \u03c9)) i, \u2026]`; the stated type only typechecks because `WithLp.toLp` is definitionally the identity. The comment names the explicit lemma (`PiLp.toLp_apply`) but the proof does not use it, so the step depends on `WithLp` remaining a transparent type synonym.",
+   "line": 86
+  }
+ ],
+ "head_sha": "4a2a263bcf90e2beeb78ba85cef0a77082f8af84",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 203,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2c1696c14cd7c9d5b634d5589193cbae5b2fad63cf73a41edad8547b1be74679",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261114T192709Z-203-proof-quality-0d7f7f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T19:27:09Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly short and routed through named `_apply` lemmas, but `polar_variance` reaches its goal by unfolding both its own definition and upstream `Matrix.toQuadraticForm'` in a nine-step rewrite chain where a three-line derivation from the file's own API exists, and `covarianceMatrix_eq_covMatrix_map` relies on `WithLp.toLp`'s coordinates being definitionally `X i \u03c9` instead of rewriting with the lemma its comment names.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/Extend.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Moments/CovarianceMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Data/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/BilinearForm.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/QuadraticForm/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/BilinearForm.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/Matrix/ToQuadraticForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Lp",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Moments/Variance.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Moments/Variance.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 23,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1b4a070762275bb41076a1640a9352181d841a32eddb73eb33532488ce1a6d55",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 202723,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 202723,
+  "cache_read_input_tokens": 2459984,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 36,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5044,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5044,
+    "cache_read_input_tokens": 178310,
+    "input_tokens": 2,
+    "output_tokens": 6119,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22908,
+  "output_tokens_details": {
+   "thinking_tokens": 17348
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
