@@ -1,0 +1,185 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.076369,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 244.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 136819,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 136819,
+    "cache_read_input_tokens": 462918,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2081,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2081,
+      "cache_read_input_tokens": 106120,
+      "input_tokens": 2,
+      "output_tokens": 3170,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19066,
+    "output_tokens_details": {
+     "thinking_tokens": 15771
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "cost_usd": 2.076369,
+ "dedupe_key": "eic/EpsilonEridani|87|3ffe736859adce7de9ac2c9090f7da4ec9a466ad|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "df8e51872bd1fb4b1581d186f54b0018d70a4bab977ea0460a930af1e8e492bd",
+ "diff_sha256": "df8e51872bd1fb4b1581d186f54b0018d70a4bab977ea0460a930af1e8e492bd",
+ "duration_s": 244.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "MinkowskiProductExtensions.lean:181-182 `lemma minkowskiProduct_self_nonpos_of_orthogonal_causal {d : \u2115} (n : Vector d) {w : Vector d} (hn : 0 \u2264 \u27ean, n\u27eb\u2098) (hn0 : n \u2260 0) (hnw : \u27ean, w\u27eb\u2098 = 0) : \u27eaw, w\u27eb\u2098 \u2264 0`; call site Kinematics.lean:303 `exact K.n.minkowskiProduct_self_nonpos_of_orthogonal_causal K.minkowskiProduct_n_self.ge`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "fix": "Swap explicitness to `(w : Vector d) {n : Vector d}` so `w.minkowskiProduct_self_nonpos_of_orthogonal_causal hn hn0 hnw` names its own subject (`n` is determined by unification from `hn`/`hnw`), and update the single use in `GPD/Kinematics.lean:303` to `K.deltaOrthN.\u2026`. Optionally reorder the suffix to `_of_causal_of_orthogonal`.",
+   "issue": "`minkowskiProduct_self_nonpos_of_orthogonal_causal` makes `n` the first explicit argument (`(n : Vector d) {w : Vector d}`) while the conclusion `\u27eaw, w\u27eb\u2098 \u2264 0` is about `w`. Dot notation therefore misstates the lemma at the call site: `K.n.minkowskiProduct_self_nonpos_of_orthogonal_causal \u2026` (Kinematics.lean:303) reads as `\u27ean, n\u27eb\u2098 \u2264 0`, the opposite of hypothesis `hn : 0 \u2264 \u27ean, n\u27eb\u2098`. The `of_`-clause also reverses hypothesis order (`hn` causal, then `hn0`, then `hnw` orthogonal), against the Mathlib rule that hypotheses are listed in the order they appear.",
+   "line": 181
+  }
+ ],
+ "head_sha": "3ffe736859adce7de9ac2c9090f7da4ec9a466ad",
+ "merge_base_sha": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 87,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "88da80bcf356b8a320119eeafde880b4b627ef4c65a7089f256ec10b1ee56c77",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261114T104402Z-87-naming-84986c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T10:44:02Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names and the absent notation are otherwise fine, but `minkowskiProduct_self_nonpos_of_orthogonal_causal` puts the wrong vector in the dot-notation position: it reads as a claim about `n`, whose Minkowski square is in fact non-negative by hypothesis.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/MinkowskiProduct.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inference/ExclusiveJoint.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7d9878dcc04d8323bb5adcd997c3ce2263b930324b37489cd3af0e9710101be4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 136819,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 136819,
+  "cache_read_input_tokens": 462918,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2081,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2081,
+    "cache_read_input_tokens": 106120,
+    "input_tokens": 2,
+    "output_tokens": 3170,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19066,
+  "output_tokens_details": {
+   "thinking_tokens": 15771
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
