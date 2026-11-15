@@ -1,0 +1,279 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0728625000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 197.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 105105,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 105105,
+    "cache_read_input_tokens": 1270555,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2781,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2781,
+      "cache_read_input_tokens": 91023,
+      "input_tokens": 2,
+      "output_tokens": 2827,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15453,
+    "output_tokens_details": {
+     "thinking_tokens": 8239
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 2.072863,
+ "dedupe_key": "eic/EpsilonEridani|200|11e902e321cfdfbffcd870c6bd5f064a63a05842|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "18c6e9ccb4269eb32540db74867e25b85edb99d52ddba52252371ee50a34b073",
+ "diff_sha256": "18c6e9ccb4269eb32540db74867e25b85edb99d52ddba52252371ee50a34b073",
+ "duration_s": 197.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: SelectionRules.lean:65-73 `def TriangleRule (k m p : \u2115) : Prop := p \u2264 k + m \u2227 k \u2264 m + p \u2227 m \u2264 k + p \u2227 (k + m + p) % 2 = 0` with `instance (k m p : \u2115) : Decidable (TriangleRule k m p)`; SelectionRules.lean:77 `exists_eq_iff_triangleRule`. Equivalence: 2J \u2264 2L+2S \u2194 J \u2264 L+S etc., and 2L+2S+2J is always even.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/Channel.lean",
+   "fix": "Add `public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SelectionRules` and make the field `triangle : PhyslibAlpha.Sl2.TriangleRule (2 * S) (2 * L) (2 * J)`. `J_le_L_add_S`, `L_le_J_add_S`, `S_le_J_add_L` then project it with `omega`, every downstream proof is unchanged, and the label gains the Clebsch\u2013Gordan justification `PhyslibAlpha.Sl2.exists_eq_iff_triangleRule` (SelectionRules.lean:77) plus its `Decidable` instance (line 71), which \u00a70.5's channel-decomposition completeness will need. PhyslibAlpha is a `lean_lib` of the already-required Physlib package (upstream/Physlib/lakefile.toml:21) and the CI import-boundary guard only bars roadmap/review imports.",
+   "issue": "The `triangle` field spells out `J \u2264 L + S \u2227 L \u2264 J + S \u2227 S \u2264 J + L` as a raw conjunction, duplicating the existing upstream predicate `PhyslibAlpha.Sl2.TriangleRule k m p = p \u2264 k + m \u2227 k \u2264 m + p \u2227 m \u2264 k + p \u2227 (k + m + p) % 2 = 0` (upstream/Physlib/PhyslibAlpha/QuantumMechanics/AngularMomentum/SelectionRules.lean:68). In integer units the fourth conjunct is automatic, so `TriangleRule (2 * S) (2 * L) (2 * J)` is exactly this field; restating it inline sets up a parallel name for the same angular-momentum coupling condition.",
+   "line": 111
+  },
+  {
+   "evidence": "grep: upstream/mathlib/Mathlib/Algebra/Ring/Parity.lean:388 `variable {R : Type*} [Monoid R] [HasDistribNeg R] {m n : \u2115}`, :395 `lemma neg_one_pow_congr (h : Even m \u2194 Even n) : (-1 : R) ^ m = (-1) ^ n`. The file already instantiates this same section at `\u2124\u02e3` (`neg_one_pow_eq_one_iff_even`, line 146).",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/Channel.lean",
+   "fix": "Replace the proof with `\u27e8fun h => by rw [\u2190 parity_eq_one_iff, \u2190 parity_eq_one_iff, h], fun h => neg_one_pow_congr h\u27e9`; `parity` unfolds to `(-1) ^ c.L` by `rfl`, so `neg_one_pow_congr` closes the reverse direction directly.",
+   "issue": "`parity_eq_iff` is proved by a four-way case bash on `Int.units_eq_one_or`; its `\u2190` direction is verbatim Mathlib's `neg_one_pow_congr (h : Even m \u2194 Even n) : (-1 : R) ^ m = (-1) ^ n`, which applies at `\u2124\u02e3` (`[Monoid R] [HasDistribNeg R]`) and is already in the import closure via `Mathlib.Algebra.Ring.Parity`.",
+   "line": 153
+  }
+ ],
+ "head_sha": "11e902e321cfdfbffcd870c6bd5f064a63a05842",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 200,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1f1d033241d955fbfc2e0ac399af65176a326a60e9bd86c2e1ddf17e0031004b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T061245Z-200-reuse-0d9d5d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T06:12:45Z",
+ "submitted_by": "wdconinc",
+ "summary": "The channel label, parity, exchange sign and the deuteron-channel theorems are genuinely new \u2014 nothing in Mathlib, Physlib/PhyslibAlpha/QuantumInfo, TauCeti or EpsilonEridani covers them. Two reuse gaps: the triangle condition restates PhyslibAlpha's existing `Sl2.TriangleRule`, and `parity_eq_iff` re-derives Mathlib's `neg_one_pow_congr`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/QuantumMechanics/AngularMomentum/Addition.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/QuantumMechanics/AngularMomentum/SelectionRules.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Ring/Parity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Representation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Algebra/Lie/Sl2/ClebschGordan.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/RepresentationTheory/SU2/Completeness.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/Channel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/lakefile.toml",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 30,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6baf7e4742fcad930985d82d301046a472da51b161e2f08c6b9a7fbdbb344a3a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105105,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 105105,
+  "cache_read_input_tokens": 1270555,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2781,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2781,
+    "cache_read_input_tokens": 91023,
+    "input_tokens": 2,
+    "output_tokens": 2827,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15453,
+  "output_tokens_details": {
+   "thinking_tokens": 8239
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

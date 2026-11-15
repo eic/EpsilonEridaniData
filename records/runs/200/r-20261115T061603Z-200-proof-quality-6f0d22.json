@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.890887,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 115.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 63398,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 63398,
+    "cache_read_input_tokens": 56204,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5458,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5458,
+      "cache_read_input_tokens": 47247,
+      "input_tokens": 2,
+      "output_tokens": 5074,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9151,
+    "output_tokens_details": {
+     "thinking_tokens": 6740
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 0.890887,
+ "dedupe_key": "eic/EpsilonEridani|200|11e902e321cfdfbffcd870c6bd5f064a63a05842|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "18c6e9ccb4269eb32540db74867e25b85edb99d52ddba52252371ee50a34b073",
+ "diff_sha256": "18c6e9ccb4269eb32540db74867e25b85edb99d52ddba52252371ee50a34b073",
+ "duration_s": 115.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 277-281: `refine eq_or_S_eq_one_and_L_add_one_eq_J hS ?_ hJ hP` whose `?_` goal is `c.S = c'.S`, closed by four lines of rewriting plus `omega`; no such lemma exists in the file (grep for `S_eq` in Channel.lean returns only `pauliAllowed_iff_of_S_eq_of_parity_eq` and `L_eq_J_of_S_eq_zero`).",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/Channel.lean",
+   "fix": "Add `theorem S_eq_of_parity_eq_of_pauliAllowed {c c' : ChannelLabel} {T : \u2115} (hS : c.S \u2264 1) (hS' : c'.S \u2264 1) (hP : c.parity = c'.parity) (h : c.PauliAllowed T) (h' : c'.PauliAllowed T) : c.S = c'.S` next to `pauliAllowed_iff_of_S_eq_of_parity_eq`, and let `eq_or_S_eq_one_and_L_add_one_eq_J_of_pauliAllowed` be `eq_or_S_eq_one_and_L_add_one_eq_J hS (S_eq_of_parity_eq_of_pauliAllowed hS hS' hP h h') hJ hP`.",
+   "issue": "`c.S = c'.S` is derived inline from `hP`, `h`, `h'`, `hS`, `hS'`; the docstring states this as content (\"equal parity and equal Pauli status force equal total spin\") and it is the converse of the exposed `pauliAllowed_iff_of_S_eq_of_parity_eq`, so a reusable lemma is hidden in a proof. The same `parity_eq_iff`/`Nat.even_iff`/`Nat.odd_iff`/`omega` boilerplate recurs at lines 205-208, 260-261 and 278-281.",
+   "line": "278"
+  },
+  {
+   "evidence": "Lines 237-238: `rw [parity_eq_one_iff, Nat.even_iff, ChannelLabel.ext_iff, ChannelLabel.ext_iff, tripletS1_S, tripletS1_L, tripletS1_J, tripletD1_S, tripletD1_L, tripletD1_J]`; line 154: `rw [\u2190 parity_eq_one_iff, \u2190 parity_eq_one_iff]`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/Channel.lean",
+   "fix": "Replace both with `simp only [...]` over the same lemma set (the projection lemmas are already `@[simp]`), which is order-independent and needs each lemma listed once.",
+   "issue": "`rw` chain of eight named lemmas with `ChannelLabel.ext_iff` listed twice, relying on the first rewrite consuming one disjunct so the second hits the other; same pattern at line 154 (`rw [\u2190 parity_eq_one_iff, \u2190 parity_eq_one_iff]`). Such occurrence-order-dependent chains break on unrelated upstream or local changes to the statement shape.",
+   "line": "237"
+  }
+ ],
+ "head_sha": "11e902e321cfdfbffcd870c6bd5f064a63a05842",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 200,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d87ef662c2ec68089cd72e4169a1cf579ecd2defd17cb067ad8591e27a9a3951",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T061603Z-200-proof-quality-6f0d22",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T06:16:03Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are short and omega-driven with no defeq abuse, but one reusable fact (equal parity plus equal Pauli status forces equal spin) is proved inline at three sites instead of being a lemma, and two proofs use occurrence-order-dependent rw chains where simp only would do.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/Channel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ae41e1a6c97dd8a5cda4b8da85f586544643b4777a7e2b17a18f825a79d9082e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 63398,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 63398,
+  "cache_read_input_tokens": 56204,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5458,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5458,
+    "cache_read_input_tokens": 47247,
+    "input_tokens": 2,
+    "output_tokens": 5074,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9151,
+  "output_tokens_details": {
+   "thinking_tokens": 6740
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
