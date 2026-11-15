@@ -1,0 +1,240 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1784025000000007,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 230.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 123102,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 123102,
+    "cache_read_input_tokens": 1018765,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4017,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4017,
+      "cache_read_input_tokens": 103894,
+      "input_tokens": 2,
+      "output_tokens": 1494,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17514,
+    "output_tokens_details": {
+     "thinking_tokens": 12522
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.178403,
+ "dedupe_key": "eic/EpsilonEridani|123|d0ae494cb09089b89309684ef7676be7fdc6b72b|placement|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c206874b7820321d7742bf8c2bc91c67aa6b690f6f1dc4e9cc4f7a49179ca7b8",
+ "diff_sha256": "c206874b7820321d7742bf8c2bc91c67aa6b690f6f1dc4e9cc4f7a49179ca7b8",
+ "duration_s": 230.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Average.lean:88-160 use only `Transverse`/`Real.circleAverage`/`SemilinearIsometryClass.norm_map_of_mem_sphere_zero`; first `TMD.Tmd` use is `def azimuthalAverage` at Average.lean:189. Mathlib keeps the analogous generic material in its own module, `Mathlib/MeasureTheory/Integral/CircleAverage.lean`, separate from its consumers.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Move lines 88\u2013175 into `GTMD/Transverse.lean`, which already owns `circleMapTransverse` and whose docstring already forward-references the sphere lemma, or into a new `GTMD/CircleAverage.lean`; leave `Average.lean` with `azimuthalAverage` and the `TMD` results. Later layers (Wigner marginals, OAM) then get the circle average without importing `TMD.Basic`.",
+   "issue": "`circleAverageTransverse` and its nine lemmas (lines 88\u2013160) plus the root-namespace `Continuous.circleAverageTransverse` (line 172) depend on nothing beyond `GTMD/Transverse.lean`, Mathlib and the new `SemilinearIsometryClass` lemma; `TMD.Tmd` first appears at line 189. This broadly useful plane-analysis layer is only reachable by importing a module that pulls in the TMD object model, and it is the sole root-namespace `Continuous.*` extension anywhere under `Particles/` (grep for `lemma Continuous\\.` in `EpsilonEridani/Particles` returns only this one), so it is not house style there.",
+   "line": 88
+  }
+ ],
+ "head_sha": "d0ae494cb09089b89309684ef7676be7fdc6b72b",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "08838bdb593c91b6bb549f0fe273f039bc13920df1b455dd2043da9f7f053d17",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T181826Z-123-placement-b4c292",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T18:18:26Z",
+ "submitted_by": "wdconinc",
+ "summary": "Placement follows the roadmap's GTMD/ directory and the Mathematics/ mirror path is right, with no unused or overly broad imports. The one defect is that the generic transverse-plane circle-average API \u2014 which has no parton content and no dependency on TMD \u2014 lives in the file that defines the azimuthal average of a `VectorTmd` and therefore sits behind `TMD.Basic`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": false,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/PDE/Harnack/Planar.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Geometry/Sphere/Circle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/TailIntegral.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 23,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8796ac0a2421df3c1e9664438045d2d68bf3a425ecddb09ceb9fe85dcf16e9e5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 123102,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 123102,
+  "cache_read_input_tokens": 1018765,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4017,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4017,
+    "cache_read_input_tokens": 103894,
+    "input_tokens": 2,
+    "output_tokens": 1494,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17514,
+  "output_tokens_details": {
+   "thinking_tokens": 12522
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,202 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7565615,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 195.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 111482,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 111482,
+    "cache_read_input_tokens": 525803,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2101,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2101,
+      "cache_read_input_tokens": 94778,
+      "input_tokens": 2,
+      "output_tokens": 3043,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15150,
+    "output_tokens_details": {
+     "thinking_tokens": 10884
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.756562,
+ "dedupe_key": "eic/EpsilonEridani|123|d0ae494cb09089b89309684ef7676be7fdc6b72b|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c206874b7820321d7742bf8c2bc91c67aa6b690f6f1dc4e9cc4f7a49179ca7b8",
+ "diff_sha256": "c206874b7820321d7742bf8c2bc91c67aa6b690f6f1dc4e9cc4f7a49179ca7b8",
+ "duration_s": 195.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Isometry.mapsTo_sphere (hf : Isometry f) (x : \u03b1) (r : \u211d) : MapsTo f (Metric.sphere x r) (Metric.sphere (f x) r)` \u2014 Mathlib/Topology/MetricSpace/Isometry.lean:251; `protected theorem isometry [SemilinearIsometryClass \ud835\udcd5 \u03c3\u2081\u2082 E E\u2082] (f : \ud835\udcd5) : Isometry f` \u2014 Mathlib/Analysis/Normed/Operator/LinearIsometry.lean:87. The PR's own `norm_circleMapTransverse` (Transverse.lean:68) already proves the analogous norm fact with `rw [LinearIsometryEquiv.norm_map, norm_circleMap_zero]`, without the new lemma.",
+   "file": "EpsilonEridani/Mathematics/Normed/Operator/LinearIsometry.lean",
+   "fix": "Drop the file and the declaration; at the two call sites use `LinearIsometryEquiv.norm_map` together with `mem_sphere_zero_iff_norm`, exactly the pair already used at `GTMD/Transverse.lean:68`.",
+   "issue": "`SemilinearIsometryClass.norm_map_of_mem_sphere_zero` abstracts over `SemilinearIsometryClass` for no use \u2014 both call sites (`Average.lean:133`, `Average.lean:141`) pass the single concrete equiv `Complex.orthonormalBasisOneI.repr` \u2014 and the fact already exists upstream in strictly greater generality (`Isometry.mapsTo_sphere`, `Mathlib/Topology/MetricSpace/Isometry.lean:251`, applicable via `SemilinearIsometryClass.isometry`, `Mathlib/Analysis/Normed/Operator/LinearIsometry.lean:87`, for any isometry and any centre).",
+   "line": "38"
+  },
+  {
+   "evidence": "Every ingredient of the proof exists at the \u2102 level: `Real.circleAverage_neg_radius` (Mathlib/MeasureTheory/Integral/CircleAverage.lean:130), `Real.circleAverage_def` (:58), `norm_circleMap_zero` (Mathlib/Analysis/SpecialFunctions/Complex/CircleMap.lean:42), and `circleMap 0 (-R) \u03b8 = -circleMap 0 R \u03b8` by `simp [circleMap]` \u2014 the same simp the PR uses at Transverse.lean:78. The transverse proof (Average.lean:148-161) invokes only `circleMapTransverse_neg_radius`, `norm_circleMapTransverse`, `circleAverageTransverse_neg_radius` and `_eq_integral`, each the transport of one of these.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Prove `Real.circleAverage_eq_zero_of_odd {f : \u2102 \u2192 E} {R : \u211d} (hf : \u2200 z, \u2016z\u2016 = |R| \u2192 f (-z) = -f z) : Real.circleAverage f 0 R = 0` in the `EpsilonEridani/Mathematics/` area this PR already opens, and derive the transverse version by transport along `Complex.orthonormalBasisOneI.repr`, as the other five `circleAverageTransverse_*` lemmas are derived.",
+   "issue": "`circleAverageTransverse_eq_zero_of_odd` is the one circle-average result in this PR that is not a transport of an existing Mathlib lemma, yet it is stated and proved only for `Transverse`. Its argument (`circleAverage f 0 (-R) = circleAverage f 0 R`, oddness on the sphere, halving) uses nothing about the transverse plane; the corresponding statement for `Real.circleAverage` on `\u2102` is unavailable to any other consumer.",
+   "line": "148"
+  }
+ ],
+ "head_sha": "d0ae494cb09089b89309684ef7676be7fdc6b72b",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ca67f338a1510c8ddfb2640bc8bef580033624a04a9c374bc27d0bd77044cef4",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T181721Z-123-generality-fb7b5d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T18:17:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two level problems: the new `SemilinearIsometryClass` lemma is a class-level abstraction with no class-level use that restates facts Mathlib already has more generally, and `circleAverageTransverse_eq_zero_of_odd` \u2014 the only new mathematics in the circle-average API \u2014 is proved only in the transverse special case although its proof uses nothing transverse.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Operator/LinearIsometry.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/MetricSpace/Isometry.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Operator/LinearIsometry.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4f5121e92dc6079bf9db9699bd4b864d2fa869c538b2a70b1961b28d2a978599",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 111482,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 111482,
+  "cache_read_input_tokens": 525803,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2101,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2101,
+    "cache_read_input_tokens": 94778,
+    "input_tokens": 2,
+    "output_tokens": 3043,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15150,
+  "output_tokens_details": {
+   "thinking_tokens": 10884
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

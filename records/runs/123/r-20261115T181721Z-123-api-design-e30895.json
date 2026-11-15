@@ -1,0 +1,252 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5559179999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 278.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 134059,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 134059,
+    "cache_read_input_tokens": 1343766,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4268,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4268,
+      "cache_read_input_tokens": 114353,
+      "input_tokens": 2,
+      "output_tokens": 1345,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21731,
+    "output_tokens_details": {
+     "thinking_tokens": 17298
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 2.555918,
+ "dedupe_key": "eic/EpsilonEridani|123|d0ae494cb09089b89309684ef7676be7fdc6b72b|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c206874b7820321d7742bf8c2bc91c67aa6b690f6f1dc4e9cc4f7a49179ca7b8",
+ "diff_sha256": "c206874b7820321d7742bf8c2bc91c67aa6b690f6f1dc4e9cc4f7a49179ca7b8",
+ "duration_s": 278.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Grep over Average.lean lines 88-272 lists every declaration; the only one mentioning the inclusion is `azimuthalAverage_comp_norm_of_nonneg` (line 234), whose conclusion is `azimuthalAverage (\u2026) i x kT Q2 \u03b6 = g i x kT Q2 \u03b6` under `(hkT : 0 \u2264 kT)`. `TMD.IsTmdDensity.supportKT` exists at TMD/Basic.lean:60 and supplies the `kT < 0` half.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Add the global form, e.g. `lemma azimuthalAverage_comp_norm {g : TMD.Tmd Flavor} (hg : TMD.IsTmdDensity g) : azimuthalAverage (fun i x w Q2 \u03b6 => g i x \u2016w\u2016 Q2 \u03b6) = g`, proved by `funext` + `rcases lt_or_ge kT 0` from `azimuthalAverage_of_neg`/`hg.supportKT` and `azimuthalAverage_comp_norm_of_nonneg`.",
+   "issue": "The docstrings (lines 51-53 and 230-233) assert that the azimuthal average \"retracts the radial inclusion `g \u21a6 fun i x w Q2 \u03b6 => g i x \u2016w\u2016 Q2 \u03b6`\" on `TMD.IsTmdDensity` TMDs, but no declaration states it: `azimuthalAverage_comp_norm_of_nonneg` is only the pointwise `0 \u2264 kT` fragment. The retraction is the characteristic relation between `VectorTmd` and `TMD.Tmd`, so every consumer must re-derive the funext/`supportKT` argument.",
+   "line": 234
+  },
+  {
+   "evidence": "Average.lean:46 makes the claim; the declaration list contains only `circleAverageTransverse_eq_zero_of_odd` (line 147) and `azimuthalAverage_eq_zero_of_odd` (line 216), both taking the per-radius hypothesis `\u2200 w, \u2016w\u2016 = |kT| \u2192 g (-w) = -g w`.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Add `lemma circleAverageTransverse_linearMap (g : Transverse \u2192\u2097[\u211d] E) (kT : \u211d) : circleAverageTransverse \u21d1g kT = 0 := circleAverageTransverse_eq_zero_of_odd fun w _ => map_neg g w`, and the matching `azimuthalAverage` corollary; or drop the claim from the docstring.",
+   "issue": "Same defect, second instance: the Main results entry claims the averages \"annihilate every function that is odd on the circle, in particular every linear map\", but no linear-map corollary is declared. This is the form Layer 2.6 needs \u2014 the `F\u2081\u2084` structure `area kT \u0394T` is linear in `kT` at fixed `\u0394T` \u2014 so the advertised consequence is exactly the one left unstated.",
+   "line": 46
+  }
+ ],
+ "head_sha": "d0ae494cb09089b89309684ef7676be7fdc6b72b",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "433caa8c4c27716abc88ec204482a79fffcdbead56d327620fbe09e506659b0a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T181721Z-123-api-design-e30895",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T18:17:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, nothing is wrongly `private`, the `*_def` lemmas correctly use `(rfl)`, and the `@[simp]`/`@[fun_prop]` choices are sound. Two results the module docstring sells as established are stated only in weakened pointwise form, leaving consumers to reconstruct them.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Reduction.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 24,
+  "trace_truncated": false
+ },
+ "transcript_blob": "aba313f8965383906970a1e6fb1c9b1ae5cf6f1f89b6033e66fbffaeee701977",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 134059,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 134059,
+  "cache_read_input_tokens": 1343766,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4268,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4268,
+    "cache_read_input_tokens": 114353,
+    "input_tokens": 2,
+    "output_tokens": 1345,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21731,
+  "output_tokens_details": {
+   "thinking_tokens": 17298
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

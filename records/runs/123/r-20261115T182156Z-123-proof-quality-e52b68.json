@@ -1,0 +1,165 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.2782879999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 166.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 87569,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 87569,
+    "cache_read_input_tokens": 185046,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8954,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8954,
+      "cache_read_input_tokens": 63753,
+      "input_tokens": 2,
+      "output_tokens": 6277,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12401,
+    "output_tokens_details": {
+     "thinking_tokens": 10018
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.278288,
+ "dedupe_key": "eic/EpsilonEridani|123|d0ae494cb09089b89309684ef7676be7fdc6b72b|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c206874b7820321d7742bf8c2bc91c67aa6b690f6f1dc4e9cc4f7a49179ca7b8",
+ "diff_sha256": "c206874b7820321d7742bf8c2bc91c67aa6b690f6f1dc4e9cc4f7a49179ca7b8",
+ "duration_s": 166.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Average.lean:110-144 are each a `simp only [circleAverageTransverse_def]` + `exact Real.circleAverage_*`; only lines 150-160 contain a hand argument. Mathlib has no `circleAverage_eq_zero_of_odd`: grep over upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean lists `circleAverage_neg_radius`, `_abs_radius`, `_const_on_circle`, `_nonneg_of_nonneg` and no odd-function lemma, so the general statement is new work and currently only available at `Transverse`.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "fix": "Prove `Real.circleAverage_eq_zero_of_odd {f : \u2102 \u2192 E} (h : \u2200 z \u2208 Metric.sphere (0:\u2102) |R|, f (-z) = -f z) : Real.circleAverage f 0 R = 0` in `EpsilonEridani/Mathematics/` (the same place `SemilinearIsometryClass.norm_map_of_mem_sphere_zero` was hoisted to), using `Real.circleAverage_neg_radius` and `circleMap 0 (-R) \u03b8 = -circleMap 0 R \u03b8`; then make the transverse version a three-line transport exactly like `circleAverageTransverse_const_on_circle`/`_nonneg_of_nonneg`. While doing so, the repeated `fun z hz => _ (SemilinearIsometryClass.norm_map_of_mem_sphere_zero Complex.orthonormalBasisOneI.repr hz)` block (lines 134-136 and 142-144, a third copy would be needed) is worth a single named transport helper.",
+   "issue": "`circleAverageTransverse_eq_zero_of_odd` is the only lemma in the circle-average section not transported from Mathlib: it rebuilds the argument by hand (rewrite both sides of `_neg_radius` into integral form, `simp_rw [hodd, intervalIntegral.integral_neg, smul_neg]`, then `linear_combination (norm := module) -h` and `simpa`). The fact proved is entirely general \u2014 the circle average about 0 of a function odd on `sphere 0 |R|` vanishes \u2014 and nothing in it is specific to `Transverse`; the binder rewriting also depends on the exact syntactic shape produced by `circleAverageTransverse_eq_integral`.",
+   "line": 147
+  }
+ ],
+ "head_sha": "d0ae494cb09089b89309684ef7676be7fdc6b72b",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 123,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4f1043bace1fef93cae27093b4ec9eb5882971980ae39d4f500370527128029c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T182156Z-123-proof-quality-e52b68",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T18:21:56Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are short, documented, and free of `show`/`change` or undocumented defeq. One exception: the odd-function vanishing argument is the only real reasoning in the file and is done inline at the specialised type, breaking the module's own one-line-transport pattern and keeping a general `Real.circleAverage` fact out of reach.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Average.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/CircleAverage.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3b9e29ea402a9658ab50f687c78842f619e4871eed9d9503fe6d0317114dd66f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 87569,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 87569,
+  "cache_read_input_tokens": 185046,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8954,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8954,
+    "cache_read_input_tokens": 63753,
+    "input_tokens": 2,
+    "output_tokens": 6277,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12401,
+  "output_tokens_details": {
+   "thinking_tokens": 10018
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
