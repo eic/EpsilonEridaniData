@@ -1,0 +1,182 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.793561,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 167.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 130225,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 130225,
+    "cache_read_input_tokens": 335852,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6997,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6997,
+      "cache_read_input_tokens": 92004,
+      "input_tokens": 2,
+      "output_tokens": 2590,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12933,
+    "output_tokens_details": {
+     "thinking_tokens": 10122
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "cost_usd": 1.793561,
+ "dedupe_key": "eic/EpsilonEridani|120|cc92287011155721b6bcc14136fe20fd14e3f761|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "27d0c3de1ff079a8aa59b7081955720a73f47a0ba9f73dc9fed7288db1792199",
+ "diff_sha256": "27d0c3de1ff079a8aa59b7081955720a73f47a0ba9f73dc9fed7288db1792199",
+ "duration_s": 167.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Matrix.vecCons` is `Fin.cons` (Mathlib/Data/Fin/VecNotation.lean:61-62); Mathlib has only `Fin.cons_update` (Mathlib/Data/Fin/Tuple/Basic.lean:144), no `Matrix` version \u2014 grep for `cons_update` in ./upstream/mathlib returns those two hits only.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "fix": "State one lemma `Matrix.vecCons_update (x : \u03b1) (p : Fin n \u2192 \u03b1) (i : Fin n) (y : \u03b1) : Matrix.vecCons x (Function.update p i y) = Function.update (Matrix.vecCons x p) i.succ y := Fin.cons_update ..` and use it in the four `simp only` calls in place of `Matrix.vecCons, Fin.cons_update`; simp will apply it through both `vecCons` layers.",
+   "issue": "Four proofs (`bilinMap_update_smul` l.94, `bilinMap_update_add` l.106, `bilinMap_update_neg` l.158, `bilinMap_update_sub` l.178) each delta-unfold `Matrix.vecCons` inside `simp only` so that `Fin.cons_update` fires, each carrying a copy of the same explanatory comment. The missing reusable fact is stated nowhere and the notation layer is broken open in four places.",
+   "line": 94
+  },
+  {
+   "evidence": "Identical three-line `have h : \u2200 x, ![a, x] = Function.update ![a, b] 1 x := fun x => by ext i; fin_cases i <;> simp` blocks at lines 113-115, 123-125, 185-187, with the single-instance variant at 165-167.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "fix": "Extract one lemma, e.g. `private theorem vecCons_pair_eq_update (a b x : M) : ![a, x] = Function.update ![a, b] 1 x := by ext i; fin_cases i <;> simp`, and have each of the four `_pair_*_snd` proofs `rw` with it once (or `simp only [vecCons_pair_eq_update (b := b), bilinMap_update_*]`).",
+   "issue": "The auxiliary fact `![a, x] = Function.update ![a, b] 1 x` is re-proved inline four times \u2014 `bilinMap_pair_smul_snd` (l.113-115), `bilinMap_pair_add_snd` (l.123-125), `bilinMap_pair_neg_snd` (l.165-167), `bilinMap_pair_sub_snd` (l.185-187) \u2014 each followed by an opaque `rwa [\u2190 h, \u2190 h, \u2190 h]` that undoes the update by backwards rewriting.",
+   "line": 113
+  }
+ ],
+ "head_sha": "cc92287011155721b6bcc14136fe20fd14e3f761",
+ "merge_base_sha": "2c150c713ec85161740c995113f1e2a5e3f15654",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ce79741f2c8c3d15bf8dbfc1aeef2d301deeea2c4ea2fe497428058039169781",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T133027Z-120-proof-quality-48acc3",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T13:30:27Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly short and robust, but BilinMap.lean repeats the same two workarounds four times each instead of factoring them into the reusable lemmas they are: a `Matrix.vecCons`-level `Fin.cons_update` bridge, and an `![a, x] = Function.update ![a, b] 1 x` conversion.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Matrix/Determinant.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "695433441056df72e77552f24d4cb2430dfcab0b15c7f5eb56b851ca33f0088c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 130225,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 130225,
+  "cache_read_input_tokens": 335852,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6997,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6997,
+    "cache_read_input_tokens": 92004,
+    "input_tokens": 2,
+    "output_tokens": 2590,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12933,
+  "output_tokens_details": {
+   "thinking_tokens": 10122
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
