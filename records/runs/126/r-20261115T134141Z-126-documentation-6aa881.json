@@ -1,0 +1,164 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6491365,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 170.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 122651,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 122651,
+    "cache_read_input_tokens": 168673,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 9854,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 9854,
+      "cache_read_input_tokens": 85801,
+      "input_tokens": 2,
+      "output_tokens": 8207,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13530,
+    "output_tokens_details": {
+     "thinking_tokens": 10978
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "cost_usd": 1.649137,
+ "dedupe_key": "eic/EpsilonEridani|126|b113158a0a88c970932b24623e8b0f5b9ca3089e|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "68a6087490acc2a491d3bb4c413e973941d2c4ae0e6271660aadf9da5e5f8f81",
+ "diff_sha256": "68a6087490acc2a491d3bb4c413e973941d2c4ae0e6271660aadf9da5e5f8f81",
+ "duration_s": 170.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 183, 191-192, 202-203, 310-311, 322-323, 348, 354, 361-362 carry `hk : 0 < k`/`0 < \u03b3.energy`, `hp : -E < p`, `hpE : p \u2264 E`, `hE0 : 0 < E`; none of the corresponding docstrings mention them.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add the hypothesis to each of these docstrings, e.g. \"...a target of energy `E` and momentum `-E < p \u2264 E` against a photon of energy `k > 0`\", or the equivalent \"inside the forward light cone\" phrasing already used for the collinear forms.",
+   "issue": "Docstrings of the real-photon and massless-target lemmas assert the relation with no condition, but the statements require `0 < k` and `-E < p \u2264 E` (resp. `0 < k`, `0 < E`), and the relation is false without them: with E=1, p=-3, k=1 the system has T=2, P_\u2225=4, so exp(2y)=3 while (2k+E-p)/(E+p)=-3. Same pattern at lines 188, 199, 306, 318, 347, 353, 360. The sibling collinear docstrings (lines 116, 128, 140, 153) do state `|a - p| < k + E`, so this is an inconsistency within the file.",
+   "line": 180
+  },
+  {
+   "evidence": "Line 24-25 \"The target has momentum `p` against the beam axis, so that `M\u00b2 = E\u00b2 - p\u00b2`\"; `minkowskiProduct_add_self_of_target` (lines 94-96) takes only `hP`, `hP'`, `hM`, while `minkowskiProduct_add_self_of_realPhoton` (line 170) does say \"unit beam axis\".",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Say \"unit beam axis `n` (`\u2016n\u2016 = 1`)\" in the module docstring lead, and note in the two `_of_target` docstrings that they hold for any `n` but that `p` and `q_\u2225` are the momentum and the component along the axis only when `\u2016n\u2016 = 1`.",
+   "issue": "The module docstring never says the beam axis `n` is a unit vector, yet almost every theorem assumes `hn : \u2016n\u2016 = 1` and the stated convention `M\u00b2 = E\u00b2 - p\u00b2` only follows for `\u2016n\u2016 = 1`. `minkowskiProduct_add_self_of_target` (line 90) and `minkowskiProduct_add_self_of_target_energyFraction` (line 257) have no `hn`, so calling `p` \"momentum against the beam axis\" and `\u27eaq.spatialPart, n\u27eb` the component `q_\u2225` is only the intended reading for unit `n`.",
+   "line": 14
+  },
+  {
+   "evidence": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean:333-337 `theorem not_isReal_of_mem_photonRegion (hm : 0 < s.mass) ... : \u00ac k.IsReal`, imported at InvariantMass.lean:8.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add one sentence: the real-photon relations are the `Q\u00b2 \u2192 0` limit, and by `ChargedSource.not_isReal_of_mem_photonRegion` no photon in a massive source's `photonRegion` is exactly real, so the collinear (any-virtuality) forms are the ones that apply there.",
+   "issue": "\"These real-photon forms apply exactly to the photons with `\u03b3.IsReal`\" tells a reader the real-photon branch is the applicable one, while the imported module proves that for a massive source that set is empty on the physical region (`ChargedSource.not_isReal_of_mem_photonRegion`). The PR description itself makes this point; the file does not.",
+   "line": 50
+  }
+ ],
+ "head_sha": "b113158a0a88c970932b24623e8b0f5b9ca3089e",
+ "merge_base_sha": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a769b07f23f7a3fd6cfd3e8c7c243a32e36f282514ee8459ba8a15b41b14b770",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T134141Z-126-documentation-6aa881",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T13:41:41Z",
+ "submitted_by": "wdconinc",
+ "summary": "Module and theorem docstrings are otherwise accurate and name-checked, but the real-photon and massless-target docstrings state their relations unconditionally when the theorems are conditional (and the relations are false without the hypotheses), the unit-beam-axis convention is never stated in the InvariantMass module docstring, and the real-photon branch is presented as applicable without noting that the repo proves no massive source emits a real photon.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "54d350d175d5508f0ee855ee53b5bd611802f5d3abb9222447c2879a531d020e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 122651,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 122651,
+  "cache_read_input_tokens": 168673,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 9854,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 9854,
+    "cache_read_input_tokens": 85801,
+    "input_tokens": 2,
+    "output_tokens": 8207,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13530,
+  "output_tokens_details": {
+   "thinking_tokens": 10978
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

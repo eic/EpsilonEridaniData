@@ -1,0 +1,199 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1875630000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 184.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 155743,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 155743,
+    "cache_read_input_tokens": 520876,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1459,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1459,
+      "cache_read_input_tokens": 117444,
+      "input_tokens": 2,
+      "output_tokens": 2594,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14785,
+    "output_tokens_details": {
+     "thinking_tokens": 10921
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "cost_usd": 2.187563,
+ "dedupe_key": "eic/EpsilonEridani|126|b113158a0a88c970932b24623e8b0f5b9ca3089e|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "68a6087490acc2a491d3bb4c413e973941d2c4ae0e6271660aadf9da5e5f8f81",
+ "diff_sha256": "68a6087490acc2a491d3bb4c413e973941d2c4ae0e6271660aadf9da5e5f8f81",
+ "duration_s": 184.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "naming-conventions.md: \"The word 'of' is used to separate these hypotheses\". The file's own precedent already does this: `Kinematics/Basic.lean:217 theorem photonVirtuality_energyFraction`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Move the descriptor before the `of`: `minkowskiProduct_add_self_energyFraction_of_target`, `..._energyFraction_of_collinearPhoton`, `..._energyFraction_of_realPhoton`, `exp_two_mul_rapidity_energyFraction_of_collinearPhoton`, `..._of_realPhoton`.",
+   "issue": "`_energyFraction` is appended after the `of`-block in five names: `minkowskiProduct_add_self_of_target_energyFraction` (261), `minkowskiProduct_add_self_of_collinearPhoton_energyFraction` (273), `minkowskiProduct_add_self_of_realPhoton_energyFraction` (284), `exp_two_mul_rapidity_of_collinearPhoton_energyFraction` (297), `exp_two_mul_rapidity_of_realPhoton_energyFraction` (310). Everything after `of` names hypotheses, but the energy fraction is a feature of the right-hand side, so e.g. `..._of_target_energyFraction` parses as \"the target's energy fraction\" when it is the photon's.",
+   "line": "261"
+  },
+  {
+   "evidence": "Lines 132, 144, 191: LHSs are `k + a + E - p`, `k - a + E + p` and `E + p` with `p` the target momentum (`hP' : P.spatialPart = -p \u2022 n`, line 113/167).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Use `targetMomentum` throughout, e.g. `photonEnergy_add_photonMomentum_add_targetEnergy_sub_targetMomentum_eq_sqrt_mul_exp_rapidity`.",
+   "issue": "The target momentum `p` is spelled as a bare `momentum` while the photon momentum `a` is spelled `photonMomentum` and the target energy `E` as `targetEnergy`, in `photonEnergy_add_photonMomentum_add_targetEnergy_sub_momentum_eq_sqrt_mul_exp_rapidity` (132), `photonEnergy_sub_photonMomentum_add_targetEnergy_add_momentum_eq_sqrt_mul_exp_neg_rapidity` (144) and `targetEnergy_add_momentum_eq_sqrt_mul_exp_neg_rapidity_of_realPhoton` (191). In names that already distinguish `photonMomentum`, the unqualified `sub_momentum`/`add_momentum` does not determine which momentum is meant.",
+   "line": "132"
+  },
+  {
+   "evidence": "Section `Massless` variables at line 337-339 include the real-photon hypotheses; compare `minkowskiProduct_add_self_of_realPhoton` (173) and `exp_two_mul_rapidity_of_realPhoton` (183), whose docstrings and names both say `realPhoton`. The massless docstrings (341, 347, 353, 360) all say \"A real photon and a massless target\".",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add the photon hypothesis to the names, e.g. `minkowskiProduct_add_self_of_realPhoton_of_masslessTarget`, consistently across the four.",
+   "issue": "The massless-target lemmas also assume a real photon (`hq : q.timeComponent = k`, `hq' : q.spatialPart = k \u2022 n`, lines 337), but name only the target: `minkowskiProduct_add_self_of_masslessTarget` (342), `exp_two_mul_rapidity_of_masslessTarget` (348), `two_mul_photonEnergy_eq_sqrt_mul_exp_rapidity_of_masslessTarget` (354), `two_mul_targetEnergy_eq_sqrt_mul_exp_neg_rapidity_of_masslessTarget` (361). Their siblings in the same file carry `_of_realPhoton`, so `W\u00b2 = 4 k E` reads as holding for any photon against a massless target, which is false at non-zero virtuality.",
+   "line": "342"
+  }
+ ],
+ "head_sha": "b113158a0a88c970932b24623e8b0f5b9ca3089e",
+ "merge_base_sha": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "85bd153bcb0d8e606772ad57ea4ef787671243bce30758fda37fa0bd02fed195",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T134016Z-126-naming-c47f7b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T13:40:16Z",
+ "submitted_by": "wdconinc",
+ "summary": "The `Lorentz.Vector` rapidity API follows upstream precedent (`tanh_artanh`/`exp_artanh`/`artanh_eq_half_log` \u2192 `tanh_rapidity`/`exp_rapidity`/`rapidity_eq_half_log`) and sits correctly in the upstream namespace, but several Photoproduction names put a conclusion descriptor after the `of`-hypothesis block, abbreviate one component inconsistently, and hide the real-photon hypothesis in the massless-target group.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/MinkowskiProduct.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/CollinsSoper.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "43191b747f5f4b2fe892213c59ee66221e3f8a2ce7dbd3fffd7eb46eaa3789ab",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 155743,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 155743,
+  "cache_read_input_tokens": 520876,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1459,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1459,
+    "cache_read_input_tokens": 117444,
+    "input_tokens": 2,
+    "output_tokens": 2594,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14785,
+  "output_tokens_details": {
+   "thinking_tokens": 10921
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

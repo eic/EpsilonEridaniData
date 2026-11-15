@@ -1,0 +1,182 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0626420000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 223.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 139783,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 139783,
+    "cache_read_input_tokens": 456334,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4136,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4136,
+      "cache_read_input_tokens": 108812,
+      "input_tokens": 2,
+      "output_tokens": 5821,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17463,
+    "output_tokens_details": {
+     "thinking_tokens": 13745
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "cost_usd": 2.062642,
+ "dedupe_key": "eic/EpsilonEridani|126|b113158a0a88c970932b24623e8b0f5b9ca3089e|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "68a6087490acc2a491d3bb4c413e973941d2c4ae0e6271660aadf9da5e5f8f81",
+ "diff_sha256": "68a6087490acc2a491d3bb4c413e973941d2c4ae0e6271660aadf9da5e5f8f81",
+ "duration_s": 223.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Proof at lines 76-77 only uses `minkowskiProduct_self_eq_mul_of_spatialPart_eq_smul`; `Physlib/.../MinkowskiProduct.lean:176` gives `\u27eau,u\u27eb\u2098 = u.timeComponent ^ 2 - \u2016u.spatialPart\u2016 ^ 2`, and Physlib's own criterion `timeLike_iff_time_lt_space` (`Physlib/Relativity/Causality/TimeLike.lean:132`) is stated in exactly that unrestricted form.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "fix": "State `theorem sqrt_minkowskiProduct_self_pos {v : Vector d} (h : \u2016v.spatialPart\u2016 < v.timeComponent) : 0 < \u221a\u27eav, v\u27eb\u2098` (via `Real.sqrt_pos` + `minkowskiProduct_self_eq_sq_sub`) and derive the `_of_spatialPart_eq_smul` form from it with `hv`/`norm_smul`.",
+   "issue": "`sqrt_minkowskiProduct_self_pos_of_spatialPart_eq_smul` assumes `hn : \u2016n\u2016 = 1` and `hv : v.spatialPart = a \u2022 n`, but `0 < \u221a\u27eav,v\u27eb\u2098` needs only `\u2016v.spatialPart\u2016 < v.timeComponent`; the collinearity is used solely to turn `|a|` into `\u2016v.spatialPart\u2016`. In a `Lorentz.Vector`-namespace file meant to move to PhyslibAlpha this ships the special case as the only form.",
+   "line": 73
+  },
+  {
+   "evidence": "`abs_sub_lt_add` (line 106) proves the triple implies the light-cone bound; the converse is false \u2014 `k = 1, E = 1, p = 2` gives `|k - p| = 1 < 2 = k + E` while `p \u2264 E` fails. Each real-photon proof immediately discharges the triple into `abs_sub_lt_add` and uses nothing else from it (lines 185, 196, 211).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Give the five lemmas the hypothesis `(h : |k - p| < k + E)` (resp. `|\u03b3.energy - p| < \u03b3.energy + E`) in place of `hk hp hpE`, and make `abs_sub_lt_add` public so the positivity triple remains an available entry point; the massless corollaries then pass `abs_sub_lt_add hk (by linarith) le_rfl` as they already do at line 357.",
+   "issue": "`exp_two_mul_rapidity_of_realPhoton` (183), `targetEnergy_add_momentum_eq_sqrt_mul_exp_neg_rapidity_of_realPhoton` (191) and `two_mul_photonEnergy_eq_exp_rapidity_mul_sub_div_sqrt_of_realPhoton` (202) assume `0 < k`, `-E < p`, `p \u2264 E`, strictly stronger than the hypothesis `|k - p| < k + E` of the collinear parents they are derived from (lines 120, 144, 156). The restriction propagates to `exp_two_mul_rapidity_of_realPhoton_energyFraction` (310) and `energyFraction_eq_exp_rapidity_mul_sub_div_sqrt_of_realPhoton` (322), and `abs_sub_lt_add` is `private`, so a user holding the weaker light-cone hypothesis cannot reach these statements at all.",
+   "line": 183
+  }
+ ],
+ "head_sha": "b113158a0a88c970932b24623e8b0f5b9ca3089e",
+ "merge_base_sha": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "249d3bb4f60571803973856fae0f921025a07a6734797bfee12ce93dd6708d5a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T133852Z-126-generality-ba4df6",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T13:38:52Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two over-restricted signatures: the positivity lemma in the PhyslibAlpha-eligible Minkowski file carries collinearity hypotheses it does not need, and the real-photon family replaces its parent's light-cone hypothesis with a strictly stronger triple whose bridge lemma is private.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Boosts/Axis.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality/TimeLike.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7f0b09b4ad82fd2e6372fe633924b7230d959a95363df8814a0e08afebca4644",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 139783,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 139783,
+  "cache_read_input_tokens": 456334,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4136,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4136,
+    "cache_read_input_tokens": 108812,
+    "input_tokens": 2,
+    "output_tokens": 5821,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17463,
+  "output_tokens_details": {
+   "thinking_tokens": 13745
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,229 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6466705000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 238.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 161028,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 161028,
+    "cache_read_input_tokens": 1153201,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3095,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3095,
+      "cache_read_input_tokens": 130231,
+      "input_tokens": 2,
+      "output_tokens": 3855,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18386,
+    "output_tokens_details": {
+     "thinking_tokens": 13103
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "cost_usd": 2.646671,
+ "dedupe_key": "eic/EpsilonEridani|126|b113158a0a88c970932b24623e8b0f5b9ca3089e|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "68a6087490acc2a491d3bb4c413e973941d2c4ae0e6271660aadf9da5e5f8f81",
+ "diff_sha256": "68a6087490acc2a491d3bb4c413e973941d2c4ae0e6271660aadf9da5e5f8f81",
+ "duration_s": 238.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean:107` `theorem energyFraction_mul_energy ... : k.energyFraction s * s.energy = k.energy := div_mul_cancel\u2080 _ hs`, used at InvariantMass.lean:265, 288, 301, 314 as the whole mathematical content of each of the five proofs; the bases are at InvariantMass.lean:94 (`minkowskiProduct_add_self_of_target`), 118 (`exp_two_mul_rapidity_of_collinearPhoton`), 173 (`minkowskiProduct_add_self_of_realPhoton`), 186 (`exp_two_mul_rapidity_of_realPhoton`).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Delete the five; a user with `hs` obtains each from `exp_two_mul_rapidity_of_collinearPhoton` / `minkowskiProduct_add_self_of_realPhoton` etc. by `rw [\u2190 \u03b3.energyFraction_mul_energy hs]`. Keep `energyFraction_eq_exp_rapidity_mul_sub_div_sqrt_of_realPhoton` (322), which is the genuine `x`-parameterisation: it isolates `\u03b3.energyFraction s` and needs no `hs`. If the virtuality bridge of line 261 is wanted, state it as a `_virtuality` lemma with `\u03b3.energy` in place of `\u03b3.energyFraction s * s.energy`, i.e. only `h\u03b3 : \u03b3.virtuality = -\u27eaq, q\u27eb\u2098` applied to `minkowskiProduct_add_self_of_target`.",
+   "issue": "Parallel API: `minkowskiProduct_add_self_of_target_energyFraction` (261), `minkowskiProduct_add_self_of_collinearPhoton_energyFraction` (273), `minkowskiProduct_add_self_of_realPhoton_energyFraction` (284), `exp_two_mul_rapidity_of_collinearPhoton_energyFraction` (297) and `exp_two_mul_rapidity_of_realPhoton_energyFraction` (310) are their base statements with the term `\u03b3.energy` written as `\u03b3.energyFraction s * s.energy`. They state nothing new about `x`: the proofs are exactly one rewrite with the lemma added in this PR, e.g. line 301-302 is `rw [\u03b3.energyFraction_mul_energy hs] at h \u22a2; exact exp_two_mul_rapidity_of_collinearPhoton hn hq hq' hP hP' h`, and lines 287-289, 313-315 are `rw [base, \u2190 \u03b3.energyFraction_mul_energy hs]; ring`. They also need the extra hypothesis `hs : s.energy \u2260 0` that the base forms do not.",
+   "line": "261"
+  }
+ ],
+ "head_sha": "b113158a0a88c970932b24623e8b0f5b9ca3089e",
+ "merge_base_sha": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3b7b5bda8fd54fd36af4e7b575a5add452211b40bb15fa3c00adb87ab6abea67",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T133851Z-126-reuse-93882c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T13:38:51Z",
+ "submitted_by": "wdconinc",
+ "summary": "The rapidity definition, the collinear Minkowski-square lemmas and the component lemmas are genuinely new and reuse Mathlib's `Real.artanh` API and Physlib's `minkowskiProduct_*` lemmas correctly. The exception is the energy-fraction section: five theorems are their own `k`-forms with `\u03b3.energy` spelled `\u03b3.energyFraction s * s.energy`, each proved by a single rewrite with the PR's new `PhotonKinematics.energyFraction_mul_energy`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Boosts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Boosts/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/HigherTwist/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "86234074899d2d1b15b6484b7cce13ed380eca42830cdbfa1ce802b9cc73e6d0",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 161028,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 161028,
+  "cache_read_input_tokens": 1153201,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3095,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3095,
+    "cache_read_input_tokens": 130231,
+    "input_tokens": 2,
+    "output_tokens": 3855,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18386,
+  "output_tokens_details": {
+   "thinking_tokens": 13103
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
