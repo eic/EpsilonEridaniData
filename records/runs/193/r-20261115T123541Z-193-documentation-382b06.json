@@ -1,0 +1,264 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.264969,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 235.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 124805,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 124805,
+    "cache_read_input_tokens": 1120988,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3287,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3287,
+      "cache_read_input_tokens": 101462,
+      "input_tokens": 2,
+      "output_tokens": 3216,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18251,
+    "output_tokens_details": {
+     "thinking_tokens": 12496
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b867b8c63ff3ff682d3ff741ea206e5ad2d2177f",
+ "cost_usd": 2.264969,
+ "dedupe_key": "eic/EpsilonEridani|193|188210a1031a29173c94498ef9fa75b0be4562a9|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "724663298eea51fcb6d80a83903efb0f9b2261f3167a543b0a3837c6ed0bb8d1",
+ "diff_sha256": "724663298eea51fcb6d80a83903efb0f9b2261f3167a543b0a3837c6ed0bb8d1",
+ "duration_s": 235.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Only `trace_symmProj`/`trace_antisymmProj` (lines 278, 290) exist; both are equations in `R`, with no `Module.finrank` of `symmetricTensors`/`antisymmetricTensors` anywhere in the file.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/TensorProduct/Symmetrizer.lean",
+   "fix": "End the sentence at the trace of the exchange operator, or say explicitly that the rank statement is not formalised here.",
+   "issue": "Module docstring: \"the trace of the exchange operator is `n`, so the symmetric and antisymmetric parts have ranks `n (n + 1) / 2` and `n (n - 1) / 2`\". The file proves no rank statement, and the inference from the trace is invalid over a general `CommRing R`: the traces are elements of `R` (over `ZMod 3`, `trace_symmProj` gives `6 = 0`, not the rank 6).",
+   "line": 36
+  },
+  {
+   "evidence": "`theorem trace_symmProj ... = \u215f(2 : R) * (Module.finrank R M * (Module.finrank R M + 1))` \u2014 an element of `R`, under hypotheses `[CommRing R] [Invertible (2 : R)]` only.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/TensorProduct/Symmetrizer.lean",
+   "fix": "Drop \"the rank of the (anti)symmetric part\", or qualify it (\"over a field of characteristic zero this is the rank of \u2026\").",
+   "issue": "Same overclaim on the declarations: `trace_symmProj` is glossed as \"`n (n + 1) / 2`, the rank of the symmetric part\" and `trace_antisymmProj` (line 289) as \"the rank of the antisymmetric part\". The statements are identities in `R`; identifying them with ranks holds only in characteristic zero and is not proved.",
+   "line": 277
+  },
+  {
+   "evidence": "Mathlib/Algebra/Lie/OfAssociative.lean:47 `@[instance_reducible] def ofAssociativeRing` (not an instance; file uses `attribute [local instance 100]` at line 63); the same caveat is documented in this PR's own BasicExtensions.lean:40-44.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "fix": "State the scope the cited lemma actually has (elements of a Lie algebra acting on `\u2102\u00b2`) and mention the `attribute [local instance 100] LieRing.ofAssociativeRing` needed for `L = Module.End \u2102 \u2102\u00b2`, or add the instantiated commutation lemma to the file.",
+   "issue": "Module docstring claims both projectors \"commute with the action `X \u2297 1 + 1 \u2297 X` of every operator `X` on `\u2102\u00b2` (`TensorProduct.commute_toEnd_antisymmProj`)\". That lemma is stated for `x : L` with `[LieRing L] [LieAlgebra R L] [LieRingModule L M] [LieModule R L M]`; taking `L := Module.End \u2102 \u2102\u00b2` requires `LieRing.ofAssociativeRing`, which is not a global instance, and this file neither enables it nor uses the lemma.",
+   "line": 26
+  },
+  {
+   "evidence": "File line 120: `\u2026 .Jsq = (2 : \u2102) \u2022 spinTripletProj`; no occurrence of `P\u2081` as a defined symbol (only `P\u2081\u2082` for `TensorProduct.comm`).",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "fix": "Write `S\u00b2 = 1 + P\u2081\u2082 = 2 \u2022 spinTripletProj`.",
+   "issue": "`Jsq_tensor_spinRep` docstring writes \"`S\u00b2 = 1 + P\u2081\u2082 = 2 P\u2081`\"; `P\u2081` is defined nowhere in the file and reads naturally as the singlet projector, whereas the statement is `(2 : \u2102) \u2022 spinTripletProj`.",
+   "line": 118
+  },
+  {
+   "evidence": "Lines 82-84; the cited lemma is the one applied in the proof body (`have h := LinearMap.trace_map_self_comp_comm (LinearMap.id \u2026)`).",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/TensorProduct/Symmetrizer.lean",
+   "fix": "Keep the first clause; move the provenance into a proof comment.",
+   "issue": "`trace_comm`'s docstring documents the proof \u2014 \"it is the case `f = id` of `LinearMap.trace_map_self_comp_comm`\" \u2014 rather than the result.",
+   "line": 83
+  },
+  {
+   "evidence": "No `casimir` occurrence in either new file (grep over the diff); SpinDecomposition.lean:119-124 proves `Jsq_tensor_spinRep`; Symmetrizer.lean:84-85 uses `LinearMap.trace_map_self_comp_comm`.",
+   "file": "",
+   "fix": "Update the description to name `PhyslibAlpha.Sl2.AngularMomentumRepresentation.Jsq` / `Jsq_tensor_spinRep`, and `LinearMap.trace_map_self_comp_comm` for `trace_comm`.",
+   "issue": "PR description is stale against the head commit: it says the total spin squared is \"taken as `LieModule.casimir` of the tensor-product Lie module \u2026 (`casimir_spinGen_eq`)\" and that `trace_comm` is \"proved via `TensorProduct.toMatrix_comm`\". Neither declaration nor proof route is in the diff.",
+   "line": 0
+  }
+ ],
+ "head_sha": "188210a1031a29173c94498ef9fa75b0be4562a9",
+ "merge_base_sha": "77ddb4653b2f7bb8d520c8def286dbf142c9c851",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 193,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d3ddcde985cfcc948b8276deed5336b7d0fc759d63acd5f4d78cfcdb9aa93c98",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T123541Z-193-documentation-382b06",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T12:35:41Z",
+ "submitted_by": "wdconinc",
+ "summary": "Three docstrings claim ranks the file never proves (and which do not follow from the trace statements over a general ring), one cites a Lie-algebra lemma as covering \"every operator X on \u2102\u00b2\" when that instantiation needs a non-global instance the file never enables, one documents its proof rather than its result, and the PR description names declarations that no longer exist.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/PauliMatrices/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/TensorProduct/Symmetrizer.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/TensorProduct/Symmetric.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Bispinors/Pauli/Relations.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/QuantumMechanics/AngularMomentum/SpinOrbit.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Lie",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Lie/OfAssociative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "replies.json",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/TensorProduct/Symmetrizer.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6db48a2aa65f8c6b21a912cde2be99b93b7cc37e4384b17f96bd6c669fe1e551",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 124805,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 124805,
+  "cache_read_input_tokens": 1120988,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3287,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3287,
+    "cache_read_input_tokens": 101462,
+    "input_tokens": 2,
+    "output_tokens": 3216,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18251,
+  "output_tokens_details": {
+   "thinking_tokens": 12496
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

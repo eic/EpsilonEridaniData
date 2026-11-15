@@ -1,0 +1,241 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.8815605,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 359.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 169504,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 169504,
+    "cache_read_input_tokens": 995271,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2812,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2812,
+      "cache_read_input_tokens": 136802,
+      "input_tokens": 2,
+      "output_tokens": 4113,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 27551,
+    "output_tokens_details": {
+     "thinking_tokens": 21654
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b867b8c63ff3ff682d3ff741ea206e5ad2d2177f",
+ "cost_usd": 2.88156,
+ "dedupe_key": "eic/EpsilonEridani|193|188210a1031a29173c94498ef9fa75b0be4562a9|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "724663298eea51fcb6d80a83903efb0f9b2261f3167a543b0a3837c6ed0bb8d1",
+ "diff_sha256": "724663298eea51fcb6d80a83903efb0f9b2261f3167a543b0a3837c6ed0bb8d1",
+ "duration_s": 359.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Ecosystem spells it out for exactly this object: `upstream/TauCeti/TauCeti/LinearAlgebra/TensorSquare.lean:74` \"projections to the symmetrizer `\u215f2 \u2022 (1 + swap)` and the antisymmetrizer `\u215f2 \u2022 (1 - swap)`\", `TensorSquare.lean:443 private noncomputable def symmetricProjection`, `symmetricTensors`/`antisymmetricTensors`, `Symmetric/Symmetrizer.lean:92 rowSymmetrizer`, `:98 columnAntisymmetrizer`. Mathlib's `TensorProduct.comm_symm` fixes the other reading of `symm` in this namespace.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/TensorProduct/Symmetrizer.lean",
+   "fix": "Rename to `TensorProduct.symmetrizer`/`TensorProduct.antisymmetrizer` (matching the file name and the prose) or `symmetricProj`/`antisymmetricProj`, and update the dependent lemma names and the two abbrevs in SpinDecomposition.lean.",
+   "issue": "`TensorProduct.symmProj`/`antisymmProj` (and the ~24 lemma names built on them: `symmProj_def`, `antisymmProj_apply`, `symmProj_add_antisymmProj`, `comm_eq_symmProj_sub_antisymmProj`, `range_symmProj`, `trace_antisymmProj`, `commute_toEnd_symmProj`, \u2026) abbreviate \"symmetric\"/\"antisymmetric\" as `symm`/`antisymm`, inside a namespace where `symm` already means the inverse of a `LinearEquiv` (`TensorProduct.comm_symm`). The file's own title and docstrings call these objects \"the symmetrizer\" and \"the antisymmetrizer\", so no declaration carries the term the module documents.",
+   "line": 117
+  },
+  {
+   "evidence": "ColorDecomposition.lean:149 `The singlet projector squares to itself: P\u2081 P\u2081 = P\u2081`, :229 `P\u2081 \u03c8 = Tr(\u03c8\u2081\u2020 \u03c8) \u03c8\u2081`, :272 `[X, P\u2081 \u03c8] = 0`; SpinDecomposition.lean:46 explicitly names that file as the counterpart whose structure it follows.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "fix": "Write `2 \u2022 spinTripletProj` (or `2 P\u2083`) instead of `2 P\u2081` in the docstring.",
+   "issue": "The `Jsq_tensor_spinRep` docstring writes `S\u00b2 = 1 + P\u2081\u2082 = 2 P\u2081`, using `P\u2081` for the *triplet* projector, while the sibling module in the same namespace uses `P\u2081` for the *singlet* projector throughout.",
+   "line": 118
+  },
+  {
+   "evidence": "upstream/Physlib/Physlib/Relativity/PauliMatrices/Basic.lean:50 `scoped[PauliMatrix] notation \"\u03c31\" => \u03c3 (Sum.inr 0)`; the file's own `lie_spinGen_zero_one` is proved from `\u03c31_\u03c32_commutator`.",
+   "file": "EpsilonEridani/Relativity/PauliMatrices/BasicExtensions.lean",
+   "fix": "State the index convention explicitly, e.g. `spinGen i = pauliMatrix (Sum.inr i) / 2`, so `spinGen 0 = \u03c31 / 2`; adjust the four other occurrences likewise.",
+   "issue": "`spinGen (i : Fin 3)` is documented as `S\u1d62 = \u03c3\u1d62 / 2`, but it is `pauliMatrix (Sum.inr i) / 2`, and Physlib's spatial Pauli notation is 1-based: `\u03c31 = \u03c3 (Sum.inr 0)`. So `spinGen 1 = \u03c32 / 2`, not `\u03c31 / 2`. Same off-by-one wording at lines 19 and 48 of this file, line 130 (`spinRep`: `J\u1d62 = S\u1d62 = \u03c3\u1d62 / 2`), and SpinDecomposition.lean:16.",
+   "line": 81
+  },
+  {
+   "evidence": "upstream/TauCeti/TauCeti/RepresentationTheory/Spin/Representation.lean:58 `noncomputable def spinRep (Q : QuadraticForm K V) (P : SpinPolarizationData Q)` \u2014 the representation of `spinGroup Q`.",
+   "file": "EpsilonEridani/Relativity/PauliMatrices/BasicExtensions.lean",
+   "fix": "Name it `spinHalfRep` (or `angularMomentumRep`) and rename the dependent `spinRep_Jx/Jy/Jz`, `Jsq_spinRep`, `dot_spinRep_spinRep`, `Jsq_tensor_spinRep*` accordingly.",
+   "issue": "`PauliMatrix.spinRep` names the spin-\u00bd *angular momentum* (su(2)) representation, but \"spin representation\" denotes the Clifford/Spin-group representation in the libraries this repo imports, where that exact short name is already taken; opening both namespaces makes `spinRep` ambiguous.",
+   "line": 131
+  }
+ ],
+ "head_sha": "188210a1031a29173c94498ef9fa75b0be4562a9",
+ "merge_base_sha": "77ddb4653b2f7bb8d520c8def286dbf142c9c851",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 193,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ce6fc50d505cbfd1b6afdcb88fcf1e8de8c9fcfff7994ab7b16c2000cbc2bd1d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T123421Z-193-naming-b7f2b4",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T12:34:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names are mostly conclusion-describing and consistent with the colour-decomposition sibling, but the new tensor-square projectors abbreviate terminology the ecosystem (and the file's own prose) spells out, and two docstring conventions collide with neighbouring modules: `P\u2081` means the singlet projector in ColorDecomposition but the triplet projector here, and `S\u1d62 = \u03c3\u1d62 / 2` is off by one against Physlib's `\u03c31 = \u03c3 (Sum.inr 0)`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/TensorProduct/Symmetrizer.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/SpinDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/PauliMatrices/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/TensorSquare.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/RepresentationTheory/Symmetric/Symmetrizer.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/RepresentationTheory/Symmetric/Symmetrizer.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/TensorSquare.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/TensorProduct/Symmetric.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/PauliMatrices/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/PauliMatrices",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/PauliMatrices/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "640776340a999fd308cf07b5c545923a1f18ed94246f9496b6bee8deea8638dc",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 169504,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 169504,
+  "cache_read_input_tokens": 995271,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2812,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2812,
+    "cache_read_input_tokens": 136802,
+    "input_tokens": 2,
+    "output_tokens": 4113,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 27551,
+  "output_tokens_details": {
+   "thinking_tokens": 21654
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
