@@ -1,0 +1,170 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9098254999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 165.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 141135,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 141135,
+    "cache_read_input_tokens": 367431,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8100,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8100,
+      "cache_read_input_tokens": 100281,
+      "input_tokens": 2,
+      "output_tokens": 3050,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12588,
+    "output_tokens_details": {
+     "thinking_tokens": 9803
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "cost_usd": 1.909825,
+ "dedupe_key": "eic/EpsilonEridani|71|3f5f19a786edebe60c3251d51b1da7a351c20056|api-design|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "44a65b9a3c02b9c9e1e0f9ebcc7dd8a61a3d9494d88917f628d4a9b3737194f8",
+ "diff_sha256": "44a65b9a3c02b9c9e1e0f9ebcc7dd8a61a3d9494d88917f628d4a9b3737194f8",
+ "duration_s": 165.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `aFour|ParityOddAssumptions gFour` across the repo returns only ParityOdd.lean:433-518; the sole `ParityOddAssumptions` facts there are `parityOddAssumptions_aOfAlt` (line 355, about `aOfAlt \u03b5 K`) and the two defeq-dependent uses at lines 489 and 515. ParityOdd.lean:77 is `public section` with no `@[expose]`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "fix": "Add `lemma parityOddAssumptions_aFour : ParityOddAssumptions gFour kFour aFour := parityOddAssumptions_aOfAlt gFour (Pi.basisFun \u211d (Fin 4)).det (Pi.basisFun \u211d (Fin 4)) kFour` and use it in `existsUnique_eq_smul_aFour` and `not_isLorentzCovariant_aFour` instead of the unfolded call. This is not the duplicate re-export the earlier reuse finding removed: that one restated a general lemma under a second parameterized name, whereas `aFour` is now a distinct specialized definition whose defining property nothing else states.",
+   "issue": "No declaration states `ParityOddAssumptions gFour kFour aFour`. The module is `public section` without `@[expose]` (line 77), so `aFour`'s body is hidden and a consumer cannot recover it from `parityOddAssumptions_aOfAlt`. The two in-file users rely on in-module defeq: `existsUnique_eq_smul_aFour` (line 489) and `not_isLorentzCovariant_aFour` (line 515) both pass `parityOddAssumptions_aOfAlt gFour (Pi.basisFun \u211d (Fin 4)).det \u2026 kFour` at an `aFour`-typed position. Downstream, `aFour` cannot be used as the `A` of `eq_div_smul`, `existsUnique_eq_smul`, `sub_flip_eq_div_smul` or `existsUnique_sub_flip_eq_smul`, all of which take `hA : ParityOddAssumptions g K A`. The module docstring (lines 68-71) advertises `aFour` as 'a non-zero parity-odd tensor', but only `aFour_ne_zero` exists.",
+   "line": 433
+  }
+ ],
+ "head_sha": "3f5f19a786edebe60c3251d51b1da7a351c20056",
+ "merge_base_sha": "0121ae28d0ebf3ad74c3fc264fcd86738f04721c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 71,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "c831a73f82c5e00f0774b03903de39d7f8347850475cf3c53d08e3b6df296006",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T000117Z-71-api-design-83e772",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T00:01:17Z",
+ "submitted_by": "wdconinc",
+ "summary": "The parity-odd API is otherwise complete and well annotated, but `Witness.aFour` ships with no declaration stating that it is parity-odd, and its body is unexposed, so the witness's headline property is unreachable downstream.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "66a6d9d7a5260b8f3dec20dfe1123c95f6680036dc50f86dc95da5f3c23e6b1c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 141135,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 141135,
+  "cache_read_input_tokens": 367431,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8100,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8100,
+    "cache_read_input_tokens": 100281,
+    "input_tokens": 2,
+    "output_tokens": 3050,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12588,
+  "output_tokens_details": {
+   "thinking_tokens": 9803
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
