@@ -1,0 +1,185 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3509069999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 98.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 96106,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 96106,
+    "cache_read_input_tokens": 422034,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2930,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2930,
+      "cache_read_input_tokens": 80965,
+      "input_tokens": 2,
+      "output_tokens": 1658,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 7150,
+    "output_tokens_details": {
+     "thinking_tokens": 4442
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.350907,
+ "dedupe_key": "eic/EpsilonEridani|196|858bf9b300da9ece0e3ba0405389a7f2b3c30d54|scope|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "32c5b2236dcecea6d72b0a09cdf308fa2899bc3bf22d081055bfb45f9870d667",
+ "diff_sha256": "32c5b2236dcecea6d72b0a09cdf308fa2899bc3bf22d081055bfb45f9870d667",
+ "duration_s": 98.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -rE 'leptonDensity|D_ee|qedEvolution|RadiatorKernel|correctionOperator|photonDensity|structureFunctionForm|tailSupport' code/EpsilonEridani` matches only ExponentiatedRadiator.lean, Kinematics/ChargedLegs.lean and Corrections/Eikonal.lean; `ls code/EpsilonEridani/QFT/Scattering/DIS/Corrections/` gives Basic, Born, Eikonal, ExponentiatedRadiator only.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/ExponentiatedRadiator.lean",
+   "fix": "Land \u00a72.2 (`D_ee` and the QED evolution) \u2014 and the Layer 1 material Layer 2 depends on \u2014 before \u00a72.4, or state in the description which open PR supplies them.",
+   "issue": "\u00a72.4 defines `exponentiatedRadiator` as \"the closed-form approximant to `D_ee` near `z = 1`\", and Layer 2's Dependencies section requires Layers 0 and 1. On the PR head there is no `D_ee`/`leptonDensity`, no `qedEvolutionGenerator` (\u00a72.2), no `RadiatorKernel`/`correctionOperator` (\u00a72.1), and no Layer 1 material (`RadiativeEvent`, shift maps, `tailSupport`) at all. The two \u00a72.4 statements that would tie this object to a radiator, `exponentiatedRadiator_agrees_soft` and `exponentiatedRadiator_error`, are therefore absent, and the PR says so. The \u03b2 parametrisation deviating from the roadmap's `\u03b2 = 2\u03b1(L-1)/\u03c0` is a symptom of the same gap: \u00a72.2's `L` does not exist to be referenced.",
+   "line": 0
+  },
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md:724-725 and :1108-1109 both assert the zeroth moment is one; the diff's `one_lt_integral_exponentiatedRadiator` proves `1 < \u222b z in Ioc 0 1, exponentiatedRadiator \u03b2 z` for `0 < \u03b2 \u2264 1`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Corrections/ExponentiatedRadiator.lean",
+   "fix": "Get \u00a72.4 and acceptance example 9 amended in EpsilonEridaniRoadmaps first (either correcting the normalisation clause to the Gribov-Lipatov value, or restating it about the Beta profile), then land this against the amended text; do not merge it as closing example 9 as written.",
+   "issue": "The PR claims acceptance example 9, whose second clause is \"and the zeroth moment is one\". `one_lt_integral_exponentiatedRadiator` proves the opposite for the definition shipped here, so example 9 is not discharged and `Gamma_le_one_of_mem_Icc` exists only to support a statement the roadmap does not ask for.",
+   "line": 0
+  }
+ ],
+ "head_sha": "858bf9b300da9ece0e3ba0405389a7f2b3c30d54",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 196,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "edd27931894cfa3193fc4e0faf59ef061d57f0bffb4bad019c09bc5242905f61",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "scope",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T042757Z-196-scope-90c6d1",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T04:27:57Z",
+ "submitted_by": "wdconinc",
+ "summary": "The PR is a single topic and cites a real target (\u00a72.4 / acceptance example 9), but it builds \u00a72.4 while \u00a72.1, \u00a72.2 and the whole of Layer 1 are absent from the repository, so the radiator is a free-standing special function with nothing in-repo that it approximates. It also proves the negation of the target's own \"zeroth moment is one\" clause, which needs a human roadmap decision before this can count as discharging example 9.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/web/static_files/progress.json",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fa290b174fce5641d3299cb21c21ce9f541e0aca391de8b2fdc990a549e36b9b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 96106,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 96106,
+  "cache_read_input_tokens": 422034,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2930,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2930,
+    "cache_read_input_tokens": 80965,
+    "input_tokens": 2,
+    "output_tokens": 1658,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 7150,
+  "output_tokens_details": {
+   "thinking_tokens": 4442
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
