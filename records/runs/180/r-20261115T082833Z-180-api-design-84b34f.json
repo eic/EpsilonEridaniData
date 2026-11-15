@@ -1,0 +1,219 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3165240000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 217.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 152699,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 152699,
+    "cache_read_input_tokens": 762868,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3177,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3177,
+      "cache_read_input_tokens": 122707,
+      "input_tokens": 2,
+      "output_tokens": 4059,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16320,
+    "output_tokens_details": {
+     "thinking_tokens": 11706
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 2.316524,
+ "dedupe_key": "eic/EpsilonEridani|180|17db25caf135f2fce478ca03d0f99cc0c39f3f44|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "08e6348428a4bef814818e870a6a5fe94115a90fc578e24d13032933768d4d3e",
+ "diff_sha256": "08e6348428a4bef814818e870a6a5fe94115a90fc578e24d13032933768d4d3e",
+ "duration_s": 217.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `hadronicMethod_eq_ofTransfer` and `ofTransfer_x_eq_Q2_div` returns only the definition at AccessMethods.lean:188 and `electronMethod_eq_ofTransfer` at :213; `ofTransfer_x_eq_Q2_div` has no call site in the repo.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "Add `hadronicMethod_eq_ofTransfer` and derive `hadronicMethod_x_eq_Q2_div` (and `electronMethod_x_eq_Q2_div`) from `ofTransfer_x_eq_Q2_div`, so all four methods carry the same characteristic form.",
+   "issue": "`hadronicMethod` is defined as `.ofTransfer g k p (pX - p)` but has no `hadronicMethod_eq_ofTransfer`, while `electronMethod_eq_ofTransfer` exists (line 213). Consequently the generic `ofTransfer_x_eq_Q2_div` (line 188) is unusable for the hadronic method without unfolding the def, and the `x = Q\u00b2/(2 (p\u00b7k) y)` form stated for `sigmaMethod` (242) and `mixedMethod` (248) has no hadronic counterpart.",
+   "line": 209
+  },
+  {
+   "evidence": "grep for `shiftXQ2_toReconstructed|shiftXY_toReconstructed` returns nothing; `toReconstructedInvariants` occurs only in the def (AccessMethods.lean:299) and in Radiative.lean proof steps.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "fix": "Add `@[simp] theorem shiftXQ2_toReconstructedInvariants (t : TrueInvariants) : t.toReconstructedInvariants.shiftXQ2 t = 0` and the `shiftXY` analogue (immediate from `shiftXQ2_eq_zero_iff`).",
+   "issue": "`TrueInvariants.toReconstructedInvariants` has no lemma relating it to the shift maps. The Born-limit theorems are stated as `method = (trueInvariants \u2026).toReconstructedInvariants` (Radiative.lean:298, 312, 319, 338) while every radiative result is stated as `shiftXQ2 \u2026 = 0` / `shiftXY \u2026 \u2260 0`; a consumer holding a Born-limit equation has no lemma to conclude the shift vanishes.",
+   "line": 299
+  },
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md:478-482 defines `trueMomentumTransfer`; grep for `trueMomentumTransfer` in EpsilonEridani/ returns nothing.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Add `RadiativeEvent.trueMomentumTransfer : V := e.pX - e.p` with a `@[simp]` defining lemma and `hardKinematics_q`-style restatement, and state the `trueInvariants_*_eq` lemmas against it.",
+   "issue": "Roadmap 1.1 names `trueMomentumTransfer` (`q_true = p_X - P`) as an explicit definition of the milestone this PR targets; it is not exposed. `e.pX - e.p` is spelled out raw in `trueInvariants_Q2_eq`, `trueInvariants_x_eq`, `trueInvariants_y_eq` and the collinear lemmas, and the only accessor `(e.hardKinematics l).q` requires supplying an `EmissionLine` the quantity does not depend on.",
+   "line": 174
+  },
+  {
+   "evidence": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/TargetMass.lean:45 and DIS/Polarized/Kinematics.lean:48 use `public section` without `@[expose]`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Use plain `public section`, as the sibling kinematics modules do.",
+   "issue": "`@[expose] public section` exposes every body in the new module, although no consumer needs to unfold: `leptonIn`/`leptonOut` have `(rfl)` simp lemmas (145-154) and `hardKinematics`/`trueInvariants` carry `@[simps]`. Exposed bodies let downstream proofs depend on the defeq `electronMethod \u2261 ofTransfer` instead of the stated lemmas.",
+   "line": 89
+  }
+ ],
+ "head_sha": "17db25caf135f2fce478ca03d0f99cc0c39f3f44",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f75393e35709d546c1bcd6aa4a3b551ede7923015a7b6890ce85f330507c73f8",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T082833Z-180-api-design-84b34f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T08:28:33Z",
+ "submitted_by": "wdconinc",
+ "summary": "The covariant-method surface is incomplete: the hadronic method lacks the ofTransfer restatement its three siblings have, nothing links the `= toReconstructedInvariants` Born-limit form to the `shift = 0` form, and the roadmap-named `trueMomentumTransfer` is unexposed. The new module also exposes bodies it does not need to.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/SesquilinearForm/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0c77222fac0138946f7d02ed910a16fa12c6f8b83970797561712305f4f13613",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 152699,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 152699,
+  "cache_read_input_tokens": 762868,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3177,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3177,
+    "cache_read_input_tokens": 122707,
+    "input_tokens": 2,
+    "output_tokens": 4059,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16320,
+  "output_tokens_details": {
+   "thinking_tokens": 11706
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
