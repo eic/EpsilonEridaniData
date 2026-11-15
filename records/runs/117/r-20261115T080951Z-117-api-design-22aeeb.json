@@ -1,0 +1,185 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9781155,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 268.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 113082,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 113082,
+    "cache_read_input_tokens": 641591,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4023,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4023,
+      "cache_read_input_tokens": 88335,
+      "input_tokens": 2,
+      "output_tokens": 8126,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21056,
+    "output_tokens_details": {
+     "thinking_tokens": 17449
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.978115,
+ "dedupe_key": "eic/EpsilonEridani|117|c7373f701d6d19d882cdb88a441dbb0961f19183|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c5c8dff731542aa571245fcbfa7b4c489fdba132e224071e7ac680ddd4a6d271",
+ "diff_sha256": "c5c8dff731542aa571245fcbfa7b4c489fdba132e224071e7ac680ddd4a6d271",
+ "duration_s": 268.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The proof already exists twice inline: line 138 `rw [coeff_one_subst G.constantCoeff_toPowerSeries, smul_eq_mul]` in the `Mul` instance, and line 194 `simp [coeff_one_subst G.constantCoeff_toPowerSeries]` in `linearCoeff`'s `map_mul'`. Reading the full file shows `coeff_one_toPowerSeries_inv` is the only `coeff_one_toPowerSeries_*` lemma. `Mathlib/RingTheory/PowerSeries/Basic.lean:226` confirms `@[simp] coeff_one_X`, which covers the `1` case but not `*`.",
+   "file": "EpsilonEridani/Mathematics/RingTheory/PowerSeries/Substitution.lean",
+   "fix": "Add `@[simp] lemma coeff_one_toPowerSeries_mul (F G : SubstGroup R) : coeff 1 (F * G).toPowerSeries = coeff 1 F.toPowerSeries * coeff 1 G.toPowerSeries`, proved by `rw [toPowerSeries_mul, coeff_one_subst G.constantCoeff_toPowerSeries, smul_eq_mul]`, and use it in the `Mul` instance and in `linearCoeff.map_mul'`.",
+   "issue": "`coeff 1 (F * G).toPowerSeries` has no lemma and no simp normal form: `@[simp] toPowerSeries_mul` rewrites it to `coeff 1 (F.toPowerSeries.subst G.toPowerSeries)`, and `coeff_one_subst` is not `@[simp]`, so simp stalls there. The interaction of `coeff 1` with `\u207b\u00b9` is given (`@[simp] coeff_one_toPowerSeries_inv`, line 204) and with `1` (via `toPowerSeries_one` + Mathlib's `@[simp] coeff_one_X`), but the product case \u2014 the group's defining operation \u2014 is missing. This matters downstream because every scheme-change theorem in BetaFunction.lean is gated on `coeff 1 F.toPowerSeries = 1` (`betaCoeff_transformBeta_zero_of_coeff_one_eq_one` etc.) while `transformBeta_mul` is the API for composing redefinitions, so discharging the hypothesis for a composite requires a manual detour through `mem_ker_linearCoeff_iff` and `Subgroup.mul_mem`.",
+   "line": 150
+  }
+ ],
+ "head_sha": "c7373f701d6d19d882cdb88a441dbb0961f19183",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 117,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "427a0d7c0aff7023a7af66829d1d3ded75347ca853bd0675d709e492337b3332",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T080951Z-117-api-design-22aeeb",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T08:09:51Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is otherwise minimal and well characterised, but `coeff 1` of a product of `SubstGroup` elements has no lemma, despite the same computation being proved inline twice and despite `coeff 1` of an inverse carrying a `@[simp]` lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/PowerSeries",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/PowerSeries/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/PowerSeries",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1a42ed129f6acf7d4a70c57e5c80fd5d8be772ae90e2d024c97093933d6e2058",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 113082,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 113082,
+  "cache_read_input_tokens": 641591,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4023,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4023,
+    "cache_read_input_tokens": 88335,
+    "input_tokens": 2,
+    "output_tokens": 8126,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21056,
+  "output_tokens_details": {
+   "thinking_tokens": 17449
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

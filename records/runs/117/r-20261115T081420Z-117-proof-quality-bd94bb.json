@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.590344,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 228.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 103085,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 103085,
+    "cache_read_input_tokens": 224288,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6865,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6865,
+      "cache_read_input_tokens": 76076,
+      "input_tokens": 2,
+      "output_tokens": 5869,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17892,
+    "output_tokens_details": {
+     "thinking_tokens": 14089
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.590344,
+ "dedupe_key": "eic/EpsilonEridani|117|c7373f701d6d19d882cdb88a441dbb0961f19183|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c5c8dff731542aa571245fcbfa7b4c489fdba132e224071e7ac680ddd4a6d271",
+ "diff_sha256": "c5c8dff731542aa571245fcbfa7b4c489fdba132e224071e7ac680ddd4a6d271",
+ "duration_s": 228.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 164-172 vs 181-187 vs 203-210: identical `have h\u03b2' := X_pow_dvd_iff.mp h\u03b2`, `have h := congrArg (coeff k) (subst_transformBeta F \u03b2)`, `rw [coeff_k_subst ..., X_pow_dvd_iff.mp (X_pow_dvd_transformBeta F 2 h\u03b2) 1 ...]`, and the same `simp only [coeff_mul, Finset.Nat.sum_antidiagonal_succ, Finset.HasAntidiagonal.antidiagonal_zero, Finset.sum_singleton, h\u03b2' 0 _, h\u03b2' 1 _, mul_zero, add_zero, coeff_derivative, smul_eq_mul, zero_mul, zero_add, ...] at h`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "fix": "Factor the shared step into one reusable lemma, e.g. `coeff_derivative_mul (f g : R\u27e6X\u27e7) (n) : coeff n (d\u2044dX f * g) = \u2211 p \u2208 Finset.antidiagonal n, (p.1 + 1) * coeff (p.1 + 1) f * coeff p.2 g` (or a version specialised to `X ^ 2 \u2223 \u03b2` giving `coeff (n+2) (d\u2044dX F * \u03b2)`), and have each private lemma apply it; carry the explanatory comment into the shared lemma.",
+   "issue": "The three private lemmas (lines 161-216) repeat the same preamble and the same Cauchy-product expansion of `coeff n (d\u2044dX F * \u03b2)`: lines 164-172, 181-187 and 203-210 differ only in `coeff_two/three/four_subst` and two extra `Nat.cast_*` entries. The comment explaining the step appears only on the first copy.",
+   "line": 161
+  },
+  {
+   "evidence": "`Units.val_pow_eq_pow_val` and `Units.inv_pow_eq_pow_inv` are `:= rfl` in upstream/mathlib/Mathlib/Algebra/Group/Units/Defs.lean:270,273; the same three lines precede `exact` in all four theorems.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "fix": "Add one helper, e.g. `lemma eq_inv_pow_mul_iff {u : R\u02e3} {a b : R} {n : \u2115} : a = (\u2191u\u207b\u00b9 : R) ^ n * b \u2194 (u : R) ^ n * a = b`, and reduce each of the four proofs to `eq_inv_pow_mul_iff.mpr <private lemma>`.",
+   "issue": "The unit-clearing idiom `rw [\u2190 Units.inv_pow_eq_pow_inv]; refine (Units.eq_inv_mul_iff_mul_eq _).mpr ?_; rw [Units.val_pow_eq_pow_val, SubstGroup.coe_linearCoeff F]` is written out four times (lines 222-224, 230-233, 243-246, 344-347). It is pure coercion bookkeeping and hides a one-line reusable fact.",
+   "line": 220
+  },
+  {
+   "evidence": "Lines 224-225 and line 234 both perform `\u2190 smul_eq_C_mul` followed by `\u2190 rescale_eq_subst` on `C u * X`; `PowerSeries.rescale_eq_subst` is upstream/mathlib/Mathlib/RingTheory/PowerSeries/Substitution.lean:404.",
+   "file": "EpsilonEridani/Mathematics/RingTheory/PowerSeries/Substitution.lean",
+   "fix": "State the underlying fact once before the `MonoidHom`, e.g. `lemma subst_C_mul_X (r : R) (f : R\u27e6X\u27e7) : f.subst (C r * X) = PowerSeries.rescale r f := by rw [\u2190 smul_eq_C_mul, \u2190 rescale_eq_subst]`, then prove `map_mul'` and `subst_toPowerSeries_rescale` from it (`simp [subst_C_mul_X, \u2190 rescale_X, rescale_rescale]`).",
+   "issue": "`rescale.map_mul'` closes its goal with a six-step chain of reverse rewrites (`\u2190 smul_eq_C_mul`, `\u2190 PowerSeries.rescale_eq_subst`, `\u2190 rescale_X` twice, `rescale_rescale`, `Units.val_mul`), re-deriving the `C r * X` \u2194 `PowerSeries.rescale r` identification that is then stated separately as `subst_toPowerSeries_rescale` (lines 232-234). The chain breaks on any upstream rename and duplicates the fact.",
+   "line": 221
+  }
+ ],
+ "head_sha": "c7373f701d6d19d882cdb88a441dbb0961f19183",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 117,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6fcd4bffd33bef7ca7feae9f6db95b402a282e8974da2981438b798939581120",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T081420Z-117-proof-quality-bd94bb",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T08:14:20Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs compile and mostly use robust idioms (explicit linear_combination coefficients, terminal simp only), but three blocks of reasoning are repeated verbatim instead of being factored, and one brittle reverse-rw chain re-derives a lemma stated immediately below it.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/PowerSeries",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/PowerSeries/Derivative.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e249108a6329dc7d9f50c8fe713ba7fcf3b4f9b0126f65e68c6a5c8f8a08868e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 103085,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 103085,
+  "cache_read_input_tokens": 224288,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6865,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6865,
+    "cache_read_input_tokens": 76076,
+    "input_tokens": 2,
+    "output_tokens": 5869,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17892,
+  "output_tokens_details": {
+   "thinking_tokens": 14089
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

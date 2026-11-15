@@ -1,0 +1,274 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3481924999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 210.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 123795,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 123795,
+    "cache_read_input_tokens": 1390635,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 40,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 801,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 801,
+      "cache_read_input_tokens": 102244,
+      "input_tokens": 2,
+      "output_tokens": 3751,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16589,
+    "output_tokens_details": {
+     "thinking_tokens": 9354
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 2.348192,
+ "dedupe_key": "eic/EpsilonEridani|117|c7373f701d6d19d882cdb88a441dbb0961f19183|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c5c8dff731542aa571245fcbfa7b4c489fdba132e224071e7ac680ddd4a6d271",
+ "diff_sha256": "c5c8dff731542aa571245fcbfa7b4c489fdba132e224071e7ac680ddd4a6d271",
+ "duration_s": 210.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Algebra/Group/Action/Defs.lean:499 `lemma inv_smul_smul (g : G) (a : \u03b1) : g\u207b\u00b9 \u2022 g \u2022 a = a`; :502 `lemma smul_inv_smul (g : G) (a : \u03b1) : g \u2022 g\u207b\u00b9 \u2022 a = a`; Mathlib/Algebra/Group/Action/Basic.lean:51 `protected lemma MulAction.injective (g : \u03b1) : Function.Injective (g \u2022 \u00b7 : \u03b2 \u2192 \u03b2)` (and :47 `MulAction.bijective`, :59 `smul_left_cancel`). `SubstGroup R` is a new type, so the instance creates no diamond with existing actions on `R\u27e6X\u27e7`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "fix": "Register `instance : MulAction (SubstGroup R) R\u27e6X\u27e7 := { smul := transformBeta, one_smul := transformBeta_one, mul_smul := transformBeta_mul }` and delete the three lemmas in favour of `inv_smul_smul F \u03b2`, `smul_inv_smul F \u03b2` and `MulAction.injective F`; if the named forms are kept for readability, prove each as a one-liner from those.",
+   "issue": "`transformBeta_one` (line 120) and `transformBeta_mul` (line 126) are literally the `one_smul`/`mul_smul` axioms of `MulAction (SubstGroup R) R\u27e6X\u27e7`, but no instance is declared, so `transformBeta_inv_transformBeta` (132), `transformBeta_transformBeta_inv` (138) and `transformBeta_injective` (145) re-prove generic Mathlib lemmas and the rest of the action API (bijectivity, surjectivity, `smul_left_cancel`, `inv_smul_eq_iff`, orbits) is unavailable.",
+   "line": 132
+  }
+ ],
+ "head_sha": "c7373f701d6d19d882cdb88a441dbb0961f19183",
+ "merge_base_sha": "bfc4de95c65ff0beae177138f58842b8a638c277",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 117,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7fee6641da6b8def35e44129974aeaf7d87eb0f00091c403732de993c7ae65ab",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T080951Z-117-reuse-fca8b3",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T08:09:51Z",
+ "submitted_by": "wdconinc",
+ "summary": "The substitution group and the finite-sum substitution coefficients are genuinely absent from Mathlib, TauCeti and Physlib, and the beta-function material does not overlap the existing real-valued QCD.beta0/beta1. One reuse gap: transformBeta is proved to be a group action but no MulAction instance is registered, so three cancellation/injectivity lemmas re-derive generic Mathlib API.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/PowerSeries/Derivative.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/RingTheory/PowerSeries/Substitution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/BetaFunction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Group/Action",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Group/Action/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Group",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Group/Action/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Group/Action/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 30,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4f8c016bd527a40f161e572ea61f0f2a7427b57033213a6862e4604b1bf15853",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 123795,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 123795,
+  "cache_read_input_tokens": 1390635,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 40,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 801,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 801,
+    "cache_read_input_tokens": 102244,
+    "input_tokens": 2,
+    "output_tokens": 3751,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16589,
+  "output_tokens_details": {
+   "thinking_tokens": 9354
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
