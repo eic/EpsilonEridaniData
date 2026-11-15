@@ -1,0 +1,174 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4219804999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 131.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 105943,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 105943,
+    "cache_read_input_tokens": 232051,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4580,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4580,
+      "cache_read_input_tokens": 78679,
+      "input_tokens": 2,
+      "output_tokens": 6674,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9859,
+    "output_tokens_details": {
+     "thinking_tokens": 6872
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.42198,
+ "dedupe_key": "eic/EpsilonEridani|199|85094f4d4dfbd67618ff0e85174b0588b9e0a432|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2dd5bdf35f6301bb88009e7500753bf2a89ed95dc443db275883ed8ae2f64108",
+ "diff_sha256": "2dd5bdf35f6301bb88009e7500753bf2a89ed95dc443db275883ed8ae2f64108",
+ "duration_s": 131.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "It follows from the file's own `spinOneMatrix_mul_spinOneMatrix_apply` (line 208): `(S\u1d62S\u2c7c)\u2090\u1d66 = \u03b4\u1d62\u2c7c\u03b4\u2090\u1d66 - \u03b4\u1d62\u1d66\u03b4\u2c7c\u2090` gives `[S\u1d62,S\u2c7c]\u2090\u1d66 = \u03b4\u1d62\u2090\u03b4\u2c7c\u1d66 - \u03b4\u1d62\u1d66\u03b4\u2c7c\u2090 = \u2211\u2096 \u03b5\u1d62\u2c7c\u2096 \u03b5_{kab} = (I \u2022 \u2211\u2096 \u03b5\u1d62\u2c7c\u2096 S\u2096)\u2090\u1d66`, i.e. the same `fin_cases` bash already used at line 211 with two extra index cases.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "Replace the three with `lemma spinOneMatrix_commutator (i j : Fin 3) : spinOneMatrix i * spinOneMatrix j - spinOneMatrix j * spinOneMatrix i = I \u2022 \u2211 k, (epsilon3 i j k : \u2102) \u2022 spinOneMatrix k`, and derive any fixed-index instance if still wanted.",
+   "issue": "`spinOneMatrix_commutator_zero_one`, `_one_two`, `_two_zero` (lines 229, 237, 245) are three copies of one statement at fixed indices, each with the identical `fin_cases a <;> fin_cases b <;> simp` proof. The index-generic form `[S\u1d62, S\u2c7c] = I \u2022 \u2211 k, \u03b5 i j k \u2022 S\u2096` is the standard upstream shape (cf. Physlib's `pauliMatrix_anticommutator (i j : Fin 3)` with `kroneckerDelta`, Physlib/Relativity/PauliMatrices/Basic.lean:217) and a user needing e.g. `[S\u2081, S\u2080]` cannot apply any of the three.",
+   "line": 229
+  },
+  {
+   "evidence": "`tr (M S\u2096) = \u2211_{a,b} M a b (S\u2096)\u1d66\u2090 = \u2211_{a,b} M a b (-I \u03b5 k b a) = I \u2211_{a,b} \u03b5 k a b M a b` by `spinOneMatrix_apply` (line 196) and `spinOneMatrix_apply_swap` (line 215); specializing k=0,1,2 gives exactly lines 290, 300, 310.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "State `lemma trace_mul_spinOneMatrix (M : Matrix (Fin 3) (Fin 3) \u2102) (k : Fin 3) : (M * spinOneMatrix k).trace = I * \u2211 a, \u2211 b, (epsilon3 k a b : \u2102) * M a b` (or the cyclic form `vectorPolarization spinOneMatrix \u03c1 k = I * (\u03c1 (k+1) (k+2) - \u03c1 (k+2) (k+1))`), and derive the three index instances from it.",
+   "issue": "`vectorPolarization_spinOneMatrix_zero`, `_one`, `_two` (lines 289, 299, 309) are the same lemma three times with byte-identical `simp only [...]; ring` proofs. The tensor case is handled correctly in general (`trace_mul_spinTensorOperator_spinOneMatrix`, line 319, general `M` and `i j`, with `tensorPolarization_spinOneMatrix` derived from it); the vector case has no such general statement.",
+   "line": 289
+  },
+  {
+   "evidence": "Line 172-173: the proof is `rw [vectorPolarization_def, ..., h\u03c1.eq, (hS k).eq, trace_mul_comm]` \u2014 `hS` appears once, applied to the statement's own `k`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "Weaken to `(hS : (S k).IsHermitian)` with `k` bound before the hypothesis. `tensorPolarization_im` (line 176) genuinely needs the `\u2200` (the Casimir sum `\u2211 k, S k * S k`), so only this one changes.",
+   "issue": "`vectorPolarization_im` assumes `hS : \u2200 k, (S k).IsHermitian` but its proof uses only `(hS k).eq` for the single index `k` in the statement.",
+   "line": 170
+  }
+ ],
+ "head_sha": "85094f4d4dfbd67618ff0e85174b0588b9e0a432",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 199,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "98a22932da58d74855d08c947aeb6a93ac535fe3aa04513d761076fbe2091f61",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T003023Z-199-generality-1c1076",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T00:30:23Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two families of lemmas are triplicated at fixed indices where a single index-generic statement is natural and readily provable from material already in the file (the commutators, and the explicit vector polarizations); one hypothesis is stronger than the proof needs. The PosSemidef generalization to RCLike is correct.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/SU2Generators.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "36fa3ad162bf101a23fc5b5b2d49f339c4bbfc601a56f75d39c3817937727c35",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105943,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 105943,
+  "cache_read_input_tokens": 232051,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4580,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4580,
+    "cache_read_input_tokens": 78679,
+    "input_tokens": 2,
+    "output_tokens": 6674,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9859,
+  "output_tokens_details": {
+   "thinking_tokens": 6872
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

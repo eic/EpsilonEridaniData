@@ -1,0 +1,174 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7945925000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 231.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 117991,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 117991,
+    "cache_read_input_tokens": 329745,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8039,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8039,
+      "cache_read_input_tokens": 87013,
+      "input_tokens": 2,
+      "output_tokens": 3268,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17990,
+    "output_tokens_details": {
+     "thinking_tokens": 14523
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.794593,
+ "dedupe_key": "eic/EpsilonEridani|199|85094f4d4dfbd67618ff0e85174b0588b9e0a432|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2dd5bdf35f6301bb88009e7500753bf2a89ed95dc443db275883ed8ae2f64108",
+ "diff_sha256": "2dd5bdf35f6301bb88009e7500753bf2a89ed95dc443db275883ed8ae2f64108",
+ "duration_s": 231.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "SpinDensityMatrix.lean:496-497 `spinHalfMatrix k := (1 / 2 : \u2102) \u2022 PauliMatrix.pauliMatrix (Sum.inr k)`; EpsilonEridani/QFT/QCD/SU2Generators.lean:60-61 `def su2GenEntry (a) (i j) : \u2102 := (1 / 2 : \u2102) * pauliMatrix (Sum.inr a) i j`. The two differ by `\u2022` vs `*` and by the matrix-application wrapper.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "Prove it explicitly, e.g. `by simp [spinHalfMatrix_def, su2GenEntry]` (or `rw [spinHalfMatrix_def, su2GenEntry, Matrix.smul_apply, smul_eq_mul]`), rather than relying on defeq across the two definitions.",
+   "issue": "`spinHalfMatrix_apply ... := (rfl)` proves an identity between two separately defined constants by unfolding `Matrix.smul_apply` and the `SMul \u2102 \u2102`/`Mul` instance chain, with no comment. Unlike the other `(rfl)` uses here, this is not a definition's own `_def` lemma, and it is load-bearing for `sum_spinHalfMatrix_mul_self`.",
+   "line": "504"
+  },
+  {
+   "evidence": "Lines 291-294, 301-304, 311-314 are byte-identical simp sets; the file already applies the correct pattern for the tensor part at line 319 (`trace_mul_spinTensorOperator_spinOneMatrix` for a general `M`, specialized at line 331).",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "Mirror the tensor side: add one lemma `trace_mul_spinOneMatrix (M) (k) : (M * spinOneMatrix k).trace = -I * \u2211 a, \u2211 b, (epsilon3 k a b : \u2102) * M b a` (or the `fin_cases k` form), prove the expansion once there, and derive the three index-specific lemmas from it.",
+   "issue": "`vectorPolarization_spinOneMatrix_zero/one/two` (lines 289, 299, 309) each repeat the same ~18-lemma `simp only` list (`trace_fin_three, Matrix.mul_apply, Fin.sum_univ_three, spinOneMatrix_apply, epsilon3, cons_val', cons_val_fin_one, ...`) followed by `ring`. The shared computation of `tr (\u03c1 S\u2096)` is never stated as a lemma, so any `cons_val`/matrix-literal rename upstream breaks three proofs.",
+   "line": "289"
+  },
+  {
+   "evidence": "Lines 420-421, 430-433, 455-458 of SpinDensityMatrix.lean contain the same simp-only list and the same `congrArg re htr` step.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "fix": "Factor out `re_tensorPolarization_spinOneMatrix_self : (tensorPolarization spinOneMatrix \u03c1 i i).re = \u03c1.trace.re - 3 * (\u03c1 i i).re` and `(\u03c1 0 0).re + (\u03c1 1 1).re + (\u03c1 2 2).re = 1` (from `htr`) as named lemmas, then let the three bounds be `fin_cases i <;> linarith` over them; the `Fin`-literal normalization bullets then collapse into the shared simp set.",
+   "issue": "The three positivity theorems (lines 417, 425, 445) each re-derive the real-part normal form: `simp only [tensorPolarization_spinOneMatrix_self, htr, sub_re, one_re, mul_re, re_ofNat, im_ofNat, zero_mul, sub_zero]` three times (420, 432, 457), `simpa [trace_fin_three] using congrArg re htr` twice (431, 456), and the per-case `Fin.zero_eta`/`Fin.mk_one`/`Fin.reduceFinMk` bullets twice (434-440, 459-468). This hides two reusable facts.",
+   "line": "417"
+  }
+ ],
+ "head_sha": "85094f4d4dfbd67618ff0e85174b0588b9e0a432",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 199,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a16886bbb12b7ab8c6451bbfddbec8883b0f62988d42689485c00c29c40420d4",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T003329Z-199-proof-quality-6e9aa5",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T00:33:29Z",
+ "submitted_by": "wdconinc",
+ "summary": "One undocumented definitional-equality bridge between two independently defined constants, and two places where identical multi-line simp blocks are copied across sibling lemmas instead of being factored into the reusable lemma the file already uses elsewhere.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/SU2Generators.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Matrix/PosSemidef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f49dee9348ffed1754d4fb659e3a92fb3329aa691939e5afc69492a78e7f8ec9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 117991,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 117991,
+  "cache_read_input_tokens": 329745,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8039,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8039,
+    "cache_read_input_tokens": 87013,
+    "input_tokens": 2,
+    "output_tokens": 3268,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17990,
+  "output_tokens_details": {
+   "thinking_tokens": 14523
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
