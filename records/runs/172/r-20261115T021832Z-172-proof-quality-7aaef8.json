@@ -1,0 +1,166 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4567040000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 220.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 92959,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 92959,
+    "cache_read_input_tokens": 191678,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 12036,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 12036,
+      "cache_read_input_tokens": 65777,
+      "input_tokens": 2,
+      "output_tokens": 12262,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17249,
+    "output_tokens_details": {
+     "thinking_tokens": 15220
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "cost_usd": 1.456704,
+ "dedupe_key": "eic/EpsilonEridani|172|27e416909b168d21e0051a9ebf23d363354759af|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "8c346bba891f55ac98347b7d75d0ee28c6ab3835cbedf420752d70ad22a959f1",
+ "diff_sha256": "8c346bba891f55ac98347b7d75d0ee28c6ab3835cbedf420752d70ad22a959f1",
+ "duration_s": 220.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 461-462: `rw [zero_smul, sub_zero, one_smul, Multiset.cons_swap, \u2190 zero_smul \u211d p, hJ s p 0 le_rfl, zero_smul, hR.merge_zero hp]`.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "Normalise the hypothesis instead of the goal: `have h := hJ s p 0 le_rfl; rw [zero_smul, hR.merge_zero hp] at h` and close with `rw [zero_smul, sub_zero, one_smul, Multiset.cons_swap]; exact h`.",
+   "issue": "The `z = 0` branch is an eight-lemma `rw` chain that rewrites `0 \u2022 p` to `0` (`zero_smul`), then back to `0 \u2022 p` (`\u2190 zero_smul \u211d p`) so `hJ` matches, then forward again (`zero_smul`). The back-and-forth depends on there being exactly one `(0 : V)` occurrence and on `Multiset.cons_swap` matching the intended cons pair; it obscures the argument and breaks on any change to these lemmas.",
+   "line": 461
+  },
+  {
+   "evidence": "Lines 215-217 and 220-221 contain the identical `simpa ... 1 \u27e8zero_le_one, le_rfl\u27e9` script; `IsCollinearExact.isCollinearExactOn` is already available at line 229.",
+   "file": "EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "fix": "`theorem IsCollinearExact.isUnital (hR : R.IsCollinearExact) : R.IsUnital := fun a => (hR.isCollinearExactOn Set.univ).merge_zero (Set.mem_univ a)`.",
+   "issue": "`IsCollinearExact.isUnital` repeats verbatim the `simpa using hR.merge_smul_one_sub_smul _ 1 \u27e8zero_le_one, le_rfl\u27e9` proof of `IsCollinearExactOn.merge_zero` (line 215) instead of deriving it, so the same reasoning is maintained in two places.",
+   "line": 220
+  }
+ ],
+ "head_sha": "27e416909b168d21e0051a9ebf23d363354759af",
+ "merge_base_sha": "5f6cb4125c1162939d3bdbcb28ba630fd0bdf0b5",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 172,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "85ff8cc4ee5b09ff34b04e93bb57205324cd5bffb886e78b566358c01b1ad397",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T021832Z-172-proof-quality-7aaef8",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T02:18:32Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly short, structured and automation-friendly, with no `change`/`show` and no defeq abuse. Two spots need work: a brittle eight-step rewrite chain that eliminates and then re-introduces `0 \u2022 p`, and a one-line proof duplicated instead of derived.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Observable/Recombination.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Observable/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ff77700fa24bae5d0959697c1c432477420231cfe287ee4456e5f9d7aafb5b00",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 92959,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 92959,
+  "cache_read_input_tokens": 191678,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 12036,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 12036,
+    "cache_read_input_tokens": 65777,
+    "input_tokens": 2,
+    "output_tokens": 12262,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17249,
+  "output_tokens_details": {
+   "thinking_tokens": 15220
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
