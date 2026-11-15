@@ -1,0 +1,324 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.2818185000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 386.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 136521,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 136521,
+    "cache_read_input_tokens": 2315347,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 52,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 905,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 905,
+      "cache_read_input_tokens": 138839,
+      "input_tokens": 2,
+      "output_tokens": 4558,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 30347,
+    "output_tokens_details": {
+     "thinking_tokens": 21664
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "cost_usd": 3.281819,
+ "dedupe_key": "eic/EpsilonEridani|87|d4f61c2afaafdf81f953b4449ca979268f08a8eb|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2c2aa2f393120fa3036f404f7a93cebd9e95c04a10f69af53c4c24db2e547254",
+ "diff_sha256": "2c2aa2f393120fa3036f404f7a93cebd9e95c04a10f69af53c4c24db2e547254",
+ "duration_s": 386.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `deltaOrthN_n_eq_zero|deltaOrthN_avgMomentum_eq|delta_deltaOrthN_eq|avgMomentum_deltaOrthN_eq|deltaOrthN_delta_eq` over ./code returns only the declaration sites plus line 303 (the mirror using its companion); `tMom_le_tZero` (322) uses `minkowskiProduct_n_deltaOrthN_eq_zero`, not the flipped form. `minkowskiProduct_symm` is Physlib, `Vector/MinkowskiProduct.lean:129`.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "Delete lines 272-276, 297-303 and 312-316, keeping the orientation each proof actually needs; any later caller gets the other order from `Lorentz.Vector.minkowskiProduct_symm`. Keep the `avgMomentum_delta`/`delta_avgMomentum` pair (235, 245), whose orientations are both consumed at lines 255/294/309 and 286.",
+   "issue": "Three `@[simp]` lemmas are flipped-argument restatements of their companions in the same file, each proved by `rw [minkowskiProduct_symm]`, and none is used anywhere in the repo: `minkowskiProduct_deltaOrthN_n_eq_zero` (274, mirror of 268), `minkowskiProduct_deltaOrthN_avgMomentum_eq` (300, mirror of 291), `minkowskiProduct_delta_deltaOrthN_eq` (314, mirror of 307). Duplicated API and three extra simp-set entries.",
+   "line": "274"
+  },
+  {
+   "evidence": "grep for `ofTimeAndSpatial` over ./code: the only uses are `ofTimeAndSpatial E (P \u2022 e\u2080)` at lines 164-169 (via `spatialPart_/timeComponent_ofTimeAndSpatial_eq`) and `GPD/Kinematics.lean:367` (via `minkowskiProduct_ofTimeAndSpatial_eq`); the zero/add/sub/smul lemmas appear only at their declarations. `ofTemporalComponent`/`ofSpatialComponent` are `\u2192L[\u211d]` maps (Physlib `Vector/Basic.lean:414,421`), so `map_*` applies.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "fix": "Drop the four lemmas; at any future use site `simp [ofTimeAndSpatial_def, map_add]` (resp. `map_sub`, `map_smul`, `map_zero`) is the one-liner. If the simp normal forms are wanted later, define `ofTimeAndSpatial` as the single CLM `(ofTemporalComponent.coprod ofSpatialComponent)` (`ContinuousLinearMap.coprod`, Mathlib/Topology/Algebra/Module/ContinuousLinearMap/PiProd.lean:378) and get them from `map_add`/`map_smul` on that map for free.",
+   "issue": "`ofTimeAndSpatial_zero_zero_eq` (94), `ofTimeAndSpatial_add_ofTimeAndSpatial_eq` (98), `ofTimeAndSpatial_sub_ofTimeAndSpatial_eq` (105) and `smul_ofTimeAndSpatial_eq` (112) only restate linearity of Physlib's `ofTemporalComponent`/`ofSpatialComponent` continuous linear maps \u2014 their own proofs are `ofTimeAndSpatial_def` plus `map_add`/`map_sub`/`map_smul` \u2014 and none of them has a consumer anywhere in the repo.",
+   "line": "93"
+  }
+ ],
+ "head_sha": "d4f61c2afaafdf81f953b4449ca979268f08a8eb",
+ "merge_base_sha": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 87,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2bb63d5a96604902fee21bac2c0048042a517714609fa436f073e44c51d79535",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T081631Z-87-reuse-0907f3",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T08:16:31Z",
+ "submitted_by": "veprbl",
+ "summary": "The substantive material (the orthogonal-to-causal bound, t\u2080(\u03be), attainability) is new and reuses upstream API correctly. Two sets of declarations are redundant: three flipped-argument `@[simp]` restatements in `GPD/Kinematics.lean` and four `ofTimeAndSpatial` linearity lemmas that restate the `map_add`/`map_sub`/`map_smul`/`map_zero` API of Physlib's CLMs; none has a consumer.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Polynomiality.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/MinkowskiProduct.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Algebra/Module",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 39,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8d5b46d344fb860a3f19f653eca39acbabea066e0ffa06727aef762ce1b337e1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 136521,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 136521,
+  "cache_read_input_tokens": 2315347,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 52,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 905,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 905,
+    "cache_read_input_tokens": 138839,
+    "input_tokens": 2,
+    "output_tokens": 4558,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 30347,
+  "output_tokens_details": {
+   "thinking_tokens": 21664
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

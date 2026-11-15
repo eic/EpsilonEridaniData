@@ -1,0 +1,256 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.320552,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 368.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 98767,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 98767,
+    "cache_read_input_tokens": 1188674,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1307,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1307,
+      "cache_read_input_tokens": 100683,
+      "input_tokens": 2,
+      "output_tokens": 3569,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 29535,
+    "output_tokens_details": {
+     "thinking_tokens": 23297
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "cost_usd": 2.320552,
+ "dedupe_key": "eic/EpsilonEridani|87|d4f61c2afaafdf81f953b4449ca979268f08a8eb|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2c2aa2f393120fa3036f404f7a93cebd9e95c04a10f69af53c4c24db2e547254",
+ "diff_sha256": "2c2aa2f393120fa3036f404f7a93cebd9e95c04a10f69af53c4c24db2e547254",
+ "duration_s": 368.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Kinematics.lean:131-135 (fields, untagged) vs :234, :250, :267, :280 (`@[simp]` on the derived identities). In-repo precedent for the identical pattern: `EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean:95` `attribute [simp] nPlus_nPlus_eq_zero nMinus_nMinus_eq_zero nPlus_nMinus_eq_one nMinus_nPlus_eq_one` on the same kind of bilinear-form structure fields.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "Add `attribute [simp] minkowskiProduct_p_self minkowskiProduct_pPrime_self minkowskiProduct_n_self` at the top of `namespace OffForwardKinematics`.",
+   "issue": "The three equational fields `minkowskiProduct_p_self`, `minkowskiProduct_pPrime_self`, `minkowskiProduct_n_self` are not `@[simp]`, while every derived Minkowski product in the file is (`minkowskiProduct_avgMomentum_self_eq`, `minkowskiProduct_n_deltaOrthN_eq_zero`, ...). The simp set therefore normalizes `\u27eaK.avgMomentum, K.avgMomentum\u27eb\u2098` but leaves `\u27eaK.p, K.p\u27eb\u2098` and `\u27eaK.n, K.n\u27eb\u2098` untouched.",
+   "line": "131"
+  },
+  {
+   "evidence": "Grep of the file shows the only lemmas mentioning `K.p`/`K.pPrime` in a product are `minkowskiProduct_n_p_eq` (:205) and `minkowskiProduct_n_pPrime_eq` (:213); no `\u27eaK.p, K.pPrime\u27eb\u2098` anywhere. From `tMom_def` and `minkowskiProduct_sub_self`, `t = 2M\u00b2 - 2\u27eap, p'\u27eb\u2098`. The roadmap target asks for \"the identities among `p`, `p'`, `P`, `\u0394`, `t`, `\u03be`\" (roadmap README \u00a70.1, lines 324-327).",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "Add the on-shell identities, e.g. `minkowskiProduct_p_pPrime_eq : \u27eaK.p, K.pPrime\u27eb\u2098 = M ^ 2 - K.tMom / 2`, `minkowskiProduct_p_delta_eq : \u27eaK.p, K.delta\u27eb\u2098 = -K.tMom / 2`, `minkowskiProduct_pPrime_delta_eq : \u27eaK.pPrime, K.delta\u27eb\u2098 = K.tMom / 2` (plus the swapped orders, as the file already does for `delta`/`avgMomentum`), tagged `@[simp]` like their siblings.",
+   "issue": "`tMom` is characterized only through `delta`; the file proves every pairing among `n`, `avgMomentum`, `delta`, `deltaOrthN` but none involving the carrier's own momenta `p`, `pPrime`. A consumer holding `p` and `p'` (what the Layer 0.2+ correlators hold) cannot get `t` without re-deriving via `delta_def` and `minkowskiProduct_sub_self`.",
+   "line": "158"
+  },
+  {
+   "evidence": "Kinematics.lean:76-82 provide `tZero_zero_right`/`tZero_neg_right` only; `tZero` (:72) depends on `M` only through `M ^ 2`, and the structure (:131) imposes no sign condition on `M`.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "Add the parallel left-argument lemmas `@[simp] tZero_neg_left (M \u03be : \u211d) : tZero (-M) \u03be = tZero M \u03be` and `@[simp] tZero_zero_left (\u03be : \u211d) : tZero 0 \u03be = 0` (the massless case, where the bound degenerates to `t \u2264 0`).",
+   "issue": "`tZero`'s skewness argument gets both `tZero_zero_right` and `tZero_neg_right`, but its mass argument gets neither, even though `OffForwardKinematics` constrains only `M ^ 2` (`\u27eap, p\u27eb\u2098 = M ^ 2`), so `M`'s sign is free and `K : OffForwardKinematics d (-M)` is indistinguishable from `OffForwardKinematics d M` with no lemma to bridge the two bounds.",
+   "line": "81"
+  }
+ ],
+ "head_sha": "d4f61c2afaafdf81f953b4449ca979268f08a8eb",
+ "merge_base_sha": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 87,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "94ea676515aee6bd883caefc31ba8e101ed9eab0425c65a370b1b9723880f514",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T081631Z-87-api-design-00a60f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T08:16:31Z",
+ "submitted_by": "veprbl",
+ "summary": "Exposure, `_def` coverage, and extensionality are correct, but the characteristic API is incomplete: the structure's defining product fields carry no `@[simp]` although every derived product identity does, no identity relates `p`/`pPrime` to `t`, and `tZero`'s `M` argument has none of the parallel lemmas its `\u03be` argument has.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/GeneralizedPartonDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 24,
+  "trace_truncated": false
+ },
+ "transcript_blob": "57eb7ec92c406fd7cbc0f64016946b95630850730451fa5ef977b57d504a2152",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 98767,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 98767,
+  "cache_read_input_tokens": 1188674,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1307,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1307,
+    "cache_read_input_tokens": 100683,
+    "input_tokens": 2,
+    "output_tokens": 3569,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 29535,
+  "output_tokens_details": {
+   "thinking_tokens": 23297
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

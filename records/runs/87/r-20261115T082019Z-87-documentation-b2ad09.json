@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6162940000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 275.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 77513,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 77513,
+    "cache_read_input_tokens": 504448,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2128,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2128,
+      "cache_read_input_tokens": 78608,
+      "input_tokens": 2,
+      "output_tokens": 3643,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23554,
+    "output_tokens_details": {
+     "thinking_tokens": 19272
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "cost_usd": 1.616294,
+ "dedupe_key": "eic/EpsilonEridani|87|d4f61c2afaafdf81f953b4449ca979268f08a8eb|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2c2aa2f393120fa3036f404f7a93cebd9e95c04a10f69af53c4c24db2e547254",
+ "diff_sha256": "2c2aa2f393120fa3036f404f7a93cebd9e95c04a10f69af53c4c24db2e547254",
+ "duration_s": 275.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 16-21 vs. the appended lines 28-38 and the new declarations `minkowskiProduct_self_nonpos_of_causal_of_orthogonal` (line 194) and `ofTimeAndSpatial` (line 66).",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "fix": "Rewrite the opening sentence to scope the file as general facts about Physlib's Minkowski product used downstream, and give the bullet list its own lead-in enumerating the groups (difference square, spatial-part length, mass-shell pair, symmetry, causal-orthogonality bound, `ofTimeAndSpatial` API).",
+   "issue": "The module docstring's \"what lives here\" sentence still reads \"Facts about `Physlib`'s Minkowski product that the kinematics of an emission process uses: ...\", but this PR appends material for off-forward hadron kinematics and a general time-plus-spatial constructor. The new bullet list (lines 28-38) is spliced in with no lead-in, so it reads as a continuation of the emission-process framing \u2014 one of its own bullets says it serves \"off-forward parton kinematics\".",
+   "line": "16"
+  },
+  {
+   "evidence": "`GPD/Basic.lean:42` `abbrev Gpd ... /-- A GPD family indexed by flavor and variables `(x, \u03be, t)`. -/`; `GPD/Basic.lean:55` `skewnessBound : \u2200 i x xi t, 1 < |xi| \u2192 ...`; `GPD/Basic.lean:62` `M.H i x 0 0`, the `(\u03be,t) = (0,0)` point used by `physicalRegion_nonempty`.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "Add one sentence saying that `skewness` and `tMom` are the `\u03be` and `t` arguments of `GPD.Gpd`/`GPD.Model.H` in the same namespace, that `physicalRegion` is the domain those are to be read over, and that `abs_skewness_lt_one` is the kinematic fact behind `Assumptions.skewnessBound`.",
+   "issue": "The module docstring's only orientation note disambiguates against the remote `ExclKinematics.xiSkew`, but never states what this material feeds: the same-namespace `GPD.Gpd Flavor := Flavor \u2192 \u211d \u2192 \u211d \u2192 \u211d \u2192 \u211d` with \"variables `(x, \u03be, t)`\" and `Assumptions.skewnessBound` already exist in `GPD/Basic.lean`, and a reader cannot tell whether `skewness`/`tMom`/`physicalRegion` are those arguments or an unrelated set.",
+   "line": "45"
+  },
+  {
+   "evidence": "Statement at line 251 is `\u27eaK.avgMomentum, K.avgMomentum\u27eb\u2098 = M ^ 2 - K.tMom / 4`; repo convention elsewhere is explicit: `DIS/Kinematics/Basic.lean:63` \"The hadronic invariant mass squared `W2 := (p + q)^2`\", `Generator/Kinematics.lean:62` same.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "\"The invariant mass squared of the average momentum, `P\u00b2 = M\u00b2 - t / 4`.\"",
+   "issue": "`/-- The invariant mass of the average momentum, `P\u00b2 = M\u00b2 - t / 4`. -/` \u2014 the statement is about `\u27eaP, P\u27eb\u2098`, i.e. the invariant mass *squared*; the docstring names it the invariant mass.",
+   "line": "249"
+  },
+  {
+   "evidence": "`grep -E 'transverseDelta|ofTimeAndTwoSpatial|minkowskiProduct_self_nonpos_of_orthogonal_causal|minkowskiProduct_avgMomentum_self\\b' code/` \u2192 \"No matches found\"; actual names at `Kinematics.lean:169,268,281,251` and `MinkowskiProductExtensions.lean:66,120,194`.",
+   "file": "",
+   "fix": "Update the description to the landed names (`deltaOrthN`, `minkowskiProduct_n_deltaOrthN_eq_zero`, `minkowskiProduct_deltaOrthN_self_eq`, `minkowskiProduct_avgMomentum_self_eq`, `minkowskiProduct_self_nonpos_of_causal_of_orthogonal`, `ofTimeAndSpatial` + `minkowskiProduct_ofTimeAndSpatial_eq`), and say that the generic constructor replaced the three-direction one.",
+   "issue": "The PR description documents an API that does not exist at the head: `transverseDelta`, `minkowskiProduct_n_transverseDelta_eq_zero`, `minkowskiProduct_transverseDelta_self`, `minkowskiProduct_avgMomentum_self`, `minkowskiProduct_self_nonpos_of_orthogonal_causal`, `ofTimeAndTwoSpatial`, `minkowskiProduct_ofTimeAndTwoSpatial`, `ofTimeAndTwoSpatial_sub_ofTimeAndTwoSpatial`. The landed code uses `deltaOrthN` (and explicitly documents that it is *not* the transverse momentum transfer, contradicting the description's name) and a general `ofTimeAndSpatial` rather than a three-direction constructor.",
+   "line": "0"
+  }
+ ],
+ "head_sha": "d4f61c2afaafdf81f953b4449ca979268f08a8eb",
+ "merge_base_sha": "b3e745c90eed773bac8870b8e796e91d45a61394",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 87,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "618b756f0939a3235c2f6fe362b87978088584474f7980195ad0dadf5dc89300",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "638255e870e4ec1d38ff83224e17e7bccc9deab9",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261115T082019Z-87-documentation-b2ad09",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T08:20:19Z",
+ "submitted_by": "veprbl",
+ "summary": "Declaration-level docstrings in the new GPD file are accurate and complete, but the extended `MinkowskiProductExtensions` module docstring still scopes the file to \"the kinematics of an emission process\" while half its content now serves off-forward hadron kinematics, the GPD module docstring never says what its variables feed (the same-namespace `GPD.Gpd (x, \u03be, t)`), and one docstring calls `\u27eaP,P\u27eb\u2098` an invariant mass rather than a mass squared.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "237614ae2c29a0bf30c30e0b460834d8c6be393d5b246417b26354b9fcc03fb6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 77513,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 77513,
+  "cache_read_input_tokens": 504448,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2128,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2128,
+    "cache_read_input_tokens": 78608,
+    "input_tokens": 2,
+    "output_tokens": 3643,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23554,
+  "output_tokens_details": {
+   "thinking_tokens": 19272
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
