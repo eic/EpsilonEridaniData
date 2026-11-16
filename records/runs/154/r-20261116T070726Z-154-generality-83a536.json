@@ -1,0 +1,215 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.5223325,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 204.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 80687,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 80687,
+    "cache_read_input_tokens": 672315,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5589,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5589,
+      "cache_read_input_tokens": 78321,
+      "input_tokens": 2,
+      "output_tokens": 3792,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15167,
+    "output_tokens_details": {
+     "thinking_tokens": 10482
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 1.522333,
+ "dedupe_key": "eic/EpsilonEridani|154|c18bc9e55a780a63c3f8a3084912371434731eff|generality|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "a8a0ec47d46d8c0601f006486199e42ac9b9949d340352ee83e757f4c6502baf",
+ "diff_sha256": "a8a0ec47d46d8c0601f006486199e42ac9b9949d340352ee83e757f4c6502baf",
+ "duration_s": 204.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Amplitude.lean:118-121 \u2014 the proof body is `have h := hN.posSemidef_one_sub.isHermitian.apply x y; simp only [of_apply, star_trivial] at h; linarith`, with no use of the other two fields. The file already applies exactly this treatment to the non-negativity half (Amplitude.lean:105-111 general over `\u03b1`, Amplitude.lean:124 as the `IsAdmissible` corollary).",
+   "file": "EpsilonEridani/QFT/SmallX/Dipole/Amplitude.lean",
+   "fix": "State the general fact next to `mem_Icc_zero_two_of_posSemidef_one_sub`, in the same hypothesis form and over an arbitrary index type: `theorem apply_comm_of_posSemidef_one_sub {\u03b1 : Type*} {N : \u03b1 \u2192 \u03b1 \u2192 \u211d} (hS : (Matrix.of fun x y => 1 - N x y).PosSemidef) (x y : \u03b1) : N x y = N y x`, and keep `IsAdmissible.apply_comm` as the one-line corollary `apply_comm_of_posSemidef_one_sub hN.posSemidef_one_sub x y`.",
+   "issue": "`IsAdmissible.apply_comm` takes full admissibility but its proof uses only `posSemidef_one_sub` (via `isHermitian.apply`); `apply_self` and `le_one` are visibly unused. The docstring then presents endpoint symmetry as a property of admissible amplitudes, when it holds for any kernel with positive-semidefinite `1 - N` \u2014 including the configuration-level and not-yet-`le_one` ensembles the module docstring itself discusses (lines 31-42).",
+   "line": "118"
+  },
+  {
+   "evidence": "Amplitude.lean:199-210 is the whole complex-to-real transfer, done inline. `upstream/TauCeti/TauCeti/Analysis/Bochner/Gaussian/Basic.lean:153` gives `posSemidef_cexp_neg_mul_sq_norm {c : \u211d} (hc : 0 \u2264 c)` for any `V` with `[NormedAddCommGroup V] [InnerProductSpace \u211d V]`, so the general real form is immediate from `map_re`; grep for `posSemidef`/`PosSemidef` across `code/EpsilonEridani` returns no real Gaussian-kernel lemma (only Model.lean, Positivity.lean \u00d72, PosSemidef.lean, Amplitude.lean), and `EpsilonEridani/Mathematics/Gaussian.lean` has none either.",
+   "file": "EpsilonEridani/QFT/SmallX/Dipole/Amplitude.lean",
+   "fix": "State it once as the real companion of the upstream complex lemma, next to `Matrix.PosSemidef.map_re`: `theorem posSemidef_rexp_neg_mul_sq_norm {V : Type*} [NormedAddCommGroup V] [InnerProductSpace \u211d V] {c : \u211d} (hc : 0 \u2264 c) : (Matrix.of fun a b : V => Real.exp (-(c * \u2016a - b\u2016 ^ 2))).PosSemidef`, proved by `map_re` applied to `TauCeti.posSemidef_cexp_neg_mul_sq_norm hc`, and let `isAdmissible_golecBiernatWusthoff` instantiate it at `V := EuclideanSpace \u211d (Fin 2)`, `c := Qs ^ 2 / 4`.",
+   "issue": "The general result \u2014 the real Gaussian kernel `(a, b) \u21a6 exp (-(c * \u2016a - b\u2016 ^ 2))` on a real inner-product space is positive semidefinite \u2014 is proved inline as `have hG` + `have e` inside `isAdmissible_golecBiernatWusthoff`, already specialized to the plane and to `c = Qs ^ 2 / 4`. Nothing of the dipole enters the argument, so the general fact is unavailable to any other consumer (the roadmap's Layer 5.6 MV covariance positivity is directed at the same `Matrix.PosSemidef` module: roadmap README lines 212-213, \"used for the positive-definiteness of the S-matrix kernel in Layer 0.5 and of the MV covariance in Layer 5.6\").",
+   "line": "201"
+  }
+ ],
+ "head_sha": "c18bc9e55a780a63c3f8a3084912371434731eff",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 154,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "8f9e105788777dfe074cb7d7e287d644ea16f1be8f4658c5853bec5a6f47ec88",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261116T070726Z-154-generality-83a536",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T07:07:26Z",
+ "submitted_by": "veprbl",
+ "summary": "Generality is mostly right after the earlier fix (the Icc lemma is general over the index type, map_re is general over RCLike with an arbitrary index type). Two items: IsAdmissible.apply_comm demands two visibly unused fields for a fact that follows from positive semidefiniteness alone, and the general real Gaussian-kernel positivity is proved inline inside the physics witness instead of being stated once.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/Amplitude.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Bochner/Gaussian/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/Operator.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/Matrix/Realify.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/PositiveDefinite",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/PositiveDefinite/Kernel/Bounds.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SmallXAndSaturation/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Gaussian.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "adfb7fad88fe952963a4fa60203afa0af4e278052517b8d583bde550aa0c0bf3",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 80687,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 80687,
+  "cache_read_input_tokens": 672315,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5589,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5589,
+    "cache_read_input_tokens": 78321,
+    "input_tokens": 2,
+    "output_tokens": 3792,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15167,
+  "output_tokens_details": {
+   "thinking_tokens": 10482
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
