@@ -1,0 +1,167 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9221045,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 224.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 129540,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 129540,
+    "cache_read_input_tokens": 366289,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2807,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2807,
+      "cache_read_input_tokens": 97911,
+      "input_tokens": 2,
+      "output_tokens": 6940,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17740,
+    "output_tokens_details": {
+     "thinking_tokens": 14620
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "cost_usd": 1.922105,
+ "dedupe_key": "eic/EpsilonEridani|126|fc70f7f39f4377932e8fb8dc5064d1e31cef147f|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "6b8cec8fe3d649fd68e78f0788468462f9dd2325ad7d2e9b2aad57d08d73fe82",
+ "diff_sha256": "6b8cec8fe3d649fd68e78f0788468462f9dd2325ad7d2e9b2aad57d08d73fe82",
+ "duration_s": 224.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean:52 `def artanh (x : \u211d) := log \u221a((1 + x) / (1 - x))`; at `x = 1`, `(1+1)/(1-1) = 0` in \u211d, `\u221a0 = 0`, `log 0 = 0`. Rapidity.lean:62 `def rapidity v n := artanh (\u27eav.spatialPart, n\u27eb_\u211d / v.timeComponent)`. Every theorem in the file carries `|\u27eav.spatialPart, n\u27eb_\u211d| < v.timeComponent` or `|a| < v.timeComponent`, confirming the definition is unconstrained outside that region.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Add to the `rapidity` docstring (and one clause in the module docstring) that the value is the rapidity only for `|v_\u2225| < v\u2070`, and is the junk value `0` otherwise \u2014 on the light cone `|v_\u2225| = v\u2070` (so a real photon gets `0`, not `+\u221e`), outside it, and at `v\u2070 = 0`.",
+   "issue": "The docstring of `rapidity` states only the `\u2016n\u2016 = 1` caveat, presenting `artanh (v_\u2225 / v\u2070)` as the rapidity of any four-vector. Mathlib's `artanh x = log \u221a((1 + x) / (1 - x))` evaluates to 0 whenever `|x| \u2265 1`, and the quotient is 0 when `v\u2070 = 0`, so `v.rapidity n = 0` for a real photon along `n` (`v_\u2225 = v\u2070`, physically `y = +\u221e`), for any spacelike-along-`n` vector, and at `v\u2070 = 0`. The PR description acknowledges this (\"A real photon's own rapidity is infinite, and a spacelike photon has none\") but the file does not, so the docstring promises more than the definition delivers. The module docstring (lines 16\u201326) has the same gap: it describes the definition, then only says what holds \"inside the forward light cone\".",
+   "line": 58
+  },
+  {
+   "evidence": "Rapidity.lean:21 \"Inside the forward light cone along `n`, that is for `|v_\u2225| < v\u2070`\" vs MinkowskiProductExtensions.lean `sqrt_minkowskiProduct_self_pos`: \"A four-vector inside the forward light cone, `\u2016v.spatialPart\u2016 < v\u2070`\". The Rapidity.lean lemmas are stated for arbitrary `v : Vector d` with no constraint on the transverse part.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "In those docstrings say \"for `|v_\u2225| < v\u2070`\" (or \"inside the forward cone of the 1+1-dimensional projection along `n`\") rather than \"inside the forward light cone along `n`\"; the InvariantMass.lean uses, where the spatial part is collinear, are correct and need no change.",
+   "issue": "`|v_\u2225| < v\u2070` is glossed as \"the forward light cone along `n`\" for an arbitrary `v`, but a vector satisfying it can be spacelike (e.g. `v\u2070 = 1`, `v_\u2225 = 0`, transverse part of norm 10). The same PR uses \"inside the forward light cone\" for the genuine condition `\u2016v.spatialPart\u2016 < v\u2070` in `sqrt_minkowskiProduct_self_pos`, so one phrase names two different regions. Same gloss repeats at lines 76, 85, 93, 106, 116, 125, 136, 148, 158.",
+   "line": 21
+  }
+ ],
+ "head_sha": "fc70f7f39f4377932e8fb8dc5064d1e31cef147f",
+ "merge_base_sha": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "eaec7e19f2e64057176df54f577e485a30e6fc361c80a8dd089fdd36dc1e19a5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261116T034356Z-126-documentation-667d26",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T03:43:56Z",
+ "submitted_by": "wdconinc",
+ "summary": "Documentation is thorough and the lemma-by-lemma docstrings match their statements, but the `rapidity` definition is presented as \"the rapidity of v along n\" with no mention that it silently returns the junk value 0 on and outside the light cone (including for a real photon, the central object of this PR), and `|v_\u2225| < v\u2070` is repeatedly glossed as \"the forward light cone\", which it is not for a vector with transverse components.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0414d4cf4e82d4dbf1571cfd54ffa1ef8baf67b0e065ef330213596c40b26023",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 129540,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 129540,
+  "cache_read_input_tokens": 366289,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2807,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2807,
+    "cache_read_input_tokens": 97911,
+    "input_tokens": 2,
+    "output_tokens": 6940,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17740,
+  "output_tokens_details": {
+   "thinking_tokens": 14620
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

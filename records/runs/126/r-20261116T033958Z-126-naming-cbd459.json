@@ -1,0 +1,184 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.220919,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 237.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 155150,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 155150,
+    "cache_read_input_tokens": 413768,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5556,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5556,
+      "cache_read_input_tokens": 110936,
+      "input_tokens": 2,
+      "output_tokens": 3273,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18499,
+    "output_tokens_details": {
+     "thinking_tokens": 15055
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "cost_usd": 2.220919,
+ "dedupe_key": "eic/EpsilonEridani|126|fc70f7f39f4377932e8fb8dc5064d1e31cef147f|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "6b8cec8fe3d649fd68e78f0788468462f9dd2325ad7d2e9b2aad57d08d73fe82",
+ "diff_sha256": "6b8cec8fe3d649fd68e78f0788468462f9dd2325ad7d2e9b2aad57d08d73fe82",
+ "duration_s": 237.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -n 'IsReal' Kinematics/Basic.lean` \u2192 line 92 `def IsReal (k : PhotonKinematics) : Prop := k.virtuality = 0`. `grep -rn '(Collinear|RealPhoton|MasslessTarget)' EpsilonEridani/` returns only the section headers and docstrings of this file \u2014 no declaration by those names exists.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Name the hypotheses, as this PR's own `MinkowskiProductExtensions.lean` does with `minkowskiProduct_self_eq_zero_of_timeComponent_eq_of_spatialPart_eq_smul` and `\u2026_of_spatialPart_eq_smul`; or introduce actual `Prop`-valued predicates (e.g. an `IsCollinearWith`/null-four-momentum predicate) and take them as hypotheses so `_of_realPhoton` names something that exists.",
+   "issue": "`_of_realPhoton` names no hypothesis and clashes with a real predicate: `PhotonKinematics.IsReal (k) : Prop := k.virtuality = 0` is defined in the same `\u2026Photoproduction.Kinematics` namespace (`Kinematics/Basic.lean:92`) and imported here (line 8), so `minkowskiProduct_add_self_of_realPhoton` reads as taking `\u03b3.IsReal`. The actual hypotheses are `q.timeComponent = k` and `q.spatialPart = k \u2022 n` \u2014 i.e. null *and* collinear, a condition strictly stronger than `IsReal`, with the collinearity the name silently drops (the sibling family marks it `_of_collinearPhoton`). Same at lines 191, 201, 211, 273, 282, 292, 301.",
+   "line": 180
+  },
+  {
+   "evidence": "naming-conventions.md: \"it is necessary to describe some of the hypotheses. The word \\\"of\\\" is used to separate these hypotheses\"; the hypotheses here are `hn : \u2016n\u2016 = 1`, `hq : q.timeComponent = k`, `hq' : q.spatialPart = a \u2022 n`, `hP`, `hP'` (lines 112\u2013113, 173\u2013174, 267\u2013268).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Either define the predicates these suffixes claim, or rename after the hypotheses (`_of_timeComponent_eq_of_spatialPart_eq_smul`, `_of_spatialPart_eq_neg_smul`, \u2026) in line with the `Lorentz.Vector` lemmas this file calls.",
+   "issue": "Same defect in the other role-suffixes: `_of_target` (line 100), `_of_collinearPhoton` (119, 128, 140, 152, 163, 238, 251) and `_of_masslessTarget` (273, 282, 292, 302) describe the physical role of the data, not the hypotheses, contrary to the naming convention's rule that `of` separates the described hypotheses. The repo's own precedent is `_of_<existing predicate>` (`eq_of_eqOn_euclideanSection_of_spaceLike`, `trace_total_of_diracEq`, `_of_isHermitian`), where the suffix names a declaration.",
+   "line": 100
+  },
+  {
+   "evidence": "Rapidity.lean:62 definition and lines 18\u201320 of the module docstring: \"This is the physical rapidity along `n` only for a unit vector\". No `rapidity` declaration exists upstream to constrain the convention (`grep -ri rapidity upstream/Physlib upstream/mathlib` finds only prose and `\u03b3_tanh`).",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Normalise in the definition \u2014 `artanh (\u27eav.spatialPart, n\u27eb / (\u2016n\u2016 * v.timeComponent))` \u2014 which makes the name correct for any non-zero direction and turns `rapidity_smul_right` into a genuine invariance lemma; or take a bundled unit vector (`Metric.sphere (0 : EuclideanSpace \u211d (Fin d)) 1`).",
+   "issue": "`rapidity v n = artanh (\u27eav.spatialPart, n\u27eb / v\u2070)` is named for a quantity it computes only when `\u2016n\u2016 = 1`; the file itself proves the name is wrong otherwise (`rapidity_smul_right_eq_artanh`, line 72). A user writing `v.rapidity p.spatialPart` gets a term named \"rapidity\" that is not one, and every consumer lemma must re-carry `\u2016n\u2016 = 1`.",
+   "line": 62
+  }
+ ],
+ "head_sha": "fc70f7f39f4377932e8fb8dc5064d1e31cef147f",
+ "merge_base_sha": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "aa2bed1fcb9206a759ef3f9f56d752b91bf046956c9a1e19927832ff5ea76fb9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261116T033958Z-126-naming-cbd459",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T03:39:58Z",
+ "submitted_by": "wdconinc",
+ "summary": "The `_of_<role>` suffixes throughout `InvariantMass.lean` name section headers rather than hypotheses, and `_of_realPhoton` in particular collides with the existing `PhotonKinematics.IsReal` predicate in the same namespace, which is not the hypothesis. `Lorentz.Vector.rapidity` also carries a name that is correct only under the unguarded side condition `\u2016n\u2016 = 1`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "92ffb12895bb6b367f112ef36f1ec61d2c1bc57520185e5c8a3666951b155931",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 155150,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 155150,
+  "cache_read_input_tokens": 413768,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5556,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5556,
+    "cache_read_input_tokens": 110936,
+    "input_tokens": 2,
+    "output_tokens": 3273,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18499,
+  "output_tokens_details": {
+   "thinking_tokens": 15055
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

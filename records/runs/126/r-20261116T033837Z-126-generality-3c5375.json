@@ -1,0 +1,197 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6079499999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 328.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 155410,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 155410,
+    "cache_read_input_tokens": 820830,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 17899,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 17899,
+      "cache_read_input_tokens": 108853,
+      "input_tokens": 2,
+      "output_tokens": 3302,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 25733,
+    "output_tokens_details": {
+     "thinking_tokens": 21326
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "cost_usd": 2.60795,
+ "dedupe_key": "eic/EpsilonEridani|126|fc70f7f39f4377932e8fb8dc5064d1e31cef147f|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "6b8cec8fe3d649fd68e78f0788468462f9dd2325ad7d2e9b2aad57d08d73fe82",
+ "diff_sha256": "6b8cec8fe3d649fd68e78f0788468462f9dd2325ad7d2e9b2aad57d08d73fe82",
+ "duration_s": 328.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`abs_lt` is the `to_additive` of `mabs_lt` at upstream/mathlib/Mathlib/Algebra/Order/Group/Unbundled/Abs.lean:262, under `variable [Group \u03b1] [LinearOrder \u03b1]` (line 194) + `[MulLeftMono \u03b1]` (line 225) \u2014 i.e. `[AddGroup \u03b1] [LinearOrder \u03b1] [AddLeftMono \u03b1]` additively. The new lemma's statement and proof use nothing beyond that.",
+   "file": "EpsilonEridani/Mathematics/Algebra/Order/Abs.lean",
+   "fix": "Restate at the level of `abs_lt`: `variable {\u03b1 : Type*} [AddCommGroup \u03b1] [LinearOrder \u03b1] [IsOrderedAddMonoid \u03b1]`. The proof is purely additive \u2014 goal `a - b < a + c` is `-c < b`; goal `-(a+c) < a - b` follows from `b \u2264 c` and `0 < a + a` \u2014 so replace `linarith` with `abs_lt.2 \u27e8_, _\u27e9` discharged by `add_lt_add`/`sub_lt_sub` steps, since `linarith` does not run over a bare ordered additive group.",
+   "issue": "`variable {\u03b1 : Type*} [Field \u03b1] [LinearOrder \u03b1] [IsStrictOrderedRing \u03b1]` is far stronger than the lemma's content: `abs_sub_lt_add_of_pos_of_neg_lt_of_le` contains no multiplication, division or inverse, only `+`, `-`, `|\u00b7|`, `0`, `<`. As stated it cannot be applied over `\u2124` or any ordered additive group, and the file sits at the Mathlib-mirror path `Mathematics/Algebra/Order/Abs.lean` where the typeclass level is the whole point.",
+   "line": 21
+  },
+  {
+   "evidence": "InvariantMass.lean:104-106 proves `hqP` from `minkowskiProduct_eq_timeComponent_spatialPart` (Physlib/Relativity/Tensors/RealTensor/Vector/MinkowskiProduct.lean:156) + `real_inner_smul_right`; MinkowskiProductExtensions.lean:56-62 adds only the `v = u` case of the same computation.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add to `MinkowskiProductExtensions.lean`, beside the other `_of_spatialPart_eq_smul` lemmas, the general `\u27eau, v\u27eb\u2098 = u.timeComponent * v.timeComponent - a * b` for `\u2016n\u2016 = 1`, `u.spatialPart = a \u2022 n`, `v.spatialPart = b \u2022 n`; derive `minkowskiProduct_self_eq_mul_of_spatialPart_eq_smul` from it (diagonal plus `sq_sub_sq`) and use it for `minkowskiProduct_add_self_of_target`.",
+   "issue": "The general result is proved inside a `have` instead of stated: `hqP : \u27eaq, P\u27eb\u2098 = q\u2070 * E + p * \u27eaq.spatialPart, n\u27eb` is the bilinear companion of `minkowskiProduct_self_eq_mul_of_spatialPart_eq_smul`, which this PR does add to `MinkowskiProductExtensions.lean`. The PR thus states the diagonal special case upstream and buries the general two-vector case in a photoproduction proof, where no other caller can reach it.",
+   "line": 104
+  }
+ ],
+ "head_sha": "fc70f7f39f4377932e8fb8dc5064d1e31cef147f",
+ "merge_base_sha": "9efdd34763c6366e08ecc4e37c0df10f0d3a73fc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "45f53880875e91c610b44bffa96831b9910242acbc2a270f1816f7c64d2238e7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261116T033837Z-126-generality-3c5375",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T03:38:37Z",
+ "submitted_by": "wdconinc",
+ "summary": "The tiering of the kinematics results (collinear \u2192 real \u2192 massless) and the rapidity API are at the right level, and every included hypothesis is used. Two generality defects: an over-strong typeclass assumption on the new absolute-value lemma, and the general bilinear Minkowski-product fact being inlined in a proof instead of stated beside the diagonal case the PR does add.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Order",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Order/Group/Unbundled/Abs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "291ff6ee5eedd8e3194d0025365d5b26f0e38c865b35faa7d8b7773dd59d701c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 155410,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 155410,
+  "cache_read_input_tokens": 820830,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 17899,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 17899,
+    "cache_read_input_tokens": 108853,
+    "input_tokens": 2,
+    "output_tokens": 3302,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 25733,
+  "output_tokens_details": {
+   "thinking_tokens": 21326
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
