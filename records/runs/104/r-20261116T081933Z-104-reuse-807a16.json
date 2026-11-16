@@ -1,0 +1,272 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.3727650000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 261.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 181204,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 181204,
+    "cache_read_input_tokens": 2120730,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4353,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4353,
+      "cache_read_input_tokens": 154298,
+      "input_tokens": 2,
+      "output_tokens": 4450,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20006,
+    "output_tokens_details": {
+     "thinking_tokens": 12989
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2c11a23ea5eeafa55d75b20cf809b0e3a3a964a8",
+ "cost_usd": 3.372765,
+ "dedupe_key": "eic/EpsilonEridani|104|9f12a012303c8386db4060d093d9f7b9f9bbad51|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "9902a5286e97065f3dbd470c26c3d56478747185b35e0e617bfaed91cacc2c2a",
+ "diff_sha256": "9902a5286e97065f3dbd470c26c3d56478747185b35e0e617bfaed91cacc2c2a",
+ "duration_s": 261.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`upstream/mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean:310: lemma of_dotProduct_mulVec_nonneg {M : Matrix n n R} (hM1 : M.IsHermitian) (hM2 : \u2200 x, 0 \u2264 star x \u2b1d\u1d65 (M *\u1d65 x)) : M.PosSemidef`, under `variable [Fintype n]` at line 295; this file already imports `Mathlib.LinearAlgebra.Matrix.PosDef` (line 8) and already uses the Fintype-only `hM.re_dotProduct_nonneg` at line 137.",
+   "file": "EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "fix": "Delete `of_submatrix_dotProduct_mulVec_nonneg`, add `[Fintype n]` to `map_re` and `posSemidef_map_ofReal_iff`, and start both proofs from Mathlib's `Matrix.PosSemidef.of_dotProduct_mulVec_nonneg`; the submatrix step then drops out (`map_re`: `of_dotProduct_mulVec_nonneg (hM.1.map re ..) fun x => by simpa [re_star_dotProduct_mulVec_ofReal] using hM.re_dotProduct_nonneg fun i => (x i : \ud835\udd5c)`; the `mpr` of the iff keeps its current `RCLike.nonneg_iff`/`re_star_dotProduct_map_ofReal_mulVec`/`IsHermitian.im_star_dotProduct_mulVec_self` body without `Matrix.submatrix_map`).",
+   "issue": "`PosSemidef.of_submatrix_dotProduct_mulVec_nonneg` is a thin reshaping of `TauCeti.posSemidef_iff_finite_sum` whose only purpose is to let `PosSemidef.map_re` (line 133) and `posSemidef_map_ofReal_iff` (line 154) avoid `[Fintype n]`. No consumer needs that generality: both are used only on `Matrix (Fin 4) (Fin 4) \u2102` (ComplexSpinDensity.lean:114 and :337), and the two identities those proofs rely on, `re_star_dotProduct_mulVec_ofReal` (line 123) and `re_star_dotProduct_map_ofReal_mulVec` (line 142), already carry `[Fintype n]` themselves.",
+   "line": 87
+  },
+  {
+   "evidence": "grep: ComplexSpinDensity.lean:254 `simp only [PDF.IsParityInvariant, mat_re_apply, h.1, h.2.1, and_self]`; no other occurrence of `mat_idxMM_idxMM_eq_mat_idxPP_idxPP` or `mat_idxMP_idxMP_eq_mat_idxPM_idxPM` in `EpsilonEridani/`.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "fix": "Delete the two unused accessors (keep `mat_idxMM_idxPP_eq_mat_idxPP_idxMM`, which is used at line 273), or use them in `IsParityInvariant.re` instead of the raw projections.",
+   "issue": "`IsParityInvariant.mat_idxMM_idxMM_eq_mat_idxPP_idxPP` (line 231) and `IsParityInvariant.mat_idxMP_idxMP_eq_mat_idxPM_idxPM` (line 237) are `h.1` and `h.2.1` of the `\u2227`-bundle at line 226 and have no consumer: `IsParityInvariant.re` (line 254) writes `h.1, h.2.1` directly. The real `PDF.IsParityInvariant` (Positivity.lean:226) has no such accessors, so this is an unused parallel surface.",
+   "line": 231
+  }
+ ],
+ "head_sha": "9f12a012303c8386db4060d093d9f7b9f9bbad51",
+ "merge_base_sha": "2c11a23ea5eeafa55d75b20cf809b0e3a3a964a8",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 104,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "98cad3d1e36777f4c9f399a85accbb9f19a83be5d93ba8e8b7b42c571019d31e",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261116T081933Z-104-reuse-807a16",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T08:19:33Z",
+ "submitted_by": "wdconinc",
+ "summary": "The real/complex PSD transfer and the SpinDensityC API are new and reuse the existing real lemmas properly, but the new arbitrary-index wrapper around TauCeti's quadratic-form characterisation is unnecessary: Mathlib's Matrix.PosSemidef.of_dotProduct_mulVec_nonneg covers every consumer. Two parity accessors also duplicate the \u2227-projections and are unused.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/ProbabilisticTheory/CStarAlgebra/Uncertainty.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Matrix/PosDef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Matrix/PosSemidef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Matrix/Order.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/RCLike",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ComplexSpinDensity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 28,
+  "trace_truncated": false
+ },
+ "transcript_blob": "59e3402b10bdc48ba11cc7102c21962f60c0e43ca367fb13de5675967347cb38",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 181204,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 181204,
+  "cache_read_input_tokens": 2120730,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4353,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4353,
+    "cache_read_input_tokens": 154298,
+    "input_tokens": 2,
+    "output_tokens": 4450,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20006,
+  "output_tokens_details": {
+   "thinking_tokens": 12989
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
