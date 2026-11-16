@@ -1,0 +1,191 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6055590000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 221.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 100865,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 100865,
+    "cache_read_input_tokens": 360928,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2007,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2007,
+      "cache_read_input_tokens": 81426,
+      "input_tokens": 2,
+      "output_tokens": 6340,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16655,
+    "output_tokens_details": {
+     "thinking_tokens": 12887
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.605559,
+ "dedupe_key": "eic/EpsilonEridani|169|f900ed2186df6962a05eb3800bb57353c8ec00f2|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "6466c0e5e74329a4132ceabd49d6cef43903011378b5520f617eeb04ab13ea87",
+ "diff_sha256": "6466c0e5e74329a4132ceabd49d6cef43903011378b5520f617eeb04ab13ea87",
+ "duration_s": 221.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "MomentDeterminacy.lean:124 states the kernel result; the only consumer path is line 167 `simpa using congrFun (LinearMap.mem_ker.mp hker) \u27e8n, Nat.lt_succ_of_le hn\u27e9`; no `mem_ker` lemma exists in the file.",
+   "file": "EpsilonEridani/Mathematics/MomentDeterminacy.lean",
+   "fix": "Add `theorem mem_ker_polynomialMomentsIcc_iff {p : Polynomial \u211d} : p \u2208 LinearMap.ker (polynomialMomentsIcc a b N) \u2194 \u2200 n \u2264 N, \u222b x in Icc a b, x ^ n * p.eval x = 0`, and use it at line 167.",
+   "issue": "`ker_polynomialMomentsIcc_inf_degreeLT_ne_bot` is a listed main result delivering membership in `LinearMap.ker (polynomialMomentsIcc a b N)`, but nothing publicly states what that membership means: there is no `mem_ker_polynomialMomentsIcc_iff`. Since the `polynomialMomentsIcc` body is (correctly) not exposed, every consumer must redo the plumbing the author does inline at line 167 (`congrFun (LinearMap.mem_ker.mp hker) \u27e8n, _\u27e9` plus `simpa`).",
+   "line": 124
+  },
+  {
+   "evidence": "Determinacy.lean:106 defines `Model.ofPolynomial` under plain `public section` (no `@[expose]`, unlike `GPD/Basic.lean:30` `@[expose] public section`); only `ofPolynomial_E` (111), `ofPolynomial_H_of_mem_Icc` (130) and `mellinMomentH_ofPolynomial` (146, `hxi : |xi| \u2264 1`) are exported.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Determinacy.lean",
+   "fix": "Add `@[simp] lemma Model.ofPolynomial_H : (Model.ofPolynomial p F).H i x xi t = if 1 < |xi| then 0 else (Icc (0:\u211d) 1).indicator (fun y => p.eval y) x := (rfl)` (or, failing that, `mellinMomentH_ofPolynomial_of_one_lt_abs`), and replace the in-file `simp [Model.ofPolynomial, \u2026]` unfoldings with it.",
+   "issue": "`Model.ofPolynomial` has no `*_def` lemma for `H`. Its body is unexposed, yet the file's own proofs unfold it seven times (`simp [Model.ofPolynomial, ...]` at lines 124, 126, 133, 140, 141, 155, 156, 204) \u2014 including line 204, where the `1 < |xi|` branch of the moment is computed by unfolding because `mellinMomentH_ofPolynomial` (line 146) is stated only for `|xi| \u2264 1`. A downstream user has no simp normal form for `(Model.ofPolynomial p F).H` and must reconstruct the `|\u03be| > 1` moment from `assumptions_ofPolynomial.skewnessBound` by hand.",
+   "line": 106
+  }
+ ],
+ "head_sha": "f900ed2186df6962a05eb3800bb57353c8ec00f2",
+ "merge_base_sha": "bf236e25849c37730b85b0a4934ab24dc36fa6e7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 169,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2701c526dc23ff81c9287c92d39cc06c6a5fe02611d9306512dd1fdc08a290a6",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261116T003221Z-169-api-design-8a74d6",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T00:32:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "Surface is otherwise minimal and shim-free with bodies correctly unexposed, but two advertised public objects lack their characteristic lemmas: the kernel of `polynomialMomentsIcc` has no membership restatement, and `Model.ofPolynomial` has no defining equation for `H`, so the file's own proofs unfold a body downstream cannot see.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MomentDeterminacy.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Determinacy.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Moments.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/TailIntegral.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9529497b15e3348e88ff99661266e4d347e6a0d23a682cf6307fe58ebcab6779",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 100865,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 100865,
+  "cache_read_input_tokens": 360928,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2007,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2007,
+    "cache_read_input_tokens": 81426,
+    "input_tokens": 2,
+    "output_tokens": 6340,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16655,
+  "output_tokens_details": {
+   "thinking_tokens": 12887
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
