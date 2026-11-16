@@ -1,0 +1,207 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4836970000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 180.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 83686,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 83686,
+    "cache_read_input_tokens": 612734,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3579,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3579,
+      "cache_read_input_tokens": 69130,
+      "input_tokens": 2,
+      "output_tokens": 2813,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13614,
+    "output_tokens_details": {
+     "thinking_tokens": 10225
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ea019b485c32bc7b80ae1169efde4c66701b7484",
+ "cost_usd": 1.483697,
+ "dedupe_key": "eic/EpsilonEridani|217|5c4d06616053fa9f63e659d9d16896cb0fd8fca2|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "8c33ce37c72e9e486b3c121a88f2aafee1d163519a2ec106debeeaab38ebef76",
+ "diff_sha256": "8c33ce37c72e9e486b3c121a88f2aafee1d163519a2ec106debeeaab38ebef76",
+ "duration_s": 180.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Repo convention for `IsX` predicates with unexposed bodies: `QFT/Jets/Observable/Basic.lean:161` `isCollinearSafe_def`, `:238` `isInfraredSafe_def`, `QFT/Scattering/Photoproduction/Kinematics/Basic.lean:96` `isReal_iff`; `Mathematics/Distribution/PlusFunctional.lean:92` documents the pattern (\"Unfolding lemma for `plusFunctional`, whose body is not exposed\").",
+   "file": "EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "fix": "Add `theorem isLightConeGauge_iff {W : GaugeLink V G} {n : V} : W.IsLightConeGauge n \u2194 \u2200 (x : V) (t : \u211d), W x (x + t \u2022 n) = 1 := (Iff.rfl)` (and, if convenient, an `IsLightConeGauge.apply` accessor).",
+   "issue": "`IsLightConeGauge` is a public `Prop`-valued `def` in a plain `public section` (line 73, no `@[expose]`), so its body is not available downstream, and the file provides no `_def`/`_iff` restatement. A consumer can neither prove `W.IsLightConeGauge n` for a link other than `ofBilin` nor extract `W x (x + t \u2022 n) = 1` from a hypothesis; the only intro/elim are `isLightConeGauge_ofBilin` and `pathLink_staple_of_isLightConeGauge`. The in-file use `hW x L` (line 261) works only because the body is visible in its own module.",
+   "line": 252
+  },
+  {
+   "evidence": "Line 222 `def staple (v x y : V) : List V := [x, x + v, y + v, y]` under the plain `public section` of line 73; grep shows no `staple_def` or other lemma naming the corner list, while the sibling definitions `transverseLink` (line 235) and `ofBilin` (line 291) do carry `(rfl)` restatements.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "fix": "Add `theorem staple_def (v x y : V) : staple v x y = [x, x + v, y + v, y] := (rfl)`.",
+   "issue": "`staple v x y : List V` likewise has no `staple_def`, so downstream it is an opaque list: its corners, its head/`getLast`, and hence its interaction with `pathLink_append` and `pathLink_insert_of_mem_segment` (e.g. subdividing the transverse rung of the staple) are unreachable. The file itself only gets away with it by unfolding in-module (`simp [staple]` at lines 229 and 242).",
+   "line": 222
+  }
+ ],
+ "head_sha": "5c4d06616053fa9f63e659d9d16896cb0fd8fca2",
+ "merge_base_sha": "8b52f6a293d930d2445354db8480a605944ea0b1",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 217,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "82d4bf5675dc76efae57f7335c3d1906bc065ed1c305272b556c7286443181d6",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261116T010204Z-217-api-design-4f5e25",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T01:02:04Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and mostly well-characterised (`transverseLink_def`, `ofBilin_apply`, the three `pathLink` equation lemmas, `@[ext]` with no free data), but two public definitions have unexposed bodies and no unfolding lemma: `IsLightConeGauge` and `staple` are opaque to every downstream consumer.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/TransverseMomentumDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Distribution/PlusFunctional.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/WilsonLine.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "87681fadf34138a1bde524e2a4dfb2e3ba0ded52421cfccf9b80fbc1ebd3b2c8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 83686,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 83686,
+  "cache_read_input_tokens": 612734,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3579,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3579,
+    "cache_read_input_tokens": 69130,
+    "input_tokens": 2,
+    "output_tokens": 2813,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13614,
+  "output_tokens_details": {
+   "thinking_tokens": 10225
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

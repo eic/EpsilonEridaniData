@@ -1,0 +1,199 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.365477,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 173.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 79042,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 79042,
+    "cache_read_input_tokens": 482564,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 889,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 889,
+      "cache_read_input_tokens": 67751,
+      "input_tokens": 2,
+      "output_tokens": 1869,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13347,
+    "output_tokens_details": {
+     "thinking_tokens": 9410
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ea019b485c32bc7b80ae1169efde4c66701b7484",
+ "cost_usd": 1.365477,
+ "dedupe_key": "eic/EpsilonEridani|217|5c4d06616053fa9f63e659d9d16896cb0fd8fca2|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "8c33ce37c72e9e486b3c121a88f2aafee1d163519a2ec106debeeaab38ebef76",
+ "diff_sha256": "8c33ce37c72e9e486b3c121a88f2aafee1d163519a2ec106debeeaab38ebef76",
+ "duration_s": 173.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 323-328; `@[simp] lemma exp_neg (x : \u211d) : exp (-x) = (exp x)\u207b\u00b9` at upstream/mathlib/Mathlib/Analysis/Complex/Circle.lean:146, `exp_injOn_Icc` at .../Complex/Circle.lean:110 takes two membership arguments the script leaves implicit.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "fix": "Make the phase explicit, e.g. `have hphase : (0 : \u211d) + (B (1,0) (0 - (0,1)) - B (0 - (0,1)) (1,0)) = -1 := by simp [hB]`, then state `have h1 : Circle.exp (1 : \u211d) = Circle.exp 0 := \u2026` before applying `Circle.exp_injOn_Icc`; or use Mathlib's `Circle.exp_eq_one` (`Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean:90`) on the explicit phase.",
+   "issue": "In `exists_isLightConeGauge_pathLink_staple_ne_one`, everything after `norm_num [hB] at h` depends on an intermediate form of `h` that is never stated. The phase is `-1`, and the proof only works because `Circle.exp_neg` and `inv_eq_one` are simp, so `h` silently becomes `Circle.exp 1 = 1`; the following `rw [\u2190 Circle.exp_zero]`, the `(a := 0) (b := 1)` instantiation and the two anonymous `by norm_num` membership goals are unreadable without reconstructing that. A change in the simp set breaks the tail with no indication of intent.",
+   "line": 324
+  },
+  {
+   "evidence": "Lines 190-193, 261, 286-287, 299-300 of the new file; `sub_add_cancel_left` is in the `sub_add_cancel` family Mathlib has already renamed once (upstream/mathlib/Mathlib/LinearAlgebra/Isomorphisms.lean:107 and others use the current name).",
+   "file": "EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "fix": "Replace the generic tails with automation: `simp [ofBilin_apply, hB]` at 299, `simp [pathLink_staple, hW x L, W.apply_swap, hW y L]` at 261, `rw [\u2190 Circle.exp_neg]; congr 1; simp only [bilinPhase, \u2026]; ring` at 286, and `simp only [List.reverse_cons, List.append_assoc, List.singleton_append]` plus the one `pathLink_append` step at 190.",
+   "issue": "`isLightConeGauge_ofBilin` closes the goal with a nine-lemma `rw` chain that is mostly generic cleanup (`sub_add_cancel_left`, `map_neg`, `map_smul`, `smul_zero`, `neg_zero`, `zero_div`, `Circle.exp_zero`); any upstream rename in that family breaks it. Same pattern at line 261 (`pathLink_staple_of_isLightConeGauge` ends in `inv_one, one_mul, mul_one`), lines 286-287 (`ofBilin.toFun_swap'`, where the positional `add_comm y x` rewrite depends on which occurrence is matched and the goal is then closed by `ring_nf` rather than an explicit `congr 1; ring`), and lines 190-193 (`pathLink_reverse`, where `\u2190 List.reverse_cons` re-folds what two forward `List.reverse_cons` steps just unfolded).",
+   "line": 299
+  },
+  {
+   "evidence": "`LinearMap.compl\u2081\u2082_apply` at upstream/mathlib/Mathlib/LinearAlgebra/BilinearMap.lean:336 and `LinearMap.mul_apply'` at upstream/mathlib/Mathlib/Algebra/Algebra/Bilinear.lean:49 state exactly these reductions.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "fix": "`:= by simp [B]` (or `by simp [B, LinearMap.compl\u2081\u2082_apply, LinearMap.mul_apply']`).",
+   "issue": "`have hB (z w : \u211d \u00d7 \u211d) : B z w = z.1 * w.2 := (rfl)` proves an application of `LinearMap.compl\u2081\u2082` of `LinearMap.mul`/`fst`/`snd` by definitional unfolding through the `DFunLike` coercions, rather than by the available application lemmas.",
+   "line": 321
+  }
+ ],
+ "head_sha": "5c4d06616053fa9f63e659d9d16896cb0fd8fca2",
+ "merge_base_sha": "8b52f6a293d930d2445354db8480a605944ea0b1",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 217,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2bb1decea6b94701690904e755494c73373c624778ee8e9ad16a580e9435507c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261116T010505Z-217-proof-quality-b08702",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T01:05:05Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly short and use robust automation, but the witness theorem's tail hinges on an unstated norm_num normal form, and several proofs replace automation with long chains of generic algebra rewrites.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Algebra/Bilinear.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Group",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a27f08b89dd0928a654ab0c0dd2905df7b6f03c0ab476bf080b76a7a37435a22",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 79042,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 79042,
+  "cache_read_input_tokens": 482564,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 889,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 889,
+    "cache_read_input_tokens": 67751,
+    "input_tokens": 2,
+    "output_tokens": 1869,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13347,
+  "output_tokens_details": {
+   "thinking_tokens": 9410
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

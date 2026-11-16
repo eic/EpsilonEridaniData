@@ -1,0 +1,207 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.655383,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 192.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 104783,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 104783,
+    "cache_read_input_tokens": 495276,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 689,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 689,
+      "cache_read_input_tokens": 83945,
+      "input_tokens": 2,
+      "output_tokens": 1713,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14393,
+    "output_tokens_details": {
+     "thinking_tokens": 10830
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ea019b485c32bc7b80ae1169efde4c66701b7484",
+ "cost_usd": 1.655383,
+ "dedupe_key": "eic/EpsilonEridani|217|5c4d06616053fa9f63e659d9d16896cb0fd8fca2|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "8c33ce37c72e9e486b3c121a88f2aafee1d163519a2ec106debeeaab38ebef76",
+ "diff_sha256": "8c33ce37c72e9e486b3c121a88f2aafee1d163519a2ec106debeeaab38ebef76",
+ "duration_s": 192.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Direct upstream analogue with the same hypothesis shape: `Mathlib/Analysis/Normed/Affine/Convex.lean:39` `dist_add_dist_of_mem_segment {x y z : E} (h : y \u2208 [x -[\u211d] z]) : dist x y + dist y z = dist x z` \u2014 the function name is repeated around the operator, not prefixed by it.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "fix": "Rename to `apply_mul_apply_of_mem_segment` (update the three uses at lines 121, 132, 213).",
+   "issue": "`mul_apply_of_mem_segment : W x m * W m y = W x y` does not describe its conclusion: the LHS is `apply * apply`, but `mul_apply` is an established Mathlib name for `(f * g) x = f x * g x` (e.g. `Mathlib/Topology/ContinuousMap/Bounded/Basic.lean:508`, `Mathlib/NumberTheory/ArithmeticFunction/Defs.lean:237`). The structure field itself uses the correct order (`toFun_mul_toFun'`, line 92).",
+   "line": 114
+  },
+  {
+   "evidence": "Lines 217-229: `omit [Module \u211d V] in def staple (v x y : V) : List V := [x, x + v, y + v, y]` vs line 233 `def transverseLink (W : GaugeLink V G) (v x y : V) : G`; module docstring line 59 itself distinguishes \"the staple path and the link of its rung\".",
+   "file": "EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "fix": "Rename to `staplePath` (and `reverse_staplePath`), or move both out of the `GaugeLink` namespace into `TMD`, since neither mentions a gauge link.",
+   "issue": "`GaugeLink.staple (v x y : V) : List V` is a list of corners, not a link, and takes no `GaugeLink` (it even omits `[Module \u211d V]` and never mentions `G`), yet it sits in the `GaugeLink` namespace next to `transverseLink : \u2026 \u2192 G`. In the literature \"the staple\" denotes the staple-shaped link; here the link is `W.pathLink (staple v x y)`, so the name advertises the wrong type, and `W.staple` does not elaborate. Same for `reverse_staple` (line 228).",
+   "line": 222
+  }
+ ],
+ "head_sha": "5c4d06616053fa9f63e659d9d16896cb0fd8fca2",
+ "merge_base_sha": "8b52f6a293d930d2445354db8480a605944ea0b1",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 217,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7fcc76efcc044043ec31a4fc7fe3a842e6764040cbc25f765746466992792fa5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261116T010314Z-217-naming-04df01",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T01:03:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names are mostly conclusion-describing and in standard TMD terminology, but `mul_apply_of_mem_segment` inverts the Mathlib word order for its conclusion (`mul_apply` has an established, different meaning upstream), and `GaugeLink.staple` names a corner list while the parallel `GaugeLink.transverseLink` names a group element.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Affine/Convex.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0dcdcba760eb3939b9dfbe1e159c914156b6372f28729ac3a01d1de1f5f2bc6d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 104783,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 104783,
+  "cache_read_input_tokens": 495276,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 689,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 689,
+    "cache_read_input_tokens": 83945,
+    "input_tokens": 2,
+    "output_tokens": 1713,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14393,
+  "output_tokens_details": {
+   "thinking_tokens": 10830
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
