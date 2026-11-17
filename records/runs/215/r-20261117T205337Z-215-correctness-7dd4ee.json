@@ -1,0 +1,175 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5097690000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 371.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 149837,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 149837,
+    "cache_read_input_tokens": 632938,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4305,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4305,
+      "cache_read_input_tokens": 122350,
+      "input_tokens": 2,
+      "output_tokens": 8557,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 27794,
+    "output_tokens_details": {
+     "thinking_tokens": 24579
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d245b5ef9f515e1c231c93995c042da5e13ee357",
+ "cost_usd": 2.509769,
+ "dedupe_key": "eic/EpsilonEridani|215|d45df45049b2c691e33659dc148ad1d42c836041|correctness|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "f64e508979ec4fdc78170d6342111cbd59399869de28e59995119b291e0a25e7",
+ "diff_sha256": "f64e508979ec4fdc78170d6342111cbd59399869de28e59995119b291e0a25e7",
+ "duration_s": 371.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Electroweak/NeutralCurrent.lean:141-148 documents `ParityOddFromInterferenceOnly` as the statement that \"parity-odd part [is] given by the gamma-Z interference contribution alone ... constrains sigma against D\"; NeutralCurrent.lean:252-254 defines `gammaZInterference` as `((gammaZTerm true - gammaZTerm false) + (zBosonTerm true - zBosonTerm false)) / 2`, and NeutralCurrent.lean:426-430 proves that second difference is nonzero in general. Each of the three terms is affine in \u03bb (\u03bb\u00b2 = 1), so no assignment to this three-field, helicity-independent structure can keep the fields' documented meanings \u2014 the claim, not the instance, is what must be weakened.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "fix": "Drop `parityOddFromInterferenceOnly_neutralCurrentDecomposition`, or state it under the hypothesis that the pure-Z helicity difference vanishes (`zBosonTerm ... true - zBosonTerm ... false = 0`, i.e. `2g_Vg_A B^Z + (g_V\u00b2+g_A\u00b2)Y\u208bxF\u2083^Z = 0`), so the predicate's documented reading is actually established. `neutralCurrent_eq_neutralCurrentDecomposition`, which makes no \"interference only\" claim, can stay; if the instance is kept, the \u03bb-odd field should not be presented through the `gammaZInterference` name without that restriction.",
+   "issue": "`parityOddFromInterferenceOnly_neutralCurrentDecomposition` asserts a predicate documented upstream as \"the parity-odd part is given by the gamma-Z interference contribution alone\", but it holds only because `neutralCurrentDecomposition.gammaZInterference` is *defined* as the total helicity-odd part, which by this PR's own `zBosonTerm_true_sub_false` contains the pure-Z odd piece `-2\u03b7\u00b2(K/(xQ\u00b2))(2g_V g_A B^Z + (g_V\u00b2+g_A\u00b2)Y\u208bxF\u2083^Z)`. Likewise `.zBoson` is not the pure-Z term (it absorbs the even part of the interference term, `gammaZTerm_true_add_false`), contradicting the field docstrings \"Pure Z contribution\" / \"gamma-Z interference contribution\" in Electroweak/NeutralCurrent.lean:99-102. A Layer-2 consumer reading `.gammaZInterference` as the interference contribution gets a wrong object.",
+   "line": 306
+  }
+ ],
+ "head_sha": "d45df45049b2c691e33659dc148ad1d42c836041",
+ "merge_base_sha": "8b52f6a293d930d2445354db8480a605944ea0b1",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 215,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "1fdfc348233958dc84a960646d71f93987848674d4d8ac9fd0d3e4ed9b7d0123",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "correctness",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261117T205337Z-215-correctness-7dd4ee",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-17T20:53:37Z",
+ "submitted_by": "wdconinc",
+ "summary": "The three-term decomposition, the helicity coupling g_V \u2212 \u03bb g_A, the \u03bb sign slot and all five sum/difference closed forms are correct, and the helicity average reproduces the H1/ZEUS unpolarised NC form exactly. The one defect is the NeutralCurrentDecomposition instance: its gammaZInterference field is not the interference term, so parityOddFromInterferenceOnly_neutralCurrentDecomposition records a claim the PR itself refutes.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/NeutralCurrent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Interference/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "96740a1704fcf74c03d55398408791cca7a1b146b60159f6900057ea5971ea97",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 149837,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 149837,
+  "cache_read_input_tokens": 632938,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4305,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4305,
+    "cache_read_input_tokens": 122350,
+    "input_tokens": 2,
+    "output_tokens": 8557,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 27794,
+  "output_tokens_details": {
+   "thinking_tokens": 24579
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
