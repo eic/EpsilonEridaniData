@@ -1,0 +1,177 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4321625,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 137.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 101087,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 101087,
+    "cache_read_input_tokens": 290965,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3679,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3679,
+      "cache_read_input_tokens": 79253,
+      "input_tokens": 2,
+      "output_tokens": 5438,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11030,
+    "output_tokens_details": {
+     "thinking_tokens": 8140
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 1.432163,
+ "dedupe_key": "eic/EpsilonEridani|238|1bfef82fd879b19894060423a85dc8efdff6e09b|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "26bfc1624a607e3989f43bca18332719b8d81416b032d5fdfbe41e035b231cf1",
+ "diff_sha256": "26bfc1624a607e3989f43bca18332719b8d81416b032d5fdfbe41e035b231cf1",
+ "duration_s": 137.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `speciesIsospinConj_weight` occurs only at Parton/PDF/Isospin.lean:189 (its own statement) and `isospinConj_valenceModelWeight` only at Meson/Pdf/Isospin.lean:100 and in a docstring; `PDF.comap_modelPdf` is `rfl` (Parton/PDF/Model.lean:110) so the structural chain closes exactly as for `chargeConj`.",
+   "file": "EpsilonEridani/Particles/Meson/Pdf/Isospin.lean",
+   "fix": "Mirror the charge-conjugation analogue `PseudoscalarMeson.chargeConj_valenceModelPdf` (Meson/Pdf/Basic.lean:347-350, `rw [valenceModelPdf, valenceModelPdf, PDF.chargeConj_weight, PDF.chargeConj_eq_comap, PDF.comap_modelPdf, chargeConj_valenceModelWeight]`): `rw [valenceModelPdf, valenceModelPdf, PDF.speciesIsospinConj_weight, PDF.speciesIsospinConj_eq_comap, PDF.comap_modelPdf, isospinConj_valenceModelWeight]`.",
+   "issue": "`isospinConj_valenceModelPdf` is proved by `funext s x Q2; simp [PDF.modelPdf_apply]`, i.e. by unfolding the model down to `Set.indicator`/`betaShape` pointwise. Its own docstring says it holds because \"the shape is flavour-independent and the weight relabels by `isospinConj_valenceModelWeight`\", but neither `isospinConj_valenceModelWeight` (line 100) nor the new `PDF.speciesIsospinConj_weight` is used; both are left unused in the repo, and the reason the proof works is hidden in simp's unfolding.",
+   "line": 111
+  },
+  {
+   "evidence": "`IsIsospinLimit b := b.isospinBreaking = 0` (Meson/Basic.lean:479); `isIsospinCovariant_valenceModelPdf (b)` holds at every `b` (Meson/Pdf/Isospin.lean:165); `piPlus_quark_u_eq_antiquark_d`'s statement (line 205-207) is `F piPlus (.quark u) = F piPlus (.antiquark d)`, independent of `b`.",
+   "file": "EpsilonEridani/Particles/Meson/Pdf/Isospin.lean",
+   "fix": "Discharge it from the general theorem at a breaking datum that is in the isospin limit (the conclusion does not mention `b`): e.g. `exact piPlus_quark_u_eq_antiquark_d isChargeConjCovariant_valenceModelPdf (isIsospinCovariant_valenceModelPdf \u27e80, 0\u27e9) rfl`, since `FlavorBreaking.IsIsospinLimit \u27e80, 0\u27e9` is `(0 : \u211d) = 0`.",
+   "issue": "The final bullet of `exists_not_isIsospinLimit_piPlus_quark_u_eq_antiquark_d` re-derives `valenceModelPdf piPlus (.quark u) = valenceModelPdf piPlus (.antiquark d)` by the same pointwise `funext x Q2; simp [PDF.modelPdf_apply]` unfolding, duplicating the reasoning of `piPlus_quark_u_eq_antiquark_d` proved 70 lines earlier and leaving the model-specific `if`-decisions to simp.",
+   "line": 280
+  }
+ ],
+ "head_sha": "1bfef82fd879b19894060423a85dc8efdff6e09b",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 238,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "800ae6a8df2f5d736342d0fd88d24905221a09844a53e8f23b2ac8128b9311f7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261117T102039Z-238-proof-quality-e7034b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-17T10:20:39Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly clean rewrite chains over the new simp lemmas, but the two valence-model facts are proved by pointwise `funext` + unfolding `simp [PDF.modelPdf_apply]`, bypassing the structural lemmas the PR itself adds (`isospinConj_valenceModelWeight`, `PDF.speciesIsospinConj_weight`) and the general theorem already proved in the same file.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Pdf/Isospin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Isospin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Pdf/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Pdf/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Model.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6bf3480de9f399f5aaf5e3daebbd54aacb940f412e07b7fb9f3574ad8829d15c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 101087,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 101087,
+  "cache_read_input_tokens": 290965,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3679,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3679,
+    "cache_read_input_tokens": 79253,
+    "input_tokens": 2,
+    "output_tokens": 5438,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11030,
+  "output_tokens_details": {
+   "thinking_tokens": 8140
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
