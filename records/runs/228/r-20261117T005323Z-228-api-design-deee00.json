@@ -1,0 +1,219 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.881787,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 226.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 104098,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 104098,
+    "cache_read_input_tokens": 809544,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 538,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 538,
+      "cache_read_input_tokens": 106783,
+      "input_tokens": 2,
+      "output_tokens": 2937,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17437,
+    "output_tokens_details": {
+     "thinking_tokens": 13137
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 1.881787,
+ "dedupe_key": "eic/EpsilonEridani|228|808b50fc05d1255dd48cf1c3df1c5e81a3be1d67|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "0991a46a92a5fb9bdfa17af9e72e38b4d50cba55da955ba3573c47b3b5edf4f4",
+ "diff_sha256": "0991a46a92a5fb9bdfa17af9e72e38b4d50cba55da955ba3573c47b3b5edf4f4",
+ "duration_s": 226.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep over ./code for `ofLightFront 0 1 0` and `minkowskiProduct_ofLightFront` hits only lines 347 and 350 of this file; `grep OffForwardKinematics ./code` matches only GPD/Kinematics.lean and this file, so no public declaration produces an `OffForwardKinematics` from light-front momenta.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Kinematics.lean",
+   "fix": "Make the pairing a public lemma in its canonical home `Relativity/Tensors/RealTensor/Vector/LightFront.lean` (statement mentions only `ofLightFront`, `minkowskiProduct`, `plusComponent`; proof is independent of GTMD), e.g. `minkowskiProduct_ofLightFront_zero_one_zero`, and export the builder here as a def (`ofMomenta`-side `toOffForwardKinematics p p' hp hp' hpos hpos'`) that `tMom_ofMomenta` then uses.",
+   "issue": "`skewness_ofMomenta_eq` (304) and `tMom_ofMomenta_eq` (327) are public but take `hn : \u2200 q, \u27eaF.n, q\u27eb\u2098 = plusComponent q`, and nothing public discharges it: the witness `\u27eaofLightFront 0 1 0, q\u27eb\u2098 = plusComponent q` is an inline `have` at 347 and the `OffForwardKinematics 3 M` term built from on-shell light-front momenta is a `let` at 349-350. A consumer of the bridge must reprove both.",
+   "line": 347
+  },
+  {
+   "evidence": "Line 311 `private lemma deltaT_ofMomenta_eq`, versus lines 304 and 327; `norm_deltaT_sq_eq` (132) only gives `\u2016\u0394T\u2016\u00b2`, not the vector.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Kinematics.lean",
+   "fix": "Drop `private` and list it in the module docstring next to `skewness_ofMomenta_eq` and `tMom_ofMomenta_eq`.",
+   "issue": "`private lemma deltaT_ofMomenta_eq` is the only statement identifying the GTMD `deltaT` with covariant data (`transversePart F.deltaOrthN`), while the parallel `skewness_ofMomenta_eq` and `tMom_ofMomenta_eq` are public. The public surface therefore identifies \u03be and t with GPD quantities but leaves \u0394T unmatched, although \u00a70.4/0.5 state hermiticity and parity in \u0394T against correlators built from momenta.",
+   "line": 311
+  },
+  {
+   "evidence": "`IsPhysical` at 202 has only `isPhysical_iff` (210); the subset analogues are already free (`mem_zeroSkewness_iff` 166 plus `skewness_swap` 225 close `K.swap \u2208 zeroSkewness \u2194 K.skewness = 0` by simp), which is exactly what the structure blocks for `IsPhysical`.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Kinematics.lean",
+   "fix": "Add `@[simp] lemma isPhysical_swap : K.swap.IsPhysical \u2194 K.IsPhysical`.",
+   "issue": "No interaction lemma between the two operations the file introduces: `IsPhysical` and `swap`. Because `IsPhysical` is a structure, `K.swap.IsPhysical \u2194 K.IsPhysical` is not reachable by `simp` from `skewness_swap`/`x_swap`, so every hermiticity statement of \u00a70.4 restricted to the physical domain must re-derive it.",
+   "line": 202
+  }
+ ],
+ "head_sha": "808b50fc05d1255dd48cf1c3df1c5e81a3be1d67",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 228,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "15b90a77fb6da66e4266860a731e73116eda12c4237d68036dbe891fd246e8cc",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261117T005323Z-228-api-design-deee00",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-17T00:53:23Z",
+ "submitted_by": "veprbl",
+ "summary": "The GPD bridge lemmas are stated with a hypothesis that no exported declaration can discharge, and the witness plus the `OffForwardKinematics` builder are buried inside a proof; the \u0394T half of the bridge is gratuitously `private`. Otherwise the surface is minimal, bodies are hidden, and the simp annotations are right.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7825ea87ec803b7dc558117bdd7dc0c0e1d32aa80337fb321d0bc0ab18759e85",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 104098,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 104098,
+  "cache_read_input_tokens": 809544,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 538,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 538,
+    "cache_read_input_tokens": 106783,
+    "input_tokens": 2,
+    "output_tokens": 2937,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17437,
+  "output_tokens_details": {
+   "thinking_tokens": 13137
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

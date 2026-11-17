@@ -1,0 +1,161 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.7911565,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 116.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 48709,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 48709,
+    "cache_read_input_tokens": 116503,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2350,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2350,
+      "cache_read_input_tokens": 49582,
+      "input_tokens": 2,
+      "output_tokens": 6488,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9831,
+    "output_tokens_details": {
+     "thinking_tokens": 7305
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 0.791157,
+ "dedupe_key": "eic/EpsilonEridani|228|808b50fc05d1255dd48cf1c3df1c5e81a3be1d67|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "0991a46a92a5fb9bdfa17af9e72e38b4d50cba55da955ba3573c47b3b5edf4f4",
+ "diff_sha256": "0991a46a92a5fb9bdfa17af9e72e38b4d50cba55da955ba3573c47b3b5edf4f4",
+ "duration_s": 116.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 281: `theorem ofMomenta_transverseBoost (v : E\u00b2) (hP : plusComponent p + plusComponent p' \u2260 0)` \u2014 transverse boosts only, with a non-degeneracy hypothesis.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Kinematics.lean",
+   "fix": "Say what is proved: \"The variables are invariant under the light-front transverse boosts, provided `P\u207a \u2260 0` (`Kinematics.ofMomenta_transverseBoost`).\"",
+   "issue": "\"Every variable is frame independent\" overclaims: the only result is `ofMomenta_transverseBoost`, invariance under light-front transverse boosts and only for `p\u207a + p'\u207a \u2260 0`. Nothing here shows invariance under a general Lorentz transformation (which changes the plus direction and hence `x`, `kT`, `\u0394T`).",
+   "line": 40
+  },
+  {
+   "evidence": "Line 343-345: `theorem tMom_ofMomenta ... (hpos : 0 < plusComponent p) (hpos' : 0 < plusComponent p')`.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Kinematics.lean",
+   "fix": "Add the hypothesis: \"...for every realisation by on-shell four-momenta with positive plus components\", as the module docstring at line 33 already does.",
+   "issue": "`tMom`'s docstring claims \"It equals `\u0394\u00b2` for every realisation by on-shell four-momenta (`tMom_ofMomenta`)\", but the cited theorem additionally hypothesizes positive plus components for both hadrons; the identity fails without a non-degenerate `P\u207a` (at `p\u207a + p'\u207a = 0` both sides are junk).",
+   "line": 107
+  },
+  {
+   "evidence": "Line 189: `theorem tMom_eq_zero_iff (hM : M \u2260 0) (h\u03be : |K.skewness| < 1)`; `tMom` (line 109) divides by `1 - K.skewness ^ 2`.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Kinematics.lean",
+   "fix": "Write \"for a massive hadron and `|\u03be| < 1`\", matching the declaration's own docstring at line 187.",
+   "issue": "Module bullet \"`Kinematics.tMom_eq_zero_iff`: for a massive hadron, `t = 0` exactly at `\u03be = 0` and `\u0394T = 0`\" drops the theorem's `|\u03be| < 1`. The unqualified claim is false: at `|\u03be| = 1` the definition divides by zero, so `tMom M = 0` with `\u03be \u2260 0`.",
+   "line": 51
+  },
+  {
+   "evidence": "Line 116-117: no hypothesis on `K.skewness`; for `K.skewness ^ 2 > 1` the term `\u2016\u0394T\u2016 ^ 2 / (1 - K.skewness ^ 2)` is \u2264 0.",
+   "file": "EpsilonEridani/Particles/Parton/GTMD/Kinematics.lean",
+   "fix": "State it as the identity `t = t\u2080(\u03be) - \u0394T\u00b2/(1 - \u03be\u00b2)` and restrict the \"lowered\" reading to `|\u03be| < 1`.",
+   "issue": "`tMom_eq_tZero_sub`'s docstring says the momentum transfer is \"the minimal momentum transfer lowered by `\u0394T\u00b2 / (1 - \u03be\u00b2)`\", but the lemma is an unconditional identity; the subtracted term is negative for `|\u03be| > 1`, so it is not a lowering there.",
+   "line": 115
+  }
+ ],
+ "head_sha": "808b50fc05d1255dd48cf1c3df1c5e81a3be1d67",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 228,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "bc9a08c65bb2207a2b285b94aa0615984e73cba0b7d51631089f72728eec92f5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261117T005612Z-228-documentation-a434d0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-17T00:56:12Z",
+ "submitted_by": "veprbl",
+ "summary": "The module docstring and two declaration docstrings state results without the hypotheses the corresponding theorems require: blanket \"frame independence\", \"every realisation\", a missing |\u03be| < 1 in the t = 0 bullet, and an unconditional \"lowered by\". Everything else is documented and matches the referenced GPD/LightFront declarations.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a885bb40be8152c3c206da931c2a2f79c60e23c080d301ce900964fac58cb10b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 48709,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 48709,
+  "cache_read_input_tokens": 116503,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2350,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2350,
+    "cache_read_input_tokens": 49582,
+    "input_tokens": 2,
+    "output_tokens": 6488,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9831,
+  "output_tokens_details": {
+   "thinking_tokens": 7305
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
