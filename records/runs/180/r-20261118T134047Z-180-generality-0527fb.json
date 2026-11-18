@@ -1,0 +1,167 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.099961,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 258.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 146987,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 146987,
+    "cache_read_input_tokens": 259782,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 23826,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 23826,
+      "cache_read_input_tokens": 92512,
+      "input_tokens": 2,
+      "output_tokens": 12562,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20006,
+    "output_tokens_details": {
+     "thinking_tokens": 17079
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "cost_usd": 2.099961,
+ "dedupe_key": "eic/EpsilonEridani|180|86b27a9db0fcef1b980fce90529d6694dadf46ef|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "3c1e39c0f224ce96a3698af13985adfc0c5cda3349069e3918a54ec6910d8372",
+ "diff_sha256": "3c1e39c0f224ce96a3698af13985adfc0c5cda3349069e3918a54ec6910d8372",
+ "duration_s": 258.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Radiative.lean:447-451 `rw [trueInvariants_y_of_collinear_initialState g hcol] at hy` then `have hzk : ... := (div_ne_zero_iff.mp hy).1`; `div_ne_zero_iff : a / b \u2260 0 \u2194 a \u2260 0 \u2227 b \u2260 0`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "Drop `hpk` from all three signatures and derive it internally: `have hpk : g e.p e.k \u2260 0 := fun h => (div_ne_zero_iff.mp hy).2 (by rw [h, mul_zero])` (and `hy0.ne'` for the latter two).",
+   "issue": "`hpk : g e.p e.k \u2260 0` is redundant: it follows from `hy`. After `rw [trueInvariants_y_of_collinear_initialState g hcol] at hy` the proof already has `hy : (z * g p k - g p k') / (z * g p k) \u2260 0`, and `(div_ne_zero_iff.mp hy).2 : z * g p k \u2260 0` gives `g p k \u2260 0` directly (the proof uses `.1` of the same destructuring on line 451). Same redundancy at line 467 `electronMethod_x_ne_trueInvariants_x_of_collinear_initialState` and line 483 `shiftXY_electronMethod_ne_zero_of_collinear_initialState`, where `hy0 : 0 < y` implies `hpk` the same way.",
+   "line": 441
+  },
+  {
+   "evidence": "Radiative.lean:573 applies `LinearMap.BilinForm.apply_sub_smul_self_eq` with `u = k`, `v = W`, giving `g (k - z\u2022W) (k - z\u2022W) = z * g (k-W) (k-W) + (1-z) * (g k k - z * g W W)`; negating yields the remainder form, and `hww` (line 569) is used only to kill the last term. `kPrime_eq_smul_leptonOut_of_collinear_finalState` (line 532) takes only `hcol`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "fix": "State the general form `(electronMethod g e.k e.p e.kPrime).Q2 = z * (e.trueInvariants g .finalState).Q2 - (1 - z) * g e.k e.k + z * (1 - z) * g (e.leptonOut .finalState) (e.leptonOut .finalState)` from `hcol` alone, and derive the current massless statement from it with `leptonOut_sq_eq_zero_of_collinear_finalState g hk' hcol hz`.",
+   "issue": "`electronMethod_Q2_of_collinear_finalState` assumes `hk' : g k' k' = 0` and `hz : z \u2260 0`, while its ISR twin `trueInvariants_Q2_of_collinear_initialState` (line 399) is stated with full mass remainders and no mass or `z` hypothesis. The FSR identity holds in general from `hcol` alone: with `W := e.leptonOut .finalState` and `k' = z \u2022 W` (`kPrime_eq_smul_leptonOut_of_collinear_finalState`, which needs only `hcol`), `apply_sub_smul_self_eq` gives `Q\u00b2_e = z Q\u00b2 - (1 - z) g k k + z (1 - z) g W W`. The PR description claims the other lepton's mass 'appears as an explicit remainder' elsewhere; here it does not.",
+   "line": 564
+  }
+ ],
+ "head_sha": "86b27a9db0fcef1b980fce90529d6694dadf46ef",
+ "merge_base_sha": "c07cfc1de6c14c87d3f2977c1efb750e6525a179",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 180,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fad2503865e4aef647bd1ea6ec4c09b082da51c453409ab80735ba93d54f9f65",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261118T134047Z-180-generality-0527fb",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-18T13:40:47Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two generality defects: a redundant `hpk` hypothesis implied by the inelasticity hypothesis in three collinear-ISR electron-method lemmas, and the collinear-FSR virtuality stated only in the massless special case while its ISR twin keeps full mass remainders.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/AccessMethods.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Radiative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/RadiativeCorrections/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fa98b614fdc1be10272b814a7de8ecc2afcc25bdfba786fd1e5d931811e652ac",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 146987,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 146987,
+  "cache_read_input_tokens": 259782,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 23826,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 23826,
+    "cache_read_input_tokens": 92512,
+    "input_tokens": 2,
+    "output_tokens": 12562,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20006,
+  "output_tokens_details": {
+   "thinking_tokens": 17079
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
