@@ -1,0 +1,157 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.2190415000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 142.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 87673,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 87673,
+    "cache_read_input_tokens": 137643,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4986,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4986,
+      "cache_read_input_tokens": 69809,
+      "input_tokens": 2,
+      "output_tokens": 5994,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10938,
+    "output_tokens_details": {
+     "thinking_tokens": 8239
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 1.219042,
+ "dedupe_key": "eic/EpsilonEridani|223|d7388acf064d6f5aab18412e675f7d9e3af4be5e|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ce5a8ba51e8c860f06d0cfe6593901c5f944d1f14bcfb15557abc6ef8394f2d6",
+ "diff_sha256": "ce5a8ba51e8c860f06d0cfe6593901c5f944d1f14bcfb15557abc6ef8394f2d6",
+ "duration_s": 142.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`let K : DisKinematics V := { p := P, pPrime := \u2026, k := 0, kPrime := 0, q := 0, hq := by simp }` (MomentumTransferBound.lean:192-194); `structure DisKinematics` has only `hq : q = k - kPrime` (DIS/Kinematics/Basic.lean:51-64).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "State in both docstrings and the module docstring that only the target-side momenta (`P`, `P'`) are constrained, that the lepton and photon momenta are unconstrained (the exhibited witness takes them zero), and that the set equality therefore characterises the target-side kinematics, not the diffractive physical region.",
+   "issue": "`exists_tMom_eq_of_le_tMin` is documented as producing \"an event\" and `setOf_tMom_eq_Iic_tMin` (line 215) as the \"momentum transfers of the events\"; the module docstring (line 28) says \"every `t` below the boundary is attained by an explicit event\" and \"the accessible momentum transfers \u2026 are exactly the half-line\", and `tMin`'s docstring in Kinematics.lean:303 repeats \"the accessible momentum transfers are exactly `t \u2264 tMin M M_Y \u03be`\". Nothing in the statements constrains the lepton side: the witness is built with `k := 0, kPrime := 0, q := 0` (line 192-194), so `Q\u00b2 = 0` and it is not a diffractive DIS event; the set is over all `DisKinematics` with target-side constraints only.",
+   "line": "169"
+  },
+  {
+   "evidence": "Signatures at MomentumTransferBound.lean:104-106 (`hp`, `hp'`), :158-162 (`hT hp hp' hM hMY h\u0394T h\u03be hth`), :221-224 (`htr`, `he`, `hee`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "Drop \"alone\"/\"whenever\" and name the remaining hypotheses: non-vanishing plus momenta for the identity, the transverse-free frame, positive plus momenta and `\u0394_T\u00b2 \u2264 0` for `tMom_nonpos`, and the transverse-signature assumptions for the \"exactly\" claim about `tMin`.",
+   "issue": "Hypotheses are understated in four places. (i) `tMom_eq_tMin_add`'s docstring gives the identity \"for a target with no transverse momentum, `P\u00b2 = M\u00b2` and `P'\u00b2 = M_Y\u00b2`\", and the module docstring (line 19) says it is derived \"from these two on-shell conditions alone\", but the statement also needs `hp : L.plus K.p \u2260 0` and `hp' : L.plus K.pPrime \u2260 0` (without which `\u03be` and `1/(1-\u03be)` are division junk). (ii) `tMom_nonpos` (line 154) says `t \u2264 0` \"holds whenever `0 \u2264 \u03be` and `(1 - \u03be) M\u00b2 \u2264 M_Y\u00b2`\", omitting `hT`, `hp`, `hp'`, `h\u0394T`. (iii) `tMin`'s docstring (Kinematics.lean:303-306) claims the transfers are \"exactly `t \u2264 tMin M M_Y \u03be`\" \"derived from the on-shell conditions `P\u00b2 = M\u00b2`, `P'\u00b2 = M_Y\u00b2`\", but exactness in `setOf_tMom_eq_Iic_tMin` additionally requires `htr` (metric negative semidefinite on transverse vectors) and a space-like transverse vector `e`.",
+   "line": "100"
+  }
+ ],
+ "head_sha": "d7388acf064d6f5aab18412e675f7d9e3af4be5e",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 223,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1853abfc6d069040ebd540b8d1b2164a555d9d39caeb24c994d521c9c39b012c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261118T180815Z-223-documentation-d37a03",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-18T18:08:15Z",
+ "submitted_by": "wdconinc",
+ "summary": "The module docstring and several new docstrings are accurate on the algebra but overstate reach: they call the witnesses \"events\" whose \"accessible\" transfers are characterised, when the existential ranges over unconstrained `DisKinematics` (the witness has q = k = k' = 0, so Q\u00b2 = 0), and they attribute results to fewer hypotheses than the statements carry.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "620170449c49ae8975d457ab7134461deef7f62e65f5dfcc146a9432f307639e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 87673,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 87673,
+  "cache_read_input_tokens": 137643,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4986,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4986,
+    "cache_read_input_tokens": 69809,
+    "input_tokens": 2,
+    "output_tokens": 5994,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10938,
+  "output_tokens_details": {
+   "thinking_tokens": 8239
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

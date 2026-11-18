@@ -1,0 +1,174 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.408334,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 148.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 102057,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 102057,
+    "cache_read_input_tokens": 229128,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2327,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2327,
+      "cache_read_input_tokens": 86187,
+      "input_tokens": 2,
+      "output_tokens": 2427,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10926,
+    "output_tokens_details": {
+     "thinking_tokens": 8350
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 1.408334,
+ "dedupe_key": "eic/EpsilonEridani|223|d7388acf064d6f5aab18412e675f7d9e3af4be5e|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ce5a8ba51e8c860f06d0cfe6593901c5f944d1f14bcfb15557abc6ef8394f2d6",
+ "diff_sha256": "ce5a8ba51e8c860f06d0cfe6593901c5f944d1f14bcfb15557abc6ef8394f2d6",
+ "duration_s": 148.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `xiLC` over `EpsilonEridani/` returns only `xiLC_def`, `one_sub_xiLC`, `xiLC_lt_one`; `tMom_nonpos` at line 162 requires `0 \u2264 xiLC L K`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "Add `xiLC_nonneg (L) (K) (hp : 0 < L.plus K.p) (hp' : L.plus K.pPrime \u2264 L.plus K.p) : 0 \u2264 xiLC L K` (or in terms of `0 \u2264 L.plus (deltaLost K)`), next to `xiLC_lt_one`.",
+   "issue": "`xiLC` exposes `xiLC_lt_one` but no lower bound, while `tMom_nonpos` (line 162) takes `h\u03be : 0 \u2264 xiLC L K` as a hypothesis; no lemma in the repo discharges it, so a consumer must unfold `xiLC_def` and redo `div_nonneg`.",
+   "line": 84
+  },
+  {
+   "evidence": "Kinematics.lean:273,279 (elastic forms) versus the new block at 309\u2013333, which provides only `tMin_def`, `tMin_self`, `tMin_xiLC_zero`, `tMin_nonpos`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Add `neg_tMin (M MY xiLC) : -tMin M MY xiLC = xiLC * (MY ^ 2 - (1 - xiLC) * M ^ 2) / (1 - xiLC)` and `le_tMin_iff (M MY xiLC t) : t \u2264 tMin M MY xiLC \u2194 \u2026 \u2264 -t`, mirroring the elastic pair.",
+   "issue": "The new general boundary `tMin` is missing the magnitude API that the same file gives its elastic special case: `neg_tMinElastic` (line 273) and `le_tMinElastic_iff` (line 279) have no `tMin` counterpart, so to read `tMom_le_tMin` as `|t| \u2265 \u03be(M_Y\u00b2 \u2212 (1\u2212\u03be)M\u00b2)/(1\u2212\u03be)` a consumer must unfold `tMin_def`.",
+   "line": 309
+  },
+  {
+   "evidence": "Line 94 `private theorem apply_transverseProj_deltaLost`; `tMom_eq_tMin_iff` (line 137) concludes `g (L.transverseProj (deltaLost K)) (L.transverseProj (deltaLost K)) = 0`, which a consumer can only translate to `P'_T` via this hidden lemma.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "Make it public, and state the underlying vector identity `L.transverseProj (deltaLost K) = -L.transverseProj K.pPrime` (under `hT`), deriving the squared form from it.",
+   "issue": "`apply_transverseProj_deltaLost` is `private`, but it is the only link between the transverse part of `\u0394` (in which every public hypothesis/conclusion here is phrased: `h\u0394T` at lines 126, 149, 161 and the RHS of `tMom_eq_tMin_iff`) and the target-side `P'_T` a user actually controls; it is a standalone fact about `deltaLost` and `transverseProj`, not a step specific to this bound.",
+   "line": 94
+  }
+ ],
+ "head_sha": "d7388acf064d6f5aab18412e675f7d9e3af4be5e",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 223,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b71d964bbd9b1ac22ac6cabeb5e90c611fac70f459129b14401b0e97f3db8eb8",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261118T180546Z-223-api-design-e13451",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-18T18:05:46Z",
+ "submitted_by": "wdconinc",
+ "summary": "The exposed surface is otherwise clean (no compatibility artifacts, bodies unexposed, correct simp annotations), but the characteristic API is incomplete: `xiLC` has no non-negativity lemma although `tMom_nonpos` demands one, `tMin` lacks the magnitude restatements its elastic special case already has, and the only bridge between the transverse part of `\u0394` and of `P'` is private.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c364e20438f7f1d0216d6ac7b8800f503c66c22def322953816de3701fa4d3bd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 102057,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 102057,
+  "cache_read_input_tokens": 229128,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2327,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2327,
+    "cache_read_input_tokens": 86187,
+    "input_tokens": 2,
+    "output_tokens": 2427,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10926,
+  "output_tokens_details": {
+   "thinking_tokens": 8350
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

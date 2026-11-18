@@ -1,0 +1,274 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.7825474999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 282.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 129093,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 129093,
+    "cache_read_input_tokens": 1967635,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 50,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1980,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1980,
+      "cache_read_input_tokens": 113540,
+      "input_tokens": 2,
+      "output_tokens": 5434,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20302,
+    "output_tokens_details": {
+     "thinking_tokens": 13276
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 2.782547,
+ "dedupe_key": "eic/EpsilonEridani|223|d7388acf064d6f5aab18412e675f7d9e3af4be5e|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ce5a8ba51e8c860f06d0cfe6593901c5f944d1f14bcfb15557abc6ef8394f2d6",
+ "diff_sha256": "ce5a8ba51e8c860f06d0cfe6593901c5f944d1f14bcfb15557abc6ef8394f2d6",
+ "duration_s": 282.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "GPD/Kinematics.lean:87 `def tZero (M \u03be : \u211d) : \u211d := -4 * \u03be ^ 2 * M ^ 2 / (1 - \u03be ^ 2)`; :341 `theorem tMom_le_tZero : K.tMom \u2264 tZero M K.skewness`; :446 `IsGreatest {t | \u2203 K, K.skewness = \u03be \u2227 K.tMom = t} (tZero M \u03be)`. With \u03b7 = \u03be/(2-\u03be): 1-\u03b7\u00b2 = (4-4\u03be)/(2-\u03be)\u00b2, so tZero M \u03b7 = -4\u03be\u00b2M\u00b2/(4-4\u03be) = -\u03be\u00b2M\u00b2/(1-\u03be) = tMinElastic M \u03be (Diffractive/Kinematics.lean:264).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "State the relation explicitly in the module docstring of MomentumTransferBound.lean (and in the `tMin` docstring in Diffractive/Kinematics.lean): `tMinElastic M \u03be = GPD.tZero M (\u03be/(2-\u03be))`, i.e. the GPD skewness \u03b7 and the light-cone fraction \u03be = 2\u03b7/(1+\u03b7) parametrize the same elastic boundary, and say that what is new here is M_Y \u2260 M and the abstract form `g`. If the two are to stay, the bridging identity belongs in a module that may import both.",
+   "issue": "The elastic content duplicates the existing off-forward development in EpsilonEridani/Particles/Parton/GPD/Kinematics.lean, with no cross-reference: `tMinElastic M \u03be` is `GPD.tZero M \u03b7` under \u03b7 = \u03be/(2-\u03be); `tMom_le_tMinElastic`/`tMom_le_tMin` restate `OffForwardKinematics.tMom_le_tZero` (Kinematics.lean:341, which needs no transverse-free target); `tMom_nonpos` restates `OffForwardKinematics.tMom_nonpos` (:348); `setOf_tMom_eq_Iic_tMinElastic`/`exists_tMom_eq_of_le_tMin` restate `isGreatest_tZero`/`exists_of_mem_physicalRegion` (:446,:364); `xiLC_lt_one` restates `abs_skewness_lt_one` (:248). A reader finds two unrelated 'minimal momentum transfer' APIs for the same physics.",
+   "line": 0
+  },
+  {
+   "evidence": "Diff: `theorem tMom_le_tMinElastic \u2026 := by rw [\u2190 tMin_self]; exact tMom_le_tMin hg L K hT hp hp' hM hMY h\u0394T` and `theorem setOf_tMom_eq_Iic_tMinElastic \u2026 := by rw [\u2190 tMin_self]; exact setOf_tMom_eq_Iic_tMin hg L htr he hee hT hp hM h\u03be`; `tMin_self` carries `@[simp]`. Grep for `tMinElastic` returns only Diffractive/Kinematics.lean and this file \u2014 no other consumers.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "Delete both wrappers and keep `tMin_self` as the elastic reduction; downstream uses are `simpa using tMom_le_tMin \u2026` / `simpa using setOf_tMom_eq_Iic_tMin \u2026`.",
+   "issue": "`tMom_le_tMinElastic` (line 157) and `setOf_tMom_eq_Iic_tMinElastic` (line 240) are thin wrappers whose proofs are `rw [\u2190 tMin_self]; exact <general form>`, with no in-repo consumers. Since `tMin_self` is `@[simp]` (Diffractive/Kinematics.lean:317-318), callers get the elastic form from `tMom_le_tMin`/`setOf_tMom_eq_Iic_tMin` with `simpa`, and the roadmap's 'reduces to t_min = \u03be\u00b2M\u00b2/(1-\u03be)' deliverable is already discharged by `tMin_self` itself.",
+   "line": 157
+  }
+ ],
+ "head_sha": "d7388acf064d6f5aab18412e675f7d9e3af4be5e",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 223,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f9371fe295aaf6f2263c9f90a358c91d16f8b0e09b8368376886e64e2b5e2fc1",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261118T180546Z-223-reuse-94e3c4",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-18T18:05:46Z",
+ "submitted_by": "wdconinc",
+ "summary": "The dissociative boundary (M_Y \u2260 M) and the abstract-bilinear-form setting are genuinely new, but the elastic half of this development is a second, unconnected formalization of the same kinematic fact already proved in EpsilonEridani/Particles/Parton/GPD/Kinematics.lean (tZero, tMom_le_tZero, tMom_nonpos, isGreatest_tZero), and the two elastic wrapper theorems add no content over the @[simp] lemma tMin_self.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Domain.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LightConeBasis.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 29,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f08795030253e9ed5e51db51a9c9e6d62bc46190795676396722d5a8f531f029",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 129093,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 129093,
+  "cache_read_input_tokens": 1967635,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 50,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1980,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1980,
+    "cache_read_input_tokens": 113540,
+    "input_tokens": 2,
+    "output_tokens": 5434,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20302,
+  "output_tokens_details": {
+   "thinking_tokens": 13276
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
