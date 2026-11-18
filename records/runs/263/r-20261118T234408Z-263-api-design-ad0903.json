@@ -1,0 +1,208 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8050760000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 216.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 108288,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 108288,
+    "cache_read_input_tokens": 650242,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 866,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 866,
+      "cache_read_input_tokens": 89873,
+      "input_tokens": 2,
+      "output_tokens": 4339,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15879,
+    "output_tokens_details": {
+     "thinking_tokens": 12016
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.805076,
+ "dedupe_key": "eic/EpsilonEridani|263|98a9bfb46c45d85370aada88e4b4a57d15bfaa17|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "38cf73ccbd2ba153bc2f5acd4dd9d1001073912a2188b09a8db84e3c63c63163",
+ "diff_sha256": "38cf73ccbd2ba153bc2f5acd4dd9d1001073912a2188b09a8db84e3c63c63163",
+ "duration_s": 216.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 109\u2013133 give `transpose_zero`, `transpose_delta`, `transpose_transpose` and the four field lemmas, but nothing for `ofRegularDelta`; `grep -n 'ofDeltaRegular' code/` returns no hit, and the structure declares both `deltaRegular` (line 85) and `regularDelta` (line 87) with `transpose` (line 111) swapping them.",
+   "file": "EpsilonEridani/QFT/Factorization/SIDIS/Coefficient.lean",
+   "fix": "Add `def ofDeltaRegular (a : \u211d \u2192 \u211d) : Coefficient := \u27e80, a, 0, 0\u27e9` with its four field `@[simp]` lemmas and `ofDeltaRegular_doubleConv : (ofDeltaRegular a).doubleConv f D x z = f x * mellinConv a D z`, plus `@[simp] transpose_ofRegularDelta : (ofRegularDelta b).transpose = ofDeltaRegular b` and `@[simp] transpose_ofDeltaRegular`.",
+   "issue": "`ofRegularDelta` (the `b(y) \u03b4(1-w)` corner) gets a full API \u2014 four field `@[simp]` lemmas plus `ofRegularDelta_doubleConv` \u2014 while the mirror corner `\u03b4(1-y) a(w)` (field `deltaRegular`) has no constructor and no evaluation lemma. Consequently `(ofRegularDelta b).transpose` has no named normal form, so `doubleConv_transpose`, the file's headline result, cannot be applied to the file's own distinguished constructor without the anonymous constructor.",
+   "line": 238
+  },
+  {
+   "evidence": "Line 205 `refine \u27e8\u27e80, 0, 0, R\u27e9, f, D, x, z, ?_\u27e9` followed by line 206 `simpa [doubleConv_def] using h`; `delta` (line 212) and `ofRegularDelta` (line 238) are the only named constructors.",
+   "file": "EpsilonEridani/QFT/Factorization/SIDIS/Coefficient.lean",
+   "fix": "Add `def ofRegular (R : \u211d \u2192 \u211d \u2192 \u211d) : Coefficient := \u27e80, 0, 0, R\u27e9` with field `@[simp]` lemmas and `ofRegular_doubleConv : (ofRegular R).doubleConv f D x z = doubleMellinConv R f D x z`, and restate `exists_doubleConv_ne` through it.",
+   "issue": "The purely regular coefficient function `\u27e80, 0, 0, R\u27e9` has no named constructor either: `exists_doubleConv_ne` builds it with the anonymous constructor and then reasons through `doubleConv_def`, i.e. by unfolding, because no API covers that corner.",
+   "line": 205
+  },
+  {
+   "evidence": "Double.lean:85,91 and Coefficient.lean:166,173 give the support lemmas at the two lower levels; Coefficient.lean:264\u2013321 contains only `structureFunction_def`, `_diagonal`, `_delta`, `_ofRegularDelta`, the last two hypothesising `hx hz`.",
+   "file": "EpsilonEridani/QFT/Factorization/SIDIS/Coefficient.lean",
+   "fix": "Add `structureFunction_of_notMem_left` and `structureFunction_of_notMem_right`, each by `Finset.sum_eq_zero` with `Coefficient.doubleConv_of_notMem_left/right`.",
+   "issue": "`structureFunction`, the top-level product of the file, has no vanishing-off-`(0,1]\u00b2` lemmas, although both layers below it provide them (`doubleMellinConv_of_notMem_left/right`, `doubleConv_of_notMem_left/right`). Every exported statement about it is conditioned on `x, z \u2208 Ioc 0 1`, so a consumer outside that region must unfold the sum.",
+   "line": 268
+  },
+  {
+   "evidence": "Algebra.lean:143\u2013150 `@[simp] mellinConv_zero_left`, `@[simp] mellinConv_zero_right`; Double.lean:98\u2013105 provides only the coefficient-zero case.",
+   "file": "EpsilonEridani/QFT/Factorization/Convolution/Double.lean",
+   "fix": "Add `@[simp] doubleMellinConv_zero_left : doubleMellinConv C 0 D = 0` and `doubleMellinConv_zero_right : doubleMellinConv C f 0 = 0` (via `mellinConv_zero_right`), and the matching `doubleConv_zero_left/right` in Coefficient.lean.",
+   "issue": "Only the zero *coefficient* gets a simp lemma (`zero_doubleMellinConv`, and `zero_doubleConv` at Coefficient.lean:181); a zero *density* does not, although `mellinConv_zero_left` and `mellinConv_zero_right` are both `@[simp]` upstream. Since the bodies are unexposed, `simp` cannot reduce `doubleMellinConv C 0 D` or `doubleMellinConv C f 0` (likewise `C.doubleConv 0 D`, `C.doubleConv f 0`).",
+   "line": 99
+  }
+ ],
+ "head_sha": "98a9bfb46c45d85370aada88e4b4a57d15bfaa17",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 263,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a3a94d84d9e662f5405461381ed42460f40a022db1e642caf93bf7bf6d1f5aea",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261118T234408Z-263-api-design-ad0903",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-18T23:44:08Z",
+ "submitted_by": "wdconinc",
+ "summary": "The exposed surface is minimal and bodies are correctly unexposed (`(rfl)` unfolding lemmas, no `@[expose]`), but the characteristic API is one-sided: only the `regularDelta` corner of `Coefficient` gets a named constructor, so the file's headline transposition theorem has no normal form on its own distinguished constructors, and the top-level `structureFunction` lacks the off-support lemmas both lower layers carry.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Convolution/Double.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/SIDIS/Coefficient.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Convolution/Algebra.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/SIDIS/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6b15dee3562ce1ff750b12002cab33910a1ca77430cd22190133ce1a9445aa22",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 108288,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 108288,
+  "cache_read_input_tokens": 650242,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 866,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 866,
+    "cache_read_input_tokens": 89873,
+    "input_tokens": 2,
+    "output_tokens": 4339,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15879,
+  "output_tokens_details": {
+   "thinking_tokens": 12016
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
