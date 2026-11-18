@@ -1,0 +1,204 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9866779999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 242.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 119499,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 119499,
+    "cache_read_input_tokens": 683026,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3323,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3323,
+      "cache_read_input_tokens": 101906,
+      "input_tokens": 2,
+      "output_tokens": 5294,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18003,
+    "output_tokens_details": {
+     "thinking_tokens": 14344
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.986678,
+ "dedupe_key": "eic/EpsilonEridani|254|8c90ead91398a80dc43a5fcb344829f850088bd0|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "e2b4c4ef09368f6a6497246c9384edcf4734d7150076520fe870d397e3c8b47f",
+ "diff_sha256": "e2b4c4ef09368f6a6497246c9384edcf4734d7150076520fe870d397e3c8b47f",
+ "duration_s": 242.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Meson/Pdf/Basic.lean:20-21 states the convention (\"the momentum sum rule and the sum rule for each species are likewise the species-level bundle `PDF.SumRuleAssumptions`, instantiated rather than restated\"); roadmap README.md:421 \"The sum rules are instantiated, not restated\"; README.md:484 asks for densities that \"satisfy all of 1.2\".",
+   "file": "EpsilonEridani/Particles/Meson/Pdf/LargeX.lean",
+   "fix": "Add `sumRuleAssumptionsCountingRuleModelPdf [Fintype Flavor] : PDF.SumRuleAssumptions M.countingRuleModelPdf` (momentum from `sum_mellinMoment_one_countingRuleModelPdf`, `valenceTarget s := M.valenceModelWeight s / 2`, valence from `mellinMoment_countingRuleModelPdf_of_le_one zero_le_one`) with its `_valenceTarget` simp lemma, and state both independence theorems with `PDF.SumRuleAssumptions f` in place of the inline momentum condition.",
+   "issue": "`not_forall_countingRuleHypothesis_of_sumRules` and `not_forall_not_countingRuleHypothesis_of_sumRules` (lines 202-203, 213-214) restate the momentum sum rule inline as `\u2200 Q2, \u2211 s, PDF.mellinMoment f 1 s Q2 = 1` instead of taking `PDF.SumRuleAssumptions f`, and `countingRuleModelPdf` exposes no `PDF.SumRuleAssumptions` bundle although `valenceModelPdf` does (`Meson/Pdf/Basic.lean:383 sumRuleAssumptionsValenceModelPdf`, :387 its `_valenceTarget` simp lemma). Both witnesses satisfy the bundle, so the weaker hypothesis only weakens both exposed statements.",
+   "line": 200
+  },
+  {
+   "evidence": "Basic.lean:306 `rw [Pi.add_apply, Pi.add_apply, Pi.add_apply, ...]`; Basic.lean:247 `@[simp] lemma weight_apply`.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "fix": "Add `@[simp] lemma add_apply (f g : Pdf \u03b9) (i : \u03b9) (x Q2 : \u211d) : (f + g) i x Q2 = f i x Q2 + g i x Q2 := (rfl)` in the `Add` section, and use it in `IsPartonDensity.add` and `mellinMoment_add`.",
+   "issue": "The new `Add` section introduces `+` on `Pdf \u03b9` as a public operation but supplies no `add_apply` lemma, unlike the two sibling operations (`comap_apply` at :169-172 and `weight_apply` at :247-250, both `@[simp]`). Every consumer must peel `Pi.add_apply` three times, as the PR's own proofs do at :306 and :327.",
+   "line": 298
+  },
+  {
+   "evidence": "Meson/Pdf/LargeX.lean:148-156 (`{n : \u2115} (hn : n \u2264 1)`, proof ends `interval_cases n`); Parton/PDF/Model.lean:195 `mellinMoment_modelPdf` gives the closed form for every `n`.",
+   "file": "EpsilonEridani/Particles/Meson/Pdf/LargeX.lean",
+   "fix": "State the general closed form `mellinMoment_countingRuleModelPdf (n : \u2115) (s) (Q2)` via `mellinMoment_add` + `mellinMoment_weight` + `mellinMoment_modelPdf`, and derive `mellinMoment_countingRuleModelPdf_of_le_one` from it.",
+   "issue": "`countingRuleModelPdf`'s only moment lemma is restricted to `n \u2264 1`, while its sibling has `@[simp] mellinMoment_valenceModelPdf` for every `n` (Meson/Pdf/Basic.lean:354). Since this module is `public section` without `@[expose]` (line 66), the definition's body is unavailable downstream, so no consumer can obtain the `n \u2265 2` moments \u2014 the very moments that distinguish the two models \u2014 without redoing the integral from `countingRuleModelPdf_apply`.",
+   "line": 148
+  }
+ ],
+ "head_sha": "8c90ead91398a80dc43a5fcb344829f850088bd0",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 254,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "79c2ae37d68f4b3a531e68ae9b6c87b24bdf334ae0ccd24b5360e26363d58261",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261118T215136Z-254-api-design-d350fa",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-18T21:51:36Z",
+ "submitted_by": "wdconinc",
+ "summary": "The headline independence theorems restate the momentum sum rule inline instead of instantiating the repo's `PDF.SumRuleAssumptions` bundle, and `countingRuleModelPdf` does not expose that bundle although its sibling `valenceModelPdf` does; the new `+` operation on `Pdf` and the new model are also missing the apply/moment lemmas their siblings carry.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/LargeX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Pdf/LargeX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Model.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Pdf/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MesonStructure",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MesonStructure/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "124bfa023cd58bd0dced6915bc938754301ae7eb99fc15c6e7c5e8668c556837",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 119499,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 119499,
+  "cache_read_input_tokens": 683026,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3323,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3323,
+    "cache_read_input_tokens": 101906,
+    "input_tokens": 2,
+    "output_tokens": 5294,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18003,
+  "output_tokens_details": {
+   "thinking_tokens": 14344
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

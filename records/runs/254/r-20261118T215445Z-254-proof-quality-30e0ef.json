@@ -1,0 +1,162 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.295,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 150.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 91144,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 91144,
+    "cache_read_input_tokens": 205470,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3216,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3216,
+      "cache_read_input_tokens": 74236,
+      "input_tokens": 2,
+      "output_tokens": 10122,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11231,
+    "output_tokens_details": {
+     "thinking_tokens": 9218
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.295,
+ "dedupe_key": "eic/EpsilonEridani|254|8c90ead91398a80dc43a5fcb344829f850088bd0|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "e2b4c4ef09368f6a6497246c9384edcf4734d7150076520fe870d397e3c8b47f",
+ "diff_sha256": "e2b4c4ef09368f6a6497246c9384edcf4734d7150076520fe870d397e3c8b47f",
+ "duration_s": 150.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 135-137 vs. line 155; `Pi.smul_apply` and `smul_eq_mul` are the rewrites needed to reach the stated `mul_nonneg` form.",
+   "file": "EpsilonEridani/Particles/Meson/Pdf/LargeX.lean",
+   "fix": "Make it explicit: `by simpa only [Pi.smul_apply, smul_eq_mul] using mul_nonneg hc (M.valenceModelWeight_nonneg s)`.",
+   "issue": "`smul_valenceModelWeight_nonneg` is a term-mode `mul_nonneg hc (M.valenceModelWeight_nonneg s)` against the goal `0 \u2264 (c \u2022 M.valenceModelWeight) s`; it typechecks only through the unstated defeq `(c \u2022 w) s = c * w s` (Pi.instSMul/smul_eq_mul). Line 155 of the same file does spell those steps out (`simp only [Pi.smul_apply, smul_eq_mul]`), so the file is inconsistent about it.",
+   "line": 135
+  },
+  {
+   "evidence": "`def CountingRuleHypothesis ... : Prop := PDF.HasLargeXExponent ...` (lines 86-88); grep for `countingRuleHypothesis_iff` in the diff gives only its own declaration.",
+   "file": "EpsilonEridani/Particles/Meson/Pdf/LargeX.lean",
+   "fix": "Route those two proofs through `(M.countingRuleHypothesis_iff _ _).1 h` and `.2 (...)`, so the wrapper is opened by the stated lemma rather than by defeq (or drop the unused `_iff`).",
+   "issue": "`countingRuleHypothesis_iff` (`Iff.rfl`) is never used; instead `not_countingRuleHypothesis_valenceModelPdf` (line 114, `(...).unique h` with `h : CountingRuleHypothesis`) and `countingRuleHypothesis_countingRuleModelPdf` (line 193, the `HasLargeXExponent` proof handed back directly) cross the `def` wrapper by definitional unfolding.",
+   "line": 90
+  }
+ ],
+ "head_sha": "8c90ead91398a80dc43a5fcb344829f850088bd0",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 254,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "96b7bb204f143636275460e55a6e886e2a42b10e25d63a9e44bd33ef6603aa70",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261118T215445Z-254-proof-quality-30e0ef",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-18T21:54:45Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are short, readable, and mostly explicit; no long or brittle rewrite chains. Two places lean on undocumented definitional unfolding (a `\u2022` on a Pi type, and the `CountingRuleHypothesis` wrapper whose stated `_iff` lemma is then never used).",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/LargeX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Pdf/LargeX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Model.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Pdf/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Pdf/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5df7c79f0f2fd256fbeafc2a63e47a37cd3829f672a567a071dac22556d30093",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 91144,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 91144,
+  "cache_read_input_tokens": 205470,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3216,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3216,
+    "cache_read_input_tokens": 74236,
+    "input_tokens": 2,
+    "output_tokens": 10122,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11231,
+  "output_tokens_details": {
+   "thinking_tokens": 9218
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
