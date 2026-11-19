@@ -1,0 +1,154 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.064492,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 123.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 79642,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 79642,
+    "cache_read_input_tokens": 65334,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8736,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8736,
+      "cache_read_input_tokens": 56191,
+      "input_tokens": 2,
+      "output_tokens": 2674,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9415,
+    "output_tokens_details": {
+     "thinking_tokens": 7262
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "671c95acd9d9e97aff21ad6c4573bb3753640ac8",
+ "cost_usd": 1.064492,
+ "dedupe_key": "eic/EpsilonEridani|268|94ed14c9f8683c948c645a33582df2575b3b2d69|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "460688ce88b64c10c70fb673360b353c79018c9279f7e5c7a4a5d2394046eae4",
+ "diff_sha256": "460688ce88b64c10c70fb673360b353c79018c9279f7e5c7a4a5d2394046eae4",
+ "duration_s": 123.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 175-177 vs. `def quadrupoleMoment : \u211d` (line 178); house style at EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean:20 and QFT/Factorization/Convolution/Mellin.lean:215 states the junk-value convention without the reversed implication.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "fix": "State the convention the way the rest of the repo does, e.g. \"the Bochner integral assigns `0` to a non-integrable integrand, so the value is the physical quadrupole moment only for wave functions whose integrand `r ^ 2 * uD r * (\u221a8 * uS r - uD r)` is integrable on `Ioi 0`\".",
+   "issue": "`quadrupoleMoment` docstring: \"a wave function with a finite quadrupole moment has an integrable integrand\" is vacuous and misleading \u2014 `quadrupoleMoment : \u211d` is total, so every `DeuteronWave` has a finite value, including those where the junk value `0` is returned. A reader is led to believe a finite value signals integrability.",
+   "line": "176"
+  },
+  {
+   "evidence": "Lines 41-44 vs. theorem signature lines 311-314: `(hR : 0 < R) {vS vD : \u211d \u2192 \u211d} (hS : MemLp vS 2 ...) (hD : MemLp vD 2 ...) (hlt : \u222b r in Ioi R, (vS r ^ 2 + vD r ^ 2) < 1)`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "fix": "Write \"for every `R > 0` and every exterior `(vS, vD)` square integrable on `r > R` of total weight below one\", matching the theorem docstring at line 305.",
+   "issue": "Module docstring claims the result holds \"for every exterior `(vS, vD)` on `r > R` of total weight below one\", dropping two hypotheses the theorem requires: `0 < R` and `MemLp vS/vD 2 (volume.restrict (Ioi R))`. Since the weight is itself a Bochner integral, weight `< 1` does not imply square integrability, so the summary is strictly stronger than the statement.",
+   "line": "41"
+  },
+  {
+   "evidence": "`private def glue R a v := (Ioc 0 R).indicator (fun _ => a) + (Ioi R).indicator v` (line 230-231) and `glue_of_nonpos {R a r} (hR : 0 \u2264 R) (hr : r \u2264 0)` (line 241) \u2014 the lemma needs `0 \u2264 R`, the docstring omits it.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "fix": "Say \"zero for `r \u2264 0` when `0 \u2264 R`\", or state the docstring under the standing assumption `0 \u2264 R`.",
+   "issue": "`glue` docstring states unconditionally that the amplitude is \"zero for `r \u2264 0`\", but for `R < 0` and `R < r \u2264 0` the definition gives `v r`, not `0`; the corresponding lemma carries the hypothesis `0 \u2264 R`.",
+   "line": "229"
+  }
+ ],
+ "head_sha": "94ed14c9f8683c948c645a33582df2575b3b2d69",
+ "merge_base_sha": "671c95acd9d9e97aff21ad6c4573bb3753640ac8",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 268,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fe8069baabd4813c449fc6e02552434bb533b64c485ffdf289cb3a767755a1bb",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T190338Z-268-documentation-4acf49",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T19:03:38Z",
+ "submitted_by": "wdconinc",
+ "summary": "The module docstring is substantive, mathematical and honest about the weakness of the non-observability statement. Three docstring sentences assert more than holds: a circular integrability caveat on `quadrupoleMoment`, a module-level summary that drops the square-integrability and `R > 0` hypotheses, and a private helper docstring stating an unconditional fact that needs `0 \u2264 R`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e4e4277960cfaefe17098b29891de86dbfd19fc5550a9413210075448340fa46",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 79642,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 79642,
+  "cache_read_input_tokens": 65334,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8736,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8736,
+    "cache_read_input_tokens": 56191,
+    "input_tokens": 2,
+    "output_tokens": 2674,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9415,
+  "output_tokens_details": {
+   "thinking_tokens": 7262
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

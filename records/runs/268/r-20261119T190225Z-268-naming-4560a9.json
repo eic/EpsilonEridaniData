@@ -1,0 +1,197 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6109339999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 145.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 111195,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 111195,
+    "cache_read_input_tokens": 466508,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3846,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3846,
+      "cache_read_input_tokens": 82800,
+      "input_tokens": 2,
+      "output_tokens": 3062,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10626,
+    "output_tokens_details": {
+     "thinking_tokens": 6651
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "671c95acd9d9e97aff21ad6c4573bb3753640ac8",
+ "cost_usd": 1.610934,
+ "dedupe_key": "eic/EpsilonEridani|268|94ed14c9f8683c948c645a33582df2575b3b2d69|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "460688ce88b64c10c70fb673360b353c79018c9279f7e5c7a4a5d2394046eae4",
+ "diff_sha256": "460688ce88b64c10c70fb673360b353c79018c9279f7e5c7a4a5d2394046eae4",
+ "duration_s": 145.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -rn '^\\s+(normalised|normalized)\\s*:' EpsilonEridani/` returns only DeuteronWave.lean:107 and :275; EpsilonEridani/Nuclear/Medium/NuclearEffect.lean:134 `theorem isNormalized_def`, :253 `isNormalizedSplit_def` use the American form.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "fix": "Rename the field to `normalized` and update the two uses (lines 131, 275). The roadmap's `Suggested.lean:116` spells it the same way, but that is a sketch; the convention and the repo's own `IsNormalized`/`isNormalized_def` govern.",
+   "issue": "The field `normalised` uses British spelling. The naming conventions state \"Declaration names use American English spelling\" (docstrings may use other spellings, declaration names may not). It is the only such name in the repo, and it is public API (`\u03c8.normalised`, used at line 131).",
+   "line": "107"
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/Order/Filter/Tendsto.lean:104 `theorem Tendsto.congr' ... (hl : f\u2081 =\u1da0[l\u2081] f\u2082)` vs :112 `theorem Tendsto.congr ... (h : \u2200 x, f\u2081 x = f\u2082 x)`; DeuteronWave.lean:225 proves it by `h.congr' ...`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "fix": "Rename to `HasAsymptoticNormalization.congr'` (the proof already discharges it with `h.congr'`); add an unprimed `congr` taking `\u2200 r, \u03c8.uS r = \u03c8'.uS r` only if a use needs it.",
+   "issue": "`HasAsymptoticNormalization.congr` takes `h\u03c8 : \u03c8.uS =\u1da0[atTop] \u03c8'.uS`, an eventual equality. Mathlib reserves the unprimed `congr` for pointwise equality and primes the filter-eventual variant, so this name claims the stronger-hypothesis lemma; a caller holding `\u2200 r, \u03c8.uS r = \u03c8'.uS r` will fail to unify with it.",
+   "line": "222"
+  }
+ ],
+ "head_sha": "94ed14c9f8683c948c645a33582df2575b3b2d69",
+ "merge_base_sha": "671c95acd9d9e97aff21ad6c4573bb3753640ac8",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 268,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ef3787633453561b96ab9be7b11ed91fcdc79de0b8cf9edfaba86785859cfdef",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T190225Z-268-naming-4560a9",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T19:02:25Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names describe their conclusions in standard nuclear-physics terminology and no notation is introduced, but the structure field `normalised` is the repo's only British-spelled declaration name, and `HasAsymptoticNormalization.congr` takes an eventual equality, which Mathlib names `congr'`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Order/Filter",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Order/Filter",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/PowerCounting.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d65dca3838cd8944fc23fdbe6cb8ba6beb13c8881a802ccc47fb3f7b815e4d54",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 111195,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 111195,
+  "cache_read_input_tokens": 466508,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3846,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3846,
+    "cache_read_input_tokens": 82800,
+    "input_tokens": 2,
+    "output_tokens": 3062,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10626,
+  "output_tokens_details": {
+   "thinking_tokens": 6651
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

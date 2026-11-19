@@ -1,0 +1,234 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9025175,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 254.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 106376,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 106376,
+    "cache_read_input_tokens": 777375,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2692,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2692,
+      "cache_read_input_tokens": 88302,
+      "input_tokens": 2,
+      "output_tokens": 6472,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17998,
+    "output_tokens_details": {
+     "thinking_tokens": 13315
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "671c95acd9d9e97aff21ad6c4573bb3753640ac8",
+ "cost_usd": 1.902518,
+ "dedupe_key": "eic/EpsilonEridani|268|94ed14c9f8683c948c645a33582df2575b3b2d69|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "460688ce88b64c10c70fb673360b353c79018c9279f7e5c7a4a5d2394046eae4",
+ "diff_sha256": "460688ce88b64c10c70fb673360b353c79018c9279f7e5c7a4a5d2394046eae4",
+ "duration_s": 254.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Fields `uS_eq_zero_of_nonpos`/`uD_eq_zero_of_nonpos` (lines 99-101) exist solely to pin values off `Ioi 0`; precedent `EpsilonEridani/QFT/Scattering/DIS/Corrections/Born.lean:111 theorem ext_of_eqOn_interior {\u03c3 \u03c4 : BornCrossSection S} (h : EqOn \u03c3 \u03c4 (interior (kinematicDomain S))) : \u03c3 = \u03c4`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "fix": "Add `theorem ext_of_eqOn_Ioi {\u03c8 \u03c8' : DeuteronWave} (hS : EqOn \u03c8.uS \u03c8'.uS (Ioi 0)) (hD : EqOn \u03c8.uD \u03c8'.uD (Ioi 0)) : \u03c8 = \u03c8'`, exactly as `BornCrossSection.ext_of_eqOn_interior` does for the same design.",
+   "issue": "No elimination lemma deriving equality from agreement on `Ioi 0`. The generated `@[ext]` demands full `funext` over all of \u211d, yet every statement in the file (`exists_eqOn_Ioi_...`, `EqOn \u03c8\u2081.uS vS (Ioi R)`) and every functional only ever supplies/uses values on the half-line, so consumers must redo the `rcases le_or_gt r 0` plus `uS_eq_zero_of_nonpos` split by hand.",
+   "line": "92"
+  },
+  {
+   "evidence": "`private def glued` at line 266 is the file's only construction of the structure; the parallel public introduction in the repo is `Born.lean:120 def ofLocallyIntegrableOn` with `Born.lean:129 @[simp] lemma coe_ofLocallyIntegrableOn`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "fix": "Expose a canonical introduction, e.g. `def ofHalfLine (vS vD : \u211d \u2192 \u211d) (hS hD : MemLp _ 2 (volume.restrict (Ioi 0))) (h : \u222b r in Ioi 0, (vS r ^ 2 + vD r ^ 2) = 1) : DeuteronWave` extending by `(Ioi 0).indicator`, with `@[simp]` lemmas `(ofHalfLine ..).uS r = vS r` for `r \u2208 Ioi 0`; keep `glue`/`glued` private as its internals.",
+   "issue": "No public introduction. The only way to produce a `DeuteronWave` from amplitudes given on the half-line is the raw anonymous constructor, which forces each consumer to re-derive the extension-by-zero bookkeeping (`memLp` under `volume.restrict (Ioi 0)` for an indicator, the `Ioc`/`Ioi` integral split). The file itself shows this is nontrivial \u2014 `memLp_glue` (245) and `integral_glue_sq` (251) \u2014 but hides all of it behind `private glued`.",
+   "line": "266"
+  },
+  {
+   "evidence": "Fields at lines 103/105 are restricted-measure only; the roadmap's `Suggested.lean:293 noncomputable def momentumSpaceAmplitude (\u03c8 : DeuteronWave) (k : \u211d) : \u211d` is a transform of the amplitude over the line.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "fix": "Add `theorem memLp_uS_volume (\u03c8 : DeuteronWave) : MemLp \u03c8.uS 2 volume` and the `uD` analogue, derived from the restricted fields and `uS_eq_zero_of_nonpos`.",
+   "issue": "The square-integrability fields are stated only for `volume.restrict (Ioi 0)`, and the wider view they determine \u2014 `MemLp \u03c8.uS 2 volume` on all of \u211d, available because the amplitudes vanish off the half-line \u2014 is not exposed as a derived accessor. Any consumer needing the amplitude as an L\u00b2(\u211d) function (e.g. the momentum-space transform of Layer 4) must redo the extension argument.",
+   "line": "103"
+  }
+ ],
+ "head_sha": "94ed14c9f8683c948c645a33582df2575b3b2d69",
+ "merge_base_sha": "671c95acd9d9e97aff21ad6c4573bb3753640ac8",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 268,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7b005f50c4bea8319b57c2df104e64d31343b6ad09882e9c658eb5a99167f19c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T190114Z-268-api-design-e106fd",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T19:01:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "The functional API (probabilities, quadrupole moment, asymptotic normalisation) is complete and bodies are correctly unexposed via `(rfl)`, but `DeuteronWave` itself ships without the characteristic introduction and elimination lemmas its pinned-off-half-line design calls for: no ext-from-`EqOn (Ioi 0)`, no public way to build one from half-line data (the only constructor is `private glued`), and no derived global `MemLp` accessor.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Born.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a5765282d0cabb87d722ea1fca50fc1dd07ae6c78435ed828dff1569b64320f5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 106376,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 106376,
+  "cache_read_input_tokens": 777375,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2692,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2692,
+    "cache_read_input_tokens": 88302,
+    "input_tokens": 2,
+    "output_tokens": 6472,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17998,
+  "output_tokens_details": {
+   "thinking_tokens": 13315
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
