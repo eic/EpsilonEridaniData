@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.093575,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 221.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 199248,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 199248,
+    "cache_read_input_tokens": 1306190,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 935,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 935,
+      "cache_read_input_tokens": 170244,
+      "input_tokens": 2,
+      "output_tokens": 6314,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17916,
+    "output_tokens_details": {
+     "thinking_tokens": 12875
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 3.093575,
+ "dedupe_key": "eic/EpsilonEridani|225|3cf64823fd319a88a16c3e3c961e7019f8989d5c|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "f6b99c3dc682851cf8b5f44719d54729777b82991f005f6d3cc9a4a21e76c9b4",
+ "diff_sha256": "f6b99c3dc682851cf8b5f44719d54729777b82991f005f6d3cc9a4a21e76c9b4",
+ "duration_s": 221.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/Physlib/Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean:114 `theorem gammaMatrix_anticomm (v w : Lorentz.Vector) : gammaMatrix v * gammaMatrix w + gammaMatrix w * gammaMatrix v = ...`",
+   "file": "EpsilonEridani/Relativity/Fermions/Dirac/LightConeProjectors.lean",
+   "fix": "Use the upstream term for this conclusion, as in Physlib's `gammaMatrix_anticomm`: e.g. `gammaMatrix_nPlus_anticomm_nMinus`, or spell out both summands.",
+   "issue": "`gammaMatrix_nPlus_mul_gammaMatrix_nMinus_add` ends in a dangling `_add` that names neither the second summand nor the RHS `2`, and it is exactly the name of `gammaMatrix_nPlus_mul_gammaMatrix_nMinus` (line 161, RHS `2 \u2022 P\u208a`) plus a suffix, so the two read as variants of one statement.",
+   "line": 103
+  },
+  {
+   "evidence": "Mathlib uses the head-outward form for this shape: `Prod.fst_swap`/`Prod.snd_swap` (used e.g. at upstream/mathlib/Mathlib/LinearAlgebra/UnitaryGroup.lean:84-85, Mathlib/Probability/Kernel/Composition/KernelLemmas.lean:67).",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "fix": "Rename to `nPlus_swap`, `nMinus_swap` and update the `simpa only [swap_nPlus, swap_nMinus]` call sites in LightConeProjectors.lean.",
+   "issue": "`swap_nPlus` and `swap_nMinus` (lines 263, 267) read head-first, while every other lemma in the same new section reads head-outward: `plus_swap`, `minus_swap`, `transverseProj_swap`, `longitudinal_swap`, `transverse_swap` (lines 275-294) and `goodProjector_swap`/`badProjector_swap` in the new file. The LHS is `nPlus (swap L)`, so the name should be `nPlus_swap`.",
+   "line": 263
+  },
+  {
+   "evidence": "upstream/Physlib/.../GammaMatrices.lean:133 `gammaMatrix_mul_self (v) : gammaMatrix v * gammaMatrix v = \u27eav, v\u27eb\u2098 \u2022 1`; LightConeBasis.lean:87,125,205 use the explicit `_eq_zero` suffix for zero-valued equalities.",
+   "file": "EpsilonEridani/Relativity/Fermions/Dirac/LightConeProjectors.lean",
+   "fix": "Suffix the vanishing ones with `_eq_zero` (`gammaMatrix_nPlus_mul_self_eq_zero`, `gammaMatrix_nPlus_mul_goodProjector_eq_zero`, \u2026), matching the adjacent file's `nPlus_nPlus_eq_zero`, `plus_nMinus_eq_zero`, `transverseProj_nPlus_eq_zero`.",
+   "issue": "Lemmas whose conclusion is `= 0` carry names structurally identical to neighbouring lemmas with non-zero RHS, so the name does not distinguish annihilation from absorption: `gammaMatrix_nPlus_mul_self` (93) and `gammaMatrix_nMinus_mul_self` (99) are `= 0` while Physlib's `gammaMatrix_mul_self` is `\u27eav,v\u27eb \u2022 1` and `goodProjector_mul_self` (202) is idempotency; `gammaMatrix_nPlus_mul_goodProjector` (223) is `= 0` while `gammaMatrix_nMinus_mul_goodProjector` (235) is `= gammaMatrix L.nMinus`; likewise `gammaMatrix_nMinus_mul_badProjector` (229) vs `gammaMatrix_nPlus_mul_badProjector` (242), and `goodProjector_mul_gammaMatrix_nMinus` (249), `badProjector_mul_gammaMatrix_nPlus` (255), `goodProjector_mul_badProjector` (191), `badProjector_mul_goodProjector` (197).",
+   "line": 93
+  },
+  {
+   "evidence": "Lines 384 and 493 of the same file use `gammaMatrix_sub_smul_one` for the same expression `(gammaMatrix p - m \u2022 1)`.",
+   "file": "EpsilonEridani/Relativity/Fermions/Dirac/LightConeProjectors.lean",
+   "fix": "Name the operator in both, e.g. `badProjector_apply_eq_of_gammaMatrix_sub_smul_one_apply_eq_zero` and `exists_gammaMatrix_sub_smul_one_apply_eq_zero_and_goodProjector_apply_eq`.",
+   "issue": "`badProjector_apply_eq_of_apply_eq_zero` (407) and `exists_apply_eq_zero_and_goodProjector_apply_eq` (450) refer to the Dirac operator as a bare `apply_eq_zero`, naming no function; the sibling statements spell it out (`gammaMatrix_sub_smul_one_apply_eq_zero_iff` at 384, `finrank_ker_gammaMatrix_sub_smul_one` at 493).",
+   "line": 407
+  }
+ ],
+ "head_sha": "3cf64823fd319a88a16c3e3c961e7019f8989d5c",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 225,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9a0d4dc809c09a1a5b50746e51169f50600ce7aa75ecc3fbde6461b9d69dcd3a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T035129Z-225-naming-b1e3ed",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T03:51:29Z",
+ "submitted_by": "wdconinc",
+ "summary": "Terminology and namespace use are right (good/bad matches the existing HigherTwist vocabulary; the projectors are dot notation on EpsilonEridani's own LightConeBasis), but several names are incomplete or inconsistent with their siblings: a dangling `_add` for the anticommutator, the reversed `swap_nPlus`/`swap_nMinus`, vanishing products named like non-vanishing ones, and an unnamed Dirac operator in two hypothesis names.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Fermions/Dirac/LightConeProjectors.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Prod/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Prod/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/HigherTwist/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/RingTheory/Idempotents.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0dc9ba23a0874c7271c3aefee6bdb7577e1f345e6df403ed7732466ff7e502de",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 199248,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 199248,
+  "cache_read_input_tokens": 1306190,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 935,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 935,
+    "cache_read_input_tokens": 170244,
+    "input_tokens": 2,
+    "output_tokens": 6314,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17916,
+  "output_tokens_details": {
+   "thinking_tokens": 12875
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
