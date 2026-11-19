@@ -1,0 +1,198 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3625215,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 182.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 83917,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 83917,
+    "cache_read_input_tokens": 372693,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1339,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1339,
+      "cache_read_input_tokens": 71304,
+      "input_tokens": 2,
+      "output_tokens": 2550,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13477,
+    "output_tokens_details": {
+     "thinking_tokens": 9517
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.362521,
+ "dedupe_key": "eic/EpsilonEridani|250|0170a1e7fa084ba575628fe4259680c8d7c4e5f1|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "634a98073a835f2056d4ff6ac990612d1e9ef1024bb852cff501c9682052c3cf",
+ "diff_sha256": "634a98073a835f2056d4ff6ac990612d1e9ef1024bb852cff501c9682052c3cf",
+ "duration_s": 182.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean:127-130 \u2014 `set_option backward.isDefEq.respectTransparency false in / nonrec theorem exp_add_of_commute ... := open scoped Norms.Operator in exp_add_of_commute h`; module docstring lines 30-38 state the file exists to \"hide the requirement for a norm inside the proof\". The repo also records that these instances \"do not connect by instance resolution\" at EpsilonEridani/Mathematics/LieAlgebra/SpecialUnitary/Basic.lean:51-57.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Factor the bridge into one declaration whose statement mentions no matrix norm, e.g. `private lemma hasDerivAt_matrixExp_smul_const (A : Matrix \u03b9 \u03b9 \u2102) (t : \u2102) : HasDerivAt (fun u : \u2102 => NormedSpace.exp (u \u2022 A)) (A * NormedSpace.exp (t \u2022 A)) t := open scoped Matrix.Norms.Operator in hasDerivAt_exp_smul_const' A t`, mirroring `Matrix.exp_add_of_commute`, and build `hexp` from it so the main proof is `rfl`-free.",
+   "issue": "`hasDerivAt_momentEvolution_mulVec` ends with a bare `rfl` that identifies `NormedSpace.exp` under the `Matrix.Norms.Operator` instances (carried in `hexp`'s type) with `NormedSpace.exp` under the product topology in the goal. The defeq is commented, but it is instance-level and inlined in the middle of an analysis proof, so any upstream change to how `Matrix.linftyOpNormedAddCommGroup` builds its uniformity breaks the whole lemma with an opaque failure.",
+   "line": "383"
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/Data/Matrix/Mul.lean:723 `lemma mulVec_apply_eq_sum ... : (M *\u1d65 v) i = \u2211 j : n, M i j * v j := rfl`; `Matrix.mulVec` (line 714) and `dotProduct` (line 76) are `def`s.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Replace `Matrix.mulVec, dotProduct` with the named API lemma `Matrix.mulVec_apply_eq_sum`, which is the `\u2211 j, M i j * v j` form the goal needs.",
+   "issue": "`isMomentSolution_momentEvolution_mulVec` closes with `simpa only [momentRhs, Pi.smul_apply, smul_eq_mul, Matrix.mulVec, dotProduct] using h`, unfolding two Mathlib definitions by their equation lemmas; this is the terse-but-unfolding-heavy pattern that breaks when `mulVec`/`dotProduct` are restated or bundled.",
+   "line": "391"
+  },
+  {
+   "evidence": "Line 339-341: `rw [..., \u2190 add_smul, \u2190 Complex.ofReal_add, add_comm, integratedCoupling_add]`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Give it explicit arguments: `add_comm (integratedCoupling S \u03c4\u2081 \u03c4\u2082) (integratedCoupling S \u03c4\u2080 \u03c4\u2081)`.",
+   "issue": "`momentEvolution_mul`'s rewrite chain contains an argument-free `add_comm`, which rewrites whichever addition the matcher reaches first; it is correct only because the goal happens to contain exactly one real addition at that point.",
+   "line": "341"
+  }
+ ],
+ "head_sha": "0170a1e7fa084ba575628fe4259680c8d7c4e5f1",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 250,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c390e2a163148ace19f461fa592da4b7e7faed50fbf01ad1b088033b42cf488a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T032828Z-250-proof-quality-54be08",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T03:28:28Z",
+ "submitted_by": "wdconinc",
+ "summary": "The existence proof is well factored overall, but the derivative lemma reconciles two matrix topology/norm instance stacks with a bare mid-proof `rfl` instead of a norm-free wrapper lemma, and the solution lemma closes via raw definitional unfolding of `Matrix.mulVec`/`dotProduct`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LieAlgebra/SpecialUnitary/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e83bbb864a81216718964c800d14c48e67b77e06473175e477b8e69d1782a4ed",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 83917,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 83917,
+  "cache_read_input_tokens": 372693,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1339,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1339,
+    "cache_read_input_tokens": 71304,
+    "input_tokens": 2,
+    "output_tokens": 2550,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13477,
+  "output_tokens_details": {
+   "thinking_tokens": 9517
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

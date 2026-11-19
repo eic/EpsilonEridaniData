@@ -1,0 +1,224 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9282275,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 228.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 110745,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 110745,
+    "cache_read_input_tokens": 808615,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4960,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4960,
+      "cache_read_input_tokens": 94768,
+      "input_tokens": 2,
+      "output_tokens": 6487,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16654,
+    "output_tokens_details": {
+     "thinking_tokens": 11388
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.928227,
+ "dedupe_key": "eic/EpsilonEridani|250|0170a1e7fa084ba575628fe4259680c8d7c4e5f1|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "634a98073a835f2056d4ff6ac990612d1e9ef1024bb852cff501c9682052c3cf",
+ "diff_sha256": "634a98073a835f2056d4ff6ac990612d1e9ef1024bb852cff501c9682052c3cf",
+ "duration_s": 228.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 270-311 mention `S` only as `S.alphaS`/`S.alphaS_continuous`; `Basic.lean:225` `abbrev RunningCoupling : Type := \u211d \u2192 \u211d`, used by `dglapRhsLogScale`/`IsDGLAPLogScaleEquation` (Basic.lean:238,245,273) and by `MomentReductionAssumptions` (MomentSpace.lean:541).",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "State them for the coupling: `def integratedCoupling (\u03b1s : RunningCoupling) (\u03c4\u2080 \u03c4 : \u211d) : \u211d := \u222b s in \u03c4\u2080..\u03c4, \u03b1s (Real.exp s) / (2 * Real.pi)`, with `(h\u03b1s : Continuous \u03b1s)` as a hypothesis on the three lemmas that need it, and set `momentEvolution S N \u03c4\u2080 \u03c4 := NormedSpace.exp ((integratedCoupling S.alphaS \u03c4\u2080 \u03c4 : \u2102) \u2022 S.gamma N)`.",
+   "issue": "`integratedCoupling` and its lemmas (`_self` 284, `_add` 289, `_swap` 296, `hasDerivAt_` 301, `strictMono_` 307, private `continuous_alphaS_exp_div` 270) are parametrised by `DglapMomentSystem \u03b9`, but their content uses only `S.alphaS` and `S.alphaS_continuous`; the irrelevant `\u03b9` and `gamma` make them unusable from the `x`-space API, which carries a bare `\u03b1s : RunningCoupling`.",
+   "line": 280
+  },
+  {
+   "evidence": "Proof at 408-410 goes through `momentEvolution_eq_diagonal` + `Matrix.mulVec_diagonal`, i.e. it discards every off-diagonal row other than `i`; `momentRhs` (line 120) shows row `i` is the only row entering the equation for `F \u00b7 i`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Weaken to the decoupled-row hypothesis `(h : \u2200 j, j \u2260 i \u2192 S.gamma N i j = 0)` with conclusion `F \u03c4 i = Complex.exp (integratedCoupling \u2026 * S.gamma N i i) * F \u03c4\u2080 i`; the component equation then reads `HasDerivAt (fun s => F s i) (a \u03c4 * \u03b3 i i * F \u03c4 i) \u03c4`, and `eq_of_hasDerivAt_zero` applied to `fun \u03c4 => exp (-(integratedCoupling \u2026) * \u03b3 i i) * F \u03c4 i` (the pattern already used at line 471) closes it. Derive the current diagonal statement as the corollary.",
+   "issue": "`IsMomentSolution.apply_eq_exp_mul_of_gamma_eq_diagonal` assumes the whole matrix is diagonal (`S.gamma N = Matrix.diagonal d`) for a conclusion about a single channel `i`; only row `i` enters. As stated it holds for no multi-channel QCD system, since the singlet sector mixes quark and gluon, so the advertised non-singlet closed form cannot be applied inside a full flavour system.",
+   "line": 405
+  },
+  {
+   "evidence": "The proof (366-383) uses only `hasDerivAt_exp_smul_const'`, `hasDerivAt_integratedCoupling` and a `mulVec` CLM; nothing DGLAP-specific. The same construction is re-done for operators at `SmallX.lean:357` (`hasDerivAt_bfklFlow`), showing the pattern has more than one consumer.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Factor out a `Matrix`-namespace lemma, e.g. `Matrix.hasDerivAt_exp_smul_const_mulVec {f : \u211d \u2192 \u211d} {f' t} (hf : HasDerivAt f f' t) (A : Matrix \u03b9 \u03b9 \u2102) (v : \u03b9 \u2192 \u2102) : HasDerivAt (fun s => NormedSpace.exp ((f s : \u2102) \u2022 A) *\u1d65 v) ((f' : \u2102) \u2022 (A *\u1d65 (NormedSpace.exp ((f t : \u2102) \u2022 A) *\u1d65 v))) t`, and make the DGLAP lemma its one-line specialisation at `f = integratedCoupling S \u03c4\u2080`, `A = S.gamma N`.",
+   "issue": "`hasDerivAt_momentEvolution_mulVec` states a purely generic fact \u2014 the derivative of `s \u21a6 NormedSpace.exp (f s \u2022 A) *\u1d65 v` along a differentiable scalar path \u2014 but binds it to `DglapMomentSystem`, so nothing else (the pending singlet diagonalisation, or any other linear matrix system) can use it, and the operator-norm instance plus topology-defeq `rfl` stay buried in a physics lemma.",
+   "line": 361
+  }
+ ],
+ "head_sha": "0170a1e7fa084ba575628fe4259680c8d7c4e5f1",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 250,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "82d68ef6b9ee271f654f3cded336c3bfd13742186adc8fb01d6dd88056f44b9d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T032503Z-250-generality-612482",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T03:25:03Z",
+ "submitted_by": "wdconinc",
+ "summary": "Three level problems: the integrated coupling and its lemmas are tied to a `DglapMomentSystem \u03b9` though they depend only on the coupling function, the per-channel closed form assumes full diagonality where only its own row is used, and the generic exp-along-a-scalar-path derivative is locked inside a DGLAP-specific lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/ODE/Linear.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/ODE/Linear.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Normed/Operator/Exponential.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d19431ae963fcc2e57b3d85c08d7f7d297202180f7b9fbada71cfef3f491be65",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 110745,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 110745,
+  "cache_read_input_tokens": 808615,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4960,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4960,
+    "cache_read_input_tokens": 94768,
+    "input_tokens": 2,
+    "output_tokens": 6487,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16654,
+  "output_tokens_details": {
+   "thinking_tokens": 11388
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

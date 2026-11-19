@@ -1,0 +1,202 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7375884999999995,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 226.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 102630,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 102630,
+    "cache_read_input_tokens": 594777,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1564,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1564,
+      "cache_read_input_tokens": 89218,
+      "input_tokens": 2,
+      "output_tokens": 3983,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16552,
+    "output_tokens_details": {
+     "thinking_tokens": 12666
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.737588,
+ "dedupe_key": "eic/EpsilonEridani|250|0170a1e7fa084ba575628fe4259680c8d7c4e5f1|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "634a98073a835f2056d4ff6ac990612d1e9ef1024bb852cff501c9682052c3cf",
+ "diff_sha256": "634a98073a835f2056d4ff6ac990612d1e9ef1024bb852cff501c9682052c3cf",
+ "duration_s": 226.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Body at MomentSpace.lean:281 mentions only `S.alphaS`; `abbrev RunningCoupling : Type := \u211d \u2192 \u211d` at Evolution/Basic.lean:225, already imported (MomentSpace.lean:8) and used at MomentSpace.lean:541. Roadmap README.md:743-747 states the \u03c4 reparametrisation as a property of the coupling (Layer 3.3), used by Layer 3.5.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Take the coupling directly: `def integratedCoupling (\u03b1s : RunningCoupling) (\u03c4\u2080 \u03c4 : \u211d) : \u211d := \u222b s in \u03c4\u2080..\u03c4, \u03b1s (Real.exp s) / (2 * Real.pi)`, with `Continuous \u03b1s` as an explicit hypothesis on `_add`, `hasDerivAt_`, `strictMono_` (replacing the private `continuous_alphaS_exp_div`); `momentEvolution` then reads `NormedSpace.exp ((integratedCoupling S.alphaS \u03c4\u2080 \u03c4 : \u2102) \u2022 S.gamma N)`.",
+   "issue": "`integratedCoupling (S : DglapMomentSystem \u03b9) \u03c4\u2080 \u03c4 : \u211d` uses only `S.alphaS`; `\u03b9` and `S.gamma` are phantom. The whole reparametrisation block (`integratedCoupling_self/_add/_swap`, `hasDerivAt_integratedCoupling`, `strictMono_integratedCoupling`, lines 283-311) is thereby reachable only through a bundled moment system, so Layer 2.3/3.3 consumers holding a `RunningCoupling` (and no flavour index) cannot use any of it, and two systems sharing a coupling get unrelated `integratedCoupling` terms with no lemma identifying them.",
+   "line": "280"
+  },
+  {
+   "evidence": "No `momentEvolution_def`/`integratedCoupling_def` in the file; the repo uses this pattern elsewhere, e.g. `theorem pairing_def` (Evolution/Kernel/NormalForm.lean:111) and `theorem moment_def` (NormalForm.lean:136).",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Add `lemma momentEvolution_def (S) (N) (\u03c4\u2080 \u03c4) : momentEvolution S N \u03c4\u2080 \u03c4 = NormedSpace.exp ((integratedCoupling S \u03c4\u2080 \u03c4 : \u2102) \u2022 S.gamma N) := (rfl)` and `lemma integratedCoupling_def ... = \u222b s in \u03c4\u2080..\u03c4, ... := (rfl)`, and rewrite with them in place of the definition unfoldings.",
+   "issue": "Neither `momentEvolution` nor `integratedCoupling` has a `_def` restatement; every in-file proof unfolds the body (`rw [momentEvolution, ...]` at lines 332, 339, 346, 356; `rw [momentEvolution]` via `simp only` at 379). Downstream Layer 3.5 work (singlet diagonalisation, spectral projectors) must convert `momentEvolution` to `NormedSpace.exp (c \u2022 \u03b3 N)` to apply any exponential lemma, and can only do so by unfolding the definition.",
+   "line": "321"
+  }
+ ],
+ "head_sha": "0170a1e7fa084ba575628fe4259680c8d7c4e5f1",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 250,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "558d1a438b7583273fef980a55139f66f5bd20c59294a0d8c9dcc0e66419ce74",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T032503Z-250-api-design-177ba2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T03:25:03Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new evolution-operator surface is well chosen and correctly annotated at the `_self` lemmas, but `integratedCoupling` and its five lemmas are facts about the running coupling alone, exposed only through a `DglapMomentSystem \u03b9` whose index type is phantom, and neither new definition carries a `_def` restatement, so consumers must unfold the body.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Solutions.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c4e9c50a47ad9e2361f14cd877b2696829e0b6cbe90c6f0e7c69ddbcbf371d7e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 102630,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 102630,
+  "cache_read_input_tokens": 594777,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1564,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1564,
+    "cache_read_input_tokens": 89218,
+    "input_tokens": 2,
+    "output_tokens": 3983,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16552,
+  "output_tokens_details": {
+   "thinking_tokens": 12666
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
