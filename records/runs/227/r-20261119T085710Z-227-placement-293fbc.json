@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3768160000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 154.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 92890,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 92890,
+    "cache_read_input_tokens": 322692,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2644,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2644,
+      "cache_read_input_tokens": 75709,
+      "input_tokens": 2,
+      "output_tokens": 1835,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11460,
+    "output_tokens_details": {
+     "thinking_tokens": 7925
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 1.376816,
+ "dedupe_key": "eic/EpsilonEridani|227|0d8de55c8b9243f4389f08f3a8d78b0dda172b5d|placement|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "716c377f5c205e863891a3ef06aa3e38cf1e6c018eed7b65564c3c7aa5d9b3c1",
+ "diff_sha256": "716c377f5c205e863891a3ef06aa3e38cf1e6c018eed7b65564c3c7aa5d9b3c1",
+ "duration_s": 154.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Every dependency is in Basic.lean: `reflect_isKinematicStabilizer` (Basic.lean:650), `apply_p_eq_zero_of_spectator` (658), `Bilin.reflect_apply` (173), `reflect_apply_self` (177), `reflect_apply_of_orthogonal` (185), `det_reflect` (199), `SpectatorPair` (1109). Basic.lean's own section docstring (1071-1073) says it 'supply[ies] the determinant-one stabilizer elements that `IsProperLorentzCovariant` constrains'. The PR's stated reason (Basic.lean at 1416 lines) does not hold: the block is ~60 lines, landing at ~1476 under the 1500 ceiling in lakefile.toml:47.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "fix": "Move lines 70-128 into `Tensors/Basic.lean` after `SpectatorPair.exists_half_turn` (line 1148), renaming the section header to cover both turns.",
+   "issue": "`exists_quarter_turn` (and its wrapper `SpectatorPair.exists_quarter_turn`, line 123) are pure kinematic-stabilizer lemmas with no parity-odd content; their canonical home is the `## Spectator frames and half-turns` section of `Tensors/Basic.lean` (lines 1067-1148), next to `exists_half_turn`/`SpectatorPair.exists_half_turn`, which they mirror field for field.",
+   "line": "77"
+  },
+  {
+   "evidence": "Its body uses only `transverseMetric_apply` (Basic.lean:471), `pTransverse_orthogonal_q` (519), `UniquenessAssumptions` fields (830-846) and `SpectatorPair` fields (1109-1127); nothing from `ParityOdd.lean`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "fix": "Move lines 219-245 into `Tensors/Basic.lean` after `SpectatorPlane.toSpectatorSplitting` (line 1170). If that plus the quarter-turn block does not fit under the longFile ceiling, split Basic.lean's spectator-frame section (half-turn, quarter-turn, `SpectatorPair`, `SpectatorPlane`, this constructor) into `Tensors/Spectators.lean` and place both there rather than leaving them downstream.",
+   "issue": "`SpectatorPair.uniquenessAssumptions` is a generic constructor of `UniquenessAssumptions` (Basic.lean:830) from a `SpectatorPair` (Basic.lean:1109) with no parity-odd content; hiding it in the decomposition file means future callers of `decomposition_unique` (Basic.lean:871) will not find it and will rebuild the same probe pairs.",
+   "line": "222"
+  }
+ ],
+ "head_sha": "0d8de55c8b9243f4389f08f3a8d78b0dda172b5d",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 227,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9e26534297b951657c61164ae552692581a6e106e05218522b4838c38ede968d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T085710Z-227-placement-293fbc",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T08:57:10Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new file is in the right topic directory and its imports are clean, but two generic declarations that depend on nothing from `ParityOdd.lean` are parked in the downstream decomposition file instead of their canonical home in `Tensors/Basic.lean`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "683c1c84d3be426dbe30af9b3961cf732714eed654f6f63c42e260e2ad354548",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 92890,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 92890,
+  "cache_read_input_tokens": 322692,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2644,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2644,
+    "cache_read_input_tokens": 75709,
+    "input_tokens": 2,
+    "output_tokens": 1835,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11460,
+  "output_tokens_details": {
+   "thinking_tokens": 7925
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

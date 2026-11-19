@@ -1,0 +1,236 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.831339,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 238.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 141441,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 141441,
+    "cache_read_input_tokens": 2000038,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1808,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1808,
+      "cache_read_input_tokens": 124820,
+      "input_tokens": 2,
+      "output_tokens": 3731,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16668,
+    "output_tokens_details": {
+     "thinking_tokens": 10393
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 2.831339,
+ "dedupe_key": "eic/EpsilonEridani|227|0d8de55c8b9243f4389f08f3a8d78b0dda172b5d|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "716c377f5c205e863891a3ef06aa3e38cf1e6c018eed7b65564c3c7aa5d9b3c1",
+ "diff_sha256": "716c377f5c205e863891a3ef06aa3e38cf1e6c018eed7b65564c3c7aa5d9b3c1",
+ "duration_s": 238.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Decomposition.lean:91-116 versus Basic.lean:1085-1099; the det branch comment \"Mathlib defines `LinearMap.det` to be `1` outside finite dimension, so this branch is vacuous and carries no geometric content.\" appears verbatim in both.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "fix": "Factor the shared part into one lemma next to `exists_half_turn` in Basic.lean, e.g. `lemma comp_reflect_isKinematicStabilizer (hSymm : g.IsSymm) {a b : V} (ha : g a a \u2260 0) (haq : g K.q a = 0) (haT : g (pTransverse g K) a = 0) (hb : g b b \u2260 0) (hbq : g K.q b = 0) (hbT : g (pTransverse g K) b = 0) : IsKinematicStabilizer g K (Bilin.reflect g a \u2218\u2097 Bilin.reflect g b) \u2227 LinearMap.det (Bilin.reflect g a \u2218\u2097 Bilin.reflect g b) = 1`, and have both `exists_half_turn` and `exists_quarter_turn` supply only the image computations. That removes ~14 duplicated lines and is roughly line-neutral for Basic.lean's budget, since `exists_half_turn`'s body shrinks correspondingly.",
+   "issue": "`exists_quarter_turn` re-derives the shared construction of `exists_half_turn` (Basic.lean:1085-1099): both build `Bilin.reflect g a \u2218\u2097 Bilin.reflect g b` from two `reflect_isKinematicStabilizer` hypotheses, prove `IsKinematicStabilizer` by the same `\u27e8fun v w => simp [comp_apply, h\u2081.isometry, h\u2082.isometry], rw [comp_apply, h\u2082.fixes_p, h\u2081.fixes_p], rw [comp_apply, h\u2082.fixes_q, h\u2081.fixes_q]\u27e9`, and discharge `det = 1` by the identical `by_cases hfin` / `LinearMap.det_comp, Bilin.det_reflect, det_eq_one_of_not_module_finite` block, comment included. Only the choice of the second direction (`u'` vs `u - u'`) and the image computations differ.",
+   "line": 107
+  },
+  {
+   "evidence": "Basic.lean:370-377 `(lMuNuVA g \u03b5 K cV cA).flip = (cV ^ 2 + cA ^ 2) \u2022 lMuNu g K - (2 * cV * cA) \u2022 lMuNuOdd \u03b5 K` with `hOdd` proved inline; Decomposition.lean:212-217 proves the same shape by `LinearMap.ext\u2082` + `ring`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "fix": "Add the general lemma once \u2014 e.g. `lemma LinearMap.BilinForm.IsAlt.flip_eq_neg (hA : A.IsAlt) : A.flip = -A` plus `flip_add_smul_of_isSymm_of_isAlt (hS : S.IsSymm) (hA : A.IsAlt) (c : \u211d) : (S + c \u2022 A).flip = S - c \u2022 A` \u2014 in Basic.lean near `IsProperLorentzCovariant.flip`, derive `flip_fromF1F2_add_smul` from it with `fromF1F2_isSymm`, and rewrite `lMuNuVA_flip`'s `hOdd` to use it.",
+   "issue": "`flip_fromF1F2_add_smul` is the hadronic clone of the existing `lMuNuVA_flip` (Basic.lean:368-377): both state `(S + c \u2022 A).flip = S - c \u2022 A` for `S` symmetric and `A` alternating, and both inline the missing fact `A.IsAlt \u2192 A.flip = -A` (here `rw [\u2190 hA.neg_eq v w]`, there `have hOdd : (lMuNuOdd \u03b5 K).flip = -lMuNuOdd \u03b5 K`). Mathlib has no such lemma either (`Mathlib/LinearAlgebra/BilinearForm/Properties.lean` has only `isSymm_iff_flip`, line 128), so the pattern is being written a second time rather than reused.",
+   "line": 210
+  }
+ ],
+ "head_sha": "0d8de55c8b9243f4389f08f3a8d78b0dda172b5d",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 227,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f443dbdae7530e0f06059acec98a4ced3e3a2e664e23fc7c00ab23a3e3e3e45b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T085611Z-227-reuse-960b23",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T08:56:11Z",
+ "submitted_by": "wdconinc",
+ "summary": "The mathematics is new and reuses the existing SpectatorPair/ParityOdd/decomposition_unique API well, but two proofs re-derive constructions already present in Tensors/Basic.lean: the composite-reflection stabilizer-plus-determinant argument of exists_half_turn, and the symmetric-plus-alternating flip split of lMuNuVA_flip.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Reflection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Longitudinal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Longitudinal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/Relativity/Poincare/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/Relativity/LorentzGroup/Invariants/RankFour.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "19383a2846709daf4dc3bd8c78b0599c00740aea91c650376284ce9f1d6f37e7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 141441,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 141441,
+  "cache_read_input_tokens": 2000038,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1808,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1808,
+    "cache_read_input_tokens": 124820,
+    "input_tokens": 2,
+    "output_tokens": 3731,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16668,
+  "output_tokens_details": {
+   "thinking_tokens": 10393
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

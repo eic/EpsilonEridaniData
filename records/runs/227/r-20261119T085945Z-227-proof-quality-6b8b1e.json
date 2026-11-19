@@ -1,0 +1,171 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4208349999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 136.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 96600,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 96600,
+    "cache_read_input_tokens": 433210,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 224,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 224,
+      "cache_read_input_tokens": 82170,
+      "input_tokens": 2,
+      "output_tokens": 1588,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9526,
+    "output_tokens_details": {
+     "thinking_tokens": 6449
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 1.420835,
+ "dedupe_key": "eic/EpsilonEridani|227|0d8de55c8b9243f4389f08f3a8d78b0dda172b5d|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "716c377f5c205e863891a3ef06aa3e38cf1e6c018eed7b65564c3c7aa5d9b3c1",
+ "diff_sha256": "716c377f5c205e863891a3ef06aa3e38cf1e6c018eed7b65564c3c7aa5d9b3c1",
+ "duration_s": 136.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:1090-1099 vs Decomposition.lean:107-116 \u2014 same `refine \u27e8Bilin.reflect g u \u2218\u2097 Bilin.reflect g \u2026\u27e9` skeleton and the same `by_cases hfin : Module.Finite \u211d V` / `LinearMap.det_eq_one_of_not_module_finite` branch with the same comment text.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "fix": "Add one lemma in Basic.lean, e.g. `reflect_comp_reflect_isKinematicStabilizer (hSymm) (huq huT hu) (hu'q hu'T hu') : IsKinematicStabilizer g K (Bilin.reflect g u \u2218\u2097 Bilin.reflect g u') \u2227 LinearMap.det (\u2026) = 1`, and have both `exists_half_turn` and `exists_quarter_turn` call it; each then only supplies its own action on `u`, `u'`. Net line count in Basic.lean is roughly unchanged (1416 of 1500), so the file-length constraint does not block this.",
+   "issue": "Lines 91-116 of `exists_quarter_turn` duplicate `Hadronic.exists_half_turn` (Basic.lean:1085-1099) nearly character for character: the two `reflect_isKinematicStabilizer` applications, the `refine \u27e8reflect g _ \u2218\u2097 reflect g _, \u27e8fun v w => by simp only [LinearMap.comp_apply, h\u2081.isometry _ _, h\u2082.isometry _ _], \u2026fixes_p, \u2026fixes_q\u27e9\u27e9` block, and the `by_cases hfin : Module.Finite \u211d V` determinant branch with the identical comment. The reusable fact \u2014 a composite of two reflections in non-null spectator directions is a determinant-one kinematic stabilizer \u2014 is left implicit in both copies.",
+   "line": 107
+  },
+  {
+   "evidence": "Decomposition.lean:261-276; `hA\u2081\u2082` and `he\u2081` appear nowhere else in the proof body, and `ring` at 276 is outside the `<;>` chain so it applies to the main goal only.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "fix": "Replace the `<;>` chain with three `\u00b7` bullets, one per component equation, each with its own `simp only`/`field_simp`/`ring`, and pass the non-vanishing facts explicitly, e.g. `field_simp [hA\u2081\u2082, he\u2081, hTT]`, rather than leaving them to the discharger. Naming the two coefficient expressions with `set`/`have` before the `refine` would also make the 3-line term at 264-266 readable.",
+   "issue": "`refine \u27e8\u2026, ?_, ?_, ?_\u27e9 <;> simp only [...] <;> field_simp` followed by a bare `ring` closes the three component identities (`(p_T,p_T)`, `(e\u2081,e\u2081)`, `(e\u2081,e\u2082)`) as one chain; `ring` runs on whichever single goal `field_simp` happened not to discharge, so the reader cannot tell which goal needs the arithmetic and any change in `field_simp` output breaks the script with \"no goals\" or unsolved goals. Compounding this, `hA\u2081\u2082` (line 261), `he\u2081` (262) and `hTT` are never referenced: they exist only to be picked up by `field_simp`'s `assumption` discharger.",
+   "line": 270
+  }
+ ],
+ "head_sha": "0d8de55c8b9243f4389f08f3a8d78b0dda172b5d",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 227,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "71cc7d1280b1471f25d00ca75b79b8daa96032dd7994537d59b0d180e6593d5a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T085945Z-227-proof-quality-6b8b1e",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T08:59:45Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two proof-quality issues: the composite-of-two-reflections construction is copied verbatim from `exists_half_turn` instead of factored into a shared lemma, and the main existence proof merges three structurally different component goals into one `<;>` chain with a trailing bare `ring`, hiding which goal needs what and relying on unnamed context hypotheses for `field_simp`'s discharger.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "tool": "Bash"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6f6bf82b22405cbc09c1fd9b64c15d49426e67f0222eeaabc7efe41cf0ffb5ab",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 96600,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 96600,
+  "cache_read_input_tokens": 433210,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 224,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 224,
+    "cache_read_input_tokens": 82170,
+    "input_tokens": 2,
+    "output_tokens": 1588,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9526,
+  "output_tokens_details": {
+   "thinking_tokens": 6449
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
