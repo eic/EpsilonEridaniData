@@ -1,0 +1,199 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8381629999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 205.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 120355,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 120355,
+    "cache_read_input_tokens": 509116,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4947,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4947,
+      "cache_read_input_tokens": 93069,
+      "input_tokens": 2,
+      "output_tokens": 4596,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15199,
+    "output_tokens_details": {
+     "thinking_tokens": 10726
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b53e6d19dddf8e85c7d2757440b03619a9abb10f",
+ "cost_usd": 1.838163,
+ "dedupe_key": "eic/EpsilonEridani|262|09124b6beb3eb132d88c037868eb196569357ab3|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "e67c070ecb164b1862080adbf47127227a3333462ecad9acb53b96779d3fef66",
+ "diff_sha256": "e67c070ecb164b1862080adbf47127227a3333462ecad9acb53b96779d3fef66",
+ "duration_s": 205.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 400 `noncomputable abbrev gammaS`; line 85 `public section` with no `@[expose]`; PR description: \"Because it is reducible, `simp` evaluates its entries with the existing `singletGluonMatrix_*` simp lemmas, so no parallel entry lemmas are needed.\"",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "fix": "Make it `noncomputable def gammaS` and supply the characteristic API: `gammaS_def` plus `@[simp]` entry lemmas `gammaS_zero_zero = gammaQQ c N`, `gammaS_zero_one = gammaQGSinglet c N`, `gammaS_one_zero = gammaGQ c N`, `gammaS_one_one = gammaGG c N`.",
+   "issue": "`gammaS` is a reducible `abbrev`, which exposes its body (the only exposed body in a file using `public section` without `@[expose]`) purely so that the upstream `singletGluonMatrix_*` simp lemmas unfold it; the docstring says this is why \"no parallel entry lemmas are needed\".",
+   "line": 400
+  },
+  {
+   "evidence": "`grep -n 'singletGluonMatrix_zero_one' SingletDecomposition.lean:460-462` shows `@[simp]`; AnomalousDimension.lean:404-406 has `gammaS_zero_one` with no attribute.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "fix": "With `gammaS` a non-reducible `def`, mark the four entry lemmas `@[simp]` with `gammaS_zero_one` stating `gammaQGSinglet c N`, so the singlet entry has one normal form; add the parallel `analyticAt_gammaQGSinglet_one` for the entry that actually sits in `\u03b3^S`.",
+   "issue": "`gammaS_zero_one` is not `@[simp]` while `singletGluonMatrix_zero_one` is (`SingletDecomposition.lean:461`), so through the reducible `gammaS` simp normalises the quark-from-gluon entry to `2 * c.nF * gammaQG c N`, a form none of `gammaQGSinglet_apply`, `meromorphic_gammaQGSinglet`, `analyticAt_gammaQGSinglet`, `gammaQGSinglet_ofReal_eq_moment` match. The `gammaQGSinglet` API is unreachable from the matrix.",
+   "line": 405
+  },
+  {
+   "evidence": "AnomalousDimension.lean:224-228; Continuation.lean:111-112 `private theorem add_one_ne_neg_natCast`; `analyticAt_complexHarmonic` (Continuation.lean:155) takes exactly this hypothesis.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "fix": "Make both public in their canonical home next to the hypothesis shape they serve (`Mathematics/HarmonicSum/Continuation.lean`, which already carries the same pattern privately as `add_one_ne_neg_natCast`, or the Digamma `Extensions` module), and use them from here.",
+   "issue": "`add_natCast_ne_zero` (line 224) and `one_ne_neg_natCast` (line 227) are `private` but state only facts about `\u2102` and `\u2115` casts with proofs independent of this file's subject; they are the side-condition glue for `analyticAt_complexHarmonic`, `analyticAt_gammaQQ` and `analyticAt_gammaGG`. Since only the `N = 1` specialisations are exported, a consumer applying these at any other point (e.g. on the Mellin inversion contour this file motivates) must re-prove `\u2200 m : \u2115, N \u2260 -m` by hand.",
+   "line": 224
+  }
+ ],
+ "head_sha": "09124b6beb3eb132d88c037868eb196569357ab3",
+ "merge_base_sha": "b53e6d19dddf8e85c7d2757440b03619a9abb10f",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 262,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "face4148f8652e78205b0b07740e51981cf92cec9faab6f183350471dcf2bd0f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T141544Z-262-api-design-6b91fb",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T14:15:44Z",
+ "submitted_by": "wdconinc",
+ "summary": "The headline definition `gammaS` is an `abbrev`, i.e. a body exposed deliberately in place of entry lemmas, in a file that otherwise hides bodies; this also leaves the quark-from-gluon entry with a simp normal form that bypasses the `gammaQGSinglet` API. Two general cast helpers are hidden as `private`, so the analyticity lemmas are unusable away from `N = 1` without re-proving their side conditions.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Meromorphic/SimplePole.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/SingletDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ad9f54b8f5a58f4f5d934f4ff1eba6e1979a953fc0d481b021ab60a2e5e2ed09",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 120355,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 120355,
+  "cache_read_input_tokens": 509116,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4947,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4947,
+    "cache_read_input_tokens": 93069,
+    "input_tokens": 2,
+    "output_tokens": 4596,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15199,
+  "output_tokens_details": {
+   "thinking_tokens": 10726
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
