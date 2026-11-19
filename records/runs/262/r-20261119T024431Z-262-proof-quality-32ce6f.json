@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3739400000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 176.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 93302,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 93302,
+    "cache_read_input_tokens": 202040,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5112,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5112,
+      "cache_read_input_tokens": 75120,
+      "input_tokens": 2,
+      "output_tokens": 6746,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13594,
+    "output_tokens_details": {
+     "thinking_tokens": 9912
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.37394,
+ "dedupe_key": "eic/EpsilonEridani|262|47f0181f29a77d4d4dddd96a43b7d858352a6a64|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "753a3ef51d53e4ffa52f41b878ad3007ba9df8264e30b02b893ad002cf893f48",
+ "diff_sha256": "753a3ef51d53e4ffa52f41b878ad3007ba9df8264e30b02b893ad002cf893f48",
+ "duration_s": 176.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 251-266 and 306-321 differ only in the names `gammaGQ`/`analyticAt_gammaGQ_residue`/`cF` vs `gammaGG`/`analyticAt_gammaGGResidue`/`cA`; the `rw [show (-1 : WithTop \u2124) = ((-1 : \u2124) : WithTop \u2124) by norm_cast, meromorphicOrderAt_eq_int_iff ...]` boilerplate also already occurs at Mathematics/HarmonicSum/Continuation.lean:214.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "fix": "Extract one private lemma, e.g. `(hg : AnalyticAt \u2102 g z) (h : \u2200\u1da0 w in \ud835\udcdd[\u2260] z, f w = (w - z)\u207b\u00b9 * g w) \u2192 Tendsto (fun w => (w - z) * f w) (\ud835\udcdd[\u2260] z) (\ud835\udcdd (g z))` and a companion giving `meromorphicOrderAt f z = -1` from `g z \u2260 0`; instantiate it at gammaGQ and gammaGG (and name the gammaGQ residue factor as a def, as gammaGGResidue already is).",
+   "issue": "tendsto_sub_one_mul_gammaGQ (251-257) and tendsto_sub_one_mul_gammaGG (306-312) are the same script verbatim (continuousAt/continuousWithinAt/tendsto, then `ht.congr'` + `filter_upwards` + `mul_inv_cancel\u2080`), and meromorphicOrderAt_gammaGQ_one (260-266) / meromorphicOrderAt_gammaGG_one (315-321) likewise. The reusable fact is hidden.",
+   "line": 251
+  },
+  {
+   "evidence": "Lines 230-232 and 296-298: `have h' : (1 : \u211d) = -m := by simpa using congrArg re h; linarith [(Nat.cast_nonneg m : (0 : \u211d) \u2264 m)]`, repeated with `-(m + 1)`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "fix": "Add one private lemma `one_ne_neg_natCast (m : \u2115) : (1 : \u2102) \u2260 -(m : \u2102)` and derive both uses from it (the `-(m+1)` case is the `m+1` instance).",
+   "issue": "The proof that `(1 : \u2102) \u2260 -m` via `simpa using congrArg re h` + `linarith [Nat.cast_nonneg m]` is written out twice, at line 231 (`-m`) and line 297 (`-(m+1)`), in a low-level real-part form.",
+   "line": 231
+  },
+  {
+   "evidence": "Kernel/LeadingOrder.lean:396 and :402 state the two column identities; AnomalousDimension.lean:380-381 are two byte-identical `simp [vecMul, dotProduct, Fin.sum_univ_two]` lines.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "fix": "Use `moment_pqq_two_add_moment_pgq_two_eq_zero` and `moment_pgg_two_add_moment_pqgSinglet_two_eq_zero` after `ext j`, and collapse the bullets to `fin_cases j <;> simp [vecMul, dotProduct, Fin.sum_univ_two, ...]`.",
+   "issue": "vecMul_gammaS_two re-derives momentum conservation from the numeric `@[simp]` moment values (`moment_pqq_two` etc.) instead of the existing conservation theorems that state exactly this, and repeats one identical `simp` call in two bullets.",
+   "line": 374
+  }
+ ],
+ "head_sha": "47f0181f29a77d4d4dddd96a43b7d858352a6a64",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 262,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e70e179944de237b3275c718d39d8e73988b98b0a46d7c27cda20b0528059bf6",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T024431Z-262-proof-quality-32ce6f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T02:44:31Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs compile and are readable, but the two simple-pole arguments are copy-pasted four times instead of being factored into the one reusable lemma they share, and a small \"1 is not a non-positive integer\" argument is duplicated. The momentum sum rule also bypasses the existing conservation theorems.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/SingletDecomposition.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9bcade570d32ce75039c0c8dc0a043ea5f980f268b4df780d53c8c58bf25d2d4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 93302,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 93302,
+  "cache_read_input_tokens": 202040,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5112,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5112,
+    "cache_read_input_tokens": 75120,
+    "input_tokens": 2,
+    "output_tokens": 6746,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13594,
+  "output_tokens_details": {
+   "thinking_tokens": 9912
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

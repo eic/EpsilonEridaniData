@@ -1,0 +1,262 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3547985,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 356.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 115882,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 115882,
+    "cache_read_input_tokens": 1113387,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3355,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3355,
+      "cache_read_input_tokens": 98880,
+      "input_tokens": 2,
+      "output_tokens": 2788,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 25565,
+    "output_tokens_details": {
+     "thinking_tokens": 19040
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.354798,
+ "dedupe_key": "eic/EpsilonEridani|262|47f0181f29a77d4d4dddd96a43b7d858352a6a64|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "753a3ef51d53e4ffa52f41b878ad3007ba9df8264e30b02b893ad002cf893f48",
+ "diff_sha256": "753a3ef51d53e4ffa52f41b878ad3007ba9df8264e30b02b893ad002cf893f48",
+ "duration_s": 356.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The imported `EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean:205` states `meromorphicTrailingCoeffAt_complexHarmonic_neg_nat_succ` alongside the order lemma and derives `tendsto_mul_complexHarmonic_neg_nat_succ` (line 220) from it; Mathlib has no `residue` for meromorphic functions, so `meromorphicTrailingCoeffAt` is the canonical form.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "fix": "Add `meromorphicTrailingCoeffAt_gammaGQ_one` and `meromorphicTrailingCoeffAt_gammaGG_one` (one line each from the existing private helpers via `MeromorphicAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE`), or make the factorization lemmas public.",
+   "issue": "The pole API gives `meromorphicOrderAt = -1` and a `Tendsto` limit, but not `meromorphicTrailingCoeffAt (gammaGQ c) 1 = 2 * c.cF` / `meromorphicTrailingCoeffAt (gammaGG c) 1 = 2 * c.cA` \u2014 the composable (multiplicative) form of the residue. Since `gammaGQ_eq_inv_mul`, `gammaGGResidue`, `gammaGG_eq_inv_mul`, `analyticAt_gammaGGResidue` and `gammaGGResidue_one` are all `private`, a downstream consumer cannot re-derive it from the public surface either.",
+   "line": 260
+  },
+  {
+   "evidence": "`EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean:154-156` tags `analyticAt_complexHarmonic {s : \u2102} (hs : \u2200 m : \u2115, s \u2260 -(m + 1))` with `@[fun_prop]` despite the same hypothesis shape, and line 161 does the same for `continuousAt_complexHarmonic`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "fix": "Tag the six `analyticAt_gamma*` lemmas `@[fun_prop]` (side conditions are discharged by `disch`, as this file's own proofs already do).",
+   "issue": "`analyticAt_gammaQQ`, `analyticAt_gammaQG`, `analyticAt_gammaGQ`, `analyticAt_gammaGG`, `analyticAt_gammaQQ_one` and `analyticAt_gammaQG_one` carry no `@[fun_prop]`, although the four `meromorphic_gamma*` lemmas do. Downstream cannot discharge `AnalyticAt \u2102 (fun N => gammaQQ c N * f N) N\u2080` by `fun_prop (disch := \u2026)`, and the bodies are not exposed so `unfold` is unavailable outside this file.",
+   "line": 191
+  }
+ ],
+ "head_sha": "47f0181f29a77d4d4dddd96a43b7d858352a6a64",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 262,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "72abdffb79347e9855f2bde20a1279138ec914d4fdd1dff75abbd11d0489ec87",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T024143Z-262-api-design-d0042e",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T02:41:43Z",
+ "submitted_by": "wdconinc",
+ "summary": "Surface is minimal, bodies unexposed, no compatibility artifacts. Two gaps against the API pattern of the imported Continuation.lean: the residues are stated only as limits, with the Laurent factorization private, so `meromorphicTrailingCoeffAt` is unobtainable downstream; and the `analyticAt_gamma*` lemmas lack the `@[fun_prop]` tag their upstream analogue carries.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/SingletDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Matrix/Normed.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/SingletDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 26,
+  "trace_truncated": false
+ },
+ "transcript_blob": "93bb676a74ff102713ce3a8a17c48e0afb7adab0c96c05a12193af6d3828bbc7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 115882,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 115882,
+  "cache_read_input_tokens": 1113387,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3355,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3355,
+    "cache_read_input_tokens": 98880,
+    "input_tokens": 2,
+    "output_tokens": 2788,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 25565,
+  "output_tokens_details": {
+   "thinking_tokens": 19040
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
