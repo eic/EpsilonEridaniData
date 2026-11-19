@@ -1,0 +1,188 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2534945000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 171.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 159292,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 159292,
+    "cache_read_input_tokens": 671609,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5611,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5611,
+      "cache_read_input_tokens": 141821,
+      "input_tokens": 2,
+      "output_tokens": 2057,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12988,
+    "output_tokens_details": {
+     "thinking_tokens": 9572
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 2.253495,
+ "dedupe_key": "eic/EpsilonEridani|235|92e25787fa89ab48d0b05deb6c4423875fd5d519|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "055ce88953e993d2e6f8cf066a3aff98eafb21ab929e3375f070056b0bae9f18",
+ "diff_sha256": "055ce88953e993d2e6f8cf066a3aff98eafb21ab929e3375f070056b0bae9f18",
+ "duration_s": 171.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 174-177 proves only `sMatrix \u03c1 T () () = elasticSMatrix \u03c1 t`; grep for `unitaryGroup` in the file shows it occurs only in the three matrix theorems (lines 99, 127, 152), never in a statement mentioning `elasticSMatrix`.",
+   "file": "EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "fix": "State the bridge at matrix level, `sMatrix (fun _ : Unit \u21a6 \u03c1) (of fun _ _ \u21a6 t) = of fun _ _ \u21a6 elasticSMatrix \u03c1 t`, and add `sMatrix_unit_mem_unitaryGroup_iff : sMatrix (fun _ : Unit \u21a6 \u03c1) (of fun _ _ \u21a6 t) \u2208 unitaryGroup Unit \u2102 \u2194 \u2016elasticSMatrix \u03c1 t\u2016 = 1` (from `Matrix.mem_unitaryGroup_iff'` plus `Matrix.ext`/`mul_apply` over `Unit`).",
+   "issue": "`sMatrix_unit_apply` links the two halves only at the entry `() ()`, so no consumer can transfer unitarity: `sMatrix (fun _ : Unit \u21a6 \u03c1) (of fun _ _ \u21a6 t) \u2208 unitaryGroup Unit \u2102` and `\u2016elasticSMatrix \u03c1 t\u2016 = 1` are never related, and `norm_elasticSMatrix_eq_one_iff_im_inv` (line 229) is a re-proof of the Unit case of `sMatrix_mem_unitaryGroup_iff_inv` (line 125) with no lemma connecting them.",
+   "line": "174"
+  },
+  {
+   "evidence": "`Complex.norm_exp (z : \u2102) : \u2016exp z\u2016 = Real.exp z.re` at upstream/mathlib/Mathlib/Analysis/Complex/Trigonometric.lean:985; line 253 gives `elasticSMatrix \u03c1 (phaseShiftAmplitude \u03c1 \u03b4) = exp (2 * \u03b4 * I)`, whose real part is `-2 * \u03b4.im`.",
+   "file": "EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "fix": "Add `norm_elasticSMatrix_phaseShiftAmplitude {\u03c1 : \u211d} (h\u03c1 : \u03c1 \u2260 0) (\u03b4 : \u2102) : \u2016elasticSMatrix \u03c1 (phaseShiftAmplitude \u03c1 \u03b4)\u2016 = Real.exp (-2 * \u03b4.im)` \u2014 one line from `elasticSMatrix_phaseShiftAmplitude` and `Complex.norm_exp` \u2014 or drop the absorption claim and the complex generality.",
+   "issue": "The docstring of `phaseShiftAmplitude` advertises that `a complex \u03b4 with Im \u03b4 > 0 describes absorption`, but no exposed lemma states the modulus, so a consumer must unfold `elasticSMatrix_phaseShiftAmplitude` and compute to use the only property that justifies the complex argument.",
+   "line": "240"
+  },
+  {
+   "evidence": "Lines 86-88 and 169-171 establish the `@[simp] *_zero` pattern; no such lemma exists for `phaseShiftAmplitude` (defined line 243).",
+   "file": "EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "fix": "Add `@[simp] theorem phaseShiftAmplitude_zero (\u03c1 : \u211d) : phaseShiftAmplitude \u03c1 0 = 0` (from `Complex.sin_zero`).",
+   "issue": "`phaseShiftAmplitude` has no zero lemma, while the file's other two definitions both carry one (`sMatrix_zero` line 87, `elasticSMatrix_zero` line 170), leaving the no-scattering value unavailable to `simp`.",
+   "line": "243"
+  }
+ ],
+ "head_sha": "92e25787fa89ab48d0b05deb6c4423875fd5d519",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 235,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "29ecb1a001a4d21728636d86ad8301ef57507430f8db7a6d5691fd8a1b1e5bd2",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T160827Z-235-api-design-46239e",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T16:08:27Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, bodies are unexposed, and the `*_def` lemmas correctly use `:= (rfl)`, but the characteristic API is incomplete in three places: nothing transfers unitarity between the matrix and single-channel developments, `phaseShiftAmplitude`'s complex argument carries a docstring claim no lemma states, and it lacks the zero lemma its two sibling definitions have.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/QuarkoniaAndExotics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/UnitaryGroup.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a9099912657dc6ddb2ce2f70bab799a8e45887b967bf26872b39e22a3481be91",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 159292,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 159292,
+  "cache_read_input_tokens": 671609,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5611,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5611,
+    "cache_read_input_tokens": 141821,
+    "input_tokens": 2,
+    "output_tokens": 2057,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12988,
+  "output_tokens_details": {
+   "thinking_tokens": 9572
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

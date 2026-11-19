@@ -1,0 +1,182 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0519200000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 151.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 144448,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 144448,
+    "cache_read_input_tokens": 626190,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4800,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4800,
+      "cache_read_input_tokens": 128372,
+      "input_tokens": 2,
+      "output_tokens": 2332,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11771,
+    "output_tokens_details": {
+     "thinking_tokens": 8722
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 2.05192,
+ "dedupe_key": "eic/EpsilonEridani|235|92e25787fa89ab48d0b05deb6c4423875fd5d519|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "055ce88953e993d2e6f8cf066a3aff98eafb21ab929e3375f070056b0bae9f18",
+ "diff_sha256": "055ce88953e993d2e6f8cf066a3aff98eafb21ab929e3375f070056b0bae9f18",
+ "duration_s": 151.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 183-188, 257-258, 273-274 of the new file; `ring_nf` has no stability guarantee on the shape it produces, so both the `rw` and the `exact exp_zero` break on any change to its normalization.",
+   "file": "EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "fix": "Line 186: close with `linear_combination` against `Complex.I_sq` instead of rewriting into normalized output. Line 257: `rw [\u2190 exp_add, neg_mul, add_neg_cancel, exp_zero]`. Lines 258 and 274: make the `exp` argument explicit with `congr 1` and finish with `ring` (e.g. `rw [\u2190 exp_add]; congr 1; ring`).",
+   "issue": "`ring_nf; rw [I_sq]; ring` rewrites into `ring_nf`'s normal form: the `rw` only succeeds if normalization happens to leave the literal subterm `I ^ 2`. Same dependence on `ring_nf` output/closing power at lines 257 (`rw [\u2190 exp_add]; ring_nf; exact exp_zero`), 258 (`rw [\u2190 exp_add]; ring_nf`) and 274 (`push_cast; ring_nf`), where `ring_nf` is used as the final tactic because `ring` cannot normalize under `exp`.",
+   "line": 186
+  },
+  {
+   "evidence": "`upstream/mathlib/Mathlib/Analysis/Complex/Trigonometric.lean:29` `def sin (z : \u2102) : \u2102 := (exp (-z * I) - exp (z * I)) * I / 2`; same file line 284 `theorem two_sin : 2 * sin x = (exp (-x * I) - exp (x * I)) * I`.",
+   "file": "EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "fix": "Replace `rw [sin]` by `Complex.two_sin` (`2 * sin x = (exp (-x * I) - exp (x * I)) * I`) and state the certificate in terms of it, e.g. `linear_combination (I * exp (\u03b4 * I)) * two_sin \u03b4 + ... * I_sq`, with a one-line comment giving the identity `2 i e^{i\u03b4} sin \u03b4 = e^{2i\u03b4} - 1`.",
+   "issue": "`rw [..., sin]` unfolds the definition of `Complex.sin` rather than using the existing API lemma, and the proof then ends in a two-term `linear_combination` whose coefficient `(exp (\u03b4 * I) * exp (-\u03b4 * I) - exp (\u03b4 * I) * exp (\u03b4 * I))` on `I_mul_I` is unexplained, so the reason the identity holds is not recoverable from the script.",
+   "line": 256
+  }
+ ],
+ "head_sha": "92e25787fa89ab48d0b05deb6c4423875fd5d519",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 235,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e207d7cbabc264f355b640c095b2cba7e3df23ddde00cdafcb643ebc27948041",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T161057Z-235-proof-quality-56ac43",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T16:10:57Z",
+ "submitted_by": "wdconinc",
+ "summary": "Several steps depend on `ring_nf`'s normal form \u2014 including a `rw [I_sq]` applied to `ring_nf` output and three uses of `ring_nf` as a goal-closer \u2014 and one proof unfolds the definition of `Complex.sin` where the API lemma `Complex.two_sin` exists, leaving an unexplained `linear_combination` certificate.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Trigonometric",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Exponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Complex/Trigonometric.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/Hermitian.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/Hermitian.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8585fcdb36530178e62adf212a7079ab8c61507fc4877284e4f165408d0fefd8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 144448,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 144448,
+  "cache_read_input_tokens": 626190,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4800,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4800,
+    "cache_read_input_tokens": 128372,
+    "input_tokens": 2,
+    "output_tokens": 2332,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11771,
+  "output_tokens_details": {
+   "thinking_tokens": 8722
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

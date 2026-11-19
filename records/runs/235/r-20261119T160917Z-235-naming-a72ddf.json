@@ -1,0 +1,218 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4067485,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 159.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 167277,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 167277,
+    "cache_read_input_tokens": 838147,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1466,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1466,
+      "cache_read_input_tokens": 144784,
+      "input_tokens": 2,
+      "output_tokens": 3468,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12593,
+    "output_tokens_details": {
+     "thinking_tokens": 8588
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 2.406748,
+ "dedupe_key": "eic/EpsilonEridani|235|92e25787fa89ab48d0b05deb6c4423875fd5d519|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "055ce88953e993d2e6f8cf066a3aff98eafb21ab929e3375f070056b0bae9f18",
+ "diff_sha256": "055ce88953e993d2e6f8cf066a3aff98eafb21ab929e3375f070056b0bae9f18",
+ "duration_s": 159.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/mathlib/Mathlib/Basic/Complex/Basic.lean:689 `theorem inv_im (z : \u2102) : z\u207b\u00b9.im = -z.im / normSq z`; also RCLike/Basic.lean:498.",
+   "file": "EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "fix": "Rename to `norm_elasticSMatrix_eq_one_iff_inv_im`.",
+   "issue": "`norm_elasticSMatrix_eq_one_iff_im_inv` has conclusion `t\u207b\u00b9.im = -\u03c1`; Mathlib spells that expression `inv_im`, not `im_inv` (the proof itself rewrites with `inv_im` on line 232).",
+   "line": 229
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Log.lean:172 `theorem exp_eq_exp_iff_exists_int {x y : \u2102} : exp x = exp y \u2194 \u2203 n : \u2124, x = y + n * (2 * \u03c0 * I)`; used at Unitarity.lean:284.",
+   "file": "EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "fix": "Rename to `phaseShiftAmplitude_eq_iff_exists_int`.",
+   "issue": "`phaseShiftAmplitude_eq_iff` does not describe its RHS `\u2203 k : \u2124, \u03b4 = \u03b4' + k * \u03c0`; the upstream lemma of exactly this shape, which the proof rewrites with, is named with `_iff_exists_int`.",
+   "line": 281
+  },
+  {
+   "evidence": "naming-conventions.md Algebra table: `/` \u2192 `div`, `\u207b\u00b9` \u2192 `inv`; Unitarity.lean:217 `\u2016t\u2016 \u2264 1 / \u03c1`.",
+   "file": "EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "fix": "Rename to `norm_le_one_div_of_norm_elasticSMatrix_eq_one` (or state the bound as `\u03c1\u207b\u00b9`).",
+   "issue": "`norm_le_inv_of_norm_elasticSMatrix_eq_one` concludes `\u2016t\u2016 \u2264 1 / \u03c1`, a `/`, but `inv` names `\u207b\u00b9`; the same file uses `inv` for `\u207b\u00b9` in `sMatrix_mem_unitaryGroup_iff_inv` and `..._iff_im_inv`, so the name is inconsistent within the file.",
+   "line": 216
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean:112 `theorem det_unique {n : Type*} [Unique n] \u2026`; Unitarity.lean:126 `(hT : IsUnit T.det)`, :108 `IsUnit R`.",
+   "file": "EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "fix": "Rename to name the conclusion, e.g. `sMatrix_unique_apply_eq_elasticSMatrix` (Mathlib uses `unique` for a `Unique` index) or `elasticSMatrix_eq_sMatrix_apply`.",
+   "issue": "`sMatrix_unit_apply` concludes `= elasticSMatrix \u03c1 t` but the name says only `apply`, so it reads as a variant of the entrywise `sMatrix_apply` (line 91); `unit` is also ambiguous with `IsUnit`/`unitaryGroup`, both pervasive in this file.",
+   "line": 174
+  },
+  {
+   "evidence": "naming-conventions.md: \"`_`-separated strings in a lemma name correspond to a definition name or connective\"; upstream/TauCeti/TauCeti/Analysis/Semigroups/PhaseShift.lean:66 `def phaseShift (S : StronglyContinuousSemigroup X) \u2026`.",
+   "file": "EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "fix": "Rename to `norm_elasticSMatrix_eq_one_iff_exists_phaseShiftAmplitude` (or `..._iff_exists_eq_phaseShiftAmplitude`).",
+   "issue": "`norm_elasticSMatrix_eq_one_iff_exists_phaseShift` names `phaseShift`, which is not a declaration in this PR (the definition is `phaseShiftAmplitude`, line 243) and does name an unrelated upstream declaration.",
+   "line": 265
+  }
+ ],
+ "head_sha": "92e25787fa89ab48d0b05deb6c4423875fd5d519",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 235,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "79f988d7f0acf93f71182c8491363e67ef979cf00c93f389445b49f0085e95a7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T160917Z-235-naming-a72ddf",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T16:09:17Z",
+ "submitted_by": "wdconinc",
+ "summary": "The definitions and most theorem names are sound, but five names do not describe their conclusions in the upstream spelling: `im_inv` vs Mathlib's `inv_im`, a bare `_eq_iff` where upstream uses `_eq_iff_exists_int`, `inv` used for `1 / \u03c1` in a file that otherwise uses `inv` for `\u207b\u00b9`, a `unit` lemma that hides its `elasticSMatrix` conclusion, and `phaseShift` naming a declaration that does not exist here.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Semigroups/PhaseShift.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Complex",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "018ac5aaff01eb5a6b063b6d1ee069319a0b79bf36bf232af03323405096d8f1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 167277,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 167277,
+  "cache_read_input_tokens": 838147,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1466,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1466,
+    "cache_read_input_tokens": 144784,
+    "input_tokens": 2,
+    "output_tokens": 3468,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12593,
+  "output_tokens_details": {
+   "thinking_tokens": 8588
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
