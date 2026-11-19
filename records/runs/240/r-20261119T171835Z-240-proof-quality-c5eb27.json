@@ -1,0 +1,211 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6221615,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 214.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 160726,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 160726,
+    "cache_read_input_tokens": 1236833,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2701,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2701,
+      "cache_read_input_tokens": 144002,
+      "input_tokens": 2,
+      "output_tokens": 4237,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15855,
+    "output_tokens_details": {
+     "thinking_tokens": 11366
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2f4253919ae95a9a74d68410e2c23772e541c8ff",
+ "cost_usd": 2.622161,
+ "dedupe_key": "eic/EpsilonEridani|240|f47404985a36d5a3df0f2e4d0d52835cd1c7d2cf|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "42e386f665590b80e878f80444216469e2d2966c1c372d11ee9af59cc317f1a4",
+ "diff_sha256": "42e386f665590b80e878f80444216469e2d2966c1c372d11ee9af59cc317f1a4",
+ "duration_s": 214.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Summable.le_tsum (hf) (i) (hb : \u2200 j \u2260 i, 0 \u2264 f j) : f i \u2264 \u2211' i, f i` is the `to_additive` of `Multipliable.le_tprod`, upstream/mathlib/Mathlib/Topology/Algebra/InfiniteSum/Order.lean:128.",
+   "file": "EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "fix": "Add two lemmas next to the bounds: `\u2016S.overlap n\u2080\u2016 ^ 2 \u2264 \u2211' n, \u2016S.overlap n\u2016 ^ 2 := hZ.le_tsum n\u2080 fun _ _ => sq_nonneg _` and `\u2016Z n\u2080\u2016 * \u2016O n\u2080 n\u2080\u2016 * \u2016Z n\u2080\u2016 \u2264 \u2211' p, w p := hO.le_tsum (n\u2080, n\u2080) fun _ _ => by positivity`, and use them for `hK\u2082` and for the `add_nonneg` step at line 349.",
+   "issue": "`hK\u2082 : 0 \u2264 K\u2082` is obtained by `nlinarith` from `hzA`/`hA\u2082` (i.e. via the exponential bound), and the companion `0 \u2264 K\u2083` only appears at line 349 as `le_trans (norm_nonneg _) hB\u2083`. Both are the direct fact `f i \u2264 \u2211' f` and are reusable: a user of `twoPoint_mul_exp_sub_le`/`norm_threePoint_mul_exp_sub_le` needs to know the stated constants are nonnegative, but the file never exports that.",
+   "line": 323
+  },
+  {
+   "evidence": "Lines 179\u2013180 and 186\u2013190: the only use of `h` is `h.exp_neg_sub_mul_le_one n ht`, which is defined at line 128 purely from `h.energy_le`; the gap lemma `exp_neg_sub_mul_le` is used only in `twoPoint_mul_exp_sub_le` and `exp_mul_exp_le`.",
+   "file": "EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "fix": "Weaken those three to `(h : \u2200 n, S.energy n\u2080 \u2264 S.energy n)` and pass `h.energy_le` at the call sites in `twoPoint_mul_exp_sub_le`, `tendsto_twoPoint_mul_exp` and `norm_threePoint_div_twoPoint_sub_le`.",
+   "issue": "`sq_norm_overlap_le_twoPoint_mul_exp` (184), `twoPoint_pos` (210) and the private `hasSum_twoPoint_mul_exp` (174) take `h : S.HasSpectralGap n\u2080 \u0394` but use it only through `h.energy_le` (via `exp_neg_sub_mul_le_one`); `\u0394` occurs nowhere in their conclusions, so a user must exhibit a gap to get a lower bound or positivity that needs only that `n\u2080` minimizes the energy.",
+   "line": 184
+  }
+ ],
+ "head_sha": "f47404985a36d5a3df0f2e4d0d52835cd1c7d2cf",
+ "merge_base_sha": "2f4253919ae95a9a74d68410e2c23772e541c8ff",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 240,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3a66fce3e22919a391a7c2d94c34d854f2cd1617a383a4d6d227446694be65eb",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T171835Z-240-proof-quality-c5eb27",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T17:18:35Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly robust and readable, but the nonnegativity of the two exported constants K\u2082 and K\u2083 is a reusable one-line consequence of summability that is instead derived indirectly inside one proof (nlinarith off an exponential bound, and `norm_nonneg` off the three-point bound). Three two-point lemmas also carry the full spectral-gap hypothesis while using only ground-state minimality.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Algebra/InfiniteSum/Order.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Algebra/InfiniteSum",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Algebra/Order",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Algebra/InfiniteSum/Real.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Order",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Algebra/InfiniteSum/Order.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Algebra/InfiniteSum/Order.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "09d1c1d74af3105485e32090e7bafba73b222e736ce9947af73094e3b12855f2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 160726,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 160726,
+  "cache_read_input_tokens": 1236833,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2701,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2701,
+    "cache_read_input_tokens": 144002,
+    "input_tokens": 2,
+    "output_tokens": 4237,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15855,
+  "output_tokens_details": {
+   "thinking_tokens": 11366
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
