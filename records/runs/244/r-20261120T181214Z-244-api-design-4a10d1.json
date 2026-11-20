@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.0792245,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 198.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 201666,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 201666,
+    "cache_read_input_tokens": 1394959,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3602,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3602,
+      "cache_read_input_tokens": 186861,
+      "input_tokens": 2,
+      "output_tokens": 4103,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14599,
+    "output_tokens_details": {
+     "thinking_tokens": 10535
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f373893d471bbca457667f127123f8fee29c7098",
+ "cost_usd": 3.079225,
+ "dedupe_key": "eic/EpsilonEridani|244|616cc012d9c39ecff9ab34e7e4fcde55da7e2fdd|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a3ed131162c78d9898d5cd20208a6aec9ac1bf7658e8e1352d6396841019ac91",
+ "diff_sha256": "a3ed131162c78d9898d5cd20208a6aec9ac1bf7658e8e1352d6396841019ac91",
+ "duration_s": 198.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -n 'momentIntegrable 0'` has exactly one hit repo-wide, `PartonModel.lean:163`; `grep -n 'IntegrableOn' EpsilonEridani/Particles/Parton` shows no such lemma exists.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "fix": "Add a public `PDF.Regularity.integrableOn (h : Regularity f) (i) (Q2) : MeasureTheory.IntegrableOn (fun x => f i x Q2) (Set.Icc 0 1)` next to `Regularity.of_abs_le` and use it at `PartonModel.lean:163`.",
+   "issue": "General infrastructure is left inlined: converting `Regularity.momentIntegrable 0` to `IntegrableOn (Set.Icc 0 1)` appears only inside a proof (`PartonModel.lean:163`, `simpa only [pow_zero, one_mul] using hr.momentIntegrable 0 s Q2`). Every consumer of `assumptions_partonModel`, `firstMomentG1_partonModel` and `ellisJaffeSumRule_partonModel_iff` whose density comes as a `PDF.Regularity`/`PDF.Assumptions` bundle has to redo it.",
+   "line": 310
+  },
+  {
+   "evidence": "roadmap `SpinStructure/README.md:551-554`; and the Layer-1 example at line 632 (\"The parton-model `g\u2081` built from `PDF.Model` satisfies `Polarized.Assumptions`, and its first moment is \u2026\") needs the same conversion for `firstMomentG1_partonModel`'s `hi` hypothesis.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/PartonModel.lean",
+   "fix": "Add `assumptions_partonModel_of_regularity (charge) (h\u0394 : \u2200 s x Q2, x < 0 \u2228 1 < x \u2192 \u0394 s x Q2 = 0) (hr : PDF.Regularity \u0394) : Assumptions (partonModel charge \u0394)`, proved via the new `Regularity.integrableOn`; `PDF.Assumptions` users reach it through `.regularity`.",
+   "issue": "The roadmap statement \"a `g\u2081` built this way from densities satisfying `PDF.Assumptions` satisfies the polarised `Polarized.Assumptions` bundle\" is not on the surface. `assumptions_partonModel` takes three unbundled hypotheses, and the only bundle-level version is the spin-density one (line 156); a user holding `PDF.Assumptions \u0394` or `PDF.Regularity \u0394` (e.g. from `PDF.Model`) must destructure it and convert the moment integrability by hand.",
+   "line": 143
+  },
+  {
+   "evidence": "`BurkhardtCottingham` is declared in `Polarized/SumRules.lean:153` (imported at `PartonModel.lean:11`); the existing precedent `burkhardtCottingham_wandzuraWilczek` (`SumRules.lean:293`) has to unfold with `simpa [firstMomentG2, wandzuraWilczek]` for want of such a lemma.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/PartonModel.lean",
+   "fix": "Add `firstMomentG2_partonModel : firstMomentG2 (partonModel charge \u0394) Q2 = 0` and `burkhardtCottingham_partonModel : BurkhardtCottingham (partonModel charge \u0394)` beside the `g\u2081` moment lemmas.",
+   "issue": "The `g\u2082` side of the API stops at `partonModel_g2`. There is no `firstMomentG2 (partonModel charge \u0394) Q2 = 0` and no `BurkhardtCottingham (partonModel charge \u0394)`, although both are unconditional and `BurkhardtCottingham` is in scope through the `SumRules` import; a consumer must unfold the `firstMomentG2` definition (`simp [firstMomentG2]`) to get them, which is the pattern the file otherwise avoids by proving `firstMomentG1_partonModel`.",
+   "line": 111
+  }
+ ],
+ "head_sha": "616cc012d9c39ecff9ab34e7e4fcde55da7e2fdd",
+ "merge_base_sha": "f373893d471bbca457667f127123f8fee29c7098",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 244,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c1c1e15ed280ce1d5c4fc435672fef52ca4aa68b43f9e7ed488de9c8fd1dca0d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T181214Z-244-api-design-4a10d1",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T18:12:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "The characteristic API of `partonModel` is incomplete: there is no entry point from the `PDF.Regularity`/`PDF.Assumptions` bundle to `Polarized.Assumptions (partonModel charge \u0394)` (the roadmap's stated product), the `momentIntegrable 0 \u2192 IntegrableOn (Icc 0 1)` step that every consumer needs is inlined in a proof instead of being a public lemma in `PDF/Basic.lean`, and the `g\u2082` side stops at `partonModel_g2` with no first-moment lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/PartonModel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/SumRules.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Flavor.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/SpinDensityC.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "bf601143e939e5eddfc62795d989b37abc39a1fdb8d72282d2e18a75b592be37",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 201666,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 201666,
+  "cache_read_input_tokens": 1394959,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3602,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3602,
+    "cache_read_input_tokens": 186861,
+    "input_tokens": 2,
+    "output_tokens": 4103,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14599,
+  "output_tokens_details": {
+   "thinking_tokens": 10535
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
