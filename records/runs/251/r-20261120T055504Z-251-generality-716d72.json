@@ -1,0 +1,205 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.7991950000000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 216.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 167523,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 167523,
+    "cache_read_input_tokens": 1501770,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 773,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 773,
+      "cache_read_input_tokens": 152722,
+      "input_tokens": 2,
+      "output_tokens": 2293,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14918,
+    "output_tokens_details": {
+     "thinking_tokens": 10093
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.799195,
+ "dedupe_key": "eic/EpsilonEridani|251|5f38348418c72e814b101936c207710ae60f9b2a|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "bb0539b4dbfb15a3ce88dbc6472c7319565795779892cf836d7f8c6366021b6d",
+ "diff_sha256": "bb0539b4dbfb15a3ce88dbc6472c7319565795779892cf836d7f8c6366021b6d",
+ "duration_s": 216.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Coherence.lean:94-99 proves the equality `charFun ((stdGaussian (EuclideanSpace \u211d (Fin d))).map (\u03c3 \u2022 \u00b7)) q.spatialPart = exp (-(\u03c3^2 * \u2016q.spatialPart\u2016^2)/2)` from `charFun_map_smul` + `charFun_stdGaussian`; lines 102-111 then weaken it. Mathlib's `charFun_map_smul` (CharacteristicFunction/Basic.lean:208) and `charFun_stdGaussian` (Gaussian/Multivariate.lean:94) hold for any `E` with `[FiniteDimensional \u211d E] [BorelSpace E]`, the same block already used by the PR's `integral_norm_sq_stdGaussian`; TauCeti's `charFun_stdGaussian_sqrt_smul` (TauCeti/Analysis/Bochner/Gaussian/Basic.lean:107) is the same fact for `\u03c3 = \u221a(2c) \u2265 0`, confirming the general level is the natural one.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "fix": "Put the general statement in `EpsilonEridani/Mathematics/Probability/Distributions/Gaussian/MultivariateExtensions.lean` next to `integral_norm_sq_stdGaussian`, for general `E` and `t : E` (equality form, or `\u2016\u00b7\u2016\u00b2 \u2264 exp (-\u2016t\u2016\u00b2 * (\u222b \u2016r\u2016\u00b2 \u2202\u00b7) / finrank \u211d E)`), and derive the Lorentz statement from it plus `hQ : -\u27eaq, q\u27eb\u2098 \u2264 \u2016q.spatialPart\u2016 ^ 2` in two lines.",
+   "issue": "`norm_sq_charFun_map_smul_stdGaussian_spatialPart_le` is the only exported form of the Gaussian form-factor decay, but it is stated for a `Lorentz.Vector d` and weakened to `\u2264` via `Q\u00b2 \u2264 \u2016q.spatialPart\u2016\u00b2`. The general content \u2014 `\u2016charFun ((stdGaussian E).map (\u03c3 \u2022 \u00b7)) t\u2016 ^ 2 = exp (-(\u03c3 ^ 2 * \u2016t\u2016 ^ 2))` for any finite-dimensional real inner product space `E` and any momentum `t` \u2014 is proved inline as `hF` (lines 94\u201399) and discarded, so a user wanting the form-factor decay at a Euclidean momentum (the roadmap's \"support of the Fourier transform of the charge density\" framing) cannot use this lemma. This is the opposite of the pattern used for the other half, where `one_sub_norm_charFun_le` is stated generally in `Mathematics/.../BasicExtensions.lean` and composed in the physics file.",
+   "line": 84
+  }
+ ],
+ "head_sha": "5f38348418c72e814b101936c207710ae60f9b2a",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 251,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "eb154293f1f09f1dc1b2abdb1d3bdbb92b8a36a9b222d57889fe48b33cb30741",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T055504Z-251-generality-716d72",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T05:55:04Z",
+ "submitted_by": "wdconinc",
+ "summary": "All hypotheses are load-bearing and the typeclass blocks match upstream convention, but the Gaussian half of the coherence bound is exported only in Lorentz-wrapped, strictly-weakened form: the general equality it proves is buried in the proof and unavailable, unlike the charFun half, whose general statement is correctly exposed in the Mathematics file.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/Measure/CharacteristicFunction/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Measure/CharacteristicFunction/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Measure/CharacteristicFunction/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Distributions/Gaussian/Multivariate.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Distributions/Gaussian/Multivariate.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Distributions/Gaussian/Multivariate.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Measure/CharacteristicFunction/TaylorExpansion.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b62b895a7fdc3e3fd0cd757ce94e1a4fd3e281c063033eb45ed6aca05e107936",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 167523,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 167523,
+  "cache_read_input_tokens": 1501770,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 773,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 773,
+    "cache_read_input_tokens": 152722,
+    "input_tokens": 2,
+    "output_tokens": 2293,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14918,
+  "output_tokens_details": {
+   "thinking_tokens": 10093
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

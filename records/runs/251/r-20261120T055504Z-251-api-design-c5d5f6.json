@@ -1,0 +1,191 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1288314999999995,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 145.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 159703,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 159703,
+    "cache_read_input_tokens": 522583,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3146,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3146,
+      "cache_read_input_tokens": 141698,
+      "input_tokens": 2,
+      "output_tokens": 4700,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10818,
+    "output_tokens_details": {
+     "thinking_tokens": 6678
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.128831,
+ "dedupe_key": "eic/EpsilonEridani|251|5f38348418c72e814b101936c207710ae60f9b2a|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "bb0539b4dbfb15a3ce88dbc6472c7319565795779892cf836d7f8c6366021b6d",
+ "diff_sha256": "bb0539b4dbfb15a3ce88dbc6472c7319565795779892cf836d7f8c6366021b6d",
+ "duration_s": 145.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Coherence.lean:86-92: `rw [integral_map (by fun_prop) (by fun_prop)]; simp_rw [norm_smul, mul_pow, Real.norm_eq_abs, sq_abs]; rw [integral_const_mul, integral_norm_sq_stdGaussian, finrank_euclideanSpace_fin]` \u2014 statement mentions only upstream types.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "fix": "Add a public `ProbabilityTheory.integral_norm_sq_map_smul_stdGaussian (\u03c3 : \u211d) : \u222b x, \u2016x\u2016 ^ 2 \u2202((stdGaussian E).map (\u03c3 \u2022 \u00b7)) = \u03c3 ^ 2 * Module.finrank \u211d E` to `Mathematics/Probability/Distributions/Gaussian/MultivariateExtensions.lean` and use it here.",
+   "issue": "The statement of `norm_sq_charFun_map_smul_stdGaussian_spatialPart_le` contains `\u222b r, \u2016r\u2016 ^ 2 \u2202((stdGaussian (EuclideanSpace \u211d (Fin d))).map (\u03c3 \u2022 \u00b7))`, but its value `\u03c3 ^ 2 * d` is computed only inside the proof, so no consumer can turn the bound into `exp (-Q\u00b2 R\u00b2 / d)` with `R\u00b2 = d \u03c3\u00b2` without redoing it.",
+   "line": 90
+  },
+  {
+   "evidence": "Coherence.lean:94-99 needs `charFun_map_smul`, `charFun_stdGaussian`, `\u2190 Complex.ofReal_pow`, `norm_smul`, `mul_pow`, `Real.norm_eq_abs`, `sq_abs`, `push_cast`, `ring_nf`; TauCeti keeps the analogous rescaling as `charFun_stdGaussian_sqrt_smul` (upstream/TauCeti/TauCeti/Analysis/Bochner/Gaussian/Basic.lean:107).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "fix": "Expose it as a public lemma (e.g. `charFun_map_smul_stdGaussian`) in `Mathematics/Probability/Distributions/Gaussian/MultivariateExtensions.lean` and apply it here.",
+   "issue": "`hF`, the form factor of the rescaled Gaussian `charFun ((stdGaussian E).map (\u03c3 \u2022 \u00b7)) t = exp (-(\u03c3 ^ 2 * \u2016t\u2016 ^ 2) / 2)`, is general infrastructure in upstream namespaces hidden as a `have`; it is not the one-step composition the PR description claims.",
+   "line": 94
+  },
+  {
+   "evidence": "Coherence.lean:102-104; Physlib has only the dual `minkowskiProduct_self_le_timeComponent_sq` (upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/MinkowskiProduct.lean:170), not this one.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "fix": "Add it as a public lemma in `Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean`, the file this PR already extends, and use it here.",
+   "issue": "`hQ : -\u27eaq, q\u27eb\u2098 \u2264 \u2016q.spatialPart\u2016 ^ 2` is a frame-independent fact about every Lorentz vector (the author's docstring stresses this at line 36) yet stays a proof-local `have`.",
+   "line": 102
+  },
+  {
+   "evidence": "Mathlib `Probability/Distributions/Gaussian/Multivariate.lean:75-76` `@[simp] lemma integral_id_stdGaussian` and `:112-113` `@[simp] lemma integral_strongDual_stdGaussian`.",
+   "file": "EpsilonEridani/Mathematics/Probability/Distributions/Gaussian/MultivariateExtensions.lean",
+   "fix": "Mark it `@[simp]`; the left side is a normal form with no loop risk.",
+   "issue": "`integral_norm_sq_stdGaussian` is a closed-form moment lemma with no automation annotation, unlike its upstream siblings.",
+   "line": 33
+  }
+ ],
+ "head_sha": "5f38348418c72e814b101936c207710ae60f9b2a",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 251,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "06095ee7ce34321c7ff8dfbaeb125c2fdf3a1e66cdd130cab1e0e90e607b9491",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T055504Z-251-api-design-c5d5f6",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T05:55:04Z",
+ "submitted_by": "wdconinc",
+ "summary": "Three pieces of general, upstream-typed infrastructure (the second moment and the characteristic function of the rescaled standard Gaussian, and the virtuality/spatial-momentum inequality) are buried as proof steps instead of being exposed in their canonical files, and the new second-moment lemma lacks the `@[simp]` its upstream siblings carry.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/Measure/CharacteristicFunction/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Distributions/Gaussian/Multivariate.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c087744f97c20b2d4a9079481c5de56bcdb6c32c8ea4e7265b5e300825a0193e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 159703,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 159703,
+  "cache_read_input_tokens": 522583,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3146,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3146,
+    "cache_read_input_tokens": 141698,
+    "input_tokens": 2,
+    "output_tokens": 4700,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10818,
+  "output_tokens_details": {
+   "thinking_tokens": 6678
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
