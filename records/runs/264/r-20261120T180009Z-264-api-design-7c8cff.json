@@ -1,0 +1,205 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.318351,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 304.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 195726,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 195726,
+    "cache_read_input_tokens": 1583742,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1820,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1820,
+      "cache_read_input_tokens": 173250,
+      "input_tokens": 2,
+      "output_tokens": 3663,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22764,
+    "output_tokens_details": {
+     "thinking_tokens": 18675
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 3.318351,
+ "dedupe_key": "eic/EpsilonEridani|264|5de520742ad5dc4dbf47e26cfbcdb052cec9afbe|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ac474b92e0ded51132767025f19df5a331d493a0af4c50c0dc419f9a366d879c",
+ "diff_sha256": "ac474b92e0ded51132767025f19df5a331d493a0af4c50c0dc419f9a366d879c",
+ "duration_s": 304.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 98-107 use `(h : Fintype.card n = 4 \u2228 gluonFieldSq g F = 0)`; line 144 uses `(hn : Fintype.card n = 4)`; lines 155-160 use `(h : trace (g\u207b\u00b9 * gluonPart g F) = 0)` and immediately convert with `(trace_gluonPart_eq_zero_iff g F).1 h`. Grep for `tracelessPart_total_of_card_eq_four` in the PR head returns nothing.",
+   "file": "EpsilonEridani/QFT/QCD/EnergyMomentumTensor/TraceDecomposition.lean",
+   "fix": "State the hypothesis as `Fintype.card n = 4 \u2228 gluonFieldSq g F = 0`, matching the two gluon-part lemmas in the same file (and rename accordingly), or add the `Fintype.card n = 4` corollary so the trace/traceless pair at the total level takes the same hypothesis.",
+   "issue": "`tracelessPart_total_of_trace_gluonPart_eq_zero` takes the raw hypothesis `trace (g\u207b\u00b9 * gluonPart g F) = 0`, while its dual `tracePart_total_of_diracEq` (line 144) takes `Fintype.card n = 4` and its siblings `tracePart_gluonPart_eq_zero` / `tracelessPart_gluonPart_eq_self` (lines 98, 104) take `Fintype.card n = 4 \u2228 gluonFieldSq g F = 0`. A consumer in four dimensions \u2014 the stated Layer 4 entry point \u2014 cannot instantiate it without manufacturing the trace equation via `trace_gluonPart_eq_zero_iff`. The PR description advertises `tracelessPart_total_of_card_eq_four` as a main statement; no such declaration exists.",
+   "line": 155
+  },
+  {
+   "evidence": "MetricTrace.lean lines 188-204 contain `isIdempotentElem_tracePart`, `isIdempotentElem_tracelessPart`, `tracePart_mul_tracelessPart`, `tracelessPart_mul_tracePart` and nothing else at the `*` level; ColorDecomposition.lean lines 156-165 keep `@[simp] colorSingletProj_mul_self` and `@[simp] colorOctetProj_mul_self`, showing the form is wanted but is still proved locally from `IsIdempotentElem.eq` rather than from the new generic file.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/Matrix/MetricTrace.lean",
+   "fix": "Add `@[simp] theorem tracePart_mul_self : tracePart g * tracePart g = tracePart g := isIdempotentElem_tracePart.eq` and the `tracelessPart` analogue, and derive `colorSingletProj_mul_self` / `colorOctetProj_mul_self` from them.",
+   "issue": "The composition-level API is asymmetric: `tracePart_mul_tracelessPart` and `tracelessPart_mul_tracePart` are `@[simp]`, but there is no `tracePart g * tracePart g = tracePart g` / `tracelessPart g * tracelessPart g = tracelessPart g`. Goals phrased with `*` in `Module.End` are left to `isIdempotentElem_tracePart.eq`, which is not a simp lemma, so simp normalises the off-diagonal products but not the diagonal ones.",
+   "line": 198
+  }
+ ],
+ "head_sha": "5de520742ad5dc4dbf47e26cfbcdb052cec9afbe",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 264,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e1da7bb7e1b107c1292d7eee29e1d6d440f3747492016f01b856ad1bb39f719c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T180009Z-264-api-design-7c8cff",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T18:00:09Z",
+ "submitted_by": "wdconinc",
+ "summary": "The projection API is largely complete and correctly annotated, with bodies unexposed and no compatibility surface. Two parallel forms the files already develop are missing: the four-dimensional traceless-part-of-total statement the PR advertises, and the composition-level idempotence lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Matrix/MetricTrace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/EnergyMomentumTensor/TraceDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/EnergyMomentumTensor",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Matrix/Isometry.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/HadronMassAndEnergyMomentumTensor/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/ColorDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "dbd4523b76e59a0eac56ba84df68b24a668027f24037cfffea59b3ce4a6a0efd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 195726,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 195726,
+  "cache_read_input_tokens": 1583742,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1820,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1820,
+    "cache_read_input_tokens": 173250,
+    "input_tokens": 2,
+    "output_tokens": 3663,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22764,
+  "output_tokens_details": {
+   "thinking_tokens": 18675
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
