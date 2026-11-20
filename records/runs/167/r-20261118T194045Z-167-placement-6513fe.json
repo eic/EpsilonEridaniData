@@ -1,0 +1,260 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.053447,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 285.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 86533,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 86533,
+    "cache_read_input_tokens": 1269264,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6578,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6578,
+      "cache_read_input_tokens": 83178,
+      "input_tokens": 2,
+      "output_tokens": 2838,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22131,
+    "output_tokens_details": {
+     "thinking_tokens": 16419
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "cost_usd": 2.053447,
+ "dedupe_key": "eic/EpsilonEridani|167|ddef6bd2f826b18abf96873452b11ff9c929bcdc|placement|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ed2683abad22b69245e4ac42b467fe4ca306f8a81e429609f8ac764999c6bf78",
+ "diff_sha256": "ed2683abad22b69245e4ac42b467fe4ca306f8a81e429609f8ac764999c6bf78",
+ "duration_s": 285.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Roadmap README:95-99 puts this roadmap's material under `QFT/Factorization/` except material that is \"mathematics rather than physics\", which goes under `EpsilonEridani/Mathematics/`; lines 184-315 of OneLoopCoupling.lean use only Mathlib plus the two new Mathematics extensions (QCD enters only at the `section QCD` corollaries, 479-499), and SmallX.lean:407 is the out-of-topic consumer.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "fix": "State the generic version in `EpsilonEridani/Mathematics/Analysis/ODE/` (beside the `ExistUnique/Extensions.lean` this PR adds) for the vector field `fun _ y => c * y ^ 2`: solutions on an open preconnected set are nowhere zero once nonzero somewhere, and no such solution's domain contains its own blow-up point. Keep the Layer 2.3 statements (`eqOn_oneLoopCouplingLogScale`, `add_landauLogScale_notMem`, `subset_Ioi_add_landauLogScale`) in `Evolution/OneLoopCoupling.lean` as corollaries, and have `SmallX.lean:404` apply the generic lemma instead of the RG predicate.",
+   "issue": "`IsOneLoopRGSolution` (184) and the non-vanishing/no-extension lemmas `.ne_zero` (227) and `.add_landauLogScale_notMem` (286) are pure statements about `y' = c y\u00b2` with no QCD dependency, and are now used outside this topic: `SmallX.lean:404-410` instantiates `IsOneLoopRGSolution (-1)` for `F' = F\u00b2` and its docstring calls that equation \"the one-loop renormalisation-group equation ... with \u03b2\u2080 = -1\", in a module whose conventions section says there is no running coupling in it (SmallX.lean:67-70). The generic fact is reachable only through the RG-named physics predicate.",
+   "line": "184"
+  },
+  {
+   "evidence": "`grep hasDerivAt_pow|HasDerivAt.pow` in the file: no matches; `grep fun_prop|ContDiff` in `upstream/mathlib/Mathlib/Analysis/Calculus/Deriv/Pow.lean`: no matches; `ContDiff.pow` is declared only at `upstream/mathlib/Mathlib/Analysis/Calculus/ContDiff/Operations.lean:508`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "fix": "Drop the import.",
+   "issue": "`import Mathlib.Analysis.Calculus.Deriv.Pow` is unused: no derivative-of-power lemma appears in the file (derivatives come from `HasDerivAt.div`, `.inv`, `hasDerivAt_id`, `.const_mul`, `.const_add`, `.sub_const`, `hasDerivAt_const`), and the one `x ^ 2` smoothness goal (line 236, `fun_prop`) needs `ContDiff.pow`, which lives in `Mathlib/Analysis/Calculus/ContDiff/Operations.lean`, not in `Deriv/Pow`.",
+   "line": "15"
+  }
+ ],
+ "head_sha": "ddef6bd2f826b18abf96873452b11ff9c929bcdc",
+ "merge_base_sha": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 167,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c7ad39b44d6984a5ce0ec9ee51cb286f484b99f2a5e504b584106e302da81768",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261118T194045Z-167-placement-6513fe",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-18T19:40:45Z",
+ "submitted_by": "veprbl",
+ "summary": "Paths and most imports are right, but the generic quadratic-ODE core now sits in a QCD module and is consumed from the small-x module at \u03b2\u2080 = \u22121, and one Mathlib import has no user.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Algebra/Order/Field.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Calculus/Deriv/Pow.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Calculus/Deriv/Inv.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Calculus/ContDiff/RCLike.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Calculus/Deriv/Pow.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Calculus/MeanValue.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 27,
+  "trace_truncated": false
+ },
+ "transcript_blob": "eec8020a19772f55d9fd2a20b8a5e1ca3eb3e56806c1fe3b6e90b5bf712ead50",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 86533,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 86533,
+  "cache_read_input_tokens": 1269264,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6578,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6578,
+    "cache_read_input_tokens": 83178,
+    "input_tokens": 2,
+    "output_tokens": 2838,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22131,
+  "output_tokens_details": {
+   "thinking_tokens": 16419
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

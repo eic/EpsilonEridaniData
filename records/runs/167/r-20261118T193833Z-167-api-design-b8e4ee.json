@@ -1,0 +1,189 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9539594999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 300.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 97740,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 97740,
+    "cache_read_input_tokens": 725449,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 10042,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 10042,
+      "cache_read_input_tokens": 90921,
+      "input_tokens": 2,
+      "output_tokens": 2448,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24549,
+    "output_tokens_details": {
+     "thinking_tokens": 20617
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "cost_usd": 1.953959,
+ "dedupe_key": "eic/EpsilonEridani|167|ddef6bd2f826b18abf96873452b11ff9c929bcdc|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ed2683abad22b69245e4ac42b467fe4ca306f8a81e429609f8ac764999c6bf78",
+ "diff_sha256": "ed2683abad22b69245e4ac42b467fe4ca306f8a81e429609f8ac764999c6bf78",
+ "duration_s": 300.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg 'hasDerivAt_oneLoopCouplingLogScale|isOneLoopRGSolution_oneLoopCouplingLogScale' code` returns only the unshifted statements (lines 199, 210, 218); the shifted shape appears solely in the conclusions at lines 271 and 288.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "fix": "Add the translated existence lemma next to line 218, e.g. `hasDerivAt_oneLoopCouplingLogScale_sub` / `isOneLoopRGSolution_oneLoopCouplingLogScale_sub : IsOneLoopRGSolution \u03b2\u2080 {t | 1 + \u03b2\u2080 * a\u2080 * (t - t\u2080) \u2260 0} (fun t => oneLoopCouplingLogScale \u03b2\u2080 a\u2080 (t - t\u2080))` (and the `Ioi (t\u2080 + landauLogScale \u03b2\u2080 a\u2080)` form for `0 < \u03b2\u2080 * a\u2080`), proved by composing `hasDerivAt_oneLoopCouplingLogScale` with `(hasDerivAt_id t).sub_const t\u2080`.",
+   "issue": "`IsOneLoopRGSolution.eqOn_oneLoopCouplingLogScale` concludes `EqOn f (fun t => oneLoopCouplingLogScale \u03b2\u2080 (f t\u2080) (t - t\u2080)) s`, but the only existence lemmas are for the unshifted function (`isOneLoopRGSolution_oneLoopCouplingLogScale`, line 210, on `{t | 1 + \u03b2\u2080 a\u2080 t \u2260 0}`, and `_Ioi`, line 218). So the initial-value problem `a(t\u2080) = a\u2080` has a uniqueness half at every `t\u2080` and an existence half only at `t\u2080 = 0`; a consumer needing a solution referenced at a nonzero `t\u2080` (flavour thresholds in roadmap \u00a72.5 match couplings at a threshold scale) must redo the chain rule, or invent `\u00e3\u2080 = a\u2080/(1 - \u03b2\u2080 a\u2080 t\u2080)` and run `oneLoopCouplingLogScale_oneLoopCouplingLogScale_sub` backwards.",
+   "line": "271"
+  }
+ ],
+ "head_sha": "ddef6bd2f826b18abf96873452b11ff9c929bcdc",
+ "merge_base_sha": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 167,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0a146195a8262ec00d9652878e81dc1a8d87f8c3047b931f3b64509804014575",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261118T193833Z-167-api-design-b8e4ee",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-18T19:38:33Z",
+ "submitted_by": "veprbl",
+ "summary": "Surface is minimal, free of compatibility artifacts, and the upstream-namespace prerequisites are correctly public in root namespace. One characteristic-API gap: the uniqueness theorem targets a translated coupling that no existence lemma covers, so only the `t\u2080 = 0` initial-value problem is usable without redoing the chain rule.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Topology/Order/IntermediateValue/Extensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/ODE/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "bf200a7be44c36c0abee495d23f036d06985a53519094eddb364869ce90e6f60",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 97740,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 97740,
+  "cache_read_input_tokens": 725449,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 10042,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 10042,
+    "cache_read_input_tokens": 90921,
+    "input_tokens": 2,
+    "output_tokens": 2448,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24549,
+  "output_tokens_details": {
+   "thinking_tokens": 20617
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

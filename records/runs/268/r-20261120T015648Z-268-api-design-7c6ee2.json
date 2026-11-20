@@ -1,0 +1,254 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0804515,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 295.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 90699,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 90699,
+    "cache_read_input_tokens": 1257543,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 38,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4764,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4764,
+      "cache_read_input_tokens": 89158,
+      "input_tokens": 2,
+      "output_tokens": 2683,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21780,
+    "output_tokens_details": {
+     "thinking_tokens": 16424
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "671c95acd9d9e97aff21ad6c4573bb3753640ac8",
+ "cost_usd": 2.080452,
+ "dedupe_key": "eic/EpsilonEridani|268|f89725d6c7ed04e247986abb9a8689599c7271a7|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "469d19b531a074c5d2b1d7862861e392bed4f75121615482f46ab4f32b292f40",
+ "diff_sha256": "469d19b531a074c5d2b1d7862861e392bed4f75121615482f46ab4f32b292f40",
+ "duration_s": 295.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "DeuteronWave.lean:451-463; the proof cites only `Mathlib/Analysis/SpecialFunctions/Gaussian/GaussianIntegral.lean:73` (`integrableOn_rpow_mul_exp_neg_mul_rpow`). Compare the PR's own treatment of `integral_sq_eq_zero_iff`, relocated to MemLp.lean for exactly this reason.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "fix": "Move it, public, to the Mathematics tree (e.g. next to `EpsilonEridani/Mathematics/MeasureTheory/MemLp.lean`, or `Mathematics/Calculus/IntegralRpow.lean` which already holds integral formulas), stated for `Ioi a` with `0 \u2264 a` rather than the literal `1`.",
+   "issue": "`private theorem setIntegral_Ioi_one_sq_mul_exp_neg_pos {b : \u211d} (hb : 0 < b) : 0 < \u222b r in Ioi (1:\u211d), r ^ 2 * Real.exp (-b * r)` mentions only upstream notions (`Ioi`, `Real.exp`) and its proof uses only `integrableOn_rpow_mul_exp_neg_mul_rpow` and `setIntegral_pos_iff_support_of_nonneg_ae` \u2014 nothing deuteron-specific. Generality is a reason to relocate and export, not to hide.",
+   "line": "452"
+  },
+  {
+   "evidence": "DeuteronWave.lean:344-368: `private def glue (R a : \u211d) (v : \u211d \u2192 \u211d) : \u211d \u2192 \u211d := (Ioi R).piecewise v fun _ => a`, then the two lemmas whose statements and proofs (`MemLp.piecewise`, `setIntegral_union`, `Real.volume_real_Ioc_of_le`) are pure measure theory on `\u211d`.",
+   "file": "EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "fix": "State both publicly in the measure-theory module directly in terms of `Set.piecewise` (no `glue` wrapper needed; the local uses then apply by unfolding `glue` inside this file), keeping `glued`, `eqOn_Ioi_glued`, `dStateProbability_glued`, `quadrupoleMoment_glued` private as genuinely argument-specific.",
+   "issue": "Same class: `memLp_glue` (line 347) and `integral_glue_sq` (line 356) are facts about `(Ioi R).piecewise v (fun _ => a)` \u2014 `MemLp` of a half-line gluing and `\u222b_{Ioi 0} (piecewise)\u00b2 = R * a ^ 2 + \u222b_{Ioi R} v \u00b2`. They carry no deuteron content; they are hidden only because they are phrased through the private `glue` wrapper over the upstream `Set.piecewise`.",
+   "line": "347"
+  }
+ ],
+ "head_sha": "f89725d6c7ed04e247986abb9a8689599c7271a7",
+ "merge_base_sha": "671c95acd9d9e97aff21ad6c4573bb3753640ac8",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 268,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "32182da98112abca561e06b8a37075a99f93d56f6c0804171616e67a32322e2e",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T015648Z-268-api-design-7c6ee2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T01:56:48Z",
+ "submitted_by": "veprbl",
+ "summary": "The deuteron surface itself is well formed: extensionality holds, bodies stay unexposed with complete `_def`/`_iff`/`ofHalfLine` characterisations and sound `@[simp]` choices. But two subject-independent measure-theory facts are hidden as `private` in the physics module instead of being relocated public, the same way the PR already relocated its two `MemLp` facts.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/DeuteronWave.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/MemLp.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LightNuclei/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Nuclei/Light/SpinDensityMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Calculus/IntegralRpow.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 26,
+  "trace_truncated": false
+ },
+ "transcript_blob": "facc35f499a00bc17a545ad26492e74d153e6b373869c53b02ef48f25a0c270e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 90699,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 90699,
+  "cache_read_input_tokens": 1257543,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 38,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4764,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4764,
+    "cache_read_input_tokens": 89158,
+    "input_tokens": 2,
+    "output_tokens": 2683,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21780,
+  "output_tokens_details": {
+   "thinking_tokens": 16424
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

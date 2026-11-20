@@ -1,0 +1,217 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4549955,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 324.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 125290,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 125290,
+    "cache_read_input_tokens": 1088051,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3062,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3062,
+      "cache_read_input_tokens": 125451,
+      "input_tokens": 2,
+      "output_tokens": 6979,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 26318,
+    "output_tokens_details": {
+     "thinking_tokens": 21099
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "cost_usd": 2.454995,
+ "dedupe_key": "eic/EpsilonEridani|167|ddef6bd2f826b18abf96873452b11ff9c929bcdc|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ed2683abad22b69245e4ac42b467fe4ca306f8a81e429609f8ac764999c6bf78",
+ "diff_sha256": "ed2683abad22b69245e4ac42b467fe4ca306f8a81e429609f8ac764999c6bf78",
+ "duration_s": 324.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Topology/Order/Basic.lean:455 `theorem IsOpen.exists_Ioo_subset [Nontrivial \u03b1] {s : Set \u03b1} (hs : IsOpen s) (h : s.Nonempty) : \u2203 a b, a < b \u2227 Ioo a b \u2286 s`; Mathlib/Topology/Order/Basic.lean:444 `exists_Icc_mem_subset_of_mem_nhds : \u2203 b c, a \u2208 Icc b c \u2227 Icc b c \u2208 \ud835\udcdd a \u2227 Icc b c \u2286 s`. No `exists_Icc_subset` exists upstream, so the new name is read by analogy to the `Ioo` one.",
+   "file": "EpsilonEridani/Mathematics/Topology/Order/IntermediateValue/Extensions.lean",
+   "fix": "Name it for the full conclusion and the essential hypothesis, e.g. `IsPreconnected.exists_Icc_subset_mem_Ioo` (dot notation on the hypothesis that carries the content, openness passed in) or `IsOpen.exists_Icc_subset_mem_Ioo_of_isPreconnected`, following Mathlib's `exists_Icc_mem_subset_of_mem_nhds`, which names both the membership and the subset conjunct.",
+   "issue": "`_root_.IsOpen.exists_Icc_subset` reads as a statement about open sets (false without `IsPreconnected`: an open set with x, y in different components contains no `Icc` spanning them) and names only the `Icc a b \u2286 s` conjunct, omitting `x \u2208 Ioo a b \u2227 y \u2208 Ioo a b`, which is the content callers use. The shape also mimics Mathlib's `IsOpen.exists_Ioo_subset`, a much weaker lemma (nonempty open set, no points, no connectedness), so the `Icc` sibling name invites the wrong expectation.",
+   "line": 37
+  },
+  {
+   "evidence": "`EpsilonEridani/QFT/Factorization/Evolution/QCDCore.lean:35` `def qcdRunningCoupling (cf) (lambdaQCD2) : RunningCoupling := fun Q2 => QCD.oneLoopAlphaS cf Q2 lambdaQCD2`; `Evolution/Basic.lean:230-231` already distinguishes `\u03b1s` from `a_s = \u03b1s / (4 * \u03c0)`; `Evolution/MomentSpace.lean:98` field `alphaS : \u211d \u2192 \u211d`; OneLoopCoupling.lean:55-62 docstring.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "fix": "Put the normalisation in the name, e.g. `oneLoopA4LogScale` / `oneLoopCouplingA4LogScale` (the roadmap's convention 3 and this file's docstring both call the quantity `a\u2084`), and carry the rename through the dependent lemma names, instead of relying on the docstring to distinguish it from the `alphaS`-normalised couplings.",
+   "issue": "`oneLoopCouplingLogScale` records the argument (log-scale, not `Q\u00b2`) but not the normalisation: it is `a\u2084 = \u03b1_s/(4\u03c0)`, while in the same `Evolution` namespace `RunningCoupling`/`alphaS` and `qcdRunningCoupling` mean `\u03b1_s` itself. Since both are `\u211d \u2192 \u211d`, the names are the only guard, and the module docstring itself concedes the confusion is silent: \"Supplying `oneLoopCouplingLogScale \u03b2\u2080 a\u2080` to `dglapRhsLogScale` or `IsDGLAPLogScaleEquation` is wrong mathematics that the elaborator does not catch\" (line 61-62).",
+   "line": 94
+  }
+ ],
+ "head_sha": "ddef6bd2f826b18abf96873452b11ff9c929bcdc",
+ "merge_base_sha": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 167,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e66f040b5f0e95980c78792702d06838f272b3cff75430e40a90d4f5b284abc4",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261118T194105Z-167-naming-409e62",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-18T19:41:05Z",
+ "submitted_by": "veprbl",
+ "summary": "Two names mislead: `IsOpen.exists_Icc_subset` asserts as a property of open sets something that needs preconnectedness and under-describes its conclusion, clashing in shape with Mathlib's weaker `IsOpen.exists_Ioo_subset`; and `oneLoopCouplingLogScale` records its argument but not its normalisation, in a namespace where `RunningCoupling`/`alphaS` mean \u03b1_s and the types are interchangeable. Everything else follows repo and Mathlib precedent.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/OneLoopCoupling.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Topology/Order/IntermediateValue/Extensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/ODE",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Order/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6d47411c504b40d90ca97d40e2dbb80789babbc4a527f2a7ef18cefc238bb7b7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 125290,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 125290,
+  "cache_read_input_tokens": 1088051,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3062,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3062,
+    "cache_read_input_tokens": 125451,
+    "input_tokens": 2,
+    "output_tokens": 6979,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 26318,
+  "output_tokens_details": {
+   "thinking_tokens": 21099
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
