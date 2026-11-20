@@ -1,0 +1,203 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4331775,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 192.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 167222,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 167222,
+    "cache_read_input_tokens": 821105,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5468,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5468,
+      "cache_read_input_tokens": 147235,
+      "input_tokens": 2,
+      "output_tokens": 1822,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14013,
+    "output_tokens_details": {
+     "thinking_tokens": 10336
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 2.433178,
+ "dedupe_key": "eic/EpsilonEridani|226|43cbed3a91fc223ecb87f672a30062be409e7a45|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "5c24e8444dae8868fe3b38f86af2329e25fa774896d6d97f5b0eb82c40f30432",
+ "diff_sha256": "5c24e8444dae8868fe3b38f86af2329e25fa774896d6d97f5b0eb82c40f30432",
+ "duration_s": 192.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 93 is `public section` (no `@[expose]`, unlike `Tensors/Basic.lean:79` `@[expose] public section`); grep shows no `pWit_def`/`pWit'_def` in the file.",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "Add `@[simp] theorem pWit_def : pWit = ((3, 0, 0) : \u211d \u00d7 \u211d \u00d7 \u211d) := (rfl)` and `pWit'_def` likewise.",
+   "issue": "`pWit` (241) and `pWit'` (244) are public defs in a plain `public section` (93, no `@[expose]`), so their bodies are not part of the public interface, and the file supplies no `_def`/component lemma. Every in-file proof unfolds them (`norm_num [pWit, pWit']`, 248/253/257/265/281/287), which no consumer can do. Contrast `Tensors/Basic.lean:1043` `@[simp] lemma kWit_p : kWit.p = ((1,0,0) : \u211d \u00d7 \u211d \u00d7 \u211d) := rfl` and `Meson/Basic.lean:325` `@[simp] theorem piPlus_charge : piPlus.charge = 1 := (rfl)`, both in modules using the same pattern.",
+   "line": 241
+  },
+  {
+   "evidence": "Lines 246-248 state only the equality; `HasFormFactor` at 296-297 requires `g p p = m2` and `g p' p' = m2`; no lemma in the file gives a numerical value of `gWit pWit pWit`.",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "Add `@[simp] theorem gWit_pWit : gWit pWit pWit = 9 := by norm_num [pWit]` and `gWit_pWit' : gWit pWit' pWit' = 9`, keeping `gWit_pWit_self_eq` as the derived corollary.",
+   "issue": "`gWit_pWit_self_eq` only states `gWit pWit pWit = gWit pWit' pWit'` and never gives the value `9`, so the mass-shell hypotheses `g p p = m2`, `g p' p' = m2` of `HasFormFactor` (296) cannot be discharged at the witness transition by any consumer: the one public fact about the witness masses is an equality with no value, and the bodies are unexposed (same cause as the previous finding).",
+   "line": 247
+  },
+  {
+   "evidence": "Line 44 text vs. the statement at 173-175 (`\u2203 a b : \u211d, J = a \u2022 p + b \u2022 p'`) and 186-188 (`\u2203 A B : \u211d, J = A \u2022 (p + p') + B \u2022 (p' - p)`).",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "Cite `FormFactor.IsCovariant.exists_eq_smul_add_add_smul_sub` on line 44.",
+   "issue": "The module docstring attributes the sum/difference decomposition to `FormFactor.IsCovariant.exists_eq_smul_add_smul`, but that lemma (173) yields `J = a \u2022 p + b \u2022 p'`; the sum/difference form is `IsCovariant.exists_eq_smul_add_add_smul_sub` (186). The overview thus points users at the wrong entry point.",
+   "line": 44
+  }
+ ],
+ "head_sha": "43cbed3a91fc223ecb87f672a30062be409e7a45",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 226,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0d3baf3cb6836246d617689cdedadbf725ac83b92756738b737abfa4d05a1e24",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261119T173500Z-226-api-design-31932f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T17:35:00Z",
+ "submitted_by": "wdconinc",
+ "summary": "The witness momenta `pWit`/`pWit'` are public defs with unexposed bodies and no restatement or value lemmas, so no downstream module can compute with them or discharge the mass-shell hypothesis of `HasFormFactor` at the witness transition; the module docstring also names the wrong lemma for the sum/difference decomposition.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MesonStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8dea03d2488cd4533d3a81a4aa9dfe3f832365f6071bee39be6f1a1a09886b73",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 167222,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 167222,
+  "cache_read_input_tokens": 821105,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5468,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5468,
+    "cache_read_input_tokens": 147235,
+    "input_tokens": 2,
+    "output_tokens": 1822,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14013,
+  "output_tokens_details": {
+   "thinking_tokens": 10336
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
