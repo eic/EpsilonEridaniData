@@ -1,0 +1,240 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9736099999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 205.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 116646,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 116646,
+    "cache_read_input_tokens": 834670,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1843,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1843,
+      "cache_read_input_tokens": 95200,
+      "input_tokens": 2,
+      "output_tokens": 4403,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15587,
+    "output_tokens_details": {
+     "thinking_tokens": 10207
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.97361,
+ "dedupe_key": "eic/EpsilonEridani|248|43dfb081e280ee2016bfe9212431bf05fcddd091|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "6007c68e18985e06fde79a87dd46c59607dbd27e7f47c1a240c1a7b269d58c3f",
+ "diff_sha256": "6007c68e18985e06fde79a87dd46c59607dbd27e7f47c1a240c1a7b269d58c3f",
+ "duration_s": 205.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PowerCorrections.lean:99 `abbrev smallRatio : Filter \u211d := \ud835\udcdd[>] (0 : \u211d)`; :106 `def ApproximatesToOrder (W Wapp : \u211d \u2192 \u211d) (n : \u2115) : Prop := (fun lam => W lam - Wapp lam) =O[smallRatio] fun lam => lam ^ n`; Matching.lean:159 same body with `F a`, `effectiveAmplitude`, exponent `n+1`.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "fix": "Hoist `smallRatio`, `ApproximatesToOrder`, `isBigO_pow_of_le` and `ApproximatesToOrder.mono` out of the TMD namespace into the asymptotics layer this PR already creates (e.g. `EpsilonEridani/Mathematics/Analysis/Asymptotics/`), update the TMD uses to the moved names (no alias, per the no-compatibility rule), and define `IsMatching n F M c := \u2200 a, ApproximatesToOrder (F a) (P.effectiveAmplitude n (M a) c) (n + 1)`. NRQCD must not import the TMD module, so the shared definition has to move rather than be imported from there; the mono lemma then comes for free.",
+   "issue": "`IsMatching n F M c` is `\u2200 a, (fun \u03b5 => F a \u03b5 - effectiveAmplitude \u2026) =O[\ud835\udcdd[>] 0] fun \u03b5 => \u03b5 ^ (n+1)`, which is definitionally `\u2200 a, ApproximatesToOrder (F a) (P.effectiveAmplitude n (M a) c) (n + 1)` \u2014 the predicate already in the repo at EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean:106-107 with `smallRatio := \ud835\udcdd[>] (0 : \u211d)` (line 99). Two parallel names for the same `\u03bb \u2192 0\u207a` approximation relation, so the existing lemmas about it (`ApproximatesToOrder.mono`, `isBigO_pow_of_le`, PowerCorrections.lean:110-119) do not apply to `IsMatching`.",
+   "line": 157
+  },
+  {
+   "evidence": "grep for `eq_zero_of_isLittleO_sum_range_pow_smul_pow` in ./code gives only TruncatedExpansion.lean:61 (declaration) and :93 (inside `isLittleO_sum_range_pow_smul_pow_iff`); PowerCorrections.lean:132 calls the `_succ_iff` form, not this one.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Asymptotics/TruncatedExpansion.lean",
+   "fix": "Mark it `private` (as the two helper lemmas above it already are) and let callers use `isLittleO_sum_range_pow_smul_pow_iff`; note `isBigO_sum_range_pow_smul_pow_succ_iff` has no such directional twin, so this also makes the two results consistent.",
+   "issue": "`eq_zero_of_isLittleO_sum_range_pow_smul_pow` is public but is exactly `(isLittleO_sum_range_pow_smul_pow_iff hl).1` (it is used only to prove that iff, at line 93, and nowhere else in the repo); the module docstring lists only the two iffs as main results, so this is an undocumented second public name for the same implication.",
+   "line": 61
+  }
+ ],
+ "head_sha": "43dfb081e280ee2016bfe9212431bf05fcddd091",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 248,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e99e3c6c6b19570f1869c3238815d48947780869b6a696e71b283670a5bd826c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T023521Z-248-reuse-a28192",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T02:35:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "The analytic core is new and reuses upstream API well, but `IsMatching` is a second copy of the existing EpsilonEridani predicate `ApproximatesToOrder` (same filter, same relation, defeq), and `eq_zero_of_isLittleO_sum_range_pow_smul_pow` duplicates the forward direction of the iff that is the file's documented API.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Asymptotics/MvPolynomial.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Asymptotics/Lemmas.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/PolynomialFamily.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/PowerCounting.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Observable/SoftSafety.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Asymptotics/Lemmas.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "55a5a60ae8cc5ed165e811f0bb2c959fcc524dac6dc8e2337b400a2ef588f0ca",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 116646,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 116646,
+  "cache_read_input_tokens": 834670,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1843,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1843,
+    "cache_read_input_tokens": 95200,
+    "input_tokens": 2,
+    "output_tokens": 4403,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15587,
+  "output_tokens_details": {
+   "thinking_tokens": 10207
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
