@@ -1,0 +1,270 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.9822,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 278.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 202614,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 202614,
+    "cache_read_input_tokens": 2878500,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2930,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2930,
+      "cache_read_input_tokens": 181692,
+      "input_tokens": 2,
+      "output_tokens": 2764,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20664,
+    "output_tokens_details": {
+     "thinking_tokens": 14246
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 3.9822,
+ "dedupe_key": "eic/EpsilonEridani|250|f94d8784f879068e9e70025077b34806ae07574c|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "cc1f9d4e6f618ee2c044e8332098b6f29be1b73029accf68721cfb6d469eb5e9",
+ "diff_sha256": "cc1f9d4e6f618ee2c044e8332098b6f29be1b73029accf68721cfb6d469eb5e9",
+ "duration_s": 278.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Matrix.diagonal_apply_ne' (d) {i j} (h : j \u2260 i) : diagonal d i j = 0` at upstream/mathlib/Mathlib/Data/Matrix/Diagonal.lean:65 matches the row lemma's hypothesis shape `\u2200 j, j \u2260 i \u2192 S.gamma N i j = 0` exactly; `diagonal_apply_eq` (line 58) supplies `S.gamma N i i = d i`. Grep for `apply_eq_exp_mul` across ./code shows uses only in this file and the module docstring.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Delete it; callers obtain it from the row lemma in two lines: `hF.apply_eq_exp_mul_of_gamma_apply_eq_zero (fun j hj => by rw [h]; exact Matrix.diagonal_apply_ne' d hj) \u03c4\u2080 \u03c4`, then `rwa [h, Matrix.diagonal_apply_eq]`. (`momentEvolution_eq_diagonal` states a matrix equality not literally given by the per-row lemma and can stay.)",
+   "issue": "`IsMomentSolution.apply_eq_exp_mul_of_gamma_eq_diagonal` is the diagonal instance of `IsMomentSolution.apply_eq_exp_mul_of_gamma_apply_eq_zero` (same file, line 389): `h : S.gamma N = Matrix.diagonal d` gives the row hypothesis for every `i`, and `d i = S.gamma N i i`. It has no consumer in the repository.",
+   "line": 438
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/ToLin.lean:112 `def Matrix.mulVecBilin [Fintype n] : Matrix m n A \u2192\u2097[R] (n \u2192 A) \u2192\u2097[S] (m \u2192 A)` with `map_add' _ _ := LinearMap.ext fun _ => add_mulVec _ _ _` and `map_smul' _ _ := LinearMap.ext fun _ => smul_mulVec _ _ _` \u2014 the same two proofs the diff writes inline; its typeclass hypotheses (`Module R A`, `SMulCommClass S R A`, `IsScalarTower R A A`) all hold for `R := \ud835\udd5c`, `S := A := \ud835\udd42` under `[RCLike \ud835\udd42] [NormedAlgebra \ud835\udd5c \ud835\udd42]`.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "fix": "Use the located combinator for the linear part and keep only the norm bound: `LinearMap.mkContinuous ((Matrix.mulVecBilin \ud835\udd5c \ud835\udd42).flip v) \u2016v\u2016 fun M => (linfty_opNorm_mulVec M v).trans_eq (mul_comm _ _)`.",
+   "issue": "The `let L` block re-derives the linear map `M \u21a6 M *\u1d65 v` from raw pieces, with field proofs `add_mulVec`/`smul_mulVec` \u2014 the exact definition of Mathlib's `Matrix.mulVecBilin`.",
+   "line": 60
+  }
+ ],
+ "head_sha": "f94d8784f879068e9e70025077b34806ae07574c",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 250,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "cfea23ed6e2b8748d71e49e685f74f317fa511242c37c6896fa2489bb6be786d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T180420Z-250-reuse-5942fc",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T18:04:20Z",
+ "submitted_by": "wdconinc",
+ "summary": "The matrix-exponential lemmas and the evolution operator are genuinely new and reuse Mathlib well. Two duplications: the diagonal closed form restates the unmixed-row closed form proved 50 lines above, and the proof of `hasDerivAt_exp_smul_const_mulVec` rebuilds `Matrix.mulVecBilin` by hand.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Calculus/FDeriv/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Matrix/ToLin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/ODE/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix/Diagonal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Mathematics/ForMathlib/OneParameterSubgroups/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Calculus/IntervalIntegral/Inverse.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 28,
+  "trace_truncated": false
+ },
+ "transcript_blob": "dedda89fe58e2b0f7bc6b789a1e72289d7223b46796b14ce655d570790b513dd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 202614,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 202614,
+  "cache_read_input_tokens": 2878500,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2930,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2930,
+    "cache_read_input_tokens": 181692,
+    "input_tokens": 2,
+    "output_tokens": 2764,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20664,
+  "output_tokens_details": {
+   "thinking_tokens": 14246
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

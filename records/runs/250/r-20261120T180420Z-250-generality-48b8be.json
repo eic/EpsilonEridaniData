@@ -1,0 +1,224 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.9392514999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 351.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 208908,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 208908,
+    "cache_read_input_tokens": 2424203,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4584,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4584,
+      "cache_read_input_tokens": 187197,
+      "input_tokens": 2,
+      "output_tokens": 4053,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 25516,
+    "output_tokens_details": {
+     "thinking_tokens": 20197
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 3.939251,
+ "dedupe_key": "eic/EpsilonEridani|250|f94d8784f879068e9e70025077b34806ae07574c|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "cc1f9d4e6f618ee2c044e8332098b6f29be1b73029accf68721cfb6d469eb5e9",
+ "diff_sha256": "cc1f9d4e6f618ee2c044e8332098b6f29be1b73029accf68721cfb6d469eb5e9",
+ "duration_s": 351.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "MomentSpace.lean:415-423 \u2014 the proof uses only `isMomentSolution_momentEvolution_mulVec` and `apply_eq_exp_mul_of_gamma_apply_eq_zero`; the statement mentions `S` only through `integratedCoupling S.alphaS \u03c4\u2080 \u03c4` and `S.gamma N`. `Matrix.hasDerivAt_exp_smul_const'` (MatrixExponential.lean:45) already supplies the needed derivative with no DGLAP data.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Put it in `EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean` for arbitrary `A : Matrix m m \ud835\udd42` and `u`, proved by the same integrating-factor argument run on `Matrix.hasDerivAt_exp_smul_const'` (entrywise, `d/du (exp (u \u2022 A)) i j = (A * exp (u \u2022 A)) i j = A i i * exp (u \u2022 A) i j` under the hypothesis), then derive `momentEvolution_apply_of_gamma_apply_eq_zero`, `IsMomentSolution.apply_eq_exp_mul_of_gamma_apply_eq_zero` (via `eq_momentEvolution_mulVec`) and `momentEvolution_eq_diagonal` from it.",
+   "issue": "`momentEvolution_apply_of_gamma_apply_eq_zero` contains no DGLAP content: it is the statement that if `\u2200 j \u2260 i, A i j = 0` then `exp (u \u2022 A) i j = if i = j then exp (u * A i i) else 0`. It is stated only for `u = integratedCoupling S.alphaS \u03c4\u2080 \u03c4` and proved via `isMomentSolution_momentEvolution_mulVec` at `Pi.single j 1`, i.e. the general matrix fact is obtained through the ODE machinery of this file.",
+   "line": "415"
+  },
+  {
+   "evidence": "Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean:125-130 (`[NormedRing \ud835\udd38] [NormedAlgebra \u211a \ud835\udd38] [CompleteSpace \ud835\udd38]`, `set_option backward.isDefEq.respectTransparency false in ... open scoped Norms.Operator in exp_add_of_commute h`); Mathlib/Analysis/Matrix/Normed.lean:404,412 (instances for general `[NormedRing \u03b1]`/`[NormedAlgebra R \u03b1]`).",
+   "file": "EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "fix": "State the three lemmas as `variable {\ud835\udd5c \ud835\udd42 \ud835\udd38 m} [NontriviallyNormedField \ud835\udd5c] [RCLike \ud835\udd42] [NormedAlgebra \ud835\udd5c \ud835\udd42] [NormedRing \ud835\udd38] [NormedAlgebra \ud835\udd42 \ud835\udd38] [CompleteSpace \ud835\udd38] [Fintype m] [DecidableEq m]`, with `A : Matrix m m \ud835\udd38`, `v : m \u2192 \ud835\udd38`, `t : \ud835\udd42`, applying `set_option backward.isDefEq.respectTransparency false in` as Mathlib's `Matrix.exp_add_of_commute` does; `Matrix.linftyOpNormedRing`/`linftyOpNormedAlgebra` and `linfty_opNorm_mulVec` are already stated for general entry rings.",
+   "issue": "Entries are fixed to `RCLike \ud835\udd42`, strictly less general than the module this file mirrors and imports: Mathlib's `Matrix.exp_add_of_commute` and neighbours (Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean:125-130) hold for `[NormedRing \ud835\udd38] [NormedAlgebra \u211a \ud835\udd38] [CompleteSpace \ud835\udd38]`, and this PR calls that very lemma. The `CompleteSpace (Matrix m m \ud835\udd38)` obstruction the docstring names is the one Mathlib works around in place.",
+   "line": "40"
+  },
+  {
+   "evidence": "Mathlib/Data/Matrix/Diagonal.lean:58,65 \u2014 `diagonal_apply_eq (d) (i) : diagonal d i i = d i` and `diagonal_apply_ne' (d) (h : j \u2260 i) : diagonal d i j = 0`, matching the hypothesis shape `\u2200 j, j \u2260 i \u2192 S.gamma N i j = 0` at MomentSpace.lean:391.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Derive it from the general lemma: `hF.apply_eq_exp_mul_of_gamma_apply_eq_zero (fun j hj => by rw [h]; exact Matrix.diagonal_apply_ne' d hj) \u03c4\u2080 \u03c4`, rewriting `S.gamma N i i = d i` by `h` and `Matrix.diagonal_apply_eq`.",
+   "issue": "`IsMomentSolution.apply_eq_exp_mul_of_gamma_eq_diagonal` is a strict special case of `IsMomentSolution.apply_eq_exp_mul_of_gamma_apply_eq_zero` (line 389) \u2014 `S.gamma N = diagonal d` gives the row hypothesis for every `i` \u2014 but is proved by a separate route through `momentEvolution_eq_diagonal`.",
+   "line": "438"
+  }
+ ],
+ "head_sha": "f94d8784f879068e9e70025077b34806ae07574c",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 250,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e5a53a035b4f7214d67135e1abba1891a070ec134be44171795d59fe3b21f3a9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T180420Z-250-generality-48b8be",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T18:04:20Z",
+ "submitted_by": "wdconinc",
+ "summary": "The closed-form block is built at the DGLAP level: a pure matrix-exponential fact (row i of exp(c \u2022 A) when row i of A is diagonal) is derived through the moment-space ODE and stated only for one exponent, and the diagonal case is then proved again by a third route. The new Matrix file is also restricted to RCLike entries where the Mathlib module it extends, and which it calls, works for any complete normed algebra.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Exponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Exponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Matrix/Normed.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Matrix/Normed.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Matrix/Normed.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix/Diagonal.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b29c580de974a2400c273ef782a9d998bc4daa09648def46f0c1a6473b663f66",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 208908,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 208908,
+  "cache_read_input_tokens": 2424203,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4584,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4584,
+    "cache_read_input_tokens": 187197,
+    "input_tokens": 2,
+    "output_tokens": 4053,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 25516,
+  "output_tokens_details": {
+   "thinking_tokens": 20197
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

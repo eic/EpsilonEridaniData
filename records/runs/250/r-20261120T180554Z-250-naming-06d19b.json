@@ -1,0 +1,200 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.912957,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 226.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 172225,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 172225,
+    "cache_read_input_tokens": 1522894,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2280,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2280,
+      "cache_read_input_tokens": 169945,
+      "input_tokens": 2,
+      "output_tokens": 1975,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17166,
+    "output_tokens_details": {
+     "thinking_tokens": 12904
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.912957,
+ "dedupe_key": "eic/EpsilonEridani|250|f94d8784f879068e9e70025077b34806ae07574c|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "cc1f9d4e6f618ee2c044e8332098b6f29be1b73029accf68721cfb6d469eb5e9",
+ "diff_sha256": "cc1f9d4e6f618ee2c044e8332098b6f29be1b73029accf68721cfb6d469eb5e9",
+ "duration_s": 226.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib precedent for hypothesis-then-data in the `HasDerivAt` namespace: `Mathlib/Analysis/Calculus/Deriv/Mul.lean:147` `theorem HasDerivAt.smul_const (hc : HasDerivAt c c' x) (f : F)`; composed exponentials `Mathlib/Analysis/SpecialFunctions/ExpDeriv.lean:133` `HasDerivAt.cexp (hf : HasDerivAt f f' x)` and `:304` `HasDerivAt.exp`. Grepping Mathlib for a root- or type-namespace `*_comp` lemma whose first explicit argument is a `HasDerivAt` returns no matches.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "fix": "Rename to `HasDerivAt.matrix_exp_smul_const` and `HasDerivAt.matrix_exp_smul_const_mulVec` (keeping `Matrix.hasDerivAt_exp_smul_const'`, whose first explicit argument is a `Matrix`, where it is) and update the two uses in `MomentSpace.lean` to dot notation.",
+   "issue": "`Matrix.hasDerivAt_exp_smul_const_comp` (line 51) and `Matrix.hasDerivAt_exp_smul_const_mulVec` (line 58) have `(hf : HasDerivAt f f' t)` as their first explicit argument, so by the dot-notation rule they belong in the `HasDerivAt` namespace, not `Matrix`. The `_comp` suffix also names the proof step (composition) rather than the conclusion; Mathlib's idiom for `s \u21a6 g (f s)` given `HasDerivAt f f' t` is dot notation on the hypothesis. Consumers cannot write `hf.\u2026`; the call sites in `MomentSpace.lean:352` and `:362` pipe the hypothesis in positionally, which is exactly the shape the convention exists to avoid.",
+   "line": 51
+  }
+ ],
+ "head_sha": "f94d8784f879068e9e70025077b34806ae07574c",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 250,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6bbfd1e48cfba8713cf17abc8db659a4297806be7bb4ff90a6138e2a1de20842",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T180554Z-250-naming-06d19b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T18:05:54Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names and the (absent) notation are otherwise conventional and match upstream precedent, but the two path lemmas in the new MatrixExponential file take a `HasDerivAt` as first explicit argument while living in the `Matrix` namespace under a `_comp` name, so dot notation does not elaborate and the file cannot be upstreamed unrenamed.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Exponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "65fbd88ca4b251e27c337b9076d334340bbdeb5e8f57dd2e9732a76d0777f843",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 172225,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 172225,
+  "cache_read_input_tokens": 1522894,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2280,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2280,
+    "cache_read_input_tokens": 169945,
+    "input_tokens": 2,
+    "output_tokens": 1975,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17166,
+  "output_tokens_details": {
+   "thinking_tokens": 12904
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
