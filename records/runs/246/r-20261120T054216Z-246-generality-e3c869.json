@@ -1,0 +1,183 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6124455,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 251.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 156117,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 156117,
+    "cache_read_input_tokens": 1195431,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1250,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1250,
+      "cache_read_input_tokens": 143718,
+      "input_tokens": 2,
+      "output_tokens": 4284,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18138,
+    "output_tokens_details": {
+     "thinking_tokens": 14563
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.612446,
+ "dedupe_key": "eic/EpsilonEridani|246|fc73dc80a8065c14f1ce171fd7244744d8243280|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4ff5d340847e607b3410c6ca89c335c548da5f3f0a75edc5db678532394a9d4c",
+ "diff_sha256": "4ff5d340847e607b3410c6ca89c335c548da5f3f0a75edc5db678532394a9d4c",
+ "duration_s": 251.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 270-274 and 278-285: the only use of `h : tLo < tHi` in both is `(tIntegrate_expProfile_pos B h).ne'`; `expProfile` appears nowhere else in either proof. `eq_and_eq_of_tIntegrate_eq` repeats that same two-line derivation at lines 317-319.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/TIntegration.lean",
+   "fix": "Prove the general form first and derive the exponential case: `theorem eq_div_tIntegrate {A : \u211d} {\u03c6 : \u211d \u2192 \u211d} (h\u03c6 : tIntegrate tLo tHi \u03c6 \u2260 0) (hf : EqOn f (fun t => A * \u03c6 t) (Icc tLo tHi)) : A = tIntegrate tLo tHi f / tIntegrate tLo tHi \u03c6` and `theorem eqOn_of_tIntegrate_eq {A A' \u03c6} (h\u03c6 : tIntegrate tLo tHi \u03c6 \u2260 0) (hf : EqOn f (fun t => A * \u03c6 t) _) (hg : EqOn g (fun t => A' * \u03c6 t) _) (hfg : \u2026) : EqOn f g (Icc tLo tHi)`; the identical proofs go through with `h\u03c6` in place of `(tIntegrate_expProfile_pos B h).ne'`, and the current statements follow by supplying `(tIntegrate_expProfile_pos B h).ne'`. While doing so, have `eq_and_eq_of_tIntegrate_eq` (lines 317-319) call the shared `A = A'` step instead of re-deriving it.",
+   "issue": "`eq_div_tIntegrate_expProfile` (line 270) and `eqOn_of_tIntegrate_eq` (line 278) are specialised to `fun t => A * expProfile B t`, but nothing exponential is used: the proof at lines 273-274 is `rw [tIntegrate_congr hf, tIntegrate_const_mul, mul_div_cancel_right\u2080 _ (tIntegrate_expProfile_pos B h).ne']`, i.e. `h : tLo < tHi` only supplies `tIntegrate tLo tHi (expProfile B) \u2260 0`. Stating the shape-independent fact for the exponential only means any later profile shape (power law, dipole form factor, normalisedExpProfile itself) needs the same lemma restated, and the interface suggests the exponential is essential to recovering `A` when it is not.",
+   "line": "270"
+  }
+ ],
+ "head_sha": "fc73dc80a8065c14f1ce171fd7244744d8243280",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 246,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "042ee5281ed226a4540c6169da57fa7b30bbfc3ba7b05f705d6eef975af343b0",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T054216Z-246-generality-e3c869",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T05:42:16Z",
+ "submitted_by": "wdconinc",
+ "summary": "Assumptions are tight and the elementary tIntegrate API matches the roadmap's 1.2 bullet, but the normalisation-recovery lemmas are stated for `expProfile` although their proofs use only that the profile's integral is non-zero, so they carry a shape hypothesis and a `tLo < tHi` hypothesis where one non-vanishing hypothesis suffices.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/TIntegration.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e819ce4505df3ab48b4d22e8cbb335e62927e31742c3056214d9e64f6a321fe2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 156117,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 156117,
+  "cache_read_input_tokens": 1195431,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1250,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1250,
+    "cache_read_input_tokens": 143718,
+    "input_tokens": 2,
+    "output_tokens": 4284,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18138,
+  "output_tokens_details": {
+   "thinking_tokens": 14563
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

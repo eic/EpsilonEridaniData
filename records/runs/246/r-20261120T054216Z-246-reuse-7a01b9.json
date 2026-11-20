@@ -1,0 +1,242 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.7035679999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 155.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 162186,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 162186,
+    "cache_read_input_tokens": 1608386,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3246,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3246,
+      "cache_read_input_tokens": 146928,
+      "input_tokens": 2,
+      "output_tokens": 1820,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11095,
+    "output_tokens_details": {
+     "thinking_tokens": 5685
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.703568,
+ "dedupe_key": "eic/EpsilonEridani|246|fc73dc80a8065c14f1ce171fd7244744d8243280|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4ff5d340847e607b3410c6ca89c335c548da5f3f0a75edc5db678532394a9d4c",
+ "diff_sha256": "4ff5d340847e607b3410c6ca89c335c548da5f3f0a75edc5db678532394a9d4c",
+ "duration_s": 155.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep of `tIntegrate_add|tIntegrate_nonneg|tIntegrate_mono` across the file returns only the declaration lines (86, 104, 108, 113, 120); the repo-wide grep for `tIntegrate` matches this file alone. Proof bodies are `integral_add hf hg`, `setIntegral_nonneg measurableSet_Icc h`, `setIntegral_mono_on ...`, `setIntegral_mono_set ...`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/TIntegration.lean",
+   "fix": "Delete the five; `tIntegrate_def` and `tIntegrate_eq_intervalIntegral` already let a future consumer apply the Mathlib lemmas directly, and `tIntegrate_sub`/`_const_mul`/`_div_const`/`_congr`, which do have call sites here, can stay.",
+   "issue": "`tIntegrate_add` (86), `tIntegrate_nonneg` (104), `tIntegrate_mono` (108), `tIntegrate_mono_range` (113) and `tIntegrate_add_adjacent` (120) are restatements of `MeasureTheory.integral_add` (Mathlib/MeasureTheory/Integral/Bochner/Basic.lean:239), `setIntegral_nonneg` (Bochner/Set.lean:811), `setIntegral_mono_on` (Bochner/Set.lean:757), `setIntegral_mono_set` (Bochner/Set.lean:733) and `intervalIntegral.integral_add_adjacent_intervals`, each proved by applying exactly that lemma, and none of the five is used anywhere in the repo.",
+   "line": "86"
+  },
+  {
+   "evidence": "grep `integrableOn_expProfile` in the file matches only line 163; line 215 uses `.integrableOn_Icc` directly on a continuity proof.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/TIntegration.lean",
+   "fix": "Delete `integrableOn_expProfile`; `continuous_expProfile` plus `Continuous.integrableOn_Icc` already gives it in one term.",
+   "issue": "`integrableOn_expProfile` is `(continuous_expProfile B).integrableOn_Icc`, i.e. `Continuous.integrableOn_Icc` (Mathlib/MeasureTheory/Function/LocallyIntegrable.lean:595) applied to the `@[fun_prop]` lemma declared two lines above, and it has no call site \u2014 line 215 writes the same inline form `(continuous_normalizedExpProfile _ _ _).integrableOn_Icc` instead.",
+   "line": "163"
+  }
+ ],
+ "head_sha": "fc73dc80a8065c14f1ce171fd7244744d8243280",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 246,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "306c1fe0d88ff3def8cf37d386f8b427f420d89c5aca69ad7e7e6c3f82f7ee79",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T054216Z-246-reuse-7a01b9",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T05:42:16Z",
+ "submitted_by": "wdconinc",
+ "summary": "The exponential profile, the kernel witness and the slope recovery are genuinely new \u2014 nothing in Mathlib, Physlib or EpsilonEridani covers them. But six declarations are consumer-less one-line restatements of located Mathlib lemmas and should be dropped.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/TIntegration.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/TailIntegral.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inference/Identifiability.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/TIntegration.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "19409f230284d510e2a55d4a04c1d9fab895555d1193ecb273243727678f96cd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 162186,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 162186,
+  "cache_read_input_tokens": 1608386,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3246,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3246,
+    "cache_read_input_tokens": 146928,
+    "input_tokens": 2,
+    "output_tokens": 1820,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11095,
+  "output_tokens_details": {
+   "thinking_tokens": 5685
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

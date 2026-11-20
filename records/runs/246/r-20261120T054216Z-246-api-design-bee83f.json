@@ -1,0 +1,175 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9466600000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 132.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 140710,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 140710,
+    "cache_read_input_tokens": 619430,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1069,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1069,
+      "cache_read_input_tokens": 127659,
+      "input_tokens": 2,
+      "output_tokens": 5507,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9191,
+    "output_tokens_details": {
+     "thinking_tokens": 6239
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.94666,
+ "dedupe_key": "eic/EpsilonEridani|246|fc73dc80a8065c14f1ce171fd7244744d8243280|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4ff5d340847e607b3410c6ca89c335c548da5f3f0a75edc5db678532394a9d4c",
+ "diff_sha256": "4ff5d340847e607b3410c6ca89c335c548da5f3f0a75edc5db678532394a9d4c",
+ "duration_s": 132.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 77-79 (`tIntegrate_eq_intervalIntegral (h : tLo \u2264 tHi)`) and 137-139 (`rw [tIntegrate_def, tIntegrate_def, Icc_eq_empty h.not_ge, ... integral_zero_measure]`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/TIntegration.lean",
+   "fix": "Add `@[simp] theorem tIntegrate_of_lt (h : tHi < tLo) : tIntegrate tLo tHi f = 0` (and `tIntegrate_self`), and use it in `tIntegrate_comp_add_right` instead of unfolding.",
+   "issue": "No public characteristic lemma for an empty range: `tIntegrate_eq_intervalIntegral` requires `tLo \u2264 tHi`, so for `tHi < tLo` a consumer must fall back on `tIntegrate_def` and reason about `Measure.restrict_empty` \u2014 exactly what this proof does at lines 137-139.",
+   "line": "137"
+  },
+  {
+   "evidence": "Line 173 `theorem tIntegrate_expProfile (hB : B \u2260 0) ...`; line 257 `normalizedExpProfile tLo tHi 0 - normalizedExpProfile tLo tHi 1`; the file has `tIntegrate_const_mul` (line 95) but no `tIntegrate_const`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/TIntegration.lean",
+   "fix": "Add `expProfile_zero : expProfile 0 t = 1` and `tIntegrate_const (h : tLo \u2264 tHi) (c : \u211d) : tIntegrate tLo tHi (fun _ => c) = (tHi - tLo) * c`, giving `tIntegrate tLo tHi (expProfile 0) = tHi - tLo`.",
+   "issue": "`tIntegrate_expProfile` is the only evaluation lemma for the profile's integral and assumes `B \u2260 0`, but `tIntegrate_not_injective` (line 257) builds its witness from `normalizedExpProfile tLo tHi 0`. Nothing in the API gives `tIntegrate tLo tHi (expProfile 0)`, so the roadmap's \"explicit kernel element\" has normalisations a user cannot compute without unfolding to the set integral.",
+   "line": "173"
+  },
+  {
+   "evidence": "Lines 235-239 (docstring vs. `\u2200\u1d50 t \u2202volume.restrict (Icc tLo tHi), ... \u2260 ...`) and line 220 (`private theorem abs_eq_of_normalizedExpProfile_eq`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/TIntegration.lean",
+   "fix": "Expose the finite-set form publicly \u2014 e.g. `{t | normalizedExpProfile tLo tHi B\u2081 t = normalizedExpProfile tLo tHi B\u2082 t} \u2286 {x, -x}` with `x` as defined at line 241, or simply drop `private` from `abs_eq_of_normalizedExpProfile_eq` \u2014 or reword both docstrings to claim only a.e. inequality.",
+   "issue": "The docstring of `ae_normalizedExpProfile_ne` and the module docstring (line 22) claim the two profiles \"agree at no more than two points\", but the public statement is only an a.e. inequality; the point-set result lives solely in `private abs_eq_of_normalizedExpProfile_eq` (line 220), so no consumer can obtain the advertised strength.",
+   "line": "237"
+  }
+ ],
+ "head_sha": "fc73dc80a8065c14f1ce171fd7244744d8243280",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 246,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c45d02498adb2787214c88cdcb1b1c5d253c3ff9948c632c41c0c5dd5927f24d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T054216Z-246-api-design-bee83f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T05:42:16Z",
+ "submitted_by": "wdconinc",
+ "summary": "The t-integration API is missing its degenerate-range lemma and any evaluation route for the zero-slope profile that the headline non-injectivity witness uses, and the two-point agreement result the docstrings promise is locked behind a private lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/TIntegration.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fcc2a2ff4013884c16cd9022dca6087fdda413e3a50f8e9a93eb00271f59bae6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 140710,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 140710,
+  "cache_read_input_tokens": 619430,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1069,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1069,
+    "cache_read_input_tokens": 127659,
+    "input_tokens": 2,
+    "output_tokens": 5507,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9191,
+  "output_tokens_details": {
+   "thinking_tokens": 6239
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
