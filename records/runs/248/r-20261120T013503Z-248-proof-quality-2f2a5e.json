@@ -1,0 +1,203 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3662160000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 149.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 88517,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 88517,
+    "cache_read_input_tokens": 410082,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1177,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1177,
+      "cache_read_input_tokens": 74318,
+      "input_tokens": 2,
+      "output_tokens": 3203,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11037,
+    "output_tokens_details": {
+     "thinking_tokens": 7415
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.366216,
+ "dedupe_key": "eic/EpsilonEridani|248|04d1da8a8795d332a383475997f8876505241187|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "55ca706fd0def688195b627e1be3d364687b8eda227fbd348a23d5fe32fd5a16",
+ "diff_sha256": "55ca706fd0def688195b627e1be3d364687b8eda227fbd348a23d5fe32fd5a16",
+ "duration_s": 149.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 47-55 state and prove it generically over `n` and `a`; uses at line 60 (`exact hconst h`) and line 62 (`have ha\u2080 := hconst h`) instantiate it at different `n`/`a`. `private theorem` is already idiomatic here (65 occurrences across EpsilonEridani/).",
+   "file": "EpsilonEridani/Mathematics/Analysis/Asymptotics/PowerSum.lean",
+   "fix": "Hoist it to a top-level (or `private`) theorem taking `hl : l \u2264 \ud835\udcdd[\u2260] 0`, e.g. `eq_zero_of_isLittleO_sum_range_pow_smul_pow_const`, and call it in both induction branches.",
+   "issue": "`hconst` is a self-contained general lemma (`\u2200 {n} {a}, (power sum) =o[l] x^n \u2192 a 0 = 0`) with its own 5-line proof and its own implicit binders, buried in a `have` and applied twice (lines 60 and 62).",
+   "line": 47
+  },
+  {
+   "evidence": "Lines 85-86 and 96-97 are character-identical apart from the final `simpa` target.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Asymptotics/PowerSum.lean",
+   "fix": "Factor it as a named lemma, e.g. `sum_range_pow_smul_eq_zero (h : \u2200 k \u2264 n, a k = 0) (x : \ud835\udd5c) : \u2211 k \u2208 range (n+1), x ^ k \u2022 a k = 0`, and use it in both reverse directions.",
+   "issue": "The `h\u2080` step (`\u2200 x, \u2211 k \u2208 range (n+1), x ^ k \u2022 a k = 0` from vanishing coefficients) is duplicated verbatim in `isLittleO_sum_range_pow_smul_pow_iff` (lines 85-86) and `isBigO_sum_range_pow_smul_pow_succ_iff` (lines 96-97).",
+   "line": 85
+  },
+  {
+   "evidence": "`Mathlib/Logic/Function/Basic.lean:191`: `theorem not_injective_iff : \u00ac Injective f \u2194 \u2203 a b, f a = f b \u2227 a \u2260 b` \u2014 exactly the shape of the `obtain` goal at lines 250-251.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "fix": "`exact Function.not_injective_iff.1 (mt (Matrix.rank_eq_card_iff_mulVec_injective _).2 hrank)`.",
+   "issue": "`simpa [Function.Injective, and_comm] using mt (Matrix.rank_eq_card_iff_mulVec_injective _).2 hrank` unfolds the `Function.Injective` definition by simp and relies on simp's `not_forall`/`exists_prop` normalisation plus ordered rewriting by `and_comm` to land on the stated goal \u2014 brittle for a goal Mathlib states directly.",
+   "line": 252
+  },
+  {
+   "evidence": "Line 237-238: `have := congrFun h0 \u27e8o, _\u27e9` gives `c' o - c o = 0`; the goal is `c o = c' o`, so only `sub_eq_zero` plus one `.symm` is needed.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "fix": "Make the orientation explicit, e.g. `exact ((sub_eq_zero.1 (by simpa using this)).symm)` (or `congrFun h0 ... |>.symm` after `Pi.zero_apply`).",
+   "issue": "`simpa [sub_eq_zero, eq_comm] using this` closes `c o = c' o` by putting `eq_comm` in the simp set; equality orientation then depends on simp's term ordering rather than on an explicit step.",
+   "line": 238
+  },
+  {
+   "evidence": "Lines 131-133 (`ext o; simp only [mem_filter, mem_truncation, mem_totalDegreePiece, and_iff_right_iff_imp]; exact fun h => h \u25b8 ...`) prove exactly that set equality as a side goal of `sum_congr`.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "fix": "State it as `filter_truncation_eq_totalDegreePiece {k n} (hk : k \u2264 n) : {o \u2208 P.truncation n | totalDegree (compositeDeg P.deg o) = k} = P.totalDegreePiece k` and `rw` it here.",
+   "issue": "The fibre identification `{o \u2208 P.truncation n | totalDegree (compositeDeg P.deg o) = k} = P.totalDegreePiece k` (for `k \u2264 n`) is proved inline inside `effectiveAmplitude_eq_sum_range`; it is a reusable fact about the new `totalDegreePiece`/`truncation` API, not a one-off of this computation.",
+   "line": 131
+  }
+ ],
+ "head_sha": "04d1da8a8795d332a383475997f8876505241187",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 248,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7da6dbfbc4ca63dcd464b06c3a6e39a4905ae8308038b997041a316791ac6aca",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T013503Z-248-proof-quality-2f2a5e",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T01:35:03Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two reusable facts are buried inside proofs (a twice-applied constant-term lemma, and a verbatim-duplicated vanishing-sum step), and two goals are closed by simp sets that unfold definitions or reorient equalities where named Mathlib lemmas exist.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Asymptotics/PowerSum.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/PowerCounting.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "cbc2183b6c886f7851a3379bfaba3f509811a95b1f3398ccb75c92729715080d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 88517,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 88517,
+  "cache_read_input_tokens": 410082,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1177,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1177,
+    "cache_read_input_tokens": 74318,
+    "input_tokens": 2,
+    "output_tokens": 3203,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11037,
+  "output_tokens_details": {
+   "thinking_tokens": 7415
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

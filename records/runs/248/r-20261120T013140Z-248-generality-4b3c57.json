@@ -1,0 +1,215 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9492384999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 232.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 107849,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 107849,
+    "cache_read_input_tokens": 875237,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 676,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 676,
+      "cache_read_input_tokens": 94403,
+      "input_tokens": 2,
+      "output_tokens": 1789,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17320,
+    "output_tokens_details": {
+     "thinking_tokens": 12720
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.949238,
+ "dedupe_key": "eic/EpsilonEridani|248|04d1da8a8795d332a383475997f8876505241187|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "55ca706fd0def688195b627e1be3d364687b8eda227fbd348a23d5fe32fd5a16",
+ "diff_sha256": "55ca706fd0def688195b627e1be3d364687b8eda227fbd348a23d5fe32fd5a16",
+ "duration_s": 232.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PowerCorrections.lean:98 `abbrev smallRatio : Filter \u211d := \ud835\udcdd[>] (0 : \u211d)`; :135-137 `lemma eq_zero_of_isBigO_pow_succ {n : \u2115} {c : \u211d} (h : (fun lam : \u211d => c * lam ^ n) =O[smallRatio] fun lam : \u211d => lam ^ (n + 1)) : c = 0`, the same filter and the same statement as the new lemma specialised to `\ud835\udd5c = E = \u211d`. The import is legal: `Particles/Parton/PDF/Positivity.lean:8` and `Particles/Parton/DoubleParton/PocketFormula.lean:10` already import `EpsilonEridani.Mathematics.*`.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Asymptotics/PowerSum.lean",
+   "fix": "Add `public import EpsilonEridani.Mathematics.Analysis.Asymptotics.PowerSum` to PowerCorrections.lean and replace the body of `eq_zero_of_isBigO_pow_succ` with an application of `Asymptotics.isBigO_sum_range_pow_smul_pow_succ_iff (nhdsGT_le_nhdsNE 0) (a := fun k => if k = n then c else 0) |>.1 _ n le_rfl`. Its downstream users (`coeff_unique`, `coeff_unique_of_leading`, `not_approximatesToOrder_succ_of_coeff_ne_zero`) then need no change.",
+   "issue": "`isBigO_sum_range_pow_smul_pow_succ_iff` subsumes the pre-existing `EpsilonEridani.Particles.Parton.TMD.PowerCorrections.eq_zero_of_isBigO_pow_succ` (PowerCorrections.lean:135), which proves the one-monomial case `c * \u03bb ^ n =O[\ud835\udcdd[>] 0] \u03bb ^ (n+1) \u2192 c = 0` by a ~20-line hand-rolled argument. The PR proves the general result but does not derive the special case from it, leaving duplicated API.",
+   "line": 91
+  }
+ ],
+ "head_sha": "04d1da8a8795d332a383475997f8876505241187",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 248,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a7eed84dbe1127e952542eabf7cd35c2b1448f80213dbae0e646c748eca05a9e",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T013140Z-248-generality-4b3c57",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T01:31:40Z",
+ "submitted_by": "wdconinc",
+ "summary": "The asymptotics lemmas and the matching API sit at the right level, but the new general power-sum lemma subsumes an existing hand-rolled special case in EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean that the PR leaves un-derived, so the repo now carries two independent proofs of the same fact.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Asymptotics/PowerSum.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/PowerCounting.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/QuarkoniaAndExotics/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Moments.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Deconvolution/Uniqueness.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7be98923df36fa1ae8e257bb4e566d166241f43c1294df6777da9ecd7b4b1904",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 107849,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 107849,
+  "cache_read_input_tokens": 875237,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 676,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 676,
+    "cache_read_input_tokens": 94403,
+    "input_tokens": 2,
+    "output_tokens": 1789,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17320,
+  "output_tokens_details": {
+   "thinking_tokens": 12720
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
