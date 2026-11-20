@@ -1,0 +1,227 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1315635,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 235.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 115497,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 115497,
+    "cache_read_input_tokens": 1099287,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 770,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 770,
+      "cache_read_input_tokens": 96810,
+      "input_tokens": 2,
+      "output_tokens": 2892,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17072,
+    "output_tokens_details": {
+     "thinking_tokens": 12021
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2f4253919ae95a9a74d68410e2c23772e541c8ff",
+ "cost_usd": 2.131563,
+ "dedupe_key": "eic/EpsilonEridani|240|bdc2dda456f9ac7ac052b742ff7b0fb2e5856eb4|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "169af5a75221d5ce6c44315e6d65c5d39373f6a4d004ece244469b253a6c3edf",
+ "diff_sha256": "169af5a75221d5ce6c44315e6d65c5d39373f6a4d004ece244469b253a6c3edf",
+ "duration_s": 235.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Definition at line 140, `_def` at 144, nonneg at 170; the needed step is already used inside the proof at line 287 (`hasSum_ite_sub_hasSum (hZ.hasSum.mul_right _) n\u2080`). Mathlib: `Mathlib/Topology/Algebra/InfiniteSum/Group.lean:126` (`hasProd_ite_div_hasProd`, `to_additive` \u2192 `hasSum_ite_sub_hasSum`).",
+   "file": "EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "fix": "Add `hasSum_twoPointExcitedWeight (hZ : Summable fun n => \u2016S.overlap n\u2016 ^ 2) (n\u2080 : \u03b9) : HasSum (fun n => if n = n\u2080 then 0 else \u2016S.overlap n\u2016 ^ 2) (S.twoPointExcitedWeight n\u2080) := hasSum_ite_sub_hasSum hZ.hasSum n\u2080` (with `[DecidableEq \u03b9]`, or the `{n // n \u2260 n\u2080}` form), and derive `twoPointExcitedWeight_nonneg` from it.",
+   "issue": "`twoPointExcitedWeight` is named/documented as the excited-state weight but its only API is `twoPointExcitedWeight_def`, the difference `\u2211' n, \u2016Z n\u2016\u00b2 - \u2016Z n\u2080\u2016\u00b2`. Nothing states it as the sum over excited states, so a consumer bounding `K\u2082` (the roadmap's 'gap named honestly' constant) must go through the full sum including the ground term.",
+   "line": "140"
+  },
+  {
+   "evidence": "Definition at line 150, `_def` at 154; the proof at line 393 already builds exactly this `HasSum` (`hasSum_ite_sub_hasSum (hO.hasSum.mul_right c) (n\u2080, n\u2080)`), and line 179-181 re-proves the `threePointWeight O (n\u2080, n\u2080)` identity inline with `ring`.",
+   "file": "EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "fix": "Add `hasSum_threePointExcitedWeight (hO : Summable (S.threePointWeight O)) (n\u2080 : \u03b9) : HasSum (fun p => if p = (n\u2080, n\u2080) then 0 else S.threePointWeight O p) (S.threePointExcitedWeight O n\u2080) := hasSum_ite_sub_hasSum hO.hasSum (n\u2080, n\u2080)`, plus `threePointWeight O (n\u2080, n\u2080) = \u2016S.overlap n\u2080\u2016 ^ 2 * \u2016O n\u2080 n\u2080\u2016`, and reuse both in `threePointExcitedWeight_nonneg`.",
+   "issue": "Same gap for `threePointExcitedWeight`: only the difference form is exposed, with the subtracted term written as `\u2016Z n\u2080\u2016\u00b2 * \u2016O n\u2080 n\u2080\u2016` rather than `threePointWeight O (n\u2080, n\u2080)`, so neither the excited-pair sum nor the relation to `threePointWeight` is available to callers.",
+   "line": "150"
+  }
+ ],
+ "head_sha": "bdc2dda456f9ac7ac052b742ff7b0fb2e5856eb4",
+ "merge_base_sha": "2f4253919ae95a9a74d68410e2c23772e541c8ff",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 240,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8bb0c407493b58eeefb253b9168c25a4ba2521d5cb5cfbbc98c5f5a8ac619e0a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T091707Z-240-api-design-6b8ae0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T09:17:07Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, bodies are unexposed (`(rfl)` throughout), extensionality is sound and there is no compatibility layer. The one gap is that the two excited-state weights have no lemma identifying them with the excited-state sum, which is exactly the form a consumer must bound.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/LatticeBridge/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Algebra/InfiniteSum/Group.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "79cc9e15b8f248110a1c090562a045a40dfc5d992bf5fe5953bad806ae3bfc36",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 115497,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 115497,
+  "cache_read_input_tokens": 1099287,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 770,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 770,
+    "cache_read_input_tokens": 96810,
+    "input_tokens": 2,
+    "output_tokens": 2892,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17072,
+  "output_tokens_details": {
+   "thinking_tokens": 12021
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
