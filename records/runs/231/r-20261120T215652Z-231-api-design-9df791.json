@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9485325,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 325.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 91737,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 91737,
+    "cache_read_input_tokens": 771535,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1816,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1816,
+      "cache_read_input_tokens": 93144,
+      "input_tokens": 2,
+      "output_tokens": 4167,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 25811,
+    "output_tokens_details": {
+     "thinking_tokens": 20842
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 1.948533,
+ "dedupe_key": "eic/EpsilonEridani|231|97adeb32c52e66b793795577d4ac23986dbecfcf|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "36c8040d418357174638eafbf0327f1b41a136b8d4d26deb1c73ce0495c3e9ed",
+ "diff_sha256": "36c8040d418357174638eafbf0327f1b41a136b8d4d26deb1c73ce0495c3e9ed",
+ "duration_s": 325.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "AcceptReject.lean:294 `private theorem lintegral_one_add_sq_div_two : \u222b\u207b z, ENNReal.ofReal ((1 + z ^ 2) / 2) \u2202uniformMeasure 0 1 = ENNReal.ofReal (2 / 3)`; AcceptReject.lean:322 `private theorem lintegral_min_two_mul : \u222b\u207b z, ENNReal.ofReal (min (2 * z) (3 / 2)) \u2202uniformMeasure 0 1 = ENNReal.ofReal (15 / 16)`. Neither mentions `trialLaw`, `acceptSet` or `acceptedLaw`.",
+   "file": "EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "fix": "Drop `private` and relocate both to `EpsilonEridani/Mathematics/Probability/Distributions/Uniform/Basic.lean`, next to `Continuous.integrable_uniformMeasure`, where they are statements about the uniform law alone.",
+   "issue": "`private theorem lintegral_one_add_sq_div_two` (line 294) and `private theorem lintegral_min_two_mul` (line 322) are general infrastructure hidden as private: both statements mention only upstream objects (`ENNReal.ofReal`, `lintegral`, `TauCeti.Probability.uniformMeasure`) and neither proof touches this file's subject (they use only `Continuous.integrable_uniformMeasure`, `uniformMeasure_zero_one` and interval integrals). They are also the only statements of the constants `2/3` and `15/16`, so a downstream consumer cannot discharge the `\u222b\u207b ofReal f \u2260 0` / `\u2260 \u221e` hypotheses of `isProbabilityMeasure_acceptedLaw_of_ae_le` (line 221) at either example, nor reuse the `2/3` normaliser that the roadmap pairs with `pQQAccept`.",
+   "line": "294"
+  },
+  {
+   "evidence": "`IsProbabilityMeasure` occurs in the file only at lines 90, 136 and 221 (general forms); `measureReal_trialLaw_acceptSet_one_add_sq_div_two` (line 305) and `acceptedLaw_one_add_sq_div_two` (line 314) are stated with no probability-measure companion, so the \"probability 2/3\" claim is only a mass statement in the exposed API.",
+   "file": "EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "fix": "Add the missing step as API: a public lemma/instance reducing `\u03bc.withDensity (fun _ => ENNReal.ofReal 1)` to `\u03bc` (or restate the line-90 instance's hypothesis as `\u222b\u207b x, ENNReal.ofReal (g x) \u2202\u03bc = 1`), plus the example-level instances `IsProbabilityMeasure (trialLaw (uniformMeasure 0 1) fun _ => 1)` and `IsProbabilityMeasure (acceptedLaw (uniformMeasure 0 1) (fun z => (1 + z ^ 2) / 2) (fun _ => 1) 1)` (and the example-5 counterpart), which `isProbabilityMeasure_acceptedLaw_of_ae_le` gives once the lemmas of the previous finding are public.",
+   "issue": "The example surface states no `IsProbabilityMeasure`, although the docstrings call the results an acceptance *probability* and an accepted *law* (lines 302-304, 312-313, 347-349). The general instance at line 90 cannot fire at these arguments: its hypothesis is `IsProbabilityMeasure ((uniformMeasure 0 1).withDensity fun _ => ENNReal.ofReal 1)`, and `fun _ => ENNReal.ofReal 1` is not syntactically `1`, so instance search never reaches Mathlib's `withDensity_one` (Mathlib/MeasureTheory/Measure/WithDensity.lean:193, a `@[simp]` lemma, not an instance).",
+   "line": "305"
+  }
+ ],
+ "head_sha": "97adeb32c52e66b793795577d4ac23986dbecfcf",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 231,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "56a720dd5583b5765030a24b6f08afaa77956d1b766f4ef3411456f5cef7c84e",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T215652Z-231-api-design-9df791",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T21:56:52Z",
+ "submitted_by": "veprbl",
+ "summary": "The core API is well characterised (`*_def` lemmas via `(rfl)`, hidden bodies, `mem_*` simp, measurability) with no compatibility surface, but the two lemmas computing the examples' normalising constants are `private` although they are general uniform-measure integrals, and consequently the worked examples expose no probability-measure statement.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Distributions/Uniform/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/Measure/Prod.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/EventGeneration/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/StrictMono.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Measure/WithDensity.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "dae454cd6c62c3722c056ddc9776ef50defa600ee101b4f82d4a06fc62f42a7c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 91737,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 91737,
+  "cache_read_input_tokens": 771535,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1816,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1816,
+    "cache_read_input_tokens": 93144,
+    "input_tokens": 2,
+    "output_tokens": 4167,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 25811,
+  "output_tokens_details": {
+   "thinking_tokens": 20842
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
