@@ -1,0 +1,155 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3977275,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 154.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 195459,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 195459,
+    "cache_read_input_tokens": 312195,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6475,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6475,
+      "cache_read_input_tokens": 156137,
+      "input_tokens": 2,
+      "output_tokens": 3978,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11480,
+    "output_tokens_details": {
+     "thinking_tokens": 8611
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 2.397727,
+ "dedupe_key": "eic/EpsilonEridani|126|376a0c6bef2f525bd28956cd0c62093ecf31c655|generality|claude-opus-5|30e3cfe49d22c07d|production|11",
+ "diff_blob": "6591722b23248fce157338e1119b54e18b18dcb54e8aee3a4a91d8d26e7a661f",
+ "diff_sha256": "6591722b23248fce157338e1119b54e18b18dcb54e8aee3a4a91d8d26e7a661f",
+ "duration_s": 154.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Every proof in the section is `rw [\u2190 timeComponent_add] at h; exact <general lemma> hn (spatialPart_add_eq_smul_of_spatialPart_eq_smul hu hv) h` \u2014 e.g. Rapidity.lean:289-291 vs. the lemma it calls at :220-226. Grep for the three names across `EpsilonEridani/` returns only their definitions and the module docstring at :56; the only consumers of the section are InvariantMass.lean:124 (cosh form) and :147 (exp-neg form). The two-vector hypothesis is also narrower than the general one, which already covers sums of any number of collinear vectors.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Drop the `Add` section and let callers apply the collinear-vector forms to `q + P` via `spatialPart_add_eq_smul_of_spatialPart_eq_smul` plus `timeComponent_add` (the two InvariantMass.lean call sites, :124 and :147, each need one extra argument). At minimum delete the three with no use.",
+   "issue": "The `Add` section (lines 277-342) duplicates the five `_of_spatialPart_eq_smul` theorems at a strictly less general level: each is that theorem instantiated at `v := u + v`, `a := a + b`. Three have no caller: `exp_two_mul_rapidity_add_of_spatialPart_eq_smul` (:284), `timeComponent_add_eq_sqrt_minkowskiProduct_add_self_mul_exp_rapidity_of_spatialPart_eq_smul` (:297), `eq_sqrt_minkowskiProduct_add_self_mul_sinh_rapidity_of_spatialPart_eq_smul` (:334).",
+   "line": 277
+  }
+ ],
+ "head_sha": "376a0c6bef2f525bd28956cd0c62093ecf31c655",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "3ae3356f2f07c7d40544bdc254c7455750eae2c17b9b11a998a79f9cff554e8b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 11,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261120T175553Z-126-generality-d4582a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T17:55:53Z",
+ "submitted_by": "wdconinc",
+ "summary": "The general collinear-vector layer in Rapidity.lean is at the right level, but the `Add` section restates all five of its theorems for the two-vector special case with no added mathematics, and three of those five have no caller. Everything else sits at the natural level with minimal hypotheses.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6b1db2056874a7ee9324d5781cf7ef4e57a63d1b1c9a87191036a942d0eac336",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 195459,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 195459,
+  "cache_read_input_tokens": 312195,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6475,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6475,
+    "cache_read_input_tokens": 156137,
+    "input_tokens": 2,
+    "output_tokens": 3978,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11480,
+  "output_tokens_details": {
+   "thinking_tokens": 8611
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
