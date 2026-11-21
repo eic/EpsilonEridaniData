@@ -1,0 +1,220 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.69006,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 247.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 160080,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 160080,
+    "cache_read_input_tokens": 1178060,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 660,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 660,
+      "cache_read_input_tokens": 118668,
+      "input_tokens": 2,
+      "output_tokens": 1311,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20004,
+    "output_tokens_details": {
+     "thinking_tokens": 15245
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 2.69006,
+ "dedupe_key": "eic/EpsilonEridani|126|5e92e098d35d83ad5a6d54b155b6948b0821bec3|naming|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "e37d36b85bf5d07e71217e4e549406880f330622a7a6d576fd17088fea303bc4",
+ "diff_sha256": "e37d36b85bf5d07e71217e4e549406880f330622a7a6d576fd17088fea303bc4",
+ "duration_s": 247.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Rapidity.lean:229 `v.timeComponent + a = \u221a\u27eav, v\u27eb\u2098 * exp (v.rapidity n)`; Rapidity.lean:241 `v.timeComponent - a = \u221a\u27eav, v\u27eb\u2098 * exp (-v.rapidity n)`; BasicExtensions.lean:89 `(u + v).timeComponent = u.timeComponent + v.timeComponent`, BasicExtensions.lean:96 `(u - v).timeComponent = u.timeComponent - v.timeComponent` \u2014 both in `namespace Lorentz.Vector`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Name the second operand in the collinear family, e.g. `timeComponent_add_coeff_eq_\u2026`, `timeComponent_sub_coeff_eq_\u2026`, `coeff_eq_sqrt_minkowskiProduct_self_mul_sinh_rapidity_\u2026`, so the prefix no longer reads as `(u + v).timeComponent`. The non-collinear forms already do this correctly (`timeComponent_add_inner_spatialPart_eq_\u2026`, line 171).",
+   "issue": "`timeComponent_add_eq_sqrt_minkowskiProduct_self_mul_exp_rapidity_of_spatialPart_eq_smul` (line 229) and `timeComponent_sub_eq_sqrt_minkowskiProduct_self_mul_exp_neg_rapidity_of_spatialPart_eq_smul` (line 241) state `v.timeComponent \u00b1 a` with `a` the `smul` coefficient, but the same PR fixes `timeComponent_add`/`timeComponent_sub` in the same `Lorentz.Vector` namespace to mean `(u \u00b1 v).timeComponent` (BasicExtensions.lean:89, 96, matching the pre-existing `spatialPart_sub` at line 66). The prefix therefore reads as a statement about a sum of vectors \u2014 exactly the configuration in which the `_sub_` lemma is used (InvariantMass.lean:148\u2013150 applies it to `q + P` and rewrites with `timeComponent_add` in the next line). The sibling `eq_sqrt_minkowskiProduct_self_mul_sinh_rapidity_of_spatialPart_eq_smul` (line 264) has the same unnamed-`a` problem, starting with a bare `eq_`.",
+   "line": "229"
+  }
+ ],
+ "head_sha": "5e92e098d35d83ad5a6d54b155b6948b0821bec3",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "f0ef1271cad5368f066ab75fa546aed232e66d558196057a3cf68d74836d4824",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261121T215344Z-126-naming-5e7023",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-21T21:53:44Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names now describe conclusions and hypotheses in standard terminology; my three earlier findings are resolved. One clash remains: `timeComponent_add_eq_\u2026`/`timeComponent_sub_eq_\u2026` in `Lorentz.Vector` mean `v\u2070 \u00b1 a`, while `timeComponent_add`/`timeComponent_sub` added to the same namespace in this PR mean the time component of a sum/difference of vectors.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/MinkowskiProduct.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/CollinsSoper.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0819458c343617c313964af8e0c9152feef970d8b7587e53b6e88cca2024e4de",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 160080,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 160080,
+  "cache_read_input_tokens": 1178060,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 660,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 660,
+    "cache_read_input_tokens": 118668,
+    "input_tokens": 2,
+    "output_tokens": 1311,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20004,
+  "output_tokens_details": {
+   "thinking_tokens": 15245
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
