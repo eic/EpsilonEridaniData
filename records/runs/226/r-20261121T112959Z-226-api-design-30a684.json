@@ -1,0 +1,194 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.316024,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 179.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 78281,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 78281,
+    "cache_read_input_tokens": 360388,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5019,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5019,
+      "cache_read_input_tokens": 76485,
+      "input_tokens": 2,
+      "output_tokens": 2212,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14118,
+    "output_tokens_details": {
+     "thinking_tokens": 10389
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 1.316024,
+ "dedupe_key": "eic/EpsilonEridani|226|43cbed3a91fc223ecb87f672a30062be409e7a45|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "5c24e8444dae8868fe3b38f86af2329e25fa774896d6d97f5b0eb82c40f30432",
+ "diff_sha256": "5c24e8444dae8868fe3b38f86af2329e25fa774896d6d97f5b0eb82c40f30432",
+ "duration_s": 179.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "File header line 93 `public section`; `DIS/Tensors/Basic.lean:79` `@[expose] public section`; no `pWit_eq`/`pWit_def` in the grep output for `pWit`.",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "Add `@[simp] theorem pWit_eq : pWit = ((3, 0, 0) : \u211d \u00d7 \u211d \u00d7 \u211d) := (rfl)` and `@[simp] theorem pWit'_eq : pWit' = ((5, 4, 0) : \u211d \u00d7 \u211d \u00d7 \u211d) := (rfl)`, mirroring `Witness.kWit_p`/`kWit_q` (`DIS/Tensors/Basic.lean:1043,1045`) and `piPlus_charge` (`Meson/Basic.lean:325`).",
+   "issue": "`pWit` (line 241) and `pWit'` (line 244) are public data defs whose bodies are not exposed (the file opens `public section`, not `@[expose] public section` as `DIS/Tensors/Basic.lean:79` does) and carry no value lemmas; grep for `pWit` shows every use of their values is an in-file `norm_num [pWit, pWit']`. An importer cannot compute with either momentum at all.",
+   "line": "241"
+  },
+  {
+   "evidence": "`IsCovariant.existsUnique_eq_smul` (lines 222-225) takes `hS`, `hm`, `ht`, `hP : p + p' \u2260 0`; `HasFormFactor` (line 296) takes `g p p = m2`. Grep for `pWit` shows no `\u2260 0` lemma and no lemma giving the value `9`.",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "Add `theorem pWit_add_pWit'_ne_zero : pWit + pWit' \u2260 0` and `@[simp] theorem gWit_pWit_self : gWit pWit pWit = 9` (plus the `pWit'` form), and state the instantiation `IsCovariant.existsUnique_eq_smul gWit_isSymm elasticSpectatorAssumptions_pWit \u2026` at the witness transition.",
+   "issue": "The witness section supplies three of the four hypotheses of `IsCovariant.existsUnique_eq_smul` (`elasticSpectatorAssumptions_pWit`, `gWit_pWit_self_eq`, `gWit_sub_pWit`) but never `pWit + pWit' \u2260 0`, and `gWit_pWit_self_eq` gives only the relative equality, not `gWit pWit pWit = 9` needed for the mass-shell hypotheses of `HasFormFactor`. With the bodies unexposed, no consumer can close either gap, so the module's headline uniqueness theorem has no instantiated instance anywhere.",
+   "line": "256"
+  },
+  {
+   "evidence": "Lines 106-115 define the structure with only `isometry`/`fixes_left`/`fixes_right`; grep for `fixes_sub` in the file returns nothing.",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "Add `theorem IsElasticStabilizer.fixes_sub (hf : IsElasticStabilizer g p p' f) : f (p' - p) = p' - p` and the constructor direction `isElasticStabilizer_of_fixes_sub` (or an `isElasticStabilizer_iff`); otherwise delete the claim from the docstring.",
+   "issue": "The `IsElasticStabilizer` docstring asserts \"Fixing `p` and `p'` is the same as fixing `p` and the momentum transfer `p' - p`\", but no lemma states it, while every covariance/conservation statement in the file is phrased in `p' - p`. The interface claims an equivalence it does not provide.",
+   "line": "107"
+  },
+  {
+   "evidence": "Lines 336-341 contain the only forward-transition statement; its proof already performs the `sub_self, map_zero, \u2190 two_smul` rewrite chain that the missing lemma would package. Grep for `apply_self` in the file returns nothing.",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "Add `theorem HasFormFactor.apply_self (hF : HasFormFactor g m2 J F) {p : V} (hp : g p p = m2) : J p p = (2 * F 0) \u2022 p`, and derive `apply_zero_eq` from it.",
+   "issue": "`HasFormFactor` exposes the charge normalisation only in the hypothesis direction (`apply_zero_eq`: forward matrix element \u21d2 `F 0 = e`). The elimination form \u2014 the forward matrix element of a family with a form factor \u2014 is missing, so a consumer must re-derive it by `hF p p hp hp` plus `sub_self`/`map_zero` rewriting.",
+   "line": "336"
+  }
+ ],
+ "head_sha": "43cbed3a91fc223ecb87f672a30062be409e7a45",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 226,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6bb539425ba62ea29ce869c5a8789e01d6e2fd6ae95631acad355445564a6eb2",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261121T112959Z-226-api-design-30a684",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-21T11:29:59Z",
+ "submitted_by": "veprbl",
+ "summary": "Bodies are correctly unexposed (`public section`, no `@[expose]`) and the Prop/def restatements are present, but the witness data `pWit`/`pWit'` ship with no value lemmas and no lemmas discharging the remaining hypotheses of the file's headline theorems, so the witness section is unusable to importers. Two smaller gaps: `IsElasticStabilizer` has no lemma for the equivalence its docstring asserts, and `HasFormFactor` has no forward-matrix-element accessor.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "859b7336c6fe391acd2c6598d4ed32abd376418db64da160c2697dfa44f78824",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 78281,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 78281,
+  "cache_read_input_tokens": 360388,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5019,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5019,
+    "cache_read_input_tokens": 76485,
+    "input_tokens": 2,
+    "output_tokens": 2212,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14118,
+  "output_tokens_details": {
+   "thinking_tokens": 10389
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

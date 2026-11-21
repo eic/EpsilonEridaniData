@@ -1,0 +1,212 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4395185000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 261.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 65219,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 65219,
+    "cache_read_input_tokens": 473007,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5610,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5610,
+      "cache_read_input_tokens": 62832,
+      "input_tokens": 2,
+      "output_tokens": 6214,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22029,
+    "output_tokens_details": {
+     "thinking_tokens": 17251
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 1.439519,
+ "dedupe_key": "eic/EpsilonEridani|226|43cbed3a91fc223ecb87f672a30062be409e7a45|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "5c24e8444dae8868fe3b38f86af2329e25fa774896d6d97f5b0eb82c40f30432",
+ "diff_sha256": "5c24e8444dae8868fe3b38f86af2329e25fa774896d6d97f5b0eb82c40f30432",
+ "duration_s": 261.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 277 `simpa using isCovariant_smul_add_add_smul_sub gWit pWit pWit' 0 1`, 317 `simpa using isCovariant_smul_add_add_smul_sub g p p' (F (g (p' - p) (p' - p))) 0`, 217 `simpa [hm] using apply_sub_smul_add_smul hSymm p p' A 0`.",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "Add `isCovariant_smul_add (g p p' A) : IsCovariant g p p' (A \u2022 (p + p'))` and `isCovariant_smul_sub (g p p' B) : IsCovariant g p p' (B \u2022 (p' - p))` (each two lines from `isCovariant_smul_add_smul`, or `intro f hf; rw [map_smul, map_add, hf.fixes_left, hf.fixes_right]`) and use them at lines 277 and 317.",
+   "issue": "The file's key covariance facts are only ever obtained as `simpa using isCovariant_smul_add_add_smul_sub g p p' X 0` (line 317, the sum structure) and `... 0 1` (line 277, the difference structure), with the same `0`-instantiation trick again at line 217 for conservation. The reusable statements are hidden inside a simp cleanup of `0 \u2022 _`.",
+   "line": "317"
+  },
+  {
+   "evidence": "Lines 136-138 vs line 191 (`module` closes the same kind of goal).",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "`have h : A \u2022 (p + p') + B \u2022 (p' - p) = (A - B) \u2022 p + (A + B) \u2022 p' := by module` then `rw [h]; exact isCovariant_smul_add_smul g p p' (A - B) (A + B)`.",
+   "issue": "`convert isCovariant_smul_add_smul g p p' (A - B) (A + B) using 1` followed by `simp only [smul_add, smul_sub, sub_smul, add_smul]; abel` uses `convert` on a `def`-wrapped Prop when the vector identity is directly available as a rewrite, and uses a lemma-name chain where the file already uses `module` for exactly this goal shape (line 191).",
+   "line": "136"
+  },
+  {
+   "evidence": "Lines 365 (`singlePole_def`), 378-382; `HasDerivAt.congr_deriv` at upstream/mathlib/Mathlib/Analysis/Calculus/Deriv/Basic.lean:600.",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "`rw [funext (singlePole_def e \u039bsq)]` (or `have hfun := funext (singlePole_def e \u039bsq)`), build the derivative with `(hasDerivAt_const t (e * \u039bsq)).div ((hasDerivAt_id t).const_sub \u039bsq) hne`, and close the value with `HasDerivAt.congr_deriv (by field_simp)`.",
+   "issue": "`convert h' using 1` rediscovers the function identity `singlePole e \u039bsq = fun y => e * \u039bsq * (\u039bsq - y)\u207b\u00b9` with `ext s; simp [singlePole_def, div_eq_mul_inv]`, although `singlePole_def` already states it and only a `funext` is missing; the derivative-value goal then needs `simp only [id]` to repair what `convert` left.",
+   "line": "378"
+  },
+  {
+   "evidence": "Lines 176-183: `by_contra hne` \u2026 `have hu : u \u2260 0 := fun h => hne (by rw [h, add_zero])` \u2026 `apply huu`.",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "`rcases eq_or_ne u 0 with rfl | hu` (first case `simp`), and factor the second case as `IsCovariant.spectator_eq_zero (hSymm) (hS) (hup) (hup') (hJ : IsCovariant g p p' (a \u2022 p + b \u2022 p' + u)) : u = 0`, which later sections of Layer 3 will need again.",
+   "issue": "`by_contra hne` is used only to manufacture `hu : u \u2260 0`, after which `apply huu` turns the `False` goal into `g u u = 0`; the argument therefore reads backwards and hides the reusable step \"a covariant element has zero spectator part\".",
+   "line": "178"
+  },
+  {
+   "evidence": "Lines 257-262 (`ext` then `\u00b7` then `all_goals simp [pWit, pWit']`) and 269-273.",
+   "file": "EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "fix": "Make it a tactic proof: `refine \u27e8fun v => \u27e8_, _, (0, 0, v.2.2), ?_, ?_, ?_\u27e9, ?_\u27e9` with one comment recording that the coefficients solve `g u pWit = g u pWit' = 0`, close each component goal separately (`norm_num [pWit, pWit']` / `ring`), and replace the `anisotropic` tail with `simpa using h\u2082`.",
+   "issue": "`elasticSpectatorAssumptions_pWit` is a term-mode anonymous constructor with three embedded tactic blocks: the span coefficients `v.1 / 3 - 5 * v.2.1 / 12`, `v.2.1 / 4` are unexplained, and the component check mixes one focused bullet with `all_goals simp [pWit, pWit']`, so it breaks if `ext` yields a different number of goals. The `anisotropic` field then takes four steps (`have := mul_self_ne_zero.mpr h\u2082; intro h; apply this; linarith`) to state that `-(u\u2082 * u\u2082) \u2260 0`.",
+   "line": "256"
+  }
+ ],
+ "head_sha": "43cbed3a91fc223ecb87f672a30062be409e7a45",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 226,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "775f862d17065d02f5bd6fa39e5bda14e95941522365aca95a009891a6e30b1f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261121T113427Z-226-proof-quality-2e3420",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-21T11:34:27Z",
+ "submitted_by": "veprbl",
+ "summary": "Proofs are short and mostly idiomatic, but the file's central structural facts (\"a multiple of p + p' is covariant\", \"a multiple of p' - p is covariant\") are never stated and are instead re-derived three times by instantiating the general lemma at coefficient 0 and letting `simpa` clean up; two `convert ... using 1` uses stand where an explicit rewrite is available, and the witness-transition proof is fragile and reads backwards in two places.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Tactic/FieldSimp.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Tactic/FieldSimp.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Tactic/FieldSimp/Discharger.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Tactic/FieldSimp/Discharger.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Tactic/Positivity/Core.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8a1996e2223f156d32bd6171d957422c967c261d131e4d8c9c46a80a71e2a4ad",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 65219,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 65219,
+  "cache_read_input_tokens": 473007,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5610,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5610,
+    "cache_read_input_tokens": 62832,
+    "input_tokens": 2,
+    "output_tokens": 6214,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22029,
+  "output_tokens_details": {
+   "thinking_tokens": 17251
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
