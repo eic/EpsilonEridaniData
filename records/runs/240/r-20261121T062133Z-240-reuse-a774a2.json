@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2656590000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 149.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 166005,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 166005,
+    "cache_read_input_tokens": 651378,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4488,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4488,
+      "cache_read_input_tokens": 137939,
+      "input_tokens": 2,
+      "output_tokens": 3081,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11194,
+    "output_tokens_details": {
+     "thinking_tokens": 7557
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2f4253919ae95a9a74d68410e2c23772e541c8ff",
+ "cost_usd": 2.265659,
+ "dedupe_key": "eic/EpsilonEridani|240|3a0ea383cb2cca8cb2ff6c90946626d0f4899890|reuse|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "dbbd56d7ff740d3e2b04bcc2383a7793c8281d8352ccb394346b5169bb3219ed",
+ "diff_sha256": "dbbd56d7ff740d3e2b04bcc2383a7793c8281d8352ccb394346b5169bb3219ed",
+ "duration_s": 149.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 349-355 and 518-522 of the new file; `hexp` is already stated for arbitrary `f : \u03b1 \u2192 \u211d` and arbitrary `l`, so it covers the two-point instance verbatim.",
+   "file": "EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "fix": "Factor `hexp` out as a private lemma in the `HasSpectralGap` namespace, e.g. `private theorem tendsto_exp_neg_mul_sub (h : S.HasSpectralGap n\u2080 \u0394) {\u03b1} {l : Filter \u03b1} {f : \u03b1 \u2192 \u211d} (hf : Tendsto f l atTop) (r : \u211d) : Tendsto (fun a => Real.exp (-(\u0394 * (f a - r)))) l (\ud835\udcdd 0)`, and use it in both proofs (two-point case: `f = id`, `l = atTop`, `r = t\u2080`).",
+   "issue": "`tendsto_twoPoint_mul_exp` re-derives inline (lines 349-355: `hsub` + `Real.tendsto_exp_neg_atTop_nhds_zero.comp (hsub.const_mul_atTop h.pos)`) exactly the statement `tendsto_threePoint_mul_exp` proves as `hexp` (lines 518-522), with the identical `simpa only [sub_eq_add_neg] using tendsto_atTop_add_const_right _ (-r) hf` / `const_mul_atTop h.pos` / `Real.tendsto_exp_neg_atTop_nhds_zero.comp` chain.",
+   "line": "349"
+  },
+  {
+   "evidence": "Declarations at lines 250 and 384; grep of `twoPoint_mul_exp|threePoint_mul_exp` over the file returns only those declarations plus longer-named declarations and docstring references (lines 50, 55, 272, 300, 312, 329, 345, 358, 360, 415, 466, 482, 529, 561, 564, 609, 612).",
+   "file": "EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "fix": "Delete `twoPoint_mul_exp` and `threePoint_mul_exp`; the `hasSum_*_mul_exp` lemmas supply the identity where it is needed (via `.tsum_eq`), and the unconditional tsum form is two lines from the private `twoPoint_term_mul_exp` / `threePoint_term_mul_exp` and `tsum_mul_right` if a consumer ever appears.",
+   "issue": "`twoPoint_mul_exp` (line 250) and `threePoint_mul_exp` (line 384) state the same identity as `hasSum_twoPoint_mul_exp` (line 272) and `hasSum_threePoint_mul_exp` (line 415) in tsum form, and neither has any consumer \u2014 grepping the file, every other occurrence of the strings is part of a longer name (`hasSum_\u2026`, `sq_norm_overlap_le_\u2026`, `norm_\u2026_sub_le`, `tendsto_\u2026`). This leaves two public names per correlator for \"the correlator in units of `e^{-E t}`\".",
+   "line": "250"
+  }
+ ],
+ "head_sha": "3a0ea383cb2cca8cb2ff6c90946626d0f4899890",
+ "merge_base_sha": "2f4253919ae95a9a74d68410e2c23772e541c8ff",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 240,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "55c79110ce73b5cf61d006ff872c6398cbcb34258dbb50a19a558621e43967a5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261121T062133Z-240-reuse-a774a2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-21T06:21:33Z",
+ "submitted_by": "wdconinc",
+ "summary": "The material is genuinely new \u2014 no correlator, spectral-data or spectral-gap API exists in Mathlib, Physlib/PhyslibAlpha, TauCeti or EpsilonEridani \u2014 and Mathlib's tsum API is reused throughout; the prior `le_hasSum` finding is fixed. Two duplications remain inside the diff: a limit argument re-derived in two proofs, and a pair of unused tsum lemmas parallel to the `hasSum_*_mul_exp` ones.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Lattice/Correlator/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3779e25c7cec03d9fa9881951617942486995ea604cc9b04d3e5e791bbec50da",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 166005,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 166005,
+  "cache_read_input_tokens": 651378,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4488,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4488,
+    "cache_read_input_tokens": 137939,
+    "input_tokens": 2,
+    "output_tokens": 3081,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11194,
+  "output_tokens_details": {
+   "thinking_tokens": 7557
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
