@@ -1,0 +1,204 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8624900000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 211.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 104496,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 104496,
+    "cache_read_input_tokens": 803760,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4218,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4218,
+      "cache_read_input_tokens": 103501,
+      "input_tokens": 2,
+      "output_tokens": 2946,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16622,
+    "output_tokens_details": {
+     "thinking_tokens": 12310
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 1.86249,
+ "dedupe_key": "eic/EpsilonEridani|174|6a7e3fb21ec761cdc373b158177e19f15e54def8|naming|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "0215c891cc381d135a47bcd2afb002d07c6a29c5f71453200a9f5832a6fc7b0e",
+ "diff_sha256": "0215c891cc381d135a47bcd2afb002d07c6a29c5f71453200a9f5832a6fc7b0e",
+ "duration_s": 211.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md:116-120: \"**The flux is a number spectrum per unit photon energy, fixed once.** `photonFlux alpha s bmin k` is `dN/dk` \u2026 The impact-parameter form `photonFluxImpact alpha s bSep k`\". The PR's quantity is that same `dN/dk` with a minimum impact parameter (line 252: `2 * s.charge ^ 2 * \u03b1 / \u03c0 / k * photonFluxProfile (k * bMin / s.gamma)`), and `grep photonFlux EpsilonEridani/` shows the stipulated name is still free (only `photonFluxProfile` hits).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "fix": "Rename the definition to `photonFlux` (the `ChargedSource` namespace and dot notation are fine) and follow with `photonFlux_def`, `photonFlux_pos`, `abs_photonFlux_le_mul_exp_neg`, `charge_sq_mul_photonFlux_eq_charge_sq_mul`, `isEquivalent_photonFlux_mul_log_div`.",
+   "issue": "`ChargedSource.integratedPhotonFlux` renames an object whose declaration name the roadmap already fixes: convention 3 stipulates `photonFlux alpha s bmin k` for `dN/dk` and `photonFluxImpact` for the Layer 1 partner, so the two forms whose relative normalisation this PR exists to enable will not share a stem.",
+   "line": "251"
+  },
+  {
+   "evidence": "Line 287 differentiates `besselK \u03bd`; lines 293 and 299 are `hasDerivAt_besselK_zero : HasDerivAt (besselK 0) \u2026` and `hasDerivAt_besselK_one : HasDerivAt (besselK 1) \u2026`, where the token after `besselK` is the order. `EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean:414,423` handles the identical situation (`j_l' = l/x j_l \u2212 j_{l+1}` vs the order-lowering form) with `hasDerivAt_sphericalBesselJ_of_ne_zero` / `hasDerivAt_sphericalBesselJ_succ'_of_ne_zero`, never spelling the derivative into the name.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "fix": "Use the repo's own convention for an alternative derivative form of the same function: `hasDerivAt_besselK'` (primed alternative form), not a re-spelling of the derivative. This does not reintroduce the earlier round's rejected `hasDerivAt_besselK_sub_one`, whose suffix pointed at the wrong function.",
+   "issue": "`hasDerivAt_besselK_neg_besselK_sub_one_sub_div_mul_besselK` puts the derivative value in the name slot that the adjacent declarations use for the order, so `besselK_neg_\u2026` reads as the differentiated function (and collides with the existing `besselK_neg` at line 98) rather than as the derivative.",
+   "line": "287"
+  },
+  {
+   "evidence": "Line 187: `Tendsto (fun t : \u211d \u21a6 sinh (\u03bd * t) * exp (-(x * cosh t))) atTop (\ud835\udcdd 0)`. Mathlib names the target (`upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Exp.lean:223` `tendsto_exp_neg_atTop_nhds_zero`, `:269` `tendsto_pow_mul_exp_neg_atTop_nhds_zero`), as does this PR at Flux/Basic.lean:143 `tendsto_photonFluxProfile_atTop_nhds_zero`.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "fix": "Rename to `tendsto_sinh_mul_exp_neg_cosh_atTop_nhds_zero`.",
+   "issue": "`tendsto_sinh_mul_exp_neg_cosh_atTop` omits the target filter, so the name asserts divergence to `atTop` while the statement is convergence to `\ud835\udcdd 0`.",
+   "line": "186"
+  }
+ ],
+ "head_sha": "6a7e3fb21ec761cdc373b158177e19f15e54def8",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 174,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "356f08c1df98c5b6305c002832785ada42c4aad5e872e6d74bd38ad7d585b70b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261121T180938Z-174-naming-09bbad",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-21T18:09:38Z",
+ "submitted_by": "veprbl",
+ "summary": "The new spectrum is named `integratedPhotonFlux` although the roadmap's convention 3 fixes `photonFlux` for exactly this `dN/dk` object, leaving the future `photonFluxImpact` without a shared stem; two Bessel names also misplace their suffixes relative to the file's own and the repo's conventions.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f4d4e69295872ba424077363c724daa6e0762fc99025f6d7b75d435781e11913",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 104496,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 104496,
+  "cache_read_input_tokens": 803760,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4218,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4218,
+    "cache_read_input_tokens": 103501,
+    "input_tokens": 2,
+    "output_tokens": 2946,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16622,
+  "output_tokens_details": {
+   "thinking_tokens": 12310
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
