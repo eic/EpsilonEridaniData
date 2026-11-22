@@ -1,0 +1,177 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2458329999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 133.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 159617,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 159617,
+    "cache_read_input_tokens": 796466,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1769,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1769,
+      "cache_read_input_tokens": 139579,
+      "input_tokens": 2,
+      "output_tokens": 1660,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10054,
+    "output_tokens_details": {
+     "thinking_tokens": 6811
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.245833,
+ "dedupe_key": "eic/EpsilonEridani|251|84708f7fe1e22760ab9268e281a24321258fecd9|api-design|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "55e6d5d9b32bace50c6bc5bcb7c345ae7b53967e666ca60cf04dd9de8e371489",
+ "diff_sha256": "55e6d5d9b32bace50c6bc5bcb7c345ae7b53967e666ca60cf04dd9de8e371489",
+ "duration_s": 133.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib has no instance for `IsProbabilityMeasure (\u03bc.map f)` \u2014 only `Measure.isProbabilityMeasure_map_iff (hf : AEMeasurable f \u03bc)` (upstream/mathlib/Mathlib/MeasureTheory/Measure/Typeclasses/Probability.lean:139), and `(\u03c3 \u2022 \u00b7)` is not syntactically a CLM coercion, so `isGaussian_map_of_measurable` (Gaussian/Basic.lean:99) does not fire by instance search either. The proof at MultivariateExtensions.lean:45-56 establishes integrability only coordinatewise (`hI`), never for `\u2016x\u2016\u00b2`.",
+   "file": "EpsilonEridani/Mathematics/Probability/Distributions/Gaussian/MultivariateExtensions.lean",
+   "fix": "Add to this file an `instance` giving `IsProbabilityMeasure ((stdGaussian E).map (\u03c3 \u2022 \u00b7))` (via `Measure.isProbabilityMeasure_map_iff`) and public `integrable_norm_sq_stdGaussian` / `integrable_norm_sq_map_smul_stdGaussian` (via `memLp_two_iff_integrable_sq_norm` on `IsGaussian.memLp_two_id`, then `integrable_map_measure`).",
+   "issue": "The file exposes the value `\u222b \u2016x\u2016\u00b2 \u2202((stdGaussian E).map (\u03c3 \u2022 \u00b7)) = \u03c3\u00b2 dim E` but neither `IsProbabilityMeasure ((stdGaussian E).map (\u03c3 \u2022 \u00b7))` nor `Integrable (fun x \u21a6 \u2016x\u2016 ^ 2) ((stdGaussian E).map (\u03c3 \u2022 \u00b7))` (nor the latter for `stdGaussian E` itself). Both are hypotheses of `one_sub_norm_charFun_le` / `one_sub_norm_charFun_spatialPart_sub_le` (Coherence.lean:80-83), so a consumer cannot apply this PR's below-the-bound half to this PR's Gaussian source without redoing the Fernique/MemLp work.",
+   "line": 60
+  },
+  {
+   "evidence": "Mathlib `Probability/Distributions/Gaussian/Multivariate.lean:112-113` `@[simp] lemma integral_strongDual_stdGaussian`; this file's own line 42 `@[simp] theorem integral_norm_sq_stdGaussian`.",
+   "file": "EpsilonEridani/Mathematics/Probability/Distributions/Gaussian/MultivariateExtensions.lean",
+   "fix": "Mark `integral_norm_sq_map_smul_stdGaussian` `@[simp]`; its LHS is not reachable from the `stdGaussian` simp lemma (that would need `integral_map`), so simp cannot otherwise discharge goals containing the dilated moment, and the rewrite cannot loop.",
+   "issue": "`integral_norm_sq_map_smul_stdGaussian` is a closed-form moment in normal form but carries no `@[simp]`, while its sibling `integral_norm_sq_stdGaussian` (line 42) and the upstream moments it mirrors do.",
+   "line": 60
+  }
+ ],
+ "head_sha": "84708f7fe1e22760ab9268e281a24321258fecd9",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 251,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "b347b577496c18d5575840596e62f9accacac593d60485ce08a237cb455e84ed",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T000413Z-251-api-design-181320",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T00:04:13Z",
+ "submitted_by": "wdconinc",
+ "summary": "Prior round's hidden-infrastructure findings are resolved: the rescaled-Gaussian moment and characteristic function and the virtuality bound are now public lemmas in upstream-namespace files. What remains is under-exposure around the dilated Gaussian: neither its probability-measure instance nor the integrability of \u2016x\u2016\u00b2 is exported, so the PR's own small-Q bound cannot be applied to the one concrete source it provides.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Distributions/Gaussian/MultivariateExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/Measure/CharacteristicFunction/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Distributions/Gaussian",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5c255a444321dea90d956db11ea00afe210dbd03dc15028cf61e9943aeb062d7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 159617,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 159617,
+  "cache_read_input_tokens": 796466,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1769,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1769,
+    "cache_read_input_tokens": 139579,
+    "input_tokens": 2,
+    "output_tokens": 1660,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10054,
+  "output_tokens_details": {
+   "thinking_tokens": 6811
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
