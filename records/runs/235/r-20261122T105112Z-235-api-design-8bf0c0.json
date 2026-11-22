@@ -1,0 +1,240 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1891045,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 269.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 111739,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 111739,
+    "cache_read_input_tokens": 1122009,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1268,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1268,
+      "cache_read_input_tokens": 93980,
+      "input_tokens": 2,
+      "output_tokens": 2116,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20422,
+    "output_tokens_details": {
+     "thinking_tokens": 15079
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 2.189105,
+ "dedupe_key": "eic/EpsilonEridani|235|0c80650705899266f72315af520f4ac4de090fd6|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "87d64cd611a4f2dac0431d3517b64bc2bf20bb37baa4f70e9a169ff716f48eab",
+ "diff_sha256": "87d64cd611a4f2dac0431d3517b64bc2bf20bb37baa4f70e9a169ff716f48eab",
+ "duration_s": 269.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Mathlib/LinearAlgebra/Complex/Module.lean:396` defines `imaginaryPart : A \u2192\u2097[\u211d] selfAdjoint A` for `[AddCommGroup A] [Module \u2102 A] [StarAddMonoid A] [StarModule \u2102 A]`, with `imaginaryPart_apply_coe : (\u2111 a : A) = -I \u2022 (2:\u211d)\u207b\u00b9 \u2022 (a - star a)` (line 409) \u2014 exactly `(a - a\u1d34)/2i`. `Mathlib/LinearAlgebra/Matrix/ConjTranspose.lean:434` supplies `instance [Star \u03b1] [Star \u03b2] [SMul \u03b1 \u03b2] [StarModule \u03b1 \u03b2] : StarModule \u03b1 (Matrix n n \u03b2)`, so `\u2111` elaborates on `Matrix n n \u2102`.",
+   "file": "EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "fix": "Add (or restate as) `sMatrix_mem_unitaryGroup_iff_imaginaryPart : sMatrix \u03c1 T \u2208 unitaryGroup n \u2102 \u2194 (\u2111 T\u207b\u00b9 : Matrix n n \u2102) = -diagonal (fun i \u21a6 (\u03c1 i : \u2102))`, with `open ComplexStarModule`, and keep the difference form as the auxiliary.",
+   "issue": "The module docstring, the `Main results` list and the roadmap target all advertise `Im T\u207b\u00b9 = -\u03c1`, but no declaration states it: `sMatrix_mem_unitaryGroup_iff_inv` exposes only the hand-unfolded `T\u207b\u00b9 - (T\u207b\u00b9)\u1d34 = -(2*I) \u2022 diagonal \u03c1`, leaving every consumer (Layer 4.5's K-matrix, the Herglotz layer) to redo the `/2i` conversion itself.",
+   "line": "136"
+  },
+  {
+   "evidence": "The declarations these are built from and sit beside are all `@[simp]`: `Matrix.diagonal_mem_unitary` (`Mathlib/LinearAlgebra/UnitaryGroup.lean:56`), `Matrix.natCast_mem_unitary` (:62), `Matrix.ofNat_mem_unitary` (:67), `Matrix.submatrix_equiv_mem_unitary` (:73), `Pi.const_mem_unitary_iff` (`Mathlib/Algebra/Star/Unitary.lean:236`).",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/UnitaryGroup.lean",
+   "fix": "Mark `RCLike.mem_unitary_iff_norm_eq_one` and `Matrix.mem_unitary_iff_apply_default_mem_unitary` `@[simp]` (leave the composite `mem_unitary_iff_norm_apply_default_eq_one` unannotated \u2014 its LHS is subsumed, so adding it too would be redundant). Neither loops: both rewrite membership to a strictly simpler statement, and the `Matrix` one fires only under `[Unique n]`.",
+   "issue": "`RCLike.mem_unitary_iff_norm_eq_one` (line 35) and `Matrix.mem_unitary_iff_apply_default_mem_unitary` (line 47) are unannotated, so a `unitary` membership goal in the one-channel case does not reduce automatically; `sMatrix_mem_unitaryGroup_iff_norm_elasticSMatrix_eq_one` has to `rw` the composite by hand.",
+   "line": "35"
+  }
+ ],
+ "head_sha": "0c80650705899266f72315af520f4ac4de090fd6",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 235,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9574e0143d1be272c97913b6ae8c5ab6830cf24637cbe6e2c35eda69638f1c8d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T105112Z-235-api-design-8bf0c0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T10:51:12Z",
+ "submitted_by": "wdconinc",
+ "summary": "Bodies are hidden, `*_def` lemmas use `(rfl)`, and nothing is wrongly `private`, but the headline result `Im T\u207b\u00b9 = -\u03c1` is never stated in terms of Mathlib's `imaginaryPart`, which applies verbatim to `Matrix n n \u2102`, and the new `mem_unitary` characterisations carry no `@[simp]` while every sibling in the mirrored Mathlib module does.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/UnitaryGroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Amplitude/Unitarity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/UnitaryGroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/QuarkoniaAndExotics/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Star/Unitary.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/CStarAlgebra/Classes.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Data/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Complex/Module.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "937a36cbd2e108ffc08a62dfd65dd403710dcc10e15885c411872384097a9771",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 111739,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 111739,
+  "cache_read_input_tokens": 1122009,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1268,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1268,
+    "cache_read_input_tokens": 93980,
+    "input_tokens": 2,
+    "output_tokens": 2116,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20422,
+  "output_tokens_details": {
+   "thinking_tokens": 15079
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
