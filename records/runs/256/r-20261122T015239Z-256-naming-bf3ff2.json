@@ -1,0 +1,193 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.70282,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 157.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 200746,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 200746,
+    "cache_read_input_tokens": 789580,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5404,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5404,
+      "cache_read_input_tokens": 169662,
+      "input_tokens": 2,
+      "output_tokens": 3688,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12020,
+    "output_tokens_details": {
+     "thinking_tokens": 8268
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.70282,
+ "dedupe_key": "eic/EpsilonEridani|256|b065a548157497cea9b1768b6941c1ba17453452|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "dceb2b970036b4fb6c5c9b23ec46c674e6296940089cbc6150abec45666827b6",
+ "diff_sha256": "dceb2b970036b4fb6c5c9b23ec46c674e6296940089cbc6150abec45666827b6",
+ "duration_s": 157.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`def firstMoment : \u211d \u2192 \u211d := fun Q2 => (1/2) * ((4/9) * a.deltaU Q2 + \u2026)` (line 291) vs `def firstMomentG1 (G : StructureFunctions) (Q2 : \u211d) : \u211d := \u222b x in Set.Icc (0:\u211d) 1, G.g1 x Q2` (Polarized/Basic.lean:136); both appear unqualified in `firstMomentG1_sub_firstMomentG1_eq` at lines 420-425.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/AxialCharges.lean",
+   "fix": "Rename to something that says it is the predicted/leading-twist value, e.g. `partonFirstMomentG1` or `firstMomentG1LO`, and rename the derived lemmas (`firstMoment_apply`, `firstMoment_eq_charges`, `firstMoment_isospinConj`, `firstMoment_sub_firstMoment_isospinConj`, `firstMoment_add_firstMoment_isospinConj`, `firstMoment_addSinglet`, `firstMoment_eq_ellisJaffe_add_deltaS`, `a0_eq_nine_mul_firstMoment_sub`) to match.",
+   "issue": "`AxialCharges.firstMoment` is not a moment of `a`; it is the leading-twist charge-weighted value `\u00bd\u03a3e_q\u00b2\u0394q`, which equals \u0393\u2081 only under the decomposition hypothesis and a vanishing correction. The enclosing `Polarized` namespace already has `firstMomentG1` for the real \u0393\u2081, and the file `open AxialCharges`s at line 353, so `firstMoment_sub_firstMoment_isospinConj` (line 316, the parton value) and `firstMomentG1_sub_firstMomentG1_eq` (line 420, the measured moments) sit unqualified side by side and read as the same quantity.",
+   "line": 291
+  },
+  {
+   "evidence": "Lines 233-236 define `addSinglet` as a common shift of all three flavours; line 252 proves `(a.addSinglet s).a0 Q2 = a.a0 Q2 + 3 * s Q2`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/AxialCharges.lean",
+   "fix": "Either rename the operation to name what it does to the flavours (e.g. `addFlavourUniform` / `addUniform`), or define it as `deltaU Q2 + s Q2 / 3` etc. so that `addSinglet s` really shifts `a\u2080` by `s`. Knock-on names: `deltaU_addSinglet`, `deltaD_addSinglet`, `deltaS_addSinglet`, `a0_addSinglet`, `a3_addSinglet`, `a8_addSinglet`, `firstMoment_addSinglet`, `a3_eq_and_a8_eq_iff_exists_eq_addSinglet`.",
+   "issue": "`addSinglet s` reads as \"add `s` to the singlet charge\", but it adds `s` to each flavour and so shifts `a\u2080` by `3s`; `a0_addSinglet` is `(a.addSinglet s).a0 Q2 = a.a0 Q2 + 3 * s Q2`. The name misstates the quantity added by a factor of three.",
+   "line": 233
+  },
+  {
+   "evidence": "`def ofCharges (a0 a3 a8 : \u211d \u2192 \u211d) : AxialCharges` (line 149) vs the `@[ext] structure AxialCharges` fields `deltaU/deltaD/deltaS` (lines 95-101); roadmap `SpinStructure/Suggested.lean:276` names the change-of-basis theorem `firstMoment_eq_axialCharges`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/AxialCharges.lean",
+   "fix": "Use the module docstring's own term for that triple: `ofAxialCharges` (with `a0_ofAxialCharges`, \u2026, `ofAxialCharges_a0_a3_a8`) and `firstMoment_eq_axialCharges`.",
+   "issue": "\"charges\" does not distinguish the two bases: the structure's own constructor takes `\u0394u, \u0394d, \u0394s` while `ofCharges` takes `a\u2080, a\u2083, a\u2088`, so `ofCharges f g h` is ambiguous at the call site. Same for `firstMoment_eq_charges` (line 301), whose RHS is in the `a\u2080/a\u2083/a\u2088` basis; the roadmap sketch names this theorem `firstMoment_eq_axialCharges`.",
+   "line": 149
+  }
+ ],
+ "head_sha": "b065a548157497cea9b1768b6941c1ba17453452",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 256,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "77cab128e6f84dc7d686e28efe0b12ed44107d68a4e2437991c0c2ed24fe1bfa",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T015239Z-256-naming-bf3ff2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T01:52:39Z",
+ "submitted_by": "wdconinc",
+ "summary": "Three names mislead about what they denote: `firstMoment` collides with the module's actual \u0393\u2081 (`firstMomentG1`), `addSinglet s` shifts the singlet charge by `3s` rather than `s`, and `ofCharges`/`firstMoment_eq_charges` say \"charges\" where both bases are charges. Everything else follows the existing `Polarized` and `PDF.isospinConj` precedent and no notation is introduced.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/AxialCharges.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/SumRules.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SpinStructure/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d94ba9445f56063326afb887d0c5b7f9ba1bb86ba1de5febe6f05718f6c11627",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 200746,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 200746,
+  "cache_read_input_tokens": 789580,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5404,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5404,
+    "cache_read_input_tokens": 169662,
+    "input_tokens": 2,
+    "output_tokens": 3688,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12020,
+  "output_tokens_details": {
+   "thinking_tokens": 8268
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
