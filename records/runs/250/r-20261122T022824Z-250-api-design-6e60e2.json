@@ -1,0 +1,197 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.1258494999999993,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 259.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 194591,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 194591,
+    "cache_read_input_tokens": 1417359,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3382,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3382,
+      "cache_read_input_tokens": 169501,
+      "input_tokens": 2,
+      "output_tokens": 2132,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18846,
+    "output_tokens_details": {
+     "thinking_tokens": 15007
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 3.125849,
+ "dedupe_key": "eic/EpsilonEridani|250|1d0af64ab3b82402e7545efa1791d061abcc5512|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "954fc993460bef315ee82fb5c6c8cd87cb86b04773ae803ac3ded375e8109f99",
+ "diff_sha256": "954fc993460bef315ee82fb5c6c8cd87cb86b04773ae803ac3ded375e8109f99",
+ "duration_s": 259.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "MomentSpace.lean:113-115 (fields), :126 (`momentRhs` uses `S.alphaS (Real.exp \u03c4)`), Basic.lean:272-273 (`integratedCoupling` integrand is `\u03b1s (Real.exp s)`); the structure's own docstring at :108 states \"alphaS may be discontinuous at Q2 \u2264 0\".",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Carry the log-scale coupling as the field (`alphaSLogScale : \u211d \u2192 \u211d` with `Continuous alphaSLogScale`) and have `momentRhs`/`integratedCoupling` take it directly; recover a `Q2`-indexed view as a derived accessor where one is wanted. Alternatively keep `alphaS : RunningCoupling` but restore a law that constrains it on all of `\u211d`.",
+   "issue": "`alphaS : \u211d \u2192 \u211d` is free data off the positive axis. Every operation and law evaluates it only at `Real.exp \u03c4` \u2014 `momentRhs` (line 126: `S.alphaS (Real.exp \u03c4)`), `integratedCoupling` (Basic.lean:273: `\u222b s in \u03c4\u2080..\u03c4, \u03b1s (Real.exp s) / (2 * \u03c0)`), hence `momentEvolution` \u2014 and this PR replaced the one law that pinned the rest (`alphaS_continuous : Continuous alphaS`) with `alphaS_logScale_continuous : Continuous fun \u03c4 => alphaS (Real.exp \u03c4)`. Two systems with the same `gamma` and the same `alphaS \u2218 exp` have identical evolution operators and identical solution sets but are unequal, so no useful `@[ext]` holds.",
+   "line": 113
+  },
+  {
+   "evidence": "MomentSpace.lean:501 (`coupling : S.alphaS = \u03b1s`), :536 (`simp only [momentRhs, momentVector, h.coupling, h.gamma_ofReal]` \u2014 every occurrence rewritten is `S.alphaS (Real.exp \u03c4)`), Basic.lean:246 (`dglapRhsLogScale ... = \u03b1s (Real.exp \u03c4) / (2 * Real.pi) * ...`).",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "Weaken the field to `coupling : \u2200 \u03c4 : \u211d, S.alphaS (Real.exp \u03c4) = \u03b1s (Real.exp \u03c4)` (or to the composite field proposed above); the proof at line 536 rewrites `S.alphaS` only under `Real.exp \u03c4` and goes through unchanged.",
+   "issue": "`coupling : S.alphaS = \u03b1s` requires equality of the full `\u211d \u2192 \u211d` functions, but `isMomentSolution_momentVector` uses it only under `Real.exp \u03c4`, and `dglapRhsLogScale` likewise evaluates `\u03b1s` only at `Real.exp \u03c4` (Basic.lean:246). This is the one place that still pins `S.alphaS` at `Q2 \u2264 0`, so a system packaging a coupling that agrees with the x-space `\u03b1s` only on positive scales \u2014 exactly the case the new `alphaS_logScale_continuous` field was introduced to admit \u2014 cannot satisfy `MomentReductionAssumptions`.",
+   "line": 501
+  }
+ ],
+ "head_sha": "1d0af64ab3b82402e7545efa1791d061abcc5512",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 250,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "90503a122db99d2b6881a6f171a9cdb098b037fbc460a5be201bc623da81bbf7",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T022824Z-250-api-design-6e60e2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T02:28:24Z",
+ "submitted_by": "wdconinc",
+ "summary": "The `momentEvolution`/`integratedCoupling` surface is minimal, bodies are hidden behind `_def` lemmas, and the characteristic API is complete and correctly annotated. But after this PR's field change, `DglapMomentSystem.alphaS` carries data no operation or law uses, and `MomentReductionAssumptions.coupling` still demands equality of the whole function, which cancels the generality the change was made to buy.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/QCD/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d54f52fb216313602af7944643be9c907930a62b321fbc5d654f27c690d77d51",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 194591,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 194591,
+  "cache_read_input_tokens": 1417359,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3382,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3382,
+    "cache_read_input_tokens": 169501,
+    "input_tokens": 2,
+    "output_tokens": 2132,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18846,
+  "output_tokens_details": {
+   "thinking_tokens": 15007
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
