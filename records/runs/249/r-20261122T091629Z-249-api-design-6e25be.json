@@ -1,0 +1,192 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4309409999999994,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 175.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 158442,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 158442,
+    "cache_read_input_tokens": 1061992,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 625,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 625,
+      "cache_read_input_tokens": 142531,
+      "input_tokens": 2,
+      "output_tokens": 4274,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12617,
+    "output_tokens_details": {
+     "thinking_tokens": 9156
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.430941,
+ "dedupe_key": "eic/EpsilonEridani|249|36af4e2f14ec916270a4c2c36de0e1d5169eaf01|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ae01db850393059c80257215dca1dfbde77e39886d75fef09c57fcc256aaeb63",
+ "diff_sha256": "ae01db850393059c80257215dca1dfbde77e39886d75fef09c57fcc256aaeb63",
+ "duration_s": 175.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib `Geometry/Euclidean/Angle/Oriented/Basic.lean:69,73` has `@[simp] oangle_zero_left/right`; the only zero-azimuth lemma in the PR is `azimuth_eq_zero_of_transversePart_eq` (line 127), whose hypothesis is an equation with `leptonDir`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/SIDIS/AzimuthalFrame.lean",
+   "fix": "Add `@[simp] lemma azimuth_eq_zero_of_transversePart_eq_zero (hp : transversePart p = 0) : F.azimuth p = 0` and the `F.leptonDir = 0` companion, both by `simp [azimuth_def]` via `Orientation.oangle_zero_right`/`oangle_zero_left`.",
+   "issue": "The `azimuth` docstring promises \"It is `0` when `p` or the reference direction has no transverse part\", but no lemma states it: `azimuth_eq_zero_of_transversePart_eq` only covers `transversePart p = F.leptonDir`, which does not apply to a hadron with `p_T = 0` in a frame with `leptonDir \u2260 0` \u2014 the collinear boundary case of every modulation.",
+   "line": 120
+  },
+  {
+   "evidence": "LightFront.lean:131-210 marks `transversePart_apply_zero/one`, `plusComponent_add/smul/zero/neg/sub`, `minusComponent_*`, `transversePart_*` all `@[simp]`; LightFront.lean:387-402 adds `@[simp]` only to `transversePart_boost_two`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Mark both `@[simp]`; neither loops (LHS eliminates the boost application, RHS is a scalar multiple of the unboosted component).",
+   "issue": "`plusComponent_boost_two` and `minusComponent_boost_two` (lines 393, 399) are not `@[simp]`, while the sibling `transversePart_boost_two` (line 388) is, as are all other component-of-operation lemmas in the file. `simp` therefore normalizes `transversePart (boost 2 \u03b2 h\u03b2 \u2022 p)` but leaves `plusComponent (boost 2 \u03b2 h\u03b2 \u2022 p)` stuck, so downstream proofs mixing the two must rewrite by hand.",
+   "line": 393
+  }
+ ],
+ "head_sha": "36af4e2f14ec916270a4c2c36de0e1d5169eaf01",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 249,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "034547615f3804646264e39e39a0e53a2a545528634fe6d6258e3c2c57efc837",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T091629Z-249-api-design-6e25be",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T09:16:29Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, bodies are unexposed, and each definition carries its intro/elim lemmas; two gaps remain: a documented degenerate case of `azimuth` with no lemma, and the two new light-front boost component lemmas left without `@[simp]` while every sibling in the file has it.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/SIDIS/AzimuthalFrame.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Geometry/Euclidean/Angle/Oriented/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/InnerProductSpace/Orientation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/TransverseMomentumDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Geometry/Euclidean/Angle/Oriented",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Geometry/Euclidean/Angle/Oriented/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "48d3094c0fc2cf3c4fd9472a124db9caa1f38605b8dd1152fb548bb8b7b36326",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 158442,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 158442,
+  "cache_read_input_tokens": 1061992,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 625,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 625,
+    "cache_read_input_tokens": 142531,
+    "input_tokens": 2,
+    "output_tokens": 4274,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12617,
+  "output_tokens_details": {
+   "thinking_tokens": 9156
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
