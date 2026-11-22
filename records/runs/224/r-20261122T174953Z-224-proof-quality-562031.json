@@ -1,0 +1,254 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7159509999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 243.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 84410,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 84410,
+    "cache_read_input_tokens": 765072,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2784,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2784,
+      "cache_read_input_tokens": 84849,
+      "input_tokens": 2,
+      "output_tokens": 6448,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19567,
+    "output_tokens_details": {
+     "thinking_tokens": 13206
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 1.715951,
+ "dedupe_key": "eic/EpsilonEridani|224|cf48f2f99885d0b93ae90b967448d17f5158dd5e|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "9f8f35be946c0ba445c312cd91d8d4da6ecd6ee4bdf15bc0585491b638927209",
+ "diff_sha256": "9f8f35be946c0ba445c312cd91d8d4da6ecd6ee4bdf15bc0585491b638927209",
+ "duration_s": 243.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `congrFun (congrArg (\u21d1) h) i` at Kinematics.lean:264,317,326; `congrArg (\u00b7 i) hz` at :385. Physlib's own idiom is `congrArg (fun x : EuclideanSpace \u211d (Fin d) => x i) hs` + `simpa [spatialPart_apply_eq_toCoord]` (Vector/Basic.lean:460-467).",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Add one lemma `spatialPart_avgMomentum_eq : K.avgMomentum.spatialPart = (2\u207b\u00b9 : \u211d) \u2022 (K.p.spatialPart + K.pPrime.spatialPart)` (provable by `ext i; simp`, as `spatialPart_sub` in BasicExtensions.lean:54 already is) and derive `isBreitFrame_iff_spatialPart_pPrime`, `spatialPart_p`, `spatialPart_pPrime` and the final step of `exists_isBreitFrame` from it with `smul_eq_zero`/`add_eq_zero_iff_eq_neg`; where components are still needed use Physlib's `spatialPart_apply_eq_toCoord`.",
+   "issue": "Componentwise spatial-part reasoning is done four times by applying `\u21d1` to an `EuclideanSpace` element and `congrFun`/`congrArg (\u00b7 i)` (lines 264, 317, 326, 385), undocumented reliance on the `PiLp`/`WithLp` coercion unfolding; lines 264\u2013270 further duplicate two mirrored `simp only` sets under a `<;>` chain, and 314\u2013329 repeat the identical `h0` block.",
+   "line": "264"
+  },
+  {
+   "evidence": "Kinematics.lean:187-197; `have := pow_pos hM 2; field_simp at hy; linarith` is the only justification that `\u03bc ^ 2 = 1`.",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Promote it to a top-level lemma (e.g. `eq_of_eq_smul_of_minkowskiProduct_self_eq`) and replace the cancellation with an explicit step: from `hy` get `\u03bc ^ 2 = 1` by `mul_right_cancel\u2080 (pow_ne_zero 2 hM.ne')` after `one_mul`, then `\u03bc = 1` from `h\u03bc`.",
+   "issue": "`hunit` inside `tMom_eq_zero_iff` is a general reusable fact (two vectors with the same non-zero Minkowski square, proportional by a non-negative factor, are equal), buried as a local `have`; its scalar step `field_simp at hy; linarith` relies on `field_simp` performing the nonlinear cancellation of `M\u00b2` from `\u03bc\u00b2 * M\u00b2 = M\u00b2`, which is opaque and breaks if `field_simp`'s discharger changes.",
+   "line": "187"
+  },
+  {
+   "evidence": "Kinematics.lean:356-359 (hz), :361-365 (hpair chain), :358 (h1); `minkowskiProduct` is a CLM in both slots (Physlib MinkowskiProduct.lean:93) so `map_smul` applies directly, as Physlib's own `minkowskiProduct_smul_self` (:188-191) shows.",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Extract `Velocity.spatialPart_zero` into the Vector/Velocity extensions module and `hpair` into a lemma about `generalizedBoost` (pairing with the boosted rest vector reads off the energy); replace the `hpair` chain with `map_smul`/`smul_apply`; add the one-line comment for the `timeComponent` abbrev use or restate `h1` via `Velocity.zero_timeComponent` with `timeComponent` on both sides.",
+   "issue": "`exists_isBreitFrame` (46-line proof) carries three independently-true general facts inline: `hz` ((0 : Velocity d) has vanishing spatial part, a fact about Physlib's `Velocity` with no connection to this PR's kinematics), `hpair` (\u27eaP, x\u27eb\u2098 = m * (\u039b \u2022 x)\u2070), and `hpos`. `hpair`'s proof is a 10-step named-lemma chain that round-trips `minkowskiProduct_apply \u2192 minkowskiProductMap_smul_fst \u2192 \u2190 minkowskiProduct_apply` where this file's own idiom `simp only [map_smul, _root_.smul_apply, smul_eq_mul]` (lines 136, 236) does the same in one step. Also `h1 : (0 : Velocity d).1 (Sum.inl 0) = 1 := Velocity.zero_timeComponent` silently relies on `timeComponent` being an abbrev, which the repo documents elsewhere with a comment.",
+   "line": "337"
+  },
+  {
+   "evidence": "Kinematics.lean:233-239, consumed only at :371 `obtain \u27e8hp, hp'\u27e9 := K.sq_mass_le_minkowskiProduct_avgMomentum`.",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Split into two public lemmas `sq_mass_le_minkowskiProduct_avgMomentum_p` / `_pPrime` (each a `linarith` from `sq_mass_le_minkowskiProduct_p_pPrime` and the shared `simp only`), and drop the `private`.",
+   "issue": "`sq_mass_le_minkowskiProduct_avgMomentum` hides two reusable physical facts (`M\u00b2 \u2264 P \u00b7 p` and `M\u00b2 \u2264 P \u00b7 p'`, i.e. positivity of either energy in any frame) behind `private` and an `And`, usable only by destructuring in `exists_isBreitFrame`.",
+   "line": "233"
+  },
+  {
+   "evidence": "Kinematics.lean:429-437; grep over `upstream/mathlib/Mathlib/Analysis/Calculus` for `comp_neg` yields only `fderivWithin_comp_neg` (FDeriv/Equiv.lean:506), `derivWithin_comp_neg`/`deriv_comp_neg` (Deriv/Shift.lean:50,54) and the iterated versions \u2014 no `HasDerivWithinAt` version.",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "State it as a standalone lemma in a Mathlib-namespace extensions module (the repo already uses that pattern, e.g. `Mathematics/SpecialFunctions/Gamma/Digamma/Extensions.lean`), with the general base point `x` rather than `0`, and obtain both directions of the iff from it plus `neg_neg`.",
+   "issue": "`key` inside `hasDerivWithinAt_ofLiteratureT_iff` is a general, Mathlib-shaped lemma (`HasDerivWithinAt g g' (-s) 0 \u2192 HasDerivWithinAt (fun x => g (-x)) (-g') s 0`) with no Mathlib counterpart, proved inline through three nested `by simpa using` arguments and then used twice at :435-436; the unfolding-heavy `simpa`s make the reason it works unreadable.",
+   "line": "429"
+  },
+  {
+   "evidence": "Kinematics.lean:159 and :164 both use `\u25b8 sq_nonneg _`.",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Replace with an explicit step, e.g. `\u27e8by rw [K.minkowskiProduct_p_self]; positivity, K.timeComponent_p_pos.le\u27e9`.",
+   "issue": "`causallyFollows_zero_p`/`causallyFollows_zero_pPrime` discharge `0 \u2264 \u27eap, p\u27eb\u2098` with a motive-less `K.minkowskiProduct_p_self \u25b8 sq_nonneg _`, whose rewrite direction is decided by unification and which breaks on any change to the surrounding statement.",
+   "line": "158"
+  }
+ ],
+ "head_sha": "cf48f2f99885d0b93ae90b967448d17f5158dd5e",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 224,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a582e4d242e049abf8f3302e3847843d5d29bc6730756363fc1d57bd3f505c9c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T174953Z-224-proof-quality-562031",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T17:49:53Z",
+ "submitted_by": "veprbl",
+ "summary": "Four reusable facts are proved inline (the mass-shell rigidity step, the zero-velocity spatial part, the boost pairing identity, and a general HasDerivWithinAt comp-neg lemma), and the spatial-part reasoning is done four times by pushing EuclideanSpace equations through the raw `\u21d1` coercion instead of `spatialPart_apply_eq_toCoord` or a single linearity lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Velocity/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Velocity/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Calculus",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/MinkowskiProduct.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "30291712b6c07891ce4733e5e6b6746751f335923c653fa0c11a0bef7a76221a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 84410,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 84410,
+  "cache_read_input_tokens": 765072,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2784,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2784,
+    "cache_read_input_tokens": 84849,
+    "input_tokens": 2,
+    "output_tokens": 6448,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19567,
+  "output_tokens_details": {
+   "thinking_tokens": 13206
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

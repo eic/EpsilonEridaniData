@@ -1,0 +1,215 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.498261,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 247.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 75675,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 75675,
+    "cache_read_input_tokens": 539722,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3202,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3202,
+      "cache_read_input_tokens": 75696,
+      "input_tokens": 2,
+      "output_tokens": 5406,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18862,
+    "output_tokens_details": {
+     "thinking_tokens": 14126
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 1.498261,
+ "dedupe_key": "eic/EpsilonEridani|224|cf48f2f99885d0b93ae90b967448d17f5158dd5e|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "9f8f35be946c0ba445c312cd91d8d4da6ecd6ee4bdf15bc0585491b638927209",
+ "diff_sha256": "9f8f35be946c0ba445c312cd91d8d4da6ecd6ee4bdf15bc0585491b638927209",
+ "duration_s": 247.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Sibling module exposes the parallel lemmas publicly: GPD/Kinematics.lean:293 `minkowskiProduct_p_delta_eq`, :298 `minkowskiProduct_pPrime_delta_eq`, :286 `minkowskiProduct_p_pPrime_eq`. \u00a71.2 contracts the matrix element with `p`, `p'`, `P`, `\u0394`.",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Replace the private conjunction by public `minkowskiProduct_avgMomentum_p_eq`/`_pPrime_eq : \u27eaP,p\u27eb\u2098 = T.mass^2 - K.tMom/4` (and the `\u0394` pair), deriving the inequality used in `exists_isBreitFrame` from them.",
+   "issue": "`sq_mass_le_minkowskiProduct_avgMomentum` is `private` and states an inequality where an equality holds: `\u27eaP,p\u27eb\u2098 = \u00bd(M\u00b2 + (M\u00b2 - t/2)) = M\u00b2 - t/4 = \u27eaP,P\u27eb\u2098`, same for `p'`. The characteristic pairings of `avgMomentum` with `p`/`pPrime` are therefore absent from the public surface, and `\u27eap,\u0394\u27eb\u2098 = -t/2`, `\u27eap',\u0394\u27eb\u2098 = t/2` are missing too.",
+   "line": "233"
+  },
+  {
+   "evidence": "Repo convention for `Prop` defs: `Particles/Meson/Basic.lean:398` `b.IsIsospinLimit \u2194 b.isospinBreaking = 0 := Iff.rfl`, :401, :272.",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Add `lemma isBreitFrame_iff : K.IsBreitFrame \u2194 K.avgMomentum.spatialPart = 0 := Iff.rfl` and state `spatialPart_avgMomentum` as its `.mp`.",
+   "issue": "`IsBreitFrame` is a `def : Prop` whose body is not exposed (`public section`, no `@[expose]`), and only the elimination direction is given (`spatialPart_avgMomentum` at line 277, proved `:= h` which works only inside this module). A consumer holding `K.avgMomentum.spatialPart = 0` has no way to conclude `K.IsBreitFrame` except by re-deriving `isBreitFrame_iff_spatialPart_pPrime` by hand.",
+   "line": "258"
+  },
+  {
+   "evidence": "The sibling module makes exactly this part of its API: GPD/Kinematics.lean:433 `range_skewness_tMom (hd : 2 \u2264 d) : Set.range ... = physicalRegion M`, :138 `physicalRegion_nonempty`.",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Add `exists_qSq_eq`/`range_qSq : Set.range (fun K : ElasticKinematics T d => K.qSq) = univ` for `1 \u2264 d` (and the forward `K` with `qSq = 0` as an `Inhabited`/`Nonempty` witness for all `d`).",
+   "issue": "Nothing in the surface says which `Q\u00b2` are attained, nor that `ElasticKinematics T d` is inhabited. Every Layer 1 statement is `\u2200 K, ... K.qSq ...` (e.g. `\u03a3_a gff_Cbar a Q\u00b2 = 0` for all `Q\u00b2`), so without a range statement such a theorem carries no information about the `Q\u00b2` it is claimed for.",
+   "line": "205"
+  },
+  {
+   "evidence": "Lines 216, 294, 301, 308 all carry `\u2191K.qSq` on the RHS; line 287 has LHS `(K.qSq : \u211d)`, identical to the LHS of the global simp lemma at line 208.",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Either drop `@[simp]` from `coe_qSq` (keeping it as the explicit dictionary lemma, with `Q\u00b2` as the normal form the roadmap's Convention 1 asks for), or state the Breit-frame relation on `tMom` (`K.tMom = -\u2016K.delta.spatialPart\u2016^2`) and derive the `qSq` form.",
+   "issue": "`@[simp] coe_qSq : (K.qSq : \u211d) = -K.tMom` makes `tMom` the simp normal form, which rewrites away the `qSq` form of five lemmas stated in this file (lines 216, 294, 301, 308) and collides with `IsBreitFrame.coe_qSq` (line 287), whose LHS is the same `\u2191K.qSq`: `simp [h.coe_qSq]` has two rules on one LHS.",
+   "line": "207"
+  }
+ ],
+ "head_sha": "cf48f2f99885d0b93ae90b967448d17f5158dd5e",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 224,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "855ecb38fa2b81685b7320435584f90cd94a1c0959b07c199ad17ab8a51ed715",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T174602Z-224-api-design-319e65",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T17:46:02Z",
+ "submitted_by": "veprbl",
+ "summary": "The characteristic pairing API of `avgMomentum`/`delta` is incomplete and partly hidden behind a `private` weaker form, `IsBreitFrame` has no introduction lemma now that its body is unexposed, nothing states which `Q\u00b2` are attained, and the `coe_qSq` simp direction fights the file's own `qSq`-form statements.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/HadronMassAndEnergyMomentumTensor/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/HadronMassAndEnergyMomentumTensor/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/HadronMassAndEnergyMomentumTensor/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2b9de6e5addce819f9715f2c8c2b3ebd88b13d730da2edd1036eedf4bb270750",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 75675,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 75675,
+  "cache_read_input_tokens": 539722,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3202,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3202,
+    "cache_read_input_tokens": 75696,
+    "input_tokens": 2,
+    "output_tokens": 5406,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18862,
+  "output_tokens_details": {
+   "thinking_tokens": 14126
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

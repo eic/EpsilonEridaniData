@@ -1,0 +1,267 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1741349999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 231.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 101957,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 101957,
+    "cache_read_input_tokens": 1464260,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4655,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4655,
+      "cache_read_input_tokens": 100525,
+      "input_tokens": 2,
+      "output_tokens": 4378,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16889,
+    "output_tokens_details": {
+     "thinking_tokens": 9837
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 2.174135,
+ "dedupe_key": "eic/EpsilonEridani|224|cf48f2f99885d0b93ae90b967448d17f5158dd5e|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "9f8f35be946c0ba445c312cd91d8d4da6ecd6ee4bdf15bc0585491b638927209",
+ "diff_sha256": "9f8f35be946c0ba445c312cd91d8d4da6ecd6ee4bdf15bc0585491b638927209",
+ "duration_s": 231.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diffed the two files; the declarations and in several cases the tactic scripts coincide up to `M` vs `T.mass`. PR description concedes the overlap (\"The three short on-shell identities ... have the same proofs there\").",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Factor the shared core out in this PR: either a base structure carrying `p`, `pPrime` and the two mass shells that both `OffForwardKinematics` and `ElasticKinematics` extend, or vector-level lemmas in `Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean` (whose docstring already names off-forward kinematics as its consumer) stated for `p p'` with `\u27eap,p\u27eb\u2098 = \u27eap',p'\u27eb\u2098 = M\u00b2`, e.g. `\u27ea2\u207b\u00b9 \u2022 (p + p'), p' - p\u27eb\u2098 = 0` and `\u27ea2\u207b\u00b9 \u2022 (p + p'), 2\u207b\u00b9 \u2022 (p + p')\u27eb\u2098 = M\u00b2 - \u27eap'-p, p'-p\u27eb\u2098/4`, with both modules deriving their lemmas from them.",
+   "issue": "Lines 103-155 and 174 duplicate `GPD.OffForwardKinematics`: `avgMomentum`/`avgMomentum_def` (GPD/Kinematics.lean:171-173), `delta`/`delta_def` (176-178), `tMom`/`tMom_def` (181-183), `p_eq_avgMomentum_sub`/`pPrime_eq_avgMomentum_add` (200-206), `minkowskiProduct_p_pPrime_eq` (286-290), `minkowskiProduct_avgMomentum_delta_eq_zero` (261), `minkowskiProduct_delta_avgMomentum_eq_zero` (271-273), `minkowskiProduct_avgMomentum_self_eq` (277-283), `tMom_nonpos` (348) \u2014 several proof-for-proof identical (e.g. 150-155 vs 277-283, 143-145 vs 271-273). Two parallel copies of the same elastic-transition API.",
+   "line": "103"
+  },
+  {
+   "evidence": "`p = P - \u0394/2` and `P\u00b7\u0394 = 0` give `\u27eaP,p\u27eb\u2098 = \u27eaP,P\u27eb\u2098 = T.mass^2 - K.tMom/4`, and `K.tMom \u2264 0` is line 174; both lemmas are stated above line 233 in the same file.",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Replace with a single lemma `\u27eaK.avgMomentum, K.p\u27eb\u2098 = \u27eaK.avgMomentum, K.avgMomentum\u27eb\u2098` (and the `pPrime` analogue) proved by rewriting with `p_eq_avgMomentum_sub` and `minkowskiProduct_avgMomentum_delta_eq_zero`, then use `minkowskiProduct_avgMomentum_self_eq` + `tMom_nonpos` at the call site in `exists_isBreitFrame`.",
+   "issue": "`private lemma sq_mass_le_minkowskiProduct_avgMomentum` re-expands `avgMomentum` from the mass shells, re-deriving what earlier lines already provide: `p_eq_avgMomentum_sub` (118) plus `minkowskiProduct_avgMomentum_delta_eq_zero` (135) give `\u27eaP, p\u27eb\u2098 = \u27eaP, P\u27eb\u2098` (same for `pPrime` via 122), and `minkowskiProduct_avgMomentum_self_eq` (149) with `tMom_nonpos` (174) give `M\u00b2 \u2264 \u27eaP, P\u27eb\u2098`. It is also an \u2227-bundle where the two halves are the same fact.",
+   "line": "233"
+  },
+  {
+   "evidence": "`spatialPart_sub` already exists at BasicExtensions.lean:54 and is unused by this module; `spatialCLM` is a `\u2192L[\u211d]` so `map_add`/`map_smul` apply directly (`spatialCLM_apply_eq_spatialPart`, Basic.lean:358).",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Add `spatialPart_add` and `spatialPart_smul` beside the existing `Lorentz.Vector.spatialPart_sub` in `EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean:54` (one line each, from `spatialCLM`'s `map_add`/`map_smul`, `Physlib/.../Vector/Basic.lean:352`), then derive all three from `p_eq_avgMomentum_sub` / `pPrime_eq_avgMomentum_add` and `h.spatialPart_avgMomentum`.",
+   "issue": "Spatial-part algebra is done componentwise by hand in three places instead of via linearity: `isBreitFrame_iff_spatialPart_pPrime` (263-272, `ext i`/`linarith`) and the identical `h0 : \u2200 i, K.avgMomentum (Sum.inr i) = 0` block repeated in `IsBreitFrame.spatialPart_p` (313-318) and `IsBreitFrame.spatialPart_pPrime` (321-326).",
+   "line": "263"
+  }
+ ],
+ "head_sha": "cf48f2f99885d0b93ae90b967448d17f5158dd5e",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 224,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a17ace04c48b0cacd957c69377b441a03fb11cc5434c5c044b6f647bf39b0aaa",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T174602Z-224-reuse-4f2244",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T17:46:02Z",
+ "submitted_by": "veprbl",
+ "summary": "Nine declarations (the P/\u0394/t core and its identities) are copied verbatim from EpsilonEridani.Particles.Parton.GPD.Kinematics.OffForwardKinematics, including proofs, instead of being factored into shared material; a private helper also re-derives what two earlier lemmas in the same file already give. Everything else (Target, Breit frame, ofLiteratureT) is new and reuses Physlib/Mathlib API well.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Calculus",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality/CausallyFollows.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 26,
+  "trace_truncated": false
+ },
+ "transcript_blob": "310a004863e42a6e5178e19485cd72f2dcdfa95105ff78a213a0edc0c377ccd6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 101957,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 101957,
+  "cache_read_input_tokens": 1464260,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4655,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4655,
+    "cache_read_input_tokens": 100525,
+    "input_tokens": 2,
+    "output_tokens": 4378,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16889,
+  "output_tokens_details": {
+   "thinking_tokens": 9837
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

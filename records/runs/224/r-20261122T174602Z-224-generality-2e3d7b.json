@@ -1,0 +1,225 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.012491,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 263.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 93768,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 93768,
+    "cache_read_input_tokens": 1195282,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2296,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2296,
+      "cache_read_input_tokens": 94695,
+      "input_tokens": 2,
+      "output_tokens": 2818,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19080,
+    "output_tokens_details": {
+     "thinking_tokens": 14537
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 2.012491,
+ "dedupe_key": "eic/EpsilonEridani|224|cf48f2f99885d0b93ae90b967448d17f5158dd5e|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "9f8f35be946c0ba445c312cd91d8d4da6ecd6ee4bdf15bc0585491b638927209",
+ "diff_sha256": "9f8f35be946c0ba445c312cd91d8d4da6ecd6ee4bdf15bc0585491b638927209",
+ "duration_s": 263.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line-by-line comparison of the two files: e.g. Kinematics.lean:149-155 and GPD/Kinematics.lean:277-283 are token-identical apart from `T.mass` vs `M`; both derive from `minkowskiProduct_sub_self` + `minkowskiProduct_symm`, neither uses `n`, positive plus-momentum, or positive energy.",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Add the general versions to `EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean`, next to the existing `minkowskiProduct_sub_self` (line 57), e.g. for `{u v : Vector d} {M : \u211d} (hu : \u27eau,u\u27eb\u2098 = M^2) (hv : \u27eav,v\u27eb\u2098 = M^2)`: `\u27eau,v\u27eb\u2098 = M^2 - \u27eav-u,v-u\u27eb\u2098/2`, `\u27ea(2\u207b\u00b9:\u211d)\u2022(u+v), v-u\u27eb\u2098 = 0` (this one needs only `hu.trans hv.symm`) and `\u27ea(2\u207b\u00b9:\u211d)\u2022(u+v), (2\u207b\u00b9:\u211d)\u2022(u+v)\u27eb\u2098 = M^2 - \u27eav-u,v-u\u27eb\u2098/4`; then make the four lemmas here (and the four in the GPD module) one-line applications. This needs no shared base structure, so the refactor the PR description defers is not required.",
+   "issue": "Special-case duplication: `minkowskiProduct_p_pPrime_eq` (127-131), `minkowskiProduct_avgMomentum_delta_eq_zero` (135-139), `minkowskiProduct_delta_avgMomentum_eq_zero` (143-145) and `minkowskiProduct_avgMomentum_self_eq` (149-155) are proved for `ElasticKinematics` with proofs copied verbatim from `OffForwardKinematics` (GPD/Kinematics.lean:286-290, 261-267, 271-273, 277-283). None of them uses any structure-specific data beyond `\u27eap,p\u27eb\u2098 = \u27eap',p'\u27eb\u2098 = M\u00b2`: they are the polarization identities for the Minkowski form applied to `(u+v)/2` and `v-u`.",
+   "line": 127
+  }
+ ],
+ "head_sha": "cf48f2f99885d0b93ae90b967448d17f5158dd5e",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 224,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b5cda8a2703d709f86039000aa1d8fa45f38b2b8d3652f5fadb8ce9660c46bb8",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T174602Z-224-generality-2e3d7b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T17:46:02Z",
+ "submitted_by": "veprbl",
+ "summary": "The elastic-transition identities P\u00b7\u0394 = 0, P\u00b2 = M\u00b2 \u2212 t/4 and p\u00b7p' = M\u00b2 \u2212 t/2 are hypothesis-light facts about any two Lorentz vectors of equal Minkowski square, but are re-proved inside the new structure namespace with proofs copied from `GPD/Kinematics.lean`; state them once at `Lorentz.Vector` level and derive both. The rest (Target/ElasticKinematics parameters, the Breit-frame API, the `ofLiteratureT` dictionary) sits at the level the roadmap asks for.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/HadronMassAndEnergyMomentumTensor/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/HadronMassAndEnergyMomentumTensor/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/HadronMassAndEnergyMomentumTensor/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Restricted/FromBoostRotation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Restricted/FromBoostRotation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7a3b9a936a66d96245688d02be91e21922080613752712795dde4c6757793060",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 93768,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 93768,
+  "cache_read_input_tokens": 1195282,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2296,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2296,
+    "cache_read_input_tokens": 94695,
+    "input_tokens": 2,
+    "output_tokens": 2818,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19080,
+  "output_tokens_details": {
+   "thinking_tokens": 14537
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

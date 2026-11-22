@@ -1,0 +1,188 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.5320529999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 189.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 99686,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 99686,
+    "cache_read_input_tokens": 309936,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2443,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2443,
+      "cache_read_input_tokens": 100466,
+      "input_tokens": 2,
+      "output_tokens": 4395,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15207,
+    "output_tokens_details": {
+     "thinking_tokens": 10456
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "cost_usd": 1.532053,
+ "dedupe_key": "eic/EpsilonEridani|170|6585b81f5696863ab49744b95bcacb85d65acde0|generality|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "6694ebd27d5986fe60186d961f35e2c737928353ec8498918268d9a4043c034f",
+ "diff_sha256": "6694ebd27d5986fe60186d961f35e2c737928353ec8498918268d9a4043c034f",
+ "duration_s": 189.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 347-359 and 368-380 are line-for-line identical modulo `Finset.mem_inter`\u2192`Finset.mem_sdiff` and `(hv h t).1/.2`\u2192`mt (hv h t).2/.1`; 326-328 vs 336-338 differ only in `image_conj_inter_valence` vs `image_conj_sdiff_valence`. Contrast 231-236, where the unfavoured statement is a three-line consequence of the favoured one.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Prove once `favored valence D (\u03c4 h) j = favored valence D h i` from `(h\u03c3 : Set.InjOn \u03c3 (flavorPair i))`, `(hpair : (flavorPair i).image \u03c3 = flavorPair j)`, `hv` and `Invariant \u03c4 \u03c3 D`; instantiate with `Species.image_conj_flavorPair` (j = i) and `Species.image_map_flavorPair` (j = \u03c1 i). Get the unfavoured halves by subtraction from `favored_add_unfavored` plus the reindexed total, as `unfavored_eq_apply_antiquark` already does, rather than repeating the sdiff proof.",
+   "issue": "`favored_conj_of_chargeConjRelation` (322), `unfavored_conj_of_chargeConjRelation` (332), `favored_map_of_flavorSymmetryRelation` (343) and `unfavored_map_of_flavorSymmetryRelation` (364) are four copies of one statement: a parton map \u03c3 with `(flavorPair i).image \u03c3 = flavorPair j`, injective on `flavorPair i`, compatible with `valence` along \u03c4, and `Invariant \u03c4 \u03c3 D`.",
+   "line": "322"
+  },
+  {
+   "evidence": "Line 432 shows the needed content is `fun h s => by rw [C.mem_valence_conj, Species.conj_conj]`. Cost of the bundling at the use site: `exists_chargeConjRelation_and_flavorSymmetryRelation_favored_ne_unfavored` (563-565) must `rw [\u2190 pionMultiplet_conj, \u2190 pionMultiplet_valence]` for the conj clause, while the flavour clause applies `invariant_valenceStepFrag _ pion_map_swap_mem_valence_conj_iff` directly.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "State them with `{\u03c4 : Hadron \u2192 Hadron}` and `(hv : \u2200 h s, Species.conj s \u2208 valence (\u03c4 h) \u2194 s \u2208 valence h)` (the form `chargeConjRelation_valenceStepFrag` already derives at line 432), keeping multiplet versions only as thin corollaries where `C` is genuinely in hand.",
+   "issue": "The charge-conjugation lemmas (322, 332) and `chargeConjRelation_valenceStepFrag` (430) demand a whole `C : HadronMultiplet Hadron Flavor` although their proofs use only `C.valence` and the compatibility `\u2200 h s, Species.conj s \u2208 valence (\u03c4 h) \u2194 s \u2208 valence h`; the parallel flavour-symmetry lemmas (343, 364, 419) are stated in exactly that unbundled form, so the conj side is strictly less general than its neighbour.",
+   "line": "322"
+  },
+  {
+   "evidence": "Roadmap `Hadronization/README.md:422` asks for the isospin relations \"for the pion and the kaon multiplets\", so the general form is a roadmap need. Grep over `EpsilonEridani/`: `HadronMultiplet.conj_involutive` is used only by `conj_conj` (ValenceContent.lean:149), which has no consumer; lines 540 and 550 use the standalone `Pion.conj_involutive.surjective` instead.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Add the multiplet-level lemma: apply `favored_conj_of_chargeConjRelation` at `C.conj h` with index `\u03c1 i` and rewrite `C.conj_conj` to get `favored D h (\u03c1 i) = favored D (C.conj h) (\u03c1 i)`, then `favored_map_of_flavorSymmetryRelation` gives `= favored D h i`; derive the two pion statements from it. This also gives the otherwise unused `HadronMultiplet.conj_involutive`/`conj_conj` field its only consumer \u2014 drop the field if you do not.",
+   "issue": "The reduction relation is proved only for the pion (`favored_pion_plus_down_eq_favored_pion_plus_up`, 535; `unfavored_\u2026`, 545) and by descending to single fragmentation functions via `Invariant.apply_eq_apply`, bypassing the file's own combination-level lemmas. The multiplet-level statement `favored C.valence D h (\u03c1 i) = favored C.valence D h i` under both relations with \u03c4 = C.conj is a two-step corollary of lines 322 and 343, and it needs no `IsValenceFlavor`.",
+   "line": "535"
+  },
+  {
+   "evidence": "Grep `zMoment_congr` over `EpsilonEridani/`: single hit, the declaration at Basic.lean:70. Lines 120-123 are the same `setIntegral_congr_fun measurableSet_Icc fun z hz => \u2026` argument specialized to `indicatorUnitInterval`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "fix": "Either prove `zMoment_indicatorUnitInterval` as `ext n h i Q2; exact zMoment_congr (fun z hz => indicatorUnitInterval_of_mem f hz ..) n`, so the heterogeneous generality is paid for, or drop the lemma.",
+   "issue": "`zMoment_congr` is new, generalized over a second hadron and flavour type, and has no consumer, while `zMoment_indicatorUnitInterval` (119) repeats its `setIntegral_congr_fun measurableSet_Icc` proof by hand.",
+   "line": "70"
+  },
+  {
+   "evidence": "Lines 212-216, 223-227, 253-257 and 271-275 share the identical `have hv : Species.flavorPair i \u2229 valence h = \u2026; ext s; simp only [Finset.mem_inter, Species.mem_flavorPair, \u2026]; grind` skeleton.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "State the four intersection identities once next to `Species.flavorPair` (or in `ValenceContent.lean`) \u2014 `flavorPair i \u2229 t = {quark i}` / `{antiquark i}` / `flavorPair i` / `\u2205` under the corresponding membership hypotheses \u2014 and reduce each `favored_eq_*` to `rw [favored_def, that, \u2026]`.",
+   "issue": "`favored_eq_apply_quark` (209), `favored_eq_apply_antiquark` (220), `favored_eq_add_of_quark_mem_of_antiquark_mem` (250) and `favored_eq_zero_of_quark_notMem_of_antiquark_notMem` (269) each recompute `Species.flavorPair i \u2229 valence h` with the same `ext s; simp only [Finset.mem_inter, Species.mem_flavorPair, \u2026]; grind` block; the statements involve only `flavorPair` and a `Finset`, not fragmentation.",
+   "line": "209"
+  }
+ ],
+ "head_sha": "6585b81f5696863ab49744b95bcacb85d65acde0",
+ "merge_base_sha": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 170,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "4e6252d5eac2a942a5d16774ca19e333047dcb0846c666e65595fb2a5fda4a1e",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T121017Z-170-generality-f18d24",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T12:10:17Z",
+ "submitted_by": "veprbl",
+ "summary": "One reindexing argument is written out four times (conj/map \u00d7 favoured/unfavoured) instead of once in general, with the conj half bundled into `HadronMultiplet` while its flavour-symmetry twin is unbundled; the reduction relation itself is proved only for the pion although the multiplet-level form is a corollary of the PR's own lemmas and is what the kaon bullet needs.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/README.md",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0f8e78130a2dd8f8f453113c6ced3eb324a606ca40099dbab1455caa89c1dd3b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 99686,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 99686,
+  "cache_read_input_tokens": 309936,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2443,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2443,
+    "cache_read_input_tokens": 100466,
+    "input_tokens": 2,
+    "output_tokens": 4395,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15207,
+  "output_tokens_details": {
+   "thinking_tokens": 10456
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
