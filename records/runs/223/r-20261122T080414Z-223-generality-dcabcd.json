@@ -1,0 +1,188 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.8943520000000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 205.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 184904,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 184904,
+    "cache_read_input_tokens": 1368054,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3662,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3662,
+      "cache_read_input_tokens": 164069,
+      "input_tokens": 2,
+      "output_tokens": 3172,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14447,
+    "output_tokens_details": {
+     "thinking_tokens": 10758
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 2.894352,
+ "dedupe_key": "eic/EpsilonEridani|223|255df5a1daa08a37f9b3dda69e1d9771b7f9cb6a|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "efd83e4cae5c5b68fa143b4911a788f43306639c40392bc3db00f5eaa8509f5d",
+ "diff_sha256": "efd83e4cae5c5b68fa143b4911a788f43306639c40392bc3db00f5eaa8509f5d",
+ "duration_s": 205.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 236-238: `let K : DisKinematics V := { p := P, pPrime := a \u2022 L.nPlus + c \u2022 L.nMinus + s \u2022 e, k := 0, kPrime := 0, q := 0, hq := by simp }`; the subsequent proof uses only `hKp`, `hKm`, `hKT` and `tMom_eq_tMin_add`, none of which mention `k`, `kPrime`, `q`. `DisKinematics` fixes `q = k - kPrime` (Kinematics/Basic.lean:62-64), so arbitrary lepton momenta are admissible at no proof cost.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "Take `k kPrime : V` as parameters and build the witness with `q := k - kPrime`, `hq := rfl`, adding `K.k = k \u2227 K.kPrime = kPrime` to the conclusion (or state the core fact at the momentum level, `\u2203 P', g P' P' = MY ^ 2 \u2227 L.plus (P - P') = \u03be * L.plus P \u2227 g (P - P') (P - P') = t`, and derive the `DisKinematics` form). The proof is unchanged. Then drop the `Q\u00b2 = 0` caveats from both docstrings; `setOf_tMom_eq_Iic_tMin` (line 271) inherits the same caveat from this witness and its docstring note at lines 268-270 can be narrowed accordingly.",
+   "issue": "`exists_tMom_eq_of_le_tMin` builds its witness with `k := 0, kPrime := 0, q := 0`, although the proof touches only `p` and `pPrime` (`tMom`, `MY2`, `xiLC` are functions of `P`, `P'` alone \u2014 cf. `tMom_congr`/`MX2_congr` in Diffractive/Kinematics/Basic.lean:249-263). The lepton data is unconstrained input, not something the theorem determines, so fixing it to zero is a gratuitous specialization: it forces `Q\u00b2 = 0`, which is the caveat the docstring (lines 215-217) and the module docstring (lines 37-41) have to carry, and it makes the lemma unusable for the non-emptiness milestone the PR description says it supplies the configuration for.",
+   "line": 236
+  }
+ ],
+ "head_sha": "255df5a1daa08a37f9b3dda69e1d9771b7f9cb6a",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 223,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "778ce86a44f55dbbba0ddb720bae47c703fa725e2c6f1ac2bac8d5125597974a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T080414Z-223-generality-dcabcd",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T08:04:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "The boundary API is at the right level (general `tMin`, elastic case derived, pointwise transverse hypotheses), but `exists_tMom_eq_of_le_tMin` specializes away data it never uses: the witness fixes `k = k' = q = 0`, which costs the lemma exactly the generality its stated downstream use (non-emptiness at `Q\u00b2 > 0`) needs.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a516371ebf75f70f146c86fcec1d96a3cb4d73edded6d377b5a9e8688adf14c4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 184904,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 184904,
+  "cache_read_input_tokens": 1368054,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3662,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3662,
+    "cache_read_input_tokens": 164069,
+    "input_tokens": 2,
+    "output_tokens": 3172,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14447,
+  "output_tokens_details": {
+   "thinking_tokens": 10758
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

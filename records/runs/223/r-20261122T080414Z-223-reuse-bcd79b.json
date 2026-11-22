@@ -1,0 +1,207 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.695869,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 146.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 189892,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 189892,
+    "cache_read_input_tokens": 1053618,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3294,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3294,
+      "cache_read_input_tokens": 168563,
+      "input_tokens": 2,
+      "output_tokens": 1744,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10802,
+    "output_tokens_details": {
+     "thinking_tokens": 7037
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 2.695869,
+ "dedupe_key": "eic/EpsilonEridani|223|255df5a1daa08a37f9b3dda69e1d9771b7f9cb6a|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "efd83e4cae5c5b68fa143b4911a788f43306639c40392bc3db00f5eaa8509f5d",
+ "diff_sha256": "efd83e4cae5c5b68fa143b4911a788f43306639c40392bc3db00f5eaa8509f5d",
+ "duration_s": 146.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Kinematics.lean:311-332 vs 337-351; `neg_tMinElastic` is proved as `rw [\u2190 tMin_self, neg_tMin]; ring` and `tMinElastic_xiLC_zero` as `rw [\u2190 tMin_self, tMin_xiLC_zero]`, i.e. the general lemma already is the proof.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Delete the three elastic restatements; since `tMin_self` is `@[simp]`, any elastic goal closes by `simp [tMin_self]` or `rw [\u2190 tMin_self]` from the general lemma. Keep `tMinElastic`, `tMinElastic_def`, `tMin_self` and `tMinElastic_nonpos` (the last is strictly stronger than `tMin_nonpos`: it needs no `0 \u2264 \u03be` and no mass threshold).",
+   "issue": "`neg_tMinElastic` (l.337), `le_tMinElastic_iff` (l.344) and `tMinElastic_xiLC_zero` (l.350) are exactly the `MY := M` instances of the newly added `neg_tMin` (l.311), `le_tMin_iff` (l.317) and `tMin_xiLC_zero` (l.330), and have no consumers: grep for `neg_tMinElastic|le_tMinElastic_iff|tMinElastic_xiLC_zero` across `code/` hits only their own declarations in Kinematics.lean plus docstring mentions. This is a parallel API created by this PR.",
+   "line": 337
+  },
+  {
+   "evidence": "MomentumTransferBound.lean:100-102 proof is `rw [\u2190 one_sub_xiLC L K hp, sub_sub_cancel]`; only use is l.159 `have h\u03be := xiLC_eq_one_sub_div L K hp`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "Drop `xiLC_eq_one_sub_div` and rewrite with `one_sub_xiLC` at the `1 - xiLC L K` occurrences in `tMom_eq_tMin_add`; `Basic.lean:135 xi_eq_one_sub_div` keeps only one form for the invariant `xi`.",
+   "issue": "`xiLC_eq_one_sub_div` restates `one_sub_xiLC` (l.92) up to `sub_sub_cancel` \u2014 two public names for one identity, with a single use at l.159.",
+   "line": 100
+  }
+ ],
+ "head_sha": "255df5a1daa08a37f9b3dda69e1d9771b7f9cb6a",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 223,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "24dc9dda9f7bf4eacbb7af0ddfc7ebf335f9fbc29750ca6c32752276b1b75b56",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T080414Z-223-reuse-bcd79b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T08:04:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new general boundary `tMin` and the light-cone derivation are genuinely new and reuse the existing GPD/LightConeBasis API. But the PR leaves a full parallel elastic API that its own `tMin` lemmas now subsume, and adds a public restatement of `one_sub_xiLC`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LightConeBasis.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0ccf406b66e1fb891100a91011832a524c5895837da2990f4f5466b47d999e02",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 189892,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 189892,
+  "cache_read_input_tokens": 1053618,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3294,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3294,
+    "cache_read_input_tokens": 168563,
+    "input_tokens": 2,
+    "output_tokens": 1744,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10802,
+  "output_tokens_details": {
+   "thinking_tokens": 7037
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
