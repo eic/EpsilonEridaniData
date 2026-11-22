@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4754534999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 190.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 96016,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 96016,
+    "cache_read_input_tokens": 271767,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4149,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4149,
+      "cache_read_input_tokens": 70565,
+      "input_tokens": 2,
+      "output_tokens": 10145,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15174,
+    "output_tokens_details": {
+     "thinking_tokens": 11720
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 1.475453,
+ "dedupe_key": "eic/EpsilonEridani|251|4528d1e0faf1a2489462da2a55722fe131eb3c15|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "5f9bb2dd54d14f6db1c292eec748c44ec400d5f952e7582151c6845e3446beb6",
+ "diff_sha256": "5f9bb2dd54d14f6db1c292eec748c44ec400d5f952e7582151c6845e3446beb6",
+ "duration_s": 190.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 26-27 vs lines 57-61 of the same docstring; `photonEnergy_mul_radius_lt_gamma_of_virtuality_mul_radius_sq_le_one` (line 139) takes `hcoh : k.virtuality * s.radius ^ 2 \u2264 1` as a hypothesis.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "fix": "Rewrite as: this file bounds the form factor above and below the scale `1 / R\u00b2` \u2014 the departure from the point-charge value is controlled by `Q\u00b2 R\u00b2`, and beyond the scale the Gaussian squared form factor decays \u2014 and then, under the hypothesis `Q\u00b2 R\u00b2 \u2264 1`, bounds the collider-frame photon energy.",
+   "issue": "\"This file derives the coherence bound `Q\u00b2 \u2272 1 / R\u00b2` on the virtuality ... from the form factor\" overclaims: no declaration here bounds `Q\u00b2`. The file bounds the form factor in terms of `Q\u00b2 R\u00b2`, and the energy lemma takes `Q\u00b2 R\u00b2 \u2264 1` as a hypothesis. The file's own bullet at lines 59-61 says exactly this (\"the coherence bound `Q\u00b2 R\u00b2 \u2264 1` enters as a hypothesis of the energy bound, not as a consequence of the two form-factor bounds above\"), so the opening sentence contradicts it.",
+   "line": 26
+  },
+  {
+   "evidence": "Coherence.lean:93-94 states the `-\u27eap-p',p-p'\u27eb\u2098 * (1 + .../(4*m^2))` right-hand side; the `\u2016t\u2016 ^ 2 * (\u222b \u2016x\u2016 ^ 2 \u2202\u03bc) / 2` form is CharacteristicFunction/BasicExtensions.lean:81-83.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "fix": "Cite `MeasureTheory.one_sub_norm_charFun_le` for `1 - \u2016F\u2016 \u2264 \u2016q\u2016\u00b2 R\u00b2 / 2`, and attach `one_sub_norm_charFun_spatialPart_sub_le` to the combined `Q\u00b2 (1 + Q\u00b2/(4m\u00b2)) R\u00b2 / 2` form it actually states.",
+   "issue": "The displayed formula `1 - \u2016F(q)\u2016 \u2264 \u2016q\u2016\u00b2 R\u00b2 / 2` is attributed to `one_sub_norm_charFun_spatialPart_sub_le`, but that theorem (line 89) states the already-substituted form `1 - \u2016F(q)\u2016 \u2264 Q\u00b2 (1 + Q\u00b2/(4m\u00b2)) R\u00b2 / 2`. The `\u2016t\u2016\u00b2` form is `MeasureTheory.one_sub_norm_charFun_le`, which the docstring never cites.",
+   "line": 33
+  },
+  {
+   "evidence": "Coherence.lean:120-123: `theorem norm_sq_charFun_map_smul_stdGaussian_spatialPart_le {d : \u2115} (\u03c3 : \u211d) (q : Lorentz.Vector d)` \u2014 no hypothesis relating `q` to a rest frame, unlike `one_sub_norm_charFun_spatialPart_sub_le` (line 91), which carries `hp : p.spatialPart = 0`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "fix": "State in both docstrings that the inequality is a frame-agnostic mathematical bound, and that its reading as the coherent-rate suppression factor requires `q.spatialPart` to be the momentum transfer in the rest frame in which `\u03bc` is the charge distribution.",
+   "issue": "`norm_sq_charFun_map_smul_stdGaussian_spatialPart_le` is headlined \"the coherent rate of a Gaussian source is exponentially suppressed\", and the module docstring (lines 48-49) advertises it as using \"only `Q\u00b2 \u2264 \u2016q\u2016\u00b2`, which holds in every frame\". The statement quantifies over an arbitrary `q : Lorentz.Vector d` with no rest-frame hypothesis, while `\u03bc` is defined in the opening paragraph as the rest-frame charge distribution; the physical reading of `charFun \u03bc q.spatialPart` as the form factor is only valid in that frame, where the sharper `exp (-\u03c3\u00b2 \u2016q.spatialPart\u2016\u00b2)` already holds.",
+   "line": 114
+  }
+ ],
+ "head_sha": "4528d1e0faf1a2489462da2a55722fe131eb3c15",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 251,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6fd91e7e90184c95122c2146c3b4b74fc6cacf1ac50c05523218688e4f9d5271",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T041133Z-251-documentation-fce8d8",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T04:11:33Z",
+ "submitted_by": "wdconinc",
+ "summary": "Every new file and public declaration is documented, names resolve, and no process narrative leaks into the docstrings. Three claims in Coherence.lean overclaim relative to what the statements deliver: the file does not derive the coherence bound it says it derives, one cross-reference names a lemma whose statement differs from the displayed formula, and the Gaussian decay lemma is sold as a physical suppression result without the rest-frame hypothesis that reading needs.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/Measure/CharacteristicFunction/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Distributions/Gaussian/MultivariateExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/Integral/Bochner/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Distributions/Gaussian/Fernique.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "266d4994c8a08548767e985d5b3714cdbef445ffb7a65f9149bdd5b11be28b64",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 96016,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 96016,
+  "cache_read_input_tokens": 271767,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4149,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4149,
+    "cache_read_input_tokens": 70565,
+    "input_tokens": 2,
+    "output_tokens": 10145,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15174,
+  "output_tokens_details": {
+   "thinking_tokens": 11720
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
