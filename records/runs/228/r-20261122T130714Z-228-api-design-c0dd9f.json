@@ -1,0 +1,222 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.7828660000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 315.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 203830,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 203830,
+    "cache_read_input_tokens": 2325662,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3635,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3635,
+      "cache_read_input_tokens": 180643,
+      "input_tokens": 2,
+      "output_tokens": 4180,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23263,
+    "output_tokens_details": {
+     "thinking_tokens": 18437
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 3.782866,
+ "dedupe_key": "eic/EpsilonEridani|228|5129448fc3aad1cb94ba586a8d40d836999ca975|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "6c964fa9505e0fd43613753e1491c7c1cea5bde644afd6ce02f21229cdb19009",
+ "diff_sha256": "6c964fa9505e0fd43613753e1491c7c1cea5bde644afd6ce02f21229cdb19009",
+ "duration_s": 315.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`real_inner_self_eq_norm_sq` is a plain `theorem`, not simp (upstream/mathlib/Mathlib/Analysis/InnerProductSpace/Basic.lean:398), so nothing normalizes `inner \u211d kT kT`. The sibling module states the convention explicitly: \"The exceptions are the squares ... these are `@[simp]`\" (GPD/Kinematics.lean:31-33), and indeed `minkowskiProduct_avgMomentum_self_eq` and `minkowskiProduct_deltaOrthN_self_eq` carry it.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "Tag `minkowskiProduct_ofLightFront_self` `@[simp]` (give it a higher priority than `minkowskiProduct_ofLightFront` if the general rule still wins on the square).",
+   "issue": "`minkowskiProduct_ofLightFront_self` (the square, normal form `2ab - \u2016kT\u2016\u00b2`) is not `@[simp]`, while the general pairing `minkowskiProduct_ofLightFront` at line 410 is. On a square, simp applies the general rule and stops at `a*b + b*a - inner \u211d kT kT`, never reaching the file's `\u2016\u00b7\u2016^2` normal form (`minkowskiProduct_self_eq_lightFront`, line 311).",
+   "line": 418
+  },
+  {
+   "evidence": "Proof body is `sub_ne_zero.mpr (Ne.symm (sq_ne_one_iff.mpr ...))` \u2014 pure Mathlib algebra; the same pattern already appears upstream at Mathlib/Geometry/Euclidean/Angle/Unoriented/TriangleInequality.lean:93 (`rw [sub_ne_zero, ne_comm, sq_ne_one_iff]`). Only `tZero`/`tMom` lemmas use it, and nothing in its statement mentions GPD.",
+   "file": "EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "fix": "State it in a general home (root/upstream-namespace extension module, per the PhyslibAlpha-eligibility rule in CLAUDE.md), or inline the two-line proof at its three use sites in GTMD/Kinematics.lean and drop the declaration.",
+   "issue": "`GPD.one_sub_sq_ne_zero : |\u03be| \u2260 1 \u2192 1 - \u03be^2 \u2260 0` is a statement about \u211d alone, with a proof that uses nothing from this file, yet it is exposed under `EpsilonEridani.Particles.Parton.GPD`. A contributor needing `1 - x^2 \u2260 0` will not find it there and will re-prove it.",
+   "line": 108
+  }
+ ],
+ "head_sha": "5129448fc3aad1cb94ba586a8d40d836999ca975",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 228,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7218db6e6b777c746d1f4e21a86e69c55b9fa4a4b018d7939ba54301a0f42750",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T130714Z-228-api-design-c0dd9f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T13:07:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "The GTMD surface is minimal, extensional and characterised without unfolding. Two defects: the new Minkowski-square lemma lacks `@[simp]` while the general pairing lemma that preempts it has it, leaving squares in a non-normal form; and a general real-arithmetic lemma is exposed inside the `GPD` namespace.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GTMD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/WignerDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/InnerProductSpace",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3739d95cf95985a21f9d9c053801f73c9d7ff6e66b0163e27d281ec4a88bc02e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 203830,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 203830,
+  "cache_read_input_tokens": 2325662,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3635,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3635,
+    "cache_read_input_tokens": 180643,
+    "input_tokens": 2,
+    "output_tokens": 4180,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23263,
+  "output_tokens_details": {
+   "thinking_tokens": 18437
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
