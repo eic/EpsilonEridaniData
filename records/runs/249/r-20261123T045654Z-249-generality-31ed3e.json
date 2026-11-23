@@ -1,0 +1,203 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5673159999999995,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 175.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 168408,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 168408,
+    "cache_read_input_tokens": 1115522,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3596,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3596,
+      "cache_read_input_tokens": 147638,
+      "input_tokens": 2,
+      "output_tokens": 2246,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13015,
+    "output_tokens_details": {
+     "thinking_tokens": 8574
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.567316,
+ "dedupe_key": "eic/EpsilonEridani|249|e204be4a58f189d0da54a30e5abd4e1452798135|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "81bdfb4804bfbac4236b31a011c6cbbc79d0d05368bf5b4cc67608ec923028a1",
+ "diff_sha256": "81bdfb4804bfbac4236b31a011c6cbbc79d0d05368bf5b4cc67608ec923028a1",
+ "duration_s": 175.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`def azimuth (F : AzimuthalFrame) (p : Lorentz.Vector 3) := F.orientation.oangle F.leptonDir (transversePart p)` (line 127); `def relativeTransverse (k P : Vector 3) : E\u00b2` (LightFront.lean:332). Every azimuth lemma in the file is a Mathlib `oangle` lemma precomposed with `transversePart`, i.e. the content is `E\u00b2`-level.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/SIDIS/AzimuthalFrame.lean",
+   "fix": "Define `azimuth (F) (v : E\u00b2) := F.orientation.oangle F.leptonDir v` and let the four-vector form be `F.azimuth (transversePart p)` (`\u03c6_h = F.azimuth (transversePart P_h)`). State `inner_eq_norm_mul_norm_mul_cos_azimuth`, `areaForm_eq_norm_mul_norm_mul_sin_azimuth`, `azimuth_negOrientation`, and the zero lemmas at the `E\u00b2` level; keep `azimuth_smul_of_pos`, `azimuth_neg`, `azimuth_boost_two` as the four-vector corollaries, where `transversePart` genuinely enters.",
+   "issue": "`azimuth` is `Lorentz.Vector 3 \u2192 Real.Angle`, but the frame datum (`leptonDir : E\u00b2`, `orientation`) and all the content live in the transverse plane. Transverse momenta already in the repo are `E\u00b2`, not four-vectors, so their azimuth is inexpressible: `Lorentz.Vector.relativeTransverse (k P : Vector 3) : E\u00b2` (LightFront.lean:332), the `k_T`/`K_T` of roadmap \u00a70.2, has no azimuth in this API.",
+   "line": "127"
+  },
+  {
+   "evidence": "The proof is `refine Finset.sum_congr rfl fun i _ => ?_; rw [cos_zsmul\u2026, sin_zsmul\u2026, neg_mul_neg]` (lines 241-243) \u2014 the `\u03b9`, `s`, `A`, `B` parameters contribute nothing beyond the per-`i` identity.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/SIDIS/AzimuthalFrame.lean",
+   "fix": "State the pointwise lemma `A * Real.Angle.cos (m \u2022 F.azimuth Ph + n \u2022 F.azimuth S) + B * Real.Angle.sin (\u2026) = A * Real.Angle.cos (m \u2022 F.negOrientation.azimuth Ph + \u2026) + (-B) * Real.Angle.sin (\u2026)` and derive the `Finset` version from it by `Finset.sum_congr`.",
+   "issue": "`sum_cos_add_sin_negOrientation` is a `Finset.sum_congr` over a pointwise identity that is never stated. The general result (`A * cos \u03b8 + B * sin \u03b8` under the reversed orientation) is buried in the proof, so a caller with one modulation, or with a series that is not a `Finset` sum, cannot use it.",
+   "line": "233"
+  },
+  {
+   "evidence": "Line 412: `rw [\u2190 add_div_sqrt_two_sub_sub_div_sqrt_two \u2026, \u2190 plusComponent_def, \u2190 minusComponent_def, div_pos_iff_of_pos_right (by positivity), sub_pos]` reaches `minusComponent q < plusComponent q` before `hq` is used in either direction of the `constructor` that follows.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "fix": "State `inr_two_pos_iff_minusComponent_lt_plusComponent (q : Vector 3) : 0 < q (Sum.inr 2) \u2194 minusComponent q < plusComponent q` with no hypothesis, and derive the present lemma from it under `hq`.",
+   "issue": "`inr_two_pos_iff_plusComponent_pos` carries the hypothesis `plusComponent q * minusComponent q < 0`, but its proof first establishes the hypothesis-free fact `0 < q (Sum.inr 2) \u2194 minusComponent q < plusComponent q` (from `q\u00b3 = (q\u207a - q\u207b)/\u221a2`) and only then uses `hq`. The unconditional form is the natural basic lemma in this `Lorentz.Vector` (PhyslibAlpha-eligible) namespace and is not exposed.",
+   "line": "409"
+  }
+ ],
+ "head_sha": "e204be4a58f189d0da54a30e5abd4e1452798135",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 249,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e399c05682b84db44608da9b92f8eede8ba04a2b7a7fd85a566021ac598dd1ba",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261123T045654Z-249-generality-31ed3e",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-23T04:56:54Z",
+ "submitted_by": "wdconinc",
+ "summary": "The oriented-angle material is at the right upstream level, but `azimuth` is defined only on four-vectors, so it cannot be applied to the transverse momenta this roadmap layer already produces as `EuclideanSpace \u211d (Fin 2)` values; two smaller statements also hide the more general fact inside their proofs.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/SIDIS/AzimuthalFrame.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Geometry/Euclidean/Angle/Oriented/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/InnerProductSpace/Orientation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Geometry/Euclidean/Angle/Oriented/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Geometry/Euclidean/Angle/Oriented",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/TransverseMomentumDistributions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/TransverseMomentumDistributions/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8a31804fd32a179cb2f570c1ac665b1160124d5d55733c86bd47d17431b73e91",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 168408,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 168408,
+  "cache_read_input_tokens": 1115522,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3596,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3596,
+    "cache_read_input_tokens": 147638,
+    "input_tokens": 2,
+    "output_tokens": 2246,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13015,
+  "output_tokens_details": {
+   "thinking_tokens": 8574
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
