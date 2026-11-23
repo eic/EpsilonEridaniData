@@ -1,0 +1,174 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.208793,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 174.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 169201,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 169201,
+    "cache_read_input_tokens": 406366,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 13249,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 13249,
+      "cache_read_input_tokens": 138343,
+      "input_tokens": 2,
+      "output_tokens": 3145,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12542,
+    "output_tokens_details": {
+     "thinking_tokens": 9839
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.208793,
+ "dedupe_key": "eic/EpsilonEridani|260|52e1f2a16bab8b03d8de233c4730c07c2b1a9577|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "b3bd7675193dfa9679db52c5f24f489ffedce7ca4fc32f2aaa9b33e6267cf871",
+ "diff_sha256": "b3bd7675193dfa9679db52c5f24f489ffedce7ca4fc32f2aaa9b33e6267cf871",
+ "duration_s": 174.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `onShellEnergy_massShellAction` in the diff yields only `onShellEnergy_massShellAction_rotation` (line 395); the file develops both generators, so the parallel form is warranted.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "fix": "Add the public lemma `onShellEnergy_massShellAction_boost`, proved exactly as the rotation version is at lines 395-399 (congrArg timeComponent on `massShell_massShellAction_boost`, then `timeComponent_boost_smul_massShell`).",
+   "issue": "The boost side lacks the chart-level energy lemma that the rotation side has. `onShellEnergy_massShellAction_rotation` (line 395) is public, but there is no `onShellEnergy_massShellAction_boost : onShellEnergy m (massShellAction (boost i \u03b2 h\u03b2) m p) = \u03b3 \u03b2 * (onShellEnergy m p - \u03b2 * p i)`. `timeComponent_boost_smul_massShell` (line 315) states it only for the four-vector, so a consumer must redo the `congrArg Lorentz.Vector.timeComponent` + `massShell_massShellAction_boost` step themselves \u2014 the boosted energy `E' = \u03b3(E \u2212 \u03b2p_i)` is the quantity the two-body formula and RAMBO need.",
+   "line": 320
+  },
+  {
+   "evidence": "Lines 80-95 are the full `onShellEnergy` API in the diff; no `_pos` lemma exists. The private proof at line 292 needs exactly this fact and establishes it inline (`Real.sqrt_pos.2 (by positivity)`).",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "fix": "Add `onShellEnergy_pos {m : \u211d} (hm : m \u2260 0) (p) : 0 < onShellEnergy m p` (and, if wanted for the massless case, the `p \u2260 0` variant), proved by `Real.sqrt_pos.2 (by positivity)`.",
+   "issue": "`onShellEnergy`'s characteristic API has `onShellEnergy_nonneg`, `sq_onShellEnergy`, `norm_le_onShellEnergy`, `continuous_onShellEnergy` but no strict positivity. Every consumer of `oneBodyMeasure m` for `m \u2260 0` needs `2 * onShellEnergy m p \u2260 0` to manipulate the density `(2E)\u207b\u00b9` (invert it, show the measure is equivalent to `volume`, or push it through `ENNReal.ofReal`), and currently has to re-derive it from `sq_onShellEnergy` plus nonnegativity.",
+   "line": 80
+  },
+  {
+   "evidence": "RotationsExtensions.lean:43 `..., h00, rotations_inl_0_inr]` and :50 `..., rotations_inr_inl_0]` \u2014 both are used as simp lemmas inside the same file; upstream `Physlib/Relativity/LorentzGroup/Rotations.lean:188` tags only `toVector_rotation`.",
+   "file": "EpsilonEridani/Relativity/LorentzGroup/RotationsExtensions.lean",
+   "fix": "Tag both `@[simp]`. The LHS patterns `(\u2191\u039b).1 (Sum.inr j) (Sum.inl 0)` and `(\u2191\u039b).1 (Sum.inl 0) (Sum.inr j)` are headed by a `Rotations` coercion with constant RHS `0`, so they cannot loop; Physlib's existing `@[simp] toVector_rotation` does not cover them syntactically.",
+   "issue": "`rotations_inr_inl_0` (line 27) and `rotations_inl_0_inr` (line 32) are the normal-form lemmas of the module \u2014 a closed matrix entry of a rotation rewrites to `0` \u2014 but carry no `@[simp]`. The file itself passes them to `simp` by hand at lines 43 and 50, and the main file relies on them via `spatialPart_rotations_smul_apply`; without the attribute every downstream user must repeat them in the simp set.",
+   "line": 27
+  }
+ ],
+ "head_sha": "52e1f2a16bab8b03d8de233c4730c07c2b1a9577",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 260,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ad606cd536683cf85c3f90a25543240ee229077db0a0fb472ba216ada76a5653",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261123T092611Z-260-api-design-d3adc5",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-23T09:26:11Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and compatibility-free, with `(rfl)` def-lemmas and no exposed bodies, but the characteristic API is incomplete on two counts (no chart form of the boosted energy, no positivity of `onShellEnergy`) and the two rotation entry lemmas that the file itself feeds to `simp` by hand are not tagged `@[simp]`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/RotationsExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Rotations.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "cd1a8578b30df9472ab027a8a6077c5a1ef839c2a57ac4eb481299eaed857540",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 169201,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 169201,
+  "cache_read_input_tokens": 406366,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 13249,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 13249,
+    "cache_read_input_tokens": 138343,
+    "input_tokens": 2,
+    "output_tokens": 3145,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12542,
+  "output_tokens_details": {
+   "thinking_tokens": 9839
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

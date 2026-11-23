@@ -1,0 +1,240 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.831664499999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 177.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 161589,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 161589,
+    "cache_read_input_tokens": 1775979,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2463,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2463,
+      "cache_read_input_tokens": 141767,
+      "input_tokens": 2,
+      "output_tokens": 1939,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13105,
+    "output_tokens_details": {
+     "thinking_tokens": 7886
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.831664,
+ "dedupe_key": "eic/EpsilonEridani|260|52e1f2a16bab8b03d8de233c4730c07c2b1a9577|placement|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "b3bd7675193dfa9679db52c5f24f489ffedce7ca4fc32f2aaa9b33e6267cf871",
+ "diff_sha256": "b3bd7675193dfa9679db52c5f24f489ffedce7ca4fc32f2aaa9b33e6267cf871",
+ "duration_s": 177.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Precedent in-repo: `EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean` holds exactly this shape of material \u2014 a chart on `Lorentz.Vector` (`lightFrontEquiv`) plus the group acting on it (`transverseBoost`, `transverseIsometry`) in the `EpsilonEridani` namespace at the Relativity layer, even though its motivation is parton Wigner distributions. `MinkowskiProductExtensions.lean:109` likewise keeps mass-shell facts (`exists_massShell_pair_angle_eq`, used from `QFT/Scattering/Photoproduction/Kinematics/Basic.lean:274`) at the Relativity layer rather than in the QFT file that consumes them. The moved block's only non-Mathlib dependencies are `Lorentz.Vector.ofTimeAndSpatial` (Vector/BasicExtensions.lean:75), `minkowskiProduct_self_eq_sq_sub`, and Physlib's boosts/rotations \u2014 all available one layer down.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "fix": "Move that measure-free API to the Relativity layer, e.g. a new `EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MassShell.lean` importing `Vector/BasicExtensions`, `MinkowskiProductExtensions` and the two new LorentzGroup extension modules; have `PhaseSpace.lean` import it and retain only `oneBodyMeasure`, the one-dimensional boost lemmas and the two `measurePreserving_*` theorems.",
+   "issue": "`onShellEnergy`, `massShell`, `massShellAction` and their lemmas (lines 71-184, plus `massShellAction_boost_apply_self`/`massShellAction_boost_apply_of_ne`/`timeComponent_boost_smul_massShell`/`massShell_massShellAction_boost` and `massShell_massShellAction_rotation`/`onShellEnergy_massShellAction_rotation`/`norm_massShellAction_rotation`) depend on no measure theory and are broadly useful relativistic kinematics, but live in a module about the phase-space measure. Any later user of the mass shell (n-body measure, Emission, Photoproduction, Diffractive kinematics) must import a MeasureTheory-heavy QFT module to get it.",
+   "line": 71
+  }
+ ],
+ "head_sha": "52e1f2a16bab8b03d8de233c4730c07c2b1a9577",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 260,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2e92074bbe413b41e7b11698b5d425ed875763e7b9b75e1b9481a65246238702",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261123T092727Z-260-placement-1d22e0",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-23T09:27:27Z",
+ "submitted_by": "wdconinc",
+ "summary": "The two Physlib-mirrored extension modules and all imports are correctly placed. But the mass-shell chart and the Lorentz action on it \u2014 generic relativistic kinematics that uses no measure theory \u2014 are buried in the phase-space-measure module, while the repo already keeps analogous Lorentz.Vector chart/action material in Relativity/Tensors/RealTensor/Vector/.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Measure/Haar/InnerProductSpace.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Sqrt.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Boosts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 23,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a0579fa086b44f289293a1836d72025001c6ee62817435c67ba1524cb334f764",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 161589,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 161589,
+  "cache_read_input_tokens": 1775979,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2463,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2463,
+    "cache_read_input_tokens": 141767,
+    "input_tokens": 2,
+    "output_tokens": 1939,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13105,
+  "output_tokens_details": {
+   "thinking_tokens": 7886
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

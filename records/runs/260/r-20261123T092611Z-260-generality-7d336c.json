@@ -1,0 +1,195 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.0707345000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 302.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 186074,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 186074,
+    "cache_read_input_tokens": 1344019,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1329,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1329,
+      "cache_read_input_tokens": 167973,
+      "input_tokens": 2,
+      "output_tokens": 6766,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21515,
+    "output_tokens_details": {
+     "thinking_tokens": 17763
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 3.070735,
+ "dedupe_key": "eic/EpsilonEridani|260|52e1f2a16bab8b03d8de233c4730c07c2b1a9577|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "b3bd7675193dfa9679db52c5f24f489ffedce7ca4fc32f2aaa9b33e6267cf871",
+ "diff_sha256": "b3bd7675193dfa9679db52c5f24f489ffedce7ca4fc32f2aaa9b33e6267cf871",
+ "duration_s": 302.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PhaseSpace.lean:412-425 (`hrot` has no `m` on the right-hand side; `L` is a local `let`). Physlib Relativity/LorentzGroup/Rotations.lean:78 defines `ofSpecialOrthogonal.invFun \u039b := \u27e8fun i j => \u039b.1.1 (Sum.inr i) (Sum.inr j), _\u27e9`, exactly the block `hrot` sums over, with membership in `Matrix.specialOrthogonalGroup (Fin d) \u211d` already proved there.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "fix": "Expose the general statement and derive the rest from it: add `massShellAction_rotation_apply (\u039b : Rotations d) (m : \u211d) (p) (j) : massShellAction \u039b m p j = \u2211 k, (\u039b : LorentzGroup d).1 (Sum.inr j) (Sum.inr k) * p k` (one line from `spatialPart_rotations_smul_apply` + `spatialPart_massShell`), hence mass-independence, and get `norm_massShellAction_rotation` and Lebesgue-measure preservation from it. Equivalently, strengthen `spatialPart_rotations_smul_apply` in RotationsExtensions.lean to the matrix form `((\u039b : LorentzGroup d) \u2022 v).spatialPart = (ofSpecialOrthogonal.symm \u039b).1.mulVec v.spatialPart`, so the isometry comes from `Matrix.mem_specialOrthogonalGroup_iff` rather than being rebuilt by hand.",
+   "issue": "`hrot` (line 412-414) proves `massShellAction \u039b m p j = \u2211 k, \u039b.1 (Sum.inr j) (Sum.inr k) * p k`, i.e. the rotation action on momenta does not depend on `m` at all, and `let L` (415-423) builds the corresponding linear isometry; both stay private to the proof. The public rotation API (`onShellEnergy_massShellAction_rotation` 395, `norm_massShellAction_rotation` 401, `massShell_massShellAction_rotation` 387) is all mass-indexed, and `norm_massShellAction_rotation` is derived by squaring the energy identity instead of from the isometry that the proof already has.",
+   "line": 412
+  }
+ ],
+ "head_sha": "52e1f2a16bab8b03d8de233c4730c07c2b1a9577",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 260,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0da40a566788e6ea55070bfab7ec8ded09271570eddeb72127d0ca46f8693980",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261123T092611Z-260-generality-7d336c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-23T09:26:11Z",
+ "submitted_by": "wdconinc",
+ "summary": "Hypotheses and the `\u039b`-generality of the main definitions are at the right level, but the rotation section proves the general fact inline and exposes only mass-indexed specializations: for `\u039b : Rotations d` the action on spatial momenta is independent of `m` and is a linear isometry, yet that object is built inside `measurePreserving_massShellAction_rotation` and never stated.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/RotationsExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Rotations.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "18c913c79c7ad53ce521c11178a3dbeac8fe89d6a0147869e0b94b5ab3618c56",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 186074,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 186074,
+  "cache_read_input_tokens": 1344019,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1329,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1329,
+    "cache_read_input_tokens": 167973,
+    "input_tokens": 2,
+    "output_tokens": 6766,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21515,
+  "output_tokens_details": {
+   "thinking_tokens": 17763
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

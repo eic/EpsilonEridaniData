@@ -1,0 +1,235 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.667623,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 176.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 176083,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 176083,
+    "cache_read_input_tokens": 1146136,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5336,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5336,
+      "cache_read_input_tokens": 153724,
+      "input_tokens": 2,
+      "output_tokens": 5078,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13345,
+    "output_tokens_details": {
+     "thinking_tokens": 8086
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.667623,
+ "dedupe_key": "eic/EpsilonEridani|260|52e1f2a16bab8b03d8de233c4730c07c2b1a9577|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "b3bd7675193dfa9679db52c5f24f489ffedce7ca4fc32f2aaa9b33e6267cf871",
+ "diff_sha256": "b3bd7675193dfa9679db52c5f24f489ffedce7ca4fc32f2aaa9b33e6267cf871",
+ "duration_s": 176.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib generates `MeasurableEquiv.piFinSuccAbove_symm_apply` (`@[simps! -fullyApplied]` on `MeasurableSpace/Embedding.lean:565`) and `MeasurableEquiv.coe_toLp_symm` (`Analysis/Normed/Lp/MeasurableSpace.lean:69`); Mathlib's own `TorusIntegral.lean:229` rewrites with `piFinSuccAbove_symm_apply` rather than relying on `rfl`.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "fix": "Prove it from the simp lemmas: `by simp [e, MeasurableEquiv.piFinSuccAbove_symm_apply, MeasurableEquiv.coe_toLp]` (or add a comment stating why no lemma route exists).",
+   "issue": "`hsymm : \u2200 q r, e.symm (q, r) = WithLp.toLp 2 (Fin.insertNth i q r) := fun _ _ => rfl` closes the key chart identity by undocumented defeq through `MeasurableEquiv.symm`, `.trans`, `MeasurableEquiv.toLp` and `Fin.insertNthEquiv`; any change to how those wrappers are defined silently breaks the whole boost proof.",
+   "line": 342
+  },
+  {
+   "evidence": "`upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Tensorial.lean:165`: `lemma smul_eq_sum (i) (\u039b) (p) : (\u039b \u2022 p) i = \u2211 j, \u039b.1 i j * p j`; Physlib's own `Boosts/Apply.lean:30,38,46` uses it for exactly this purpose.",
+   "file": "EpsilonEridani/Relativity/LorentzGroup/RotationsExtensions.lean",
+   "fix": "In all three places use `Lorentz.Vector.smul_eq_sum` plus `Fintype.sum_sum_type`, dropping `smul_eq_mulVec, Matrix.mulVec, dotProduct` from the simp sets.",
+   "issue": "`timeComponent_rotations_smul` (line 42), `spatialPart_rotations_smul_apply` (line 49) and `PhaseSpace.massShellAction_apply` (PhaseSpace.lean:151) each expand the Lorentz action by unfolding the definitions `Matrix.mulVec` and `dotProduct` under `smul_eq_mulVec`, instead of using the component lemma Physlib already provides.",
+   "line": 42
+  },
+  {
+   "evidence": "Lines 234-237 and 248-251 are character-identical; the same identity is also re-derived upstream at `upstream/Physlib/Physlib/Electromagnetism/Kinematics/Boosts.lean:88`, so the lemma is reusable, not a one-off.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "fix": "State it once as `\u03b3_sq_mul_one_sub_sq {\u03b2 : \u211d} (h\u03b2 : |\u03b2| < 1) : \u03b3 \u03b2 ^ 2 * (1 - \u03b2 ^ 2) = 1` in `Relativity/LorentzGroup/Boosts/BasicExtensions.lean` next to `\u03b3_pos`, and use it in both proofs.",
+   "issue": "The four-line block proving `h1 : \u03b3 \u03b2 ^ 2 * (1 - \u03b2 ^ 2) = 1` is copied verbatim in `sqrt_add_sq_boost` (234-237) and `boost_neg_boost` (248-251).",
+   "line": 234
+  },
+  {
+   "evidence": "Lines 218-220, 226-228 and 326-329 all open with `(le_abs_self _).trans (abs_mul _ _).le` followed by the same `gcongr` step.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "fix": "Factor the common step as a private lemma `mul_le_of_abs_le_one {\u03b2 x y : \u211d} (h\u03b2 : |\u03b2| \u2264 1) (hx : |x| \u2264 y) : \u03b2 * x \u2264 y` (plus a strict variant) and derive all three uses from it with `Real.abs_le_sqrt` / `norm_le_onShellEnergy`.",
+   "issue": "The calc `\u03b2 * x \u2264 |\u03b2| * |x| \u2264 1 * |x| \u2264 y` is written out three times: `mul_le_sqrt_add_sq` (218-220), `mul_lt_sqrt_add_sq` (226-228) and inside `massShell_massShellAction_boost` (326-329).",
+   "line": 218
+  },
+  {
+   "evidence": "Line 272 `intro q hq` binds `hq : q \u2208 ({0}\u1d9c : Set \u211d)` from the `\u2200 q \u2208 ({0}\u1d9c : Set \u211d)` at line 270; line 289's `fun q hq` likewise.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "fix": "Use `Set.mem_compl_singleton_iff.mp hq` (or `by simpa using hq`) in both places.",
+   "issue": "`have : q \u2260 0 := hq` (line 274) and `have hq : q \u2260 0 := hq` (line 290) retype a hypothesis `hq : q \u2208 ({0}\u1d9c : Set \u211d)` as `q \u2260 0` by raw defeq through `Set.compl` and `Set.singleton`, with no comment.",
+   "line": 274
+  },
+  {
+   "evidence": "Lines 415-425 contain the only proof of additivity and homogeneity of `massShellAction \u039b m`; the remaining milestone step (rotation conjugates of axis boosts, per the PR description) needs this fact again.",
+   "file": "EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "fix": "Promote it to a top-level `def massShellAction\u2097\u1d62 (\u039b : Rotations d) (m : \u211d) : EuclideanSpace \u211d (Fin d) \u2192\u2097\u1d62[\u211d] EuclideanSpace \u211d (Fin d)` with `coe_massShellAction\u2097\u1d62`, and have `measurePreserving_massShellAction_rotation` use it.",
+   "issue": "The fact that a rotation acts on spatial momenta as a linear isometry is built inline as `let L : ... \u2192\u2097\u1d62[\u211d] ...` with its `map_add'`/`map_smul'` proofs buried in the measure-preservation proof, so the linearity is unavailable elsewhere even though `norm_massShellAction_rotation` is already public.",
+   "line": 415
+  }
+ ],
+ "head_sha": "52e1f2a16bab8b03d8de233c4730c07c2b1a9577",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 260,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3d572066da253559bd84a0f0b02ad0c335576ed18d99cdbe7310d5a5f6782053",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261123T093024Z-260-proof-quality-b8c7ed",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-23T09:30:24Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs work but reach around available upstream API: three component proofs unfold `Matrix.mulVec`/`dotProduct` by hand where Physlib's `Lorentz.Vector.smul_eq_sum` applies, a chart-identity is closed by bare `rfl` through `MeasurableEquiv.trans`/`toLp` wrappers, and two algebraic sub-arguments are copied verbatim instead of being lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/RotationsExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Boosts/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/MeasurableSpace/Embedding.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d9272f617d0416e88f1331f56c5a015c86e73d54bd640f742e6ac9243e573a99",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 176083,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 176083,
+  "cache_read_input_tokens": 1146136,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5336,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5336,
+    "cache_read_input_tokens": 153724,
+    "input_tokens": 2,
+    "output_tokens": 5078,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13345,
+  "output_tokens_details": {
+   "thinking_tokens": 8086
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
