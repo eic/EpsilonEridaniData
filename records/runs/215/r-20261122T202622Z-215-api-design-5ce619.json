@@ -1,0 +1,165 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4709205,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 115.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 194035,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 194035,
+    "cache_read_input_tokens": 636771,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4276,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4276,
+      "cache_read_input_tokens": 166218,
+      "input_tokens": 2,
+      "output_tokens": 2900,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8485,
+    "output_tokens_details": {
+     "thinking_tokens": 6021
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d245b5ef9f515e1c231c93995c042da5e13ee357",
+ "cost_usd": 2.470921,
+ "dedupe_key": "eic/EpsilonEridani|215|8628e7dcde4797a61b0012df99aff46a3212ab97|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4dcdc2ff5175a188254cf6ea55d83389a5a3d90a35870b719bee890f4488f5e4",
+ "diff_sha256": "4dcdc2ff5175a188254cf6ea55d83389a5a3d90a35870b719bee890f4488f5e4",
+ "duration_s": 115.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "NeutralCurrent.lean:242-246 `gammaZInterference x y := gammaZTerm K M x Q2 y q \u03b7 \u2113 (HF x y) h`; Interference/Basic.lean:69-70 `minus_eq : \u2200 x y, sigmaMinus x y = D.photon x y + D.zBoson x y - D.gammaZInterference x y`; Electroweak/NeutralCurrent.lean:148 `(sigma true x y - sigma false x y) / 2 = D.gammaZInterference x y`; this file's own `gammaZTerm_true_add_false` shows the interference term is not odd.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "fix": "Drop the `h` parameter and build the bundle from the helicity-even/odd parts instead: `zBoson := ((\u03b3Z_true + \u03b3Z_false) + (Z_true + Z_false))/2`, `gammaZInterference := ((\u03b3Z_true - \u03b3Z_false) + (Z_true - Z_false))/2`, and add the characteristic lemma `neutralCurrent ... h = D.photon x y + D.zBoson x y + helicitySign h * D.gammaZInterference x y` plus `ParityOddFromInterferenceOnly D (fun h x y => neutralCurrent ... h)`, keeping the reuse bridge. Update the projection lemmas and `totalNeutralCurrent_neutralCurrentDecomposition` accordingly.",
+   "issue": "`neutralCurrentDecomposition K M Q2 q \u03b7 \u2113 h HF` fills `gammaZInterference` with `gammaZTerm ... h` at one fixed helicity. Every consumer of `NeutralCurrentDecomposition` reads that field as the helicity-odd coefficient: `Interference.HelicityInterferenceIsolationAssumptions.minus_eq` (Interference/Basic.lean:69) and `canonicalMinus_eq_total` (:108) compute `\u03c3_L = photon + zBoson - gammaZInterference`, and `Electroweak.ParityOddFromInterferenceOnly` (Electroweak/NeutralCurrent.lean:147) requires `(\u03c3_true - \u03c3_false)/2 = gammaZInterference`. Neither holds for this bundle: `gammaZTerm_true_add_false` (:369) and `zBosonTerm_true_sub_false` (:390) are generally nonzero, so `canonicalHelicityModel` applied to it yields a wrong `\u03c3_L`. The warning in the docstring does not reach a consumer who only sees the type.",
+   "line": "242"
+  }
+ ],
+ "head_sha": "8628e7dcde4797a61b0012df99aff46a3212ab97",
+ "merge_base_sha": "8b52f6a293d930d2445354db8480a605944ea0b1",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 215,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "9c4318e7d62c847575ba1e44f4103e4733b09ef6a75fbcd4616676f27f9b570a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T202622Z-215-api-design-5ce619",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T20:26:22Z",
+ "submitted_by": "wdconinc",
+ "summary": "The exposed surface is otherwise clean (bodies unexposed, `*_def` lemmas via `(rfl)`, `helicitySign`/`helicityCoupling` `@[no_expose]` with simp-annotated `_true`/`_false`, old `Interference.helicitySign` deleted rather than aliased). The one defect is `neutralCurrentDecomposition`, whose `gammaZInterference` field does not mean what every consumer of `Electroweak.NeutralCurrentDecomposition` takes that field to mean.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/NeutralCurrent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Interference/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "87b10db30b9b371cf1587efc65d9e3bc165f649d758dfdf8a4157fd9286bfd9a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 194035,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 194035,
+  "cache_read_input_tokens": 636771,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4276,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4276,
+    "cache_read_input_tokens": 166218,
+    "input_tokens": 2,
+    "output_tokens": 2900,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8485,
+  "output_tokens_details": {
+   "thinking_tokens": 6021
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

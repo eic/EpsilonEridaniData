@@ -1,0 +1,224 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 4.117113,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 390.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 237262,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 237262,
+    "cache_read_input_tokens": 2062606,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3241,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3241,
+      "cache_read_input_tokens": 198833,
+      "input_tokens": 2,
+      "output_tokens": 3381,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 28522,
+    "output_tokens_details": {
+     "thinking_tokens": 23856
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "cost_usd": 4.117113,
+ "dedupe_key": "eic/EpsilonEridani|170|6585b81f5696863ab49744b95bcacb85d65acde0|api-design|claude-opus-5|30e3cfe49d22c07d|production|7",
+ "diff_blob": "6694ebd27d5986fe60186d961f35e2c737928353ec8498918268d9a4043c034f",
+ "diff_sha256": "6694ebd27d5986fe60186d961f35e2c737928353ec8498918268d9a4043c034f",
+ "duration_s": 390.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: the only occurrences of `inter_valence_conj_eq_sdiff` / `IsValenceFlavor.conj` are the declarations and the docstring lines (:58, :59, :195). The same friction forced `rw [\u2190 pionMultiplet_conj, \u2190 pionMultiplet_valence]` before `exact chargeConjRelation_valenceStepFrag pionMultiplet` at Fragmentation/Symmetries.lean:563-565.",
+   "file": "EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "fix": "State them for a bare `valence` with the compatibility hypothesis (`\u2200 h s, Species.conj s \u2208 valence (\u03c4 h) \u2194 s \u2208 valence h`), or at minimum make `C` explicit and add pion-level corollaries phrased with `Pion.valence`/`Pion.conj`.",
+   "issue": "`IsValenceFlavor.conj` (:186) and `IsValenceFlavor.inter_valence_conj_eq_sdiff` (:195) are stated as `IsValenceFlavor C.valence h i` with `{C : HadronMultiplet ..}` implicit. `HadronMultiplet.valence ?C =?= Pion.valence` is a non-pattern unification and `pionMultiplet`'s body is not exposed (`public section` without `@[expose]`, :68), so neither lemma applies to `isValenceFlavor_pion_plus`/`_minus` (:345, :352), the only instances in the repo; both are unused repo-wide.",
+   "line": "186"
+  },
+  {
+   "evidence": "Symmetries.lean:344, :365, :421 carry the identical hypothesis; :432 proves the charge-conjugation case inline from `HadronMultiplet.mem_valence_conj` (ValenceContent.lean:141), which is stated in the conj-shifted form and so is not directly usable as that hypothesis.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "Add `def ValenceInvariant (valence : Hadron \u2192 Finset (Species Flavor)) (\u03c4 : Hadron \u2192 Hadron) (\u03c3 : Species Flavor \u2192 Species Flavor) : Prop := \u2200 h s, \u03c3 s \u2208 valence (\u03c4 h) \u2194 s \u2208 valence h` in `ValenceContent.lean`, state the three lemmas against it, and add `HadronMultiplet.valenceInvariant_conj` plus the pion instance (`pion_map_swap_mem_valence_conj_iff`, ValenceContent.lean:367) as its witnesses.",
+   "issue": "The valence-compatibility hypothesis `\u2200 h s, \u03c3 s \u2208 valence (\u03c4 h) \u2194 s \u2208 valence h` is an anonymous \u2200 repeated in `favored_map_of_flavorSymmetryRelation` (:344), `unfavored_map_of_flavorSymmetryRelation` (:365) and `invariant_valenceStepFrag` (:421); there is no named predicate and no `HadronMultiplet` lemma supplying it for the (conj, conj) pair, so that instance is re-derived inline (`fun h s => by rw [C.mem_valence_conj, Species.conj_conj]`, :432) and a user cannot name the property.",
+   "line": "344"
+  },
+  {
+   "evidence": "Precedent in the same PR and namespace: `@[simp] Species.conj_conj` with `conj_involutive := conj_conj` (Species.lean:138-143) and `@[simp] HadronMultiplet.conj_conj` (ValenceContent.lean:148-150). grep for `conj_conj|swap_swap` shows no `Pion.conj_conj` or `PionFlavor.swap_swap`.",
+   "file": "EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "fix": "Add `@[simp] theorem Pion.conj_conj (h : Pion) : conj (conj h) = h` and `@[simp] theorem PionFlavor.swap_swap (i : PionFlavor) : swap (swap i) = i`, deriving `conj_involutive`/`swap_involutive` from them.",
+   "issue": "`Pion.conj` (:285) and `PionFlavor.swap` (:229) ship only the `Function.Involutive` forms; there is no `@[simp]` pointwise `Pion.conj_conj` / `PionFlavor.swap_swap`, so simp cannot cancel a double application on a variable. `@[simp] pionMultiplet_conj` (:336) rewrites `pionMultiplet.conj` into `Pion.conj`, i.e. out of the one form that does have a cancellation lemma.",
+   "line": "285"
+  }
+ ],
+ "head_sha": "6585b81f5696863ab49744b95bcacb85d65acde0",
+ "merge_base_sha": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 170,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "7e3d4f4a0b32b57fe1fa68afb113a003937accbeff383645f7f0baa7373876b1",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 7,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261123T004806Z-170-api-design-956875",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-23T00:48:06Z",
+ "submitted_by": "wdconinc",
+ "summary": "The comap/Invariant, favored/unfavored and flavorPair APIs are complete and bodies are unexposed, but the multiplet-keyed `IsValenceFlavor` lemmas cannot be applied to the file's own pion facts, the valence-compatibility hypothesis of four public theorems has no name or `HadronMultiplet` instance, and `Pion.conj`/`PionFlavor.swap` lack the `@[simp]` involution lemmas their precedents carry.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Hadronization/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "664b200d81282fb601fdc0fb2af8ae136c1461cbe4deb60cc20eb3afc24da8e1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 237262,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 237262,
+  "cache_read_input_tokens": 2062606,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3241,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3241,
+    "cache_read_input_tokens": 198833,
+    "input_tokens": 2,
+    "output_tokens": 3381,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 28522,
+  "output_tokens_details": {
+   "thinking_tokens": 23856
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

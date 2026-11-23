@@ -1,0 +1,142 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8224315000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 100.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 165249,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 165249,
+    "cache_read_input_tokens": 9143,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 138195,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 138195,
+      "cache_read_input_tokens": 5920,
+      "input_tokens": 2,
+      "output_tokens": 6370,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6614,
+    "output_tokens_details": {
+     "thinking_tokens": 5161
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d245b5ef9f515e1c231c93995c042da5e13ee357",
+ "cost_usd": 1.822432,
+ "dedupe_key": "eic/EpsilonEridani|215|8628e7dcde4797a61b0012df99aff46a3212ab97|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4dcdc2ff5175a188254cf6ea55d83389a5a3d90a35870b719bee890f4488f5e4",
+ "diff_sha256": "4dcdc2ff5175a188254cf6ea55d83389a5a3d90a35870b719bee890f4488f5e4",
+ "duration_s": 100.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 332-335 and 347-351: `linear_combination \u03b7 ^ 2 * (K / (x * Q2)) * \u2113.gA * (\u2113.gA * crossSectionBracket M 0 x Q2 y H.zBosonF1 H.zBosonF2 0 - (helicitySign h * \u2113.gA - 2 * \u2113.gV) * (Yminus y * (x * H.zBosonF3))) * helicitySign_sq h`, with no comment in either proof.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "fix": "Either prefix each `linear_combination` with a one-line comment saying the multiplier of `helicitySign_sq` eliminates the `\u03bb\u00b2` produced by `(g_V - \u03bb g_A)` squared/expanded, or replace the certificate with a case split: `cases h <;> simp only [helicitySign_true, helicitySign_false, ...] <;> ring`, which needs no hand-computed coefficient.",
+   "issue": "`gammaZTerm_eq_crossSectionBracket_sub` (line 334-335) and `zBosonTerm_eq_crossSectionBracket_sub` (line 349-351) close with an uncommented hand-computed multiplier of `helicitySign_sq h`; the zBoson one is a three-factor product containing `crossSectionBracket` itself. Nothing in the file records that the certificate exists only to substitute `\u03bb\u00b2 = 1`, so the reason the proof works is invisible and the coefficient must be recomputed by hand on any restatement.",
+   "line": 334
+  },
+  {
+   "evidence": "Line 288 of the same file already writes `photonTerm_eq_sq_mul_dSigmaDxDQ2 (s := 0)` and line 296 `photonTerm_eq_sq_mul_loNCdSigma (hCG := hCG)`, so the named form is available and the positional chains are gratuitous.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "fix": "Use the named form the same file already uses: `photonTerm_eq_sq_mul_dSigmaDxDQ2 (s := helicitySign h)` and `dSigmaDxDQ2_eq_loNCdSigma (hCG := hCG)`.",
+   "issue": "`photonTerm_eq_sq_mul_dSigmaDxDQ2 _ _ _ _ _ _ _ (helicitySign h)` (line 229) and `dSigmaDxDQ2_eq_loNCdSigma _ _ _ _ _ _ _ hCG` (line 288) pass seven positional placeholders; adding or reordering an entry in the `variable` block at line 141 silently shifts the explicit argument into the wrong slot.",
+   "line": 229
+  }
+ ],
+ "head_sha": "8628e7dcde4797a61b0012df99aff46a3212ab97",
+ "merge_base_sha": "8b52f6a293d930d2445354db8480a605944ea0b1",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 215,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1223d73cd757250a4b60fdc6df80b5a41cc3b8dc97b93ce4114696b5e0860c2c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T202818Z-215-proof-quality-45cd31",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T20:28:18Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly short, ring/linear_combination-based and robust, but two closed-form lemmas close with hand-computed `linear_combination` certificates multiplying `helicitySign_sq` with no comment explaining why, and two applications use long positional `_` chains where the file elsewhere uses named arguments.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "825b0fc9c602437866ce80a330a5311a40264e8404fec6493fa6ecce7ce0526c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 165249,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 165249,
+  "cache_read_input_tokens": 9143,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 138195,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 138195,
+    "cache_read_input_tokens": 5920,
+    "input_tokens": 2,
+    "output_tokens": 6370,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6614,
+  "output_tokens_details": {
+   "thinking_tokens": 5161
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
