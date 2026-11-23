@@ -1,0 +1,183 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2463900000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 173.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 153007,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 153007,
+    "cache_read_input_tokens": 774580,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3153,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3153,
+      "cache_read_input_tokens": 141448,
+      "input_tokens": 2,
+      "output_tokens": 3239,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13158,
+    "output_tokens_details": {
+     "thinking_tokens": 10003
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 2.24639,
+ "dedupe_key": "eic/EpsilonEridani|234|f609760efd5f979b2a21f3f79e6a172627113542|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "004bae604309b5e57a3560766e1bc35be7f4699268feb0e97829dc02aae81478",
+ "diff_sha256": "004bae604309b5e57a3560766e1bc35be7f4699268feb0e97829dc02aae81478",
+ "duration_s": 173.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `IsBigO.of_bound|inv_anti\u2080` hits Consistency.lean:139,144,171,174 and Asymptotics.lean:177,181 with the same three-line body.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/Consistency.lean",
+   "fix": "Extract one helper next to `isBigO_harmonic_sub_log_sub_eulerMascheroniConstant_inv`, e.g. `theorem isBigO_inv_natCast_add (a : \u211d) : (fun n : \u2115 => ((n : \u211d) + a)\u207b\u00b9) =O[atTop] fun n : \u2115 => (n : \u211d)\u207b\u00b9`, and derive the three products from it with `IsBigO.mul`/`isBigO_const_mul_self` instead of fresh `nlinarith` bounds at each site.",
+   "issue": "The fact \"a rational function falling like 1/N is O(1/N)\" is re-proved inline three times by the same `refine IsBigO.of_bound c; filter_upwards; rw [Real.norm_of_nonneg \u2026]; exact inv_anti\u2080 (by positivity) (by nlinarith)` pattern: `hrat` at 138-144, `hle\u2081` at 169-171, `hle\u2082` at 172-174. The identical pattern already exists at Mathematics/HarmonicSum/Asymptotics.lean:176-181, so the reusable fact stays hidden in four private copies.",
+   "line": 138
+  },
+  {
+   "evidence": "Consistency.lean:175-179; Mathlib positivity docstring: \"use a local hypothesis of the form `0 \u2264 e`, `0 < e` or `e \u2260 0`\" (Positivity/Core.lean:573).",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/Consistency.lean",
+   "fix": "Either discharge the norm side conditions explicitly (`Real.norm_of_nonneg (by positivity [h\u2081])` or `by linarith [h\u2081, \u2026]`) or add a one-line comment saying `h\u2081` is what lets `positivity` see the first summand as nonnegative.",
+   "issue": "`h\u2081 : 0 \u2264 1 / ((N - 1) * N)` (175-177) is never named again; it is consumed invisibly by the `by positivity` side goal of `Real.norm_of_nonneg` on line 178, via positivity's local-hypothesis fallback (`compareHyp`, Mathlib/Tactic/Positivity/Core.lean:460). Same trick inside h\u2081 itself, where `this : 0 \u2264 N - 1` feeds positivity. A reader sees an unused `have` and cannot tell why `positivity` succeeds on a term with a subtraction in the denominator.",
+   "line": 175
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/Topology/ContinuousOn.lean:741 `continuousOn_id : ContinuousOn id s`; :745 `continuousOn_id' (s) : ContinuousOn (fun x : \u03b1 => x) s`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/Consistency.lean",
+   "fix": "Use `(continuousOn_id' _)` (Mathlib/Topology/ContinuousOn.lean:745, stated for `fun x => x` precisely for this) or `(by fun_prop)` for consistency.",
+   "issue": "`h\u03c6.continuousOn_mul (g := fun z => z) continuousOn_id` passes `ContinuousOn id s` where `ContinuousOn (fun z => z) s` is expected, relying on `id` unfolding; every other `continuousOn_mul` argument in this proof uses `(by fun_prop)`.",
+   "line": 81
+  }
+ ],
+ "head_sha": "f609760efd5f979b2a21f3f79e6a172627113542",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 234,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3db5ae315f7e87fe49bf7484699ef892396045b37c9993a96ad74cfee103a9a0",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261123T050025Z-234-proof-quality-930fdb",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-23T05:00:25Z",
+ "submitted_by": "wdconinc",
+ "summary": "The supersymmetric-relation proof is clean, but the two large-N proofs re-derive the same ad-hoc `IsBigO.of_bound`/`inv_anti\u2080`/`nlinarith` rational-decay bound three times (a fourth copy already sits in Asymptotics.lean), and one step is load-bearing only through positivity's silent local-hypothesis fallback.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/Consistency.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/NormalForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Asymptotics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Tactic/Positivity/Core.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4d4cd47b024e94bb154094f34e8b147140ad4fa6645dcfb2d4ac89bb62f0d65d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 153007,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 153007,
+  "cache_read_input_tokens": 774580,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3153,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3153,
+    "cache_read_input_tokens": 141448,
+    "input_tokens": 2,
+    "output_tokens": 3239,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13158,
+  "output_tokens_details": {
+   "thinking_tokens": 10003
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
