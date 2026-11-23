@@ -1,0 +1,304 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 4.842953999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 363.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 235708,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 235708,
+    "cache_read_input_tokens": 3695118,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 48,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4795,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4795,
+      "cache_read_input_tokens": 204502,
+      "input_tokens": 2,
+      "output_tokens": 1413,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 25523,
+    "output_tokens_details": {
+     "thinking_tokens": 17495
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 4.842954,
+ "dedupe_key": "eic/EpsilonEridani|250|c5c5b034288371850ba5257185ff7167b249534c|reuse|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "c3405b3e911e5457bb48859f5e764cd443b8edd18de8f2a82a02207cee367c06",
+ "diff_sha256": "c3405b3e911e5457bb48859f5e764cd443b8edd18de8f2a82a02207cee367c06",
+ "duration_s": 363.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/TauCeti/TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean:111 `theorem exp_apply_eq_of_forall_pow_apply_eq ... (hp : \u2200 k : \u2115, (M ^ k) i j = (N ^ k) u v) : exp M i j = exp N u v` under `[NormedRing R] [NormedAlgebra \u211a R] [CompleteSpace R]` (all available here; the diff already builds `NormedAlgebra \u211a \ud835\udd38` at line 126). TauCeti uses exactly this route for block entries in upstream/TauCeti/TauCeti/Analysis/Matrix/Exponential/Block.lean:85,95. `Matrix.exp_diagonal` is upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean:82. EpsilonEridani already imports TauCeti modules (code/EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean:10). Separately, the `else 0` half alone is `Matrix.BlockTriangular.exp` (same Mathlib file, line 101) with `b = fun k => if k = i then 1 else 0`.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "fix": "Apply `Matrix.exp_apply_eq_of_forall_pow_apply_eq (u \u2022 A) (Matrix.diagonal fun k => (u \u2022 A) k k) i j i j`, whose hypothesis is `((u \u2022 A) ^ k) i j = ((u \u2022 A) i i) ^ k * (1 : Matrix _ _ \ud835\udd38) i j` by induction on `k` (one `Matrix.mul_apply` + `Finset.sum_eq_single i` step, already written in the current proof) versus `Matrix.diagonal_pow`/`diagonal_apply`; then finish with `Matrix.exp_diagonal` and `Matrix.diagonal_apply`. Bridge the instance diamond with the same `open scoped Norms.Operator in` technique already used at lines 63-65. This drops the ODE argument and the lemma's dependence on `HasDerivAt.matrix_exp_smul_const_mulVec'`.",
+   "issue": "`Matrix.exp_smul_apply_of_row_apply_eq_zero_of_ne` proves `exp (u \u2022 A) i j = if i = j then exp (u \u2022 A i i) else 0` by an entrywise ODE plus integrating factor (`hg`, `hc`, `is_const_of_deriv_eq_zero`, a local `NormedAlgebra \u211a \ud835\udd38`, lines 104-131). TauCeti already provides the entry comparison that settles this by series.",
+   "line": "101"
+  }
+ ],
+ "head_sha": "c5c5b034288371850ba5257185ff7167b249534c",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 250,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "34766807af9947af3b76ef3ca631d802d77bea614483a5520066e07ba4694086",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261123T010959Z-250-reuse-56c4da",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-23T01:09:59Z",
+ "submitted_by": "wdconinc",
+ "summary": "The evolution operator, the integrated coupling and the path-derivative lemmas are genuinely new and reuse Mathlib well; my two prior findings are met and withdrawn. One gap: the row lemma's 30-line ODE/integrating-factor proof re-derives what TauCeti's entry-comparison lemma plus Mathlib's `Matrix.exp_diagonal` already give.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Solutions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/QCDCore.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/ODE",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Geometry/Lie",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Matrix/Exponential/Derivative.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/Mathematics/ForMathlib/Analysis/Normed/Algebra/MatrixLieAlgebra.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Matrix/Exponential/Diagonal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/ODE/Linear.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/Matrix/Exponential/UpperTriangular.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Matrix/Exponential/Block.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Matrix/Exponential/Block.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/Exponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 36,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b92472083b70b048ffc9fab2fa9e8a8ae9e63d6b02c5eb8248d13b52ff557a1c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 235708,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 235708,
+  "cache_read_input_tokens": 3695118,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 48,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4795,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4795,
+    "cache_read_input_tokens": 204502,
+    "input_tokens": 2,
+    "output_tokens": 1413,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 25523,
+  "output_tokens_details": {
+   "thinking_tokens": 17495
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
