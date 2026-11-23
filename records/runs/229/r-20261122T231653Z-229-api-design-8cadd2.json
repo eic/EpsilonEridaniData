@@ -1,0 +1,235 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.752642,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 185.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 159657,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 159657,
+    "cache_read_input_tokens": 1663814,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2432,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2432,
+      "cache_read_input_tokens": 148199,
+      "input_tokens": 2,
+      "output_tokens": 1814,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12961,
+    "output_tokens_details": {
+     "thinking_tokens": 8064
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 2.752642,
+ "dedupe_key": "eic/EpsilonEridani|229|d22aed7cb0bb3fe30be8fd03917ed18482ea0732|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "a074703fcad1f5ef0329f3cf086679c80bba5dc45e9afaeece624049f6b611d5",
+ "diff_sha256": "a074703fcad1f5ef0329f3cf086679c80bba5dc45e9afaeece624049f6b611d5",
+ "duration_s": 185.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Statements at lines 72-110 quantify over `{f : \u211d \u2192 \u211d}`/`(c : \u211d)` only; grep of `private (theorem|lemma)` across `EpsilonEridani/Mathematics` shows every other private helper in the repo is named after its file's subject (e.g. `sq_mul_sphericalBesselJDivPow_two`, `integrand_le`), so this file is the outlier.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Asymptotics.lean",
+   "fix": "Move them, public, to a module at the mirrored canonical path (the repo already does this for `ContinuousAt.eq_zero_of_forall_id_mul_eq_zero` in `Mathematics/Topology/Algebra/GroupWithZero.lean`), stated in their natural generality \u2014 `tendsto_inv_cocompact` for a proper normed division ring via `Metric.cobounded_eq_cocompact`, `isBigO_sin_sub_one` along an arbitrary filter \u2014 and import it here. Keep only `isBigO_inv_of_isBigO_mul_sub_sin` (97) private; it is glue for this induction.",
+   "issue": "General infrastructure hidden as `private`: `eventually_ne_zero_cocompact` (72), `tendsto_inv_cocompact` (77), `isBigO_sin_sub_one` (82), `isBigO_inv_of_isBigO_mul_one` (88), `isBigO_inv_mul_inv_sq` (108). None mentions `sphericalBesselJ` and no proof touches this file's subject; each stands on its own and is exactly the plumbing the later cocompact estimates of \u00a70.4/\u00a75.3 will repeat.",
+   "line": "77"
+  },
+  {
+   "evidence": "`Mathlib/Algebra/Group/Basic.lean:523: theorem mul_inv : (a * b)\u207b\u00b9 = a\u207b\u00b9 * b\u207b\u00b9`; the private's own proof is the single rewrite `\u2190 sq, inv_pow`.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Asymptotics.lean",
+   "fix": "Delete it and use `mul_inv`/`sq` at the three use sites (`rw [\u2190 mul_inv, \u2190 sq]`, or `\u2190 sq, inv_pow` as in the current proof).",
+   "issue": "`inv_mul_inv_eq_inv_sq` is a named restatement of a Mathlib composition, not a result worth any surface at all.",
+   "line": "104"
+  },
+  {
+   "evidence": "Line 64-69: statement and proof (`rw [\u2190 sin_sub_pi]; push_cast; ring`) involve no Bessel declaration.",
+   "file": "EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Asymptotics.lean",
+   "fix": "Export it from a trigonometric module (e.g. alongside `Mathematics/SpecialFunctions/Trigonometric/`), stated without the induction-specific `((l + 2 : \u2115) : \u211d)` cast shape.",
+   "issue": "`sin_sub_add_two_mul_pi_div_two` is a pure trigonometric identity (`Real.sin`, `\u03c0`, a \u2115 cast) kept private here; the shifted-sine phase algebra it encodes is precisely what the phase-shift material of \u00a75.3 reuses.",
+   "line": "64"
+  }
+ ],
+ "head_sha": "d22aed7cb0bb3fe30be8fd03917ed18482ea0732",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 229,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "a44636b18ed6edcd166cc9908370ba8cd89838d4d0214e547410ca8496f1afc9",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261122T231653Z-229-api-design-8cadd2",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T23:16:53Z",
+ "submitted_by": "wdconinc",
+ "summary": "The exported Bessel-specific results are the right set and need no extra annotations, but six of the eight helpers are general analysis facts with no spherical-Bessel content kept `private` in this file instead of exported from a canonical home, and one of them duplicates a Mathlib one-liner.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Asymptotics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Topology/Algebra/GroupWithZero.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/Gamma/Digamma/Asymptotics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/files.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/files.txt",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/Trigonometric/Sinc.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "490c3cbd7aa7cf1cf29f1dcf8187e5ce0726c8e539b97db5acba000834d237c6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 159657,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 159657,
+  "cache_read_input_tokens": 1663814,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2432,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2432,
+    "cache_read_input_tokens": 148199,
+    "input_tokens": 2,
+    "output_tokens": 1814,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12961,
+  "output_tokens_details": {
+   "thinking_tokens": 8064
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
