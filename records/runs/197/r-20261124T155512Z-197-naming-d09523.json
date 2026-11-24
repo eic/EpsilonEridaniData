@@ -1,0 +1,182 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7142765000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 265.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 98549,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 98549,
+    "cache_read_input_tokens": 467533,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2301,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2301,
+      "cache_read_input_tokens": 96248,
+      "input_tokens": 2,
+      "output_tokens": 3430,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19798,
+    "output_tokens_details": {
+     "thinking_tokens": 16838
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ab17c414332350586ed47a36137399ac425457c4",
+ "cost_usd": 1.714277,
+ "dedupe_key": "eic/EpsilonEridani|197|33aa99d4988b31d8957f9c8079238107dd2d3773|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "0e2ff0714e2fe313fc23dee5d9d3eaa37b12a058880dd129256c88b1edd5d8b6",
+ "diff_sha256": "0e2ff0714e2fe313fc23dee5d9d3eaa37b12a058880dd129256c88b1edd5d8b6",
+ "duration_s": 265.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Multipole.lean:123-136: `(h : x 0 = y 0)` and `(h : y 0 = x 1)`; naming-conventions \"to disambiguate ... describe some of the hypotheses\" \u2014 the description must identify the hypothesis, and here it names a different one.",
+   "file": "EpsilonEridani/QFT/SmallX/Dipole/Multipole.lean",
+   "fix": "Say which tuple each index belongs to, e.g. `multipoleS_of_quark_zero_eq_antiquark_zero` / `multipoleS_of_antiquark_zero_eq_quark_one`, or restate both in `Fin.cons` form (as `multipoleS_cons_eq_snoc` already does) so the coincidence is syntactic and the name can describe the conclusion.",
+   "issue": "`multipoleS_of_apply_zero_eq_apply_one` has hypothesis `y 0 = x 1`, but the name gives no tuple, so it parses as one tuple at indices 0 and 1 (`x 0 = x 1` or `y 0 = y 1`) \u2014 exactly the coincident-quark case Quadrupole.lean:31 documents as *not* reducing. Same defect at Multipole.lean:123, where `multipoleS_of_apply_zero_eq` (hypothesis `x 0 = y 0`) drops the right-hand side entirely and reuses the fragment `apply_zero` for `x` where the sibling uses it for `y`.",
+   "line": "132"
+  },
+  {
+   "evidence": "Mathlib/Data/Fin/Tuple/Basic.lean:409, 1007, 1015, 988: `Fin.append_comp_rev`, `Fin.cons_comp_rev`, `Fin.snoc_comp_rev`, `Fin.insertNth_comp_rev` all name `\u2218 Fin.rev` as `comp_rev`; Mathlib/Algebra/BigOperators/Group/List/Basic.lean:312 uses `reverse` for `List.reverse`. The PR's own `List.prod_ofFn_inv_rev` already uses `rev` for `Fin.rev`.",
+   "file": "EpsilonEridani/QFT/SmallX/Dipole/Multipole.lean",
+   "fix": "Rename to `multipoleS_comp_rev` and orient it like `multipoleS_comp_finRotate` (composed tuples on the left), keeping `rev` for `Fin.rev`.",
+   "issue": "`multipoleS_reverse` is about precomposition with `Fin.rev`, but uses `reverse`, Mathlib's fragment for `List.reverse` (`List.prod_inv_reverse`), while its sibling `multipoleS_comp_finRotate` (line 151) \u2014 the same kind of statement, invariance under precomposition with a `Fin` equiv \u2014 uses `comp_<function>`. The two also rewrite in opposite directions (composed side on the RHS here, on the LHS there), so neither name predicts the orientation.",
+   "line": "165"
+  }
+ ],
+ "head_sha": "33aa99d4988b31d8957f9c8079238107dd2d3773",
+ "merge_base_sha": "ab17c414332350586ed47a36137399ac425457c4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 197,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "08a2222b71eb66253d9f06f6542b37147c6a5205c125ef84b2e2995ca45e7c8d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261124T155512Z-197-naming-d09523",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-24T15:55:12Z",
+ "submitted_by": "wdconinc",
+ "summary": "Most names follow conclusion-first upstream style and the `_fin_zero/_fin_one/_fin_two` family matches `Matrix.det_fin_zero/one/two`. Two problems: the two coincidence lemmas are named only after an ambiguous rendering of their hypothesis, with `multipoleS_of_apply_zero_eq_apply_one` reading as the case the docs say does *not* reduce, and `multipoleS_reverse` departs from the `_comp_rev` fragment used by its own sibling and by Mathlib.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/Multipole.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/Quadrupole.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/SmallX/Dipole/WilsonLine.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SmallXAndSaturation/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/SmallXAndSaturation/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/BigOperators/Fin.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5a0f97401e6b91692a1c78c86f0773d70c177ce97fadadb3b233c78a5f966395",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 98549,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 98549,
+  "cache_read_input_tokens": 467533,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2301,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2301,
+    "cache_read_input_tokens": 96248,
+    "input_tokens": 2,
+    "output_tokens": 3430,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19798,
+  "output_tokens_details": {
+   "thinking_tokens": 16838
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
