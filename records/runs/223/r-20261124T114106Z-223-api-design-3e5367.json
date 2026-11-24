@@ -1,0 +1,219 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.2842955,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 261.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 202359,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 202359,
+    "cache_read_input_tokens": 1589471,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2367,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2367,
+      "cache_read_input_tokens": 179289,
+      "input_tokens": 2,
+      "output_tokens": 5352,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18634,
+    "output_tokens_details": {
+     "thinking_tokens": 14230
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 3.284295,
+ "dedupe_key": "eic/EpsilonEridani|223|6ad21d204bfcfa6575cb8cbdf533b3dced27345c|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "df347c636b9492abf059fe362cd09f4eb297de9fd1d1f658683832c74e7e942c",
+ "diff_sha256": "df347c636b9492abf059fe362cd09f4eb297de9fd1d1f658683832c74e7e942c",
+ "duration_s": 261.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`le_tMin_iff` (Kinematics.lean:272) states the numerator as `xiLC * (MY ^ 2 - (1 - xiLC) * M ^ 2)`; grep for `le_tMinElastic_iff` / `neg_tMinElastic` in `code/` returns no post-PR declaration, only the docstring claim at Kinematics.lean:311-313.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "Restore `le_tMinElastic_iff (M xiLC t : \u211d) : t \u2264 tMinElastic M xiLC \u2194 xiLC ^ 2 * M ^ 2 / (1 - xiLC) \u2264 -t` (and `neg_tMinElastic` if used in its proof), derived from `le_tMin_iff`; this is the same simplified-numerator specialization that justifies keeping `tMinElastic_def` and `tMinElastic_nonpos`.",
+   "issue": "The PR deletes `le_tMinElastic_iff` and `neg_tMinElastic`, but the `tMinElastic` docstring still claims the magnitude form `|t| \u2265 \u03be\u00b2M\u00b2/(1-\u03be)` and points at `le_tMin_iff` at `M_Y = M`, whose instance is `\u03be * (M ^ 2 - (1 - \u03be) * M ^ 2) / (1 - \u03be) \u2264 -t` \u2014 a `ring` step away from the advertised statement, which is also the roadmap's acceptance form (`README.md:1062`, `|t| \u2265 t_min`).",
+   "line": 313
+  },
+  {
+   "evidence": "`theorem tMinElastic_eq_tZero (M : \u211d) {\u03be : \u211d} (h\u03be : \u03be \u2260 2)` is the only declaration in the file; `grep -n tZero code/EpsilonEridani/Particles/Parton/GPD` shows no \u03b7\u2192\u03be counterpart elsewhere.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/OffForwardBoundary.lean",
+   "fix": "Add `tZero_eq_tMinElastic (M : \u211d) {\u03b7 : \u211d} (h\u03b7 : \u03b7 \u2260 -1) : Particles.Parton.GPD.tZero M \u03b7 = tMinElastic M (2 * \u03b7 / (1 + \u03b7))`, or drop the inverse claim from the docstrings.",
+   "issue": "Only the `\u03be \u21a6 \u03b7 = \u03be/(2-\u03be)` direction is proved, while the docstring (lines 18, 36) advertises the change of variables both ways, `\u03be = 2\u03b7/(1+\u03b7)`. A consumer holding a skewness `\u03b7` cannot rewrite `tZero M \u03b7` into the diffractive boundary without redoing the algebra and the `\u03b7 \u2260 -1` side condition.",
+   "line": 38
+  },
+  {
+   "evidence": "LightCone.lean:93-101: the docstring claim, then `deltaLostRelTransverse_def` giving only `L.transverseProj (deltaLost K) - xiLC L K \u2022 L.transverseProj K.p`; no other lemma mentions `deltaLostRelTransverse` except `_mem_transverse` and `_of_transverseProj_p_eq_zero`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/LightCone.lean",
+   "fix": "Add `deltaLostRelTransverse_eq_transverseProj (L) (K) : deltaLostRelTransverse L K = L.transverseProj (deltaLost K - xiLC L K \u2022 K.p)` (by `map_sub`, `map_smul`).",
+   "issue": "`deltaLostRelTransverse`'s docstring states \"It is the transverse part of `\u0394 - \u03be P`\", but no lemma records that interaction with `transverseProj`; the only restatement is the componentwise `deltaLostRelTransverse_def`.",
+   "line": 95
+  }
+ ],
+ "head_sha": "6ad21d204bfcfa6575cb8cbdf533b3dced27345c",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 223,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d3613e97e27f978cbd6209618699e874ffe3f52e10ebe9c78b449822546ddd22",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261124T114106Z-223-api-design-3e5367",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-24T11:41:06Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, bodies are unexposed, and the general light-cone lemma is correctly public in its canonical home. Three characteristic lemmas advertised in docstrings are missing from the API, one of them deleted by this PR.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/LightCone.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ceb2bb879c9d1b00e8dbfd6617c5351a4abb50e9f91d138d782b12683fb2c2b8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 202359,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 202359,
+  "cache_read_input_tokens": 1589471,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2367,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2367,
+    "cache_read_input_tokens": 179289,
+    "input_tokens": 2,
+    "output_tokens": 5352,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18634,
+  "output_tokens_details": {
+   "thinking_tokens": 14230
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,170 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.15866,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 153.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 160883,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 160883,
+    "cache_read_input_tokens": 541490,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2247,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2247,
+      "cache_read_input_tokens": 138515,
+      "input_tokens": 2,
+      "output_tokens": 5975,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11161,
+    "output_tokens_details": {
+     "thinking_tokens": 8088
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 2.15866,
+ "dedupe_key": "eic/EpsilonEridani|223|6ad21d204bfcfa6575cb8cbdf533b3dced27345c|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "df347c636b9492abf059fe362cd09f4eb297de9fd1d1f658683832c74e7e942c",
+ "diff_sha256": "df347c636b9492abf059fe362cd09f4eb297de9fd1d1f658683832c74e7e942c",
+ "duration_s": 153.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "xiLC * (M\u00b2 - (1 - xiLC) M\u00b2) = xiLC * (xiLC * M\u00b2) = xiLC\u00b2 M\u00b2; the pre-PR proof of the same statement was `rw [tMinElastic_def, neg_div, neg_nonpos]; exact div_nonneg (mul_nonneg (sq_nonneg xiLC) (sq_nonneg M)) (sub_nonneg.mpr h)`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics.lean",
+   "fix": "`have h : xiLC * (M ^ 2 - (1 - xiLC) * M ^ 2) = xiLC ^ 2 * M ^ 2 := by ring` then `rw [h]; positivity` (or keep the pre-PR `div_nonneg (mul_nonneg (sq_nonneg _) (sq_nonneg _))` proof off `tMinElastic_def`).",
+   "issue": "`tMinElastic_nonpos` now discharges `0 \u2264 xiLC * (M ^ 2 - (1 - xiLC) * M ^ 2)` with `nlinarith [sq_nonneg xiLC, sq_nonneg M, mul_nonneg (sq_nonneg xiLC) (sq_nonneg M)]`. The goal is `ring`-equal to `0 \u2264 xiLC ^ 2 * M ^ 2`, so nonlinear search obscures the (docstring-asserted) fact that the elastic numerator is exactly \u03be\u00b2M\u00b2, and the first two hints are unused.",
+   "line": 352
+  },
+  {
+   "evidence": "`LightConeBasis.smul_add_smul_add_eq_iff {a b : R} {w v : V} (hw : w \u2208 L.transverse) : a \u2022 L.nPlus + b \u2022 L.nMinus + w = v \u2194 a = L.plus v \u2227 b = L.minus v \u2227 w = L.transverseProj v` at EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean:232.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "Prove `hpT : pT \u2208 L.transverse` (`sub_mem (L.transverse.smul_mem _ (L.isProj_transverseProj.map_mem _)) (L.transverse.smul_mem _ he)`) and one explicit `have : K.pPrime = a \u2022 L.nPlus + c \u2022 L.nMinus + pT := rfl`, then `obtain \u27e8hKp, hKm, hKT\u27e9 := (L.smul_add_smul_add_eq_iff hpT).1 this.symm`; `hep`, `hem`, `heT` then become unnecessary.",
+   "issue": "`hKp`, `hKm`, `hKT` re-derive the three light-cone components of the constructed `K.pPrime = a \u2022 n\u208a + c \u2022 n\u208b + pT` with three separate `simp [K, pT, \u2026]` calls that depend on simp unfolding the structure literal `K` and re-proving transversality of `pT` from `hep`/`hem`/`heT`. The repo already has the uniqueness lemma that yields all three at once.",
+   "line": 169
+  }
+ ],
+ "head_sha": "6ad21d204bfcfa6575cb8cbdf533b3dced27345c",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 223,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5ebea32d54f4ece86e6c31a80d47fb956582373c903b640eb3e5768ffcdfe372",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261124T114521Z-223-proof-quality-7016a8",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-24T11:45:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two proof-quality issues: the elastic sign lemma regressed from a direct `div_nonneg` argument to an `nlinarith` with redundant hints that hides a plain `ring` identity, and the existence witness recomputes light-cone components with three ad-hoc `simp` calls on the structure literal instead of using the existing uniqueness lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/LightCone.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "33575286f79378472e1d613b8b1131fe9877f05a014c77c50ccbb9d0fd303843",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 160883,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 160883,
+  "cache_read_input_tokens": 541490,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2247,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2247,
+    "cache_read_input_tokens": 138515,
+    "input_tokens": 2,
+    "output_tokens": 5975,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11161,
+  "output_tokens_details": {
+   "thinking_tokens": 8088
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
