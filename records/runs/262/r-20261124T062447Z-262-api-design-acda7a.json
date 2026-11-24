@@ -1,0 +1,216 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3762305,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 321.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 135782,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 135782,
+    "cache_read_input_tokens": 842201,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 527,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 527,
+      "cache_read_input_tokens": 110606,
+      "input_tokens": 2,
+      "output_tokens": 6944,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23888,
+    "output_tokens_details": {
+     "thinking_tokens": 19261
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b53e6d19dddf8e85c7d2757440b03619a9abb10f",
+ "cost_usd": 2.376231,
+ "dedupe_key": "eic/EpsilonEridani|262|26ca2ea46f7d4cc99806df8549abac00e19e433a|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "74a91fd6690b7756ea1b995c4e07dfc079cfc1f50b56c14c955015752a0fb16d",
+ "diff_sha256": "74a91fd6690b7756ea1b995c4e07dfc079cfc1f50b56c14c955015752a0fb16d",
+ "duration_s": 321.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "SimplePole.lean:58-60 contains the proof; no `MeromorphicAt` conclusion appears anywhere in the file (grep: the only occurrences are inside that `have`).",
+   "file": "EpsilonEridani/Mathematics/Analysis/Meromorphic/SimplePole.lean",
+   "fix": "Export the step as a public lemma, e.g. `theorem meromorphicAt_of_eventually_eq_inv_smul (hg : AnalyticAt \ud835\udd5c g z) (h : \u2200\u1da0 w in \ud835\udcdd[\u2260] z, f w = (w - z)\u207b\u00b9 \u2022 g w) : MeromorphicAt f z`, use it inside the order proof, and list it under `Main statements`.",
+   "issue": "`meromorphicOrderAt_eq_neg_one_of_eventually_eq_inv_smul` proves `MeromorphicAt f z` from the presentation hypothesis (`have hf : MeromorphicAt f z := by rw [MeromorphicAt.meromorphicAt_congr h']; fun_prop`) but discards it. A consumer holding only `\u2200\u1da0 w in \ud835\udcdd[\u2260] z, f w = (w - z)\u207b\u00b9 \u2022 g w` and `AnalyticAt \ud835\udd5c g z` cannot reach Mathlib's meromorphic API (e.g. `MeromorphicAt.tendsto_nhds_meromorphicTrailingCoeffAt`, which takes a `MeromorphicAt` argument) without reproving this step; the module's own `Main statements` list offers no route.",
+   "line": 58
+  },
+  {
+   "evidence": "Docstring lines 64-67 vs. declarations at lines 217, 251, 281, 286, 291; the file itself carefully distinguishes the two normalisations at lines 114-131 and 417-420.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "fix": "Reword the bullet to say the four anomalous dimensions are meromorphic, add `meromorphic_gammaQGSinglet` beside them, and name `analyticAt_gammaQQ_one`, `analyticAt_gammaQG_one`, `analyticAt_gammaQGSinglet_one` in the analyticity bullet instead of describing them anonymously.",
+   "issue": "The `Main statements` bullet reads \"`meromorphic_gammaQQ`, `meromorphic_gammaGQ`, `meromorphic_gammaQG`, `meromorphic_gammaGG`: the entries of `\u03b3^S` are meromorphic on `\u2102`\", but `gammaQG` is the per-flavour function and is *not* an entry of `\u03b3^S` \u2014 `gammaQGSinglet` is (`gammaS_zero_one`, line 419). The public `meromorphic_gammaQGSinglet` (line 217), `analyticAt_gammaQGSinglet` (251) and `analyticAt_gammaQGSinglet_one` (291) are absent from the list entirely, as are `analyticAt_gammaQQ_one` and `analyticAt_gammaQG_one`.",
+   "line": 64
+  }
+ ],
+ "head_sha": "26ca2ea46f7d4cc99806df8549abac00e19e433a",
+ "merge_base_sha": "b53e6d19dddf8e85c7d2757440b03619a9abb10f",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 262,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2f966ca0770380863f9e8a0332c8b20c76d7fe4254694fd5f4a99046e2b56ac6",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261124T062447Z-262-api-design-acda7a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-24T06:24:47Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new surface is minimal, bodies are unexposed behind (rfl)-proved restatements, and the singlet-matrix entry lemmas are correctly annotated. Two gaps: SimplePole proves MeromorphicAt internally but never exports it, and the AnomalousDimension module docstring mislabels gammaQG as an entry of \u03b3^S while omitting the gammaQGSinglet regularity lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Meromorphic/SimplePole.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/SingletDecomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0647a850a08b31b20590d274c5ad2626ef35a769449d7494b67d03fb4ca974fc",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 135782,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 135782,
+  "cache_read_input_tokens": 842201,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 527,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 527,
+    "cache_read_input_tokens": 110606,
+    "input_tokens": 2,
+    "output_tokens": 6944,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23888,
+  "output_tokens_details": {
+   "thinking_tokens": 19261
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,218 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.193718,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 221.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 135291,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 135291,
+    "cache_read_input_tokens": 823646,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1459,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1459,
+      "cache_read_input_tokens": 100015,
+      "input_tokens": 2,
+      "output_tokens": 5883,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17155,
+    "output_tokens_details": {
+     "thinking_tokens": 11373
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b53e6d19dddf8e85c7d2757440b03619a9abb10f",
+ "cost_usd": 2.193718,
+ "dedupe_key": "eic/EpsilonEridani|262|26ca2ea46f7d4cc99806df8549abac00e19e433a|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "74a91fd6690b7756ea1b995c4e07dfc079cfc1f50b56c14c955015752a0fb16d",
+ "diff_sha256": "74a91fd6690b7756ea1b995c4e07dfc079cfc1f50b56c14c955015752a0fb16d",
+ "duration_s": 221.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `lemma AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE {n : \u2124} (h\u2081g : AnalyticAt \ud835\udd5c g x)` in Mathlib/Analysis/Meromorphic/TrailingCoefficient.lean:92; `theorem AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq_ofReal` in EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean:43 (file has no `namespace EpsilonEridani`).",
+   "file": "EpsilonEridani/Mathematics/Analysis/Meromorphic/SimplePole.lean",
+   "fix": "Drop `namespace EpsilonEridani` here and rename to `ContinuousAt.tendsto_sub_smul_of_eventually_eq_inv_smul`, `AnalyticAt.meromorphicOrderAt_eq_neg_one_of_eventually_eq_inv_smul`, `AnalyticAt.meromorphicTrailingCoeffAt_eq_of_eventually_eq_inv_smul`; update the `## Main statements` list and the call sites in Continuation.lean (lines 231, 238) and AnomalousDimension.lean (lines 317-319, 324-326, 335-337, 378-380, 385-387, 393-395) to dot notation.",
+   "issue": "All three lemmas are declared in `namespace EpsilonEridani` although their first explicit argument has a Mathlib type: `hg : ContinuousAt g z` (line 41) and `hg : AnalyticAt \ud835\udd5c g z` (lines 54 and 67). Mathlib's lemma these specialise is `AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE` (upstream/mathlib/Mathlib/Analysis/Meromorphic/TrailingCoefficient.lean:92), in the `AnalyticAt` namespace; this repo already follows that rule for a file of exactly this kind, `EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean:43` declaring `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq_ofReal` with no `namespace EpsilonEridani`. As written `hg.meromorphicOrderAt_eq_neg_one_of_eventually_eq_inv_smul` does not elaborate and the file cannot be upstreamed without renaming.",
+   "line": 41
+  },
+  {
+   "evidence": "grep `^theorem \\w+_(def|apply) \\(\\w+ : \u2102\\)` in the file: five `_apply`, one `_def`, all of form `<name> c N = \u2026`.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "fix": "Rename to `gammaS_apply` and update its four uses in `gammaS_zero_zero`/`gammaS_zero_one`/`gammaS_one_zero`/`gammaS_one_one` and `singletGluon_flavorBlindMatrix_mulVec_eq_gammaS_mulVec`.",
+   "issue": "`gammaS_def (N : \u2102) : gammaS c N = \u2026` has the same shape as the five sibling unfolding lemmas in the file, which are all named `_apply` (`gammaQQ_apply` line 133, `gammaGQ_apply` 137, `gammaQG_apply` 141, `gammaGG_apply` 145, `gammaQGSinglet_apply` 151): the definition evaluated at its point argument `N`. Per the naming addendum `_def` restates the unapplied definition and `_apply` evaluates at an argument (cf. `complexHarmonic_apply` in Mathematics/HarmonicSum/Continuation.lean:87, and `pqgSinglet_def : pqgSinglet c = \u2026` in LeadingOrder.lean:156, which is genuinely unapplied).",
+   "line": 407
+  },
+  {
+   "evidence": "grep: `theorem add_natCast_ne_zero {s : \u2102} (hs : \u2200 m : \u2115, s \u2260 -m) (k : \u2115) : s + k \u2260 0` at Continuation.lean:120; no declaration of that name exists in Mathlib, so the generic name is claimed here unqualified.",
+   "file": "EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "fix": "Rename to carry the hypothesis, e.g. `add_natCast_ne_zero_of_forall_ne_neg_natCast`, and update the four uses (lines 233, 273, 274 of AnomalousDimension.lean).",
+   "issue": "`add_natCast_ne_zero {s : \u2102} (hs : \u2200 m : \u2115, s \u2260 -m) (k : \u2115) : s + k \u2260 0` is a public, maximally generic cast-lemma name in the root `EpsilonEridani` namespace, but the statement is conditional on `s` avoiding the non-positive integers; the name advertises an unconditional fact `a + \u2191n \u2260 0` (compare Mathlib's `Nat.cast_add_one_ne_zero`, used in its own proof) and gives no hint of the hypothesis, which the naming document says to add with `of` when needed to convey the reference.",
+   "line": 120
+  }
+ ],
+ "head_sha": "26ca2ea46f7d4cc99806df8549abac00e19e433a",
+ "merge_base_sha": "b53e6d19dddf8e85c7d2757440b03619a9abb10f",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 262,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5ce64a85794930c7c20a18477bb748a5a6a3b1cfb8c695a71e1d72d2cd6c80ae",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261124T062551Z-262-naming-9c71e3",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-24T06:25:51Z",
+ "submitted_by": "wdconinc",
+ "summary": "The anomalous-dimension names follow the existing kernel names closely and nothing overstates its statement, but the new general SimplePole lemmas sit in the EpsilonEridani namespace when their first explicit argument is a Mathlib AnalyticAt/ContinuousAt, against both the rubric rule and the repo's own Mathematics/Analysis precedent. Two smaller naming slips: gammaS_def should be gammaS_apply, and add_natCast_ne_zero is an over-generic public name for a conditional statement.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/AnomalousDimension.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Meromorphic/SimplePole.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Meromorphic",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/HarmonicSum/Continuation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Kernel/LeadingOrder.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/Gamma/Digamma/Extensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Fourier/AddCircle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c91cb925ac62ec9b749671f332f712accc9ed7b6f0658f1a3d86a08ca395f1ed",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 135291,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 135291,
+  "cache_read_input_tokens": 823646,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1459,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1459,
+    "cache_read_input_tokens": 100015,
+    "input_tokens": 2,
+    "output_tokens": 5883,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17155,
+  "output_tokens_details": {
+   "thinking_tokens": 11373
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
