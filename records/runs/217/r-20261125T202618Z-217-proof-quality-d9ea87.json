@@ -1,0 +1,167 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.951743,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 201.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 141079,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 141079,
+    "cache_read_input_tokens": 376556,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1571,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1571,
+      "cache_read_input_tokens": 126545,
+      "input_tokens": 2,
+      "output_tokens": 10759,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14105,
+    "output_tokens_details": {
+     "thinking_tokens": 11517
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ea019b485c32bc7b80ae1169efde4c66701b7484",
+ "cost_usd": 1.951743,
+ "dedupe_key": "eic/EpsilonEridani|217|7c9a316ee92a71e90448a03e7b6907c88e4b9f66|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "83c0a262ef6dec16ccaa80702d042760a8892f13909a11ad6ce7da1ec06fcb2c",
+ "diff_sha256": "83c0a262ef6dec16ccaa80702d042760a8892f13909a11ad6ce7da1ec06fcb2c",
+ "duration_s": 201.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 396-400: `rw [pathLink_staplePath_ofBilin, ofBilin_apply, \u2190 Circle.exp_add] at h` followed by `have hphase : B (0 + (0, 1)) (0 - (0, 1)) / 2 + -(((B - B.flip) (1, 0) (0, 1) + ... ) / 2) = -1` and `rw [hphase] at h`.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "fix": "Assert the value instead of the phase, e.g. `have : (ofBilin B).pathLink (staplePath (1,0) (0,1) 0 (0,1)) = Circle.exp (-1 : \u211d) := by rw [pathLink_staplePath_ofBilin, ofBilin_apply, \u2190 Circle.exp_add]; congr 1; simp [hB]`, then derive the contradiction from that; the statement then no longer depends on how the RHS of `pathLink_staplePath_ofBilin` is parenthesised.",
+   "issue": "`hphase` restates, verbatim across three lines, the exact phase subterm produced by `pathLink_staplePath_ofBilin` + `ofBilin_apply` + `Circle.exp_add`, purely so `rw [hphase] at h` matches syntactically. Any reassociation of the author's own flux formula on line 378 silently breaks this proof and forces re-transcription.",
+   "line": 397
+  },
+  {
+   "evidence": "Lines 287-289: `rw [staplePath_def, pathLink_smul]` then `rw [List.getLast_cons_cons, List.getLast_cons_cons, List.getLast_cons_cons, List.getLast_singleton]`.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "fix": "Replace the second `rw` with one `simp only [List.getLast_cons_cons, List.getLast_singleton]` (or factor a reusable `staplePath_getLast : (staplePath v w x y).getLast h = y`, which any other `pathLink_smul`-on-a-staple result will need too).",
+   "issue": "`pathLink_staplePath_smul` finishes with a chain of four sequential named rewrites (`List.getLast_cons_cons` three times, then `List.getLast_singleton`) to evaluate `getLast` on a four-element literal list \u2014 exactly the rewrite chain that breaks on an upstream rename and that also has to be relengthened if `staplePath` ever gains a corner.",
+   "line": 288
+  }
+ ],
+ "head_sha": "7c9a316ee92a71e90448a03e7b6907c88e4b9f66",
+ "merge_base_sha": "8b52f6a293d930d2445354db8480a605944ea0b1",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 217,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b2f0a92290dc4816fafb36cb1c92e37a97f7eea08043b3a1009ac3f0f0b80b60",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T202618Z-217-proof-quality-d9ea87",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T20:26:18Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly short and well-automated (group, module, ring, simp) with no change/show and no undocumented defeq across wrappers. Two spots are needlessly brittle: a verbatim transcription of a long phase expression used only to drive a rewrite, and a four-step chain of List.getLast rewrites.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/GaugeLink.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Complex/Circle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0784ee62f6a7fab2aba92f22c530d9777b40751ccdd1c98203e7f2f1a8bd4656",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 141079,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 141079,
+  "cache_read_input_tokens": 376556,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1571,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1571,
+    "cache_read_input_tokens": 126545,
+    "input_tokens": 2,
+    "output_tokens": 10759,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14105,
+  "output_tokens_details": {
+   "thinking_tokens": 11517
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
