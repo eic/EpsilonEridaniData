@@ -1,0 +1,267 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4048745,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 189.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 131553,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 131553,
+    "cache_read_input_tokens": 1542119,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4121,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4121,
+      "cache_read_input_tokens": 116975,
+      "input_tokens": 2,
+      "output_tokens": 2051,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12723,
+    "output_tokens_details": {
+     "thinking_tokens": 7151
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "6abfc81dfe86638f850566b671287b97f8d34fc0",
+ "cost_usd": 2.404875,
+ "dedupe_key": "eic/EpsilonEridani|273|b41fd4fd7bce74c464913de685ca0c75ff880f9e|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "3f9c7b7466868abc6ed6fee948026aea860f16cab214793f54401b3fa9b03465",
+ "diff_sha256": "3f9c7b7466868abc6ed6fee948026aea860f16cab214793f54401b3fa9b03465",
+ "duration_s": 189.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "scripts/lint-scope.sh:52-55 `compare=$(gh api \"repos/$REPO/compare/$BASE...$HEAD\")` / `jq -r '.commits[].commit.message | split(\"\\n\")[0]' | sed -nE 's/.*\\(#([0-9]+)\\)$/\\1/p'`, with the comment \"Each PR lands as one squashed commit titled `... (#N)`\"; scripts/test_lint_scope.py:89 `test_merge_group_reads_prs_from_squash_titles`.",
+   "file": "scripts/merge_queue_report.py",
+   "fix": "Factor the convention into one place: put the compare-plus-subject-to-PR-numbers step in a single helper (e.g. a `merge_group_prs` function in a small shared module) and have `lint-scope.sh` call it (`python3 scripts/...`) instead of its own jq/sed pipeline; failing that, at minimum cite `scripts/lint-scope.sh:53` at `SQUASH_PR_RE` so the two stay in step.",
+   "issue": "`group_subjects` + `group_prs` (lines 46, 94, 159) re-implement the merge-group PR list that `scripts/lint-scope.sh:52-55` already computes: the same `gh api repos/$REPO/compare/$BASE...$HEAD` call, the same first-line-of-commit-message extraction, the same `(#N)`-suffix regex (`sed -nE 's/.*\\(#([0-9]+)\\)$/\\1/p'` vs `SQUASH_PR_RE = r\"\\(#(\\d+)\\)\\s*$\"`). Two copies of the squash-title convention will drift; lint-scope.sh also fails closed when a subject carries no number (`nprs -eq ncommits`, line 58) while `group_prs` silently drops it, so the two already disagree.",
+   "line": 159
+  },
+  {
+   "evidence": "structure_nudge.py:169-179 `prev = next((c[\"id\"] for c in comments if MARKER in (c[\"body\"] or \"\")), None)` then `gh api -X PATCH repos/.../issues/comments/{prev}` else POST; pr-profile.yml:744-757 `update_comment()` with the same find-then-PATCH-else-`gh pr comment` shape.",
+   "file": "scripts/merge_queue_report.py",
+   "fix": "Extract one helper (e.g. `upsert_marked_comment(repo, pr, marker_re, body, token)` in a shared `scripts/` module) and call it from `merge_queue_report.py` and `structure_nudge.py`; the only new behaviour here is keying the marker by head SHA, which is a parameter, not a new mechanism.",
+   "issue": "`upsert_comment` is a third copy of \"paginate /issues/N/comments, match a hidden marker, PATCH that comment else POST a new one\": `scripts/structure_nudge.py:166-179` does exactly this in Python, and `.github/workflows/pr-profile.yml:744-757` does it in shell for two markers.",
+   "line": 165
+  }
+ ],
+ "head_sha": "b41fd4fd7bce74c464913de685ca0c75ff880f9e",
+ "merge_base_sha": "6abfc81dfe86638f850566b671287b97f8d34fc0",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 273,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "bcbb032e4c36719d499435398baa777f3e5c6e661e814e0c9be728a5071590ca",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T090148Z-273-reuse-425a0a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T09:01:48Z",
+ "submitted_by": "wdconinc",
+ "summary": "The report itself is new functionality with no existing equivalent, but two blocks re-derive logic that already exists in scripts/: the merge-group PR extraction duplicated from lint-scope.sh, and the marker-keyed comment upsert duplicated from structure_nudge.py and pr-profile.yml.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/toolchain_tags.py",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/structure_nudge.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/bump_excludes.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/profile/render.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/pr_status/stuck_alerts.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/merge-conflicts.yml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/pr_status/core.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pr-build.yml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/roadmap_label.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/pr_status/conflicts.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lint-scope.sh",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/merge_queue_report.py",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 27,
+  "trace_truncated": false
+ },
+ "transcript_blob": "75648fa1c70d3042d4e581c69a49e31fe1c1ec9383a5e350e58b2514358372dc",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 131553,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 131553,
+  "cache_read_input_tokens": 1542119,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4121,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4121,
+    "cache_read_input_tokens": 116975,
+    "input_tokens": 2,
+    "output_tokens": 2051,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12723,
+  "output_tokens_details": {
+   "thinking_tokens": 7151
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

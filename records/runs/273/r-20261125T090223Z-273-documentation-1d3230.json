@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.221886,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 127.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 87616,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 87616,
+    "cache_read_input_tokens": 250132,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1712,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1712,
+      "cache_read_input_tokens": 76148,
+      "input_tokens": 2,
+      "output_tokens": 2946,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8824,
+    "output_tokens_details": {
+     "thinking_tokens": 6499
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "6abfc81dfe86638f850566b671287b97f8d34fc0",
+ "cost_usd": 1.221886,
+ "dedupe_key": "eic/EpsilonEridani|273|b41fd4fd7bce74c464913de685ca0c75ff880f9e|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "3f9c7b7466868abc6ed6fee948026aea860f16cab214793f54401b3fa9b03465",
+ "diff_sha256": "3f9c7b7466868abc6ed6fee948026aea860f16cab214793f54401b3fa9b03465",
+ "duration_s": 127.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`.github/workflows/merge-queue-report.yml:19-28` exposes `workflow_dispatch`, whose workflow definition is taken from the dispatched ref, not from main; only `scripts/` is checked out at `ref: main` (lines 63-67).",
+   "file": ".github/workflows/merge-queue-report.yml",
+   "fix": "Restate as what it delivers, e.g. \"`ref: main` so a dispatch from any branch still runs main's script; dispatch itself is restricted to users with write access.\"",
+   "issue": "The comment claims \"`ref` is explicit so a dispatch from a branch cannot run that branch's copy of the script with the App token.\" A `workflow_dispatch` from branch X runs X's copy of this workflow file, so X can set any `ref` it likes; the pin is not a boundary against a branch, only against accidentally picking up a non-main script. The real control is that dispatching requires write access.",
+   "line": 61
+  },
+  {
+   "evidence": "scripts/merge_queue_report.py:48-50 (`MAX_JOBS = 3`, `MAX_LINES = 25`), 84-85, 154-155; `render()` lines 106-133 contain no mention of truncation.",
+   "file": "scripts/merge_queue_report.py",
+   "fix": "In `render()`, state the cap when it bites: append \"(first 25 error lines)\" to a capped block and a \"and N more failed job(s); see the run\" line when jobs were dropped (pass the total count out of `failed_jobs`).",
+   "issue": "`render()` emits at most `MAX_JOBS = 3` failed jobs and `MAX_LINES = 25` error lines per job (`failed_jobs` line 154, `extract_errors` line 84) but the posted comment never says the lists are truncated, so a reader takes the shown jobs/errors for the whole failure. Over-long single lines are marked with ' \u2026'; the two count caps are not.",
+   "line": 119
+  },
+  {
+   "evidence": "scripts/pr_status/test_conflicts.py:2-6 \"Unit tests for the merge-conflict label sweep. / Pure logic only: every `gh` call is stubbed, so these run with no network\u2026\"; scripts/perf/test_perf.py:2 and scripts/pr_status/test_pr_labels.py:2 follow the same shape.",
+   "file": "scripts/test_merge_queue_report.py",
+   "fix": "Open with one or two sentences naming the covered surface and the no-network scope, keeping the run command after it, as in `scripts/pr_status/test_conflicts.py`.",
+   "issue": "The module docstring is only the invocation line (\"Run with python3 scripts/test_merge_queue_report.py.\"); it does not say what the file covers (branch parsing, log error extraction and its caps, group-PR extraction, fence defusing and marker round-trip) or that it exercises only pure functions with no `gh` call. Every other test module here opens with what it tests.",
+   "line": 1
+  }
+ ],
+ "head_sha": "b41fd4fd7bce74c464913de685ca0c75ff880f9e",
+ "merge_base_sha": "6abfc81dfe86638f850566b671287b97f8d34fc0",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 273,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5c6f16218d3a91c87dc8402ad9c3e69249021d8229b0ac00f37291f7c3f46404",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T090223Z-273-documentation-1d3230",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T09:02:23Z",
+ "submitted_by": "wdconinc",
+ "summary": "The script and workflow headers are mostly accurate, but the test file's docstring documents only how to run it and not what it covers, the checkout comment states a security property the explicit `ref` does not provide, and the posted comment presents a truncated job/error list as if it were complete.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/scripts/merge_queue_report.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/merge-queue-report.yml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pr-build.yml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ad760865e3625b675cced3ab840fb83c908f4de0138c279e222e4a5be4db8438",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 87616,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 87616,
+  "cache_read_input_tokens": 250132,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1712,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1712,
+    "cache_read_input_tokens": 76148,
+    "input_tokens": 2,
+    "output_tokens": 2946,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8824,
+  "output_tokens_details": {
+   "thinking_tokens": 6499
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
