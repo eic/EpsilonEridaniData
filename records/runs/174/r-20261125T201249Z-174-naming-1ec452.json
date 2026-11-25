@@ -1,0 +1,227 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.648194,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 253.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 223249,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 223249,
+    "cache_read_input_tokens": 1874348,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1052,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1052,
+      "cache_read_input_tokens": 185906,
+      "input_tokens": 2,
+      "output_tokens": 2140,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19136,
+    "output_tokens_details": {
+     "thinking_tokens": 14167
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 3.648194,
+ "dedupe_key": "eic/EpsilonEridani|174|1eb4e674339f09297243c4e22f628a28154270cd|naming|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "df00fd05130e37b180a8706b185d5073cff94d90cafab3e28fd9297c9406b4b6",
+ "diff_sha256": "df00fd05130e37b180a8706b185d5073cff94d90cafab3e28fd9297c9406b4b6",
+ "duration_s": 253.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Photoproduction/Kinematics/Basic.lean:45-49` opens `EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics`; `DIS/Corrections/Eikonal.lean:75-79,186,188,190` opens `\u2026DIS.Corrections`, then `end Corrections`, `namespace Kinematics.DisKinematics`, `open Corrections`; `DIS/Exclusive/Amplitudes/Basic.lean:20-25`, `DIS/Tensors/Basic.lean:84-88`, `DIS/Inference/Basic.lean:21-25` all mirror the path. Grep of `Photoproduction/Flux/Basic.lean` shows only `namespace EpsilonEridani/QFT/Scattering/Photoproduction` at 69-72 and `namespace Kinematics.ChargedSource` at 241 \u2014 no `Flux`.",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "fix": "Add `namespace Flux` after line 72 (and the matching `end Flux`), closing it before `namespace Kinematics.ChargedSource` at line 241 and adding `open Flux` there, exactly as `Eikonal.lean` does with `end Corrections` / `open Corrections`.",
+   "issue": "The file is `Photoproduction/Flux/Basic.lean` but opens only `EpsilonEridani.QFT.Scattering.Photoproduction`, so `photonFluxProfile` and its lemmas (`photonFluxProfile_def`, `_of_nonpos`, `hasDerivAt_`, `continuousOn_`, `abs_\u2026_le_mul_exp_neg`, `tendsto_\u2026_atTop_nhds_zero`, `\u2026_eq_integral`, `strictAntiOn_`, `_nonneg`, `_pos`, `isEquivalent_\u2026_neg_log`) get full names `\u2026Photoproduction.photonFluxProfile\u2026` instead of `\u2026Photoproduction.Flux.\u2026`. Every other module under `QFT/Scattering` mirrors its directory in the namespace.",
+   "line": 72
+  },
+  {
+   "evidence": "`grep -r 'integratedPhotonFlux\\|abs_photonFluxProfile_le\\b\\|tendsto_photonFluxProfile_atTop\\b' code` \u2192 no matches; the file defines `photonFlux` at `Flux/Basic.lean:250` and `isEquivalent_photonFlux_mul_log_div` at 298. Roadmap `Photoproduction/README.md:117` fixes the name as `photonFlux`.",
+   "file": "",
+   "fix": "Update the PR description to the names actually introduced: `ChargedSource.photonFlux`, `photonFlux_def`, `photonFlux_pos`, `charge_sq_mul_photonFlux_eq_charge_sq_mul`, `isEquivalent_photonFlux_mul_log_div`, `abs_photonFluxProfile_le_mul_exp_neg`, `tendsto_photonFluxProfile_atTop_nhds_zero`.",
+   "issue": "The PR description documents the spectrum as `ChargedSource.integratedPhotonFlux` with `integratedPhotonFlux_def/_pos`, `charge_sq_mul_integratedPhotonFlux_eq_charge_sq_mul`, `isEquivalent_integratedPhotonFlux_neg_log`, `abs_photonFluxProfile_le`, `tendsto_photonFluxProfile_atTop`; none of those names exist. The code's `photonFlux` is the correct name (roadmap convention 3), so the description is what is stale.",
+   "line": 0
+  }
+ ],
+ "head_sha": "1eb4e674339f09297243c4e22f628a28154270cd",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 174,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "7cadc61f15fc0c10dd8beba383c15d25a74b2ab8f96cc8c66199058f59754687",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T201249Z-174-naming-1ec452",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T20:12:49Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names and the one new notation-free API are otherwise conventional, but the new module omits the `Flux` namespace component that every other module under `QFT/Scattering` derives from its directory, so all eleven profile declarations land one level too high. The PR description also advertises an API (`integratedPhotonFlux\u2026`) that does not exist in the code.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Corrections/Eikonal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inference/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ed0111eddefeb97a57c3b998f6074f21ab6ac96e0bafb08d87820a56bf2b84f5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 223249,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 223249,
+  "cache_read_input_tokens": 1874348,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1052,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1052,
+    "cache_read_input_tokens": 185906,
+    "input_tokens": 2,
+    "output_tokens": 2140,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19136,
+  "output_tokens_details": {
+   "thinking_tokens": 14167
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
