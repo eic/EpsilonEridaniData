@@ -1,0 +1,219 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.937319,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 236.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 111603,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 111603,
+    "cache_read_input_tokens": 712908,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1101,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1101,
+      "cache_read_input_tokens": 91599,
+      "input_tokens": 2,
+      "output_tokens": 2916,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18589,
+    "output_tokens_details": {
+     "thinking_tokens": 13739
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 1.937319,
+ "dedupe_key": "eic/EpsilonEridani|229|3314dfd30ad3e3d6207a78074a3f3374be8e2502|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "6d57f9bef6d77289829dbd79ad8f83cb5ae9626cdd73721c27fc5b1618a1ee96",
+ "diff_sha256": "6d57f9bef6d77289829dbd79ad8f83cb5ae9626cdd73721c27fc5b1618a1ee96",
+ "duration_s": 236.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib names every IsBigO-transforming lemma this way: `theorem IsBigO.const_mul_left` (Mathlib/Analysis/Asymptotics/Ring.lean:46), `theorem IsBigO.pow` (Ring.lean:201), `theorem IsBigO.inv_rev` (Ring.lean:228). The PR itself already uses `.const_mul_left`, `.sub`, `.congr_left`.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Asymptotics/Cocompact.lean",
+   "fix": "Rename to `Asymptotics.IsBigO.inv_mul_inv_sq` (call sites become `h.inv_mul_inv_sq`), as in lines 114 and 139 of SphericalBessel/Asymptotics.lean.",
+   "issue": "`isBigO_inv_mul_inv_sq` takes `h : f =O[l] fun x => x\u207b\u00b9` as its first explicit argument, so it should be dot notation on `Asymptotics.IsBigO`, not a root `isBigO_*` name.",
+   "line": "76"
+  },
+  {
+   "evidence": "`rg \"theorem isBigO_[a-zA-Z_]*_of_isBigO\" upstream/mathlib/Mathlib` returns no matches; `theorem _root_.Filter.Tendsto.isBigO_one` is at Mathlib/Analysis/Asymptotics/Lemmas.lean:114, and this PR calls it as `tendsto_inv\u2080_cocompact.isBigO_one \ud835\udd5c` (Cocompact.lean:73).",
+   "file": "EpsilonEridani/Mathematics/Analysis/Asymptotics/Cocompact.lean",
+   "fix": "Rename to `Asymptotics.IsBigO.isBigO_inv` (used as `h.isBigO_inv hg`), on the model of `Filter.Tendsto.isBigO_one`.",
+   "issue": "`isBigO_inv_of_isBigO_mul_sub_inv` likewise has an `IsBigO` as first explicit argument; the `_of_isBigO_` name shape does not exist in Mathlib.",
+   "line": "68"
+  },
+  {
+   "evidence": "Same Mathlib convention as above; the hypothesis `h : (fun x => x * f x) =O[l] fun _ => 1` is the subject of the lemma, and `h\u2080 : \u2200\u1da0 x in l, x \u2260 0` is the side condition named by the `_of_` clause.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Asymptotics/Cocompact.lean",
+   "fix": "Swap the arguments (`h` first, `h\u2080` second) and rename to `Asymptotics.IsBigO.isBigO_inv_of_eventually_ne_zero`, so it reads `h.isBigO_inv_of_eventually_ne_zero h\u2080`.",
+   "issue": "Same pattern in `isBigO_inv_of_isBigO_mul_one`: the `IsBigO` hypothesis is second explicit argument, blocking dot notation and giving the non-upstream `_of_isBigO_` name.",
+   "line": "59"
+  }
+ ],
+ "head_sha": "3314dfd30ad3e3d6207a78074a3f3374be8e2502",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 229,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f1c4d8eadabfece65b5bf8242938441bf6bb5c900054bf929faa65382d35bf84",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T055351Z-229-naming-f2fcf3",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T05:53:51Z",
+ "submitted_by": "wdconinc",
+ "summary": "Bessel-side names and the Filter-namespace helpers follow upstream and in-repo precedent. The three Asymptotics helpers that transform an `IsBigO` hypothesis are named as root-level `isBigO_\u2026_of_isBigO_\u2026`, a shape with no Mathlib precedent; they belong in `Asymptotics.IsBigO` as dot notation so `h.foo` elaborates and they upstream unrenamed.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Asymptotics/Cocompact.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Asymptotics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Field/Lemmas.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Distribution/SchwartzSpace/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Asymptotics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Exp.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/SphericalBessel/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9db64ce18f362994f96f2f1e67f2153c90782903d2991f991f74b7be333f7604",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 111603,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 111603,
+  "cache_read_input_tokens": 712908,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1101,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1101,
+    "cache_read_input_tokens": 91599,
+    "input_tokens": 2,
+    "output_tokens": 2916,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18589,
+  "output_tokens_details": {
+   "thinking_tokens": 13739
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
