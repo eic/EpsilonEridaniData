@@ -1,0 +1,244 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9234235000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 268.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 105257,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 105257,
+    "cache_read_input_tokens": 700137,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1444,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1444,
+      "cache_read_input_tokens": 86806,
+      "input_tokens": 2,
+      "output_tokens": 6660,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20827,
+    "output_tokens_details": {
+     "thinking_tokens": 14503
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b53e6d19dddf8e85c7d2757440b03619a9abb10f",
+ "cost_usd": 1.923424,
+ "dedupe_key": "eic/EpsilonEridani|259|b027a4d175f2a505a9513bb5930084144466ad91|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "7f78c2764af1bd5b54936ba9e4b50ae54898c053eb5bf5e89c52e6c8d7945785",
+ "diff_sha256": "7f78c2764af1bd5b54936ba9e4b50ae54898c053eb5bf5e89c52e6c8d7945785",
+ "duration_s": 268.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 67 `@[expose] public section`; Parameters.lean:72,75,302,324,370 use `@[no_expose]` with an \"unfolded\" lemma; no consumer of these four defs computes with their bodies (only ChargedCurrent.lean uses them, via lemmas).",
+   "file": "EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "fix": "Mark the four new defs `@[no_expose]`, as `EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean` does (`@[no_expose] def gL`, `gR`, `chiralCoupling`, `ofQuantumNumbers`, `smTreeLevelCouplings`), keeping the `_def`/`_eq` lemmas as the public interface.",
+   "issue": "`leftChiralProjector`, `rightChiralProjector` (618, 623), `diracAdjoint` (695) and `diracBilinear` (771) sit inside the file-wide `@[expose] public section` (line 67), so their bodies are exposed downstream although `leftChiralProjector_eq`, `rightChiralProjector_eq`, `diracAdjoint_def` and `diracBilinear_def` already characterise them. Exposure is only needed for the gamma literals that the `decide +kernel` computations evaluate.",
+   "line": 618
+  },
+  {
+   "evidence": "`grep -n endEquivMatrix` in the file: lines 619 and 624 are the definitions; lines 133 and upstream Physlib/Relativity/CliffordAlgebra.lean:189 show the `_eq_endEquivMatrix` convention; lines 640/646/652/659/666 `rw [leftChiralProjector, \u2190 map_mul, \u2026]`.",
+   "file": "EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "fix": "Add `lemma leftChiralProjector_eq_endEquivMatrix : leftChiralProjector = Fermion.Dirac.endEquivMatrix Fermion.Dirac.leftChiralProjector` and the right-handed analogue, and prove the transported lemmas through them.",
+   "issue": "No public lemma relates `leftChiralProjector`/`rightChiralProjector` to their Physlib originals, breaking the file's own convention (`\u03b3_eq_endEquivMatrix` line 133, upstream `\u03b35_eq_endEquivMatrix`). Every transport of a Physlib `Fermion.Dirac` projector fact here is done by unfolding the definition (lines 640, 646, 652, 659, 666), which no later file can repeat once the body is hidden.",
+   "line": 618
+  },
+  {
+   "evidence": "ChargedCurrent.lean:138 and 157 both end `simp [diracBilinear_def]` after the \u0393 argument has been rewritten to `0` by `leftChiralProjector_mul_rightChiralProjector, mul_zero`.",
+   "file": "EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "fix": "Add `@[simp] lemma diracBilinear_zero (\u03c8 \u03c7) : diracBilinear \u03c8 0 \u03c7 = 0` (plus the two spinor-argument zeros if wanted) and `@[simp] lemma diracAdjoint_zero : diracAdjoint 0 = 0`, then close the chirality proofs without `diracBilinear_def`.",
+   "issue": "`diracBilinear` has no zero lemmas; both `chargedCurrent_rightChiralProjector_down` and `_up` fall back on `simp [diracBilinear_def]` to discharge `diracBilinear \u03c8 0 \u03c7 = 0`. `diracAdjoint 0 = 0` is likewise missing from the otherwise complete additive API (`diracAdjoint_add/neg/sub/smul`).",
+   "line": 771
+  },
+  {
+   "evidence": "Lines 709-711 `@[simp] diracAdjoint_mul`, 744-745 `@[simp] diracAdjoint_\u03b3`, 758-760 `@[simp] diracAdjoint_leftChiralProjector`; 679-683 `\u03b3_mul_leftChiralProjector` carries no attribute; ChargedCurrent.lean:168 must list the vertex lemma in `simp only` by hand.",
+   "file": "EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "fix": "Settle the normal form: mark `\u03b3_mul_leftChiralProjector` and `\u03b3_mul_rightChiralProjector` `@[simp]` (they move `\u03b3` left of the projector and terminate), so both routes converge on `P_R * \u03b3 \u03bc`; alternatively drop `@[simp]` from `diracAdjoint_mul` and mark `diracAdjoint_\u03b3_mul_leftChiralProjector` `@[simp]`.",
+   "issue": "`diracAdjoint_\u03b3_mul_leftChiralProjector` (the headline `V\u2212A` self-adjointness) is unreachable under plain `simp`: `diracAdjoint_mul` (710), `diracAdjoint_\u03b3` (745) and `diracAdjoint_leftChiralProjector` (759) are all `@[simp]` and rewrite its LHS to `rightChiralProjector * \u03b3 \u03bc`, while `\u03b3_mul_leftChiralProjector` (680) is not `@[simp]`, so simp never returns to `\u03b3 \u03bc * leftChiralProjector`. The file fixes no normal form for `\u03b3^\u03bc P_L`.",
+   "line": 826
+  },
+  {
+   "evidence": "`:= (rfl)` occurs 202 times across 36 files in `EpsilonEridani/`; bare `:= rfl` on a `_def` lemma occurs only at Positivity.lean:152 and this PR's line 698 (and 776).",
+   "file": "EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "fix": "Use `:= (rfl)` in both, as `chargedCurrent_def` (ChargedCurrent.lean:73) already does.",
+   "issue": "`diracAdjoint_def` (698) and `diracBilinear_def` (776) are proved `:= rfl` rather than `:= (rfl)`, making them defeq-transparent to downstream automation against the repo convention.",
+   "line": 698
+  },
+  {
+   "evidence": "Lines 636-689 and 757-767 supply both chiralities for every other projector lemma; 826-829 supplies only the left one.",
+   "file": "EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "fix": "Add `diracAdjoint_\u03b3_mul_rightChiralProjector : diracAdjoint (\u03b3 \u03bc * rightChiralProjector) = \u03b3 \u03bc * rightChiralProjector`, proved the same way.",
+   "issue": "The file pairs every chirality statement (both idempotences, both orthogonalities, `\u03b3_mul_left/rightChiralProjector`, `diracAdjoint_left/rightChiralProjector`), but the vertex adjoint is given only for `P_L`.",
+   "line": 826
+  }
+ ],
+ "head_sha": "b027a4d175f2a505a9513bb5930084144466ad91",
+ "merge_base_sha": "b53e6d19dddf8e85c7d2757440b03619a9abb10f",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 259,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "224fb94460c3dc74d6b6b6af0e4a669c481a36e4c115afdc9e620f90bd1b3d30",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T062820Z-259-api-design-5c87ef",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T06:28:20Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is well-chosen and non-duplicating, but the four new definitions ship exposed bodies with no need for it, the projectors lack the file's `_eq_endEquivMatrix` characteristic lemma, a zero lemma for `diracBilinear` is missing (proofs unfold instead), and the simp set leaves the `V\u2212A` vertex lemma unreachable.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/ChargedCurrent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/CliffordAlgebraExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/NeutralCurrent.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/ElectroweakAndBSM/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Mixing.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "12f593becb0eda7f66cb2f0fd79106d64b57296149895df35aed977f618dd31c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105257,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 105257,
+  "cache_read_input_tokens": 700137,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1444,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1444,
+    "cache_read_input_tokens": 86806,
+    "input_tokens": 2,
+    "output_tokens": 6660,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20827,
+  "output_tokens_details": {
+   "thinking_tokens": 14503
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
