@@ -1,0 +1,197 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3940099999999993,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 242.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 158813,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 158813,
+    "cache_read_input_tokens": 703580,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4055,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4055,
+      "cache_read_input_tokens": 113590,
+      "input_tokens": 2,
+      "output_tokens": 3141,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18160,
+    "output_tokens_details": {
+     "thinking_tokens": 14298
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.39401,
+ "dedupe_key": "eic/EpsilonEridani|248|58097dc0c0374ff77fb4773a9d51b123de3bf9c4|naming|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "104b3a6518eb798741fbcfa2257ba0482f5ebe5b6fac2f4b355e47e58d6a8329",
+ "diff_sha256": "104b3a6518eb798741fbcfa2257ba0482f5ebe5b6fac2f4b355e47e58d6a8329",
+ "duration_s": 242.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `leadingPower` occurs in exactly three files; its only definition is `structure Kpc \u2026 leadingPower : \u211d \u2192 \u211d` at EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean:107, which ApproximatesToOrder.lean does not import.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Asymptotics/ApproximatesToOrder.lean",
+   "fix": "Rename in the generic vocabulary, e.g. `leadingPower_approximatesToOrder` \u2192 `ApproximatesToOrder.of_add_mul_pow` (conclusion: the approximant without the `c * \u03bb ^ n` term still approximates to order `n`) and `coeff_unique_of_leadingPower_zero` \u2192 `coeff_unique_zero`; the only call site to update is `Kpc.leadingPower_approx` (PowerCorrections.lean:119), where the TMD-specific `leadingPower` wording is correct.",
+   "issue": "`ApproximatesToOrder.leadingPower_approximatesToOrder` (line 139) and `ApproximatesToOrder.coeff_unique_of_leadingPower_zero` (line 130) name `leadingPower`, which this general module does not define; the only `leadingPower` is the downstream TMD field `Kpc.leadingPower` (PowerCorrections.lean:107), which this module cannot see. The naming doc requires `_`-separated components to correspond to a definition name or connective, and the lemmas' own docstrings call the argument \"the lower-order approximation\", not a leading power.",
+   "line": 139
+  },
+  {
+   "evidence": "Matching.lean:112 `variable {A B : Type*} (P : PowerCounting B)`; Matching.lean:203 `theorem IsMatching.mono \u2026 (h : P.IsMatching n F M c) (hmn : m \u2264 n)`; Matching.lean:237 `variable {P} \u2026`, after which `hc.eqOn_totalDegreePiece`/`hc.isMatching_iff_mulVec_sub_eq_zero` do elaborate. The repo follows the implicit-ambient convention elsewhere: NuclearEffect.lean:113 `variable {E E' : NuclearEffect} \u2026` with `h.obs_eq` used at lines 156, 180, 293.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "fix": "Move `IsMatching.mono` below the `variable {P} \u2026` line (237) or state it with `{P}` implicit, as the other `IsMatching.*` lemmas do.",
+   "issue": "`IsMatching.mono` is declared while the section variable `P` is explicit (`variable {A B : Type*} (P : PowerCounting B)`, line 112), so `P` is auto-bound as the first explicit argument ahead of `h`. Dot notation `h.mono hmn` then feeds `hmn` to the `P` slot instead, which is why the name's namespace buys nothing for consumers.",
+   "line": 203
+  }
+ ],
+ "head_sha": "58097dc0c0374ff77fb4773a9d51b123de3bf9c4",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 248,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "03dbc2888f9dfda2bd39c556826206ff7e32fd24ed0d1c5a01d69f1c47fe3448",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T105610Z-248-naming-feda34",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T10:56:10Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two naming defects: the moved lemmas carry TMD-specific `leadingPower` jargon into the now-general `ApproximatesToOrder` module where no such declaration exists, and `IsMatching.mono` is namespaced for dot notation while `P` is still an explicit section variable. Everything else follows the file's own precedents and upstream terminology.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Asymptotics/TruncatedExpansion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Asymptotics/ApproximatesToOrder.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/PowerCounting.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Nuclear/Medium/NuclearEffect.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f37393162e5d87179fe6099a207d779c88ec11b8946ce48bbbc5614a6dc4af4e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 158813,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 158813,
+  "cache_read_input_tokens": 703580,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4055,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4055,
+    "cache_read_input_tokens": 113590,
+    "input_tokens": 2,
+    "output_tokens": 3141,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18160,
+  "output_tokens_details": {
+   "thinking_tokens": 14298
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
