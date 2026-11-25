@@ -1,0 +1,245 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.883628,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 220.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 234782,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 234782,
+    "cache_read_input_tokens": 2268166,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 644,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 644,
+      "cache_read_input_tokens": 194302,
+      "input_tokens": 2,
+      "output_tokens": 2029,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16063,
+    "output_tokens_details": {
+     "thinking_tokens": 10827
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 3.883628,
+ "dedupe_key": "eic/EpsilonEridani|227|195d25c168edd87db9d111e691d51d528ff42a60|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "d0fc2201d4bbb03181e0f09e40f1f8f197e07b4dbc966a36061408e82e326a8f",
+ "diff_sha256": "d0fc2201d4bbb03181e0f09e40f1f8f197e07b4dbc966a36061408e82e326a8f",
+ "duration_s": 220.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Decomposition.lean:196-198 `:= Bilin.flip_add_smul_of_isSymm_of_isAlt (fromF1F2_isSymm g K hSymm F1 F2) hA c`; Basic.lean:266-268 defines the general lemma; grep for the three names over `code/` returns only the definition sites and the module docstring lines 32-33, 56-58 (which mention only the two `inv_two_smul_*` ones).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "fix": "Delete `fromF1F2_add_smul_flip`; any future caller writes `Bilin.flip_add_smul_of_isSymm_of_isAlt (fromF1F2_isSymm g K hSymm F1 F2) hA c` directly. For the two `inv_two_smul_*` theorems, either name a consumer or drop them too \u2014 they state the headline split advertised in the docstring and mirror the pre-existing leptonic pair `inv_two_smul_lMuNuVA_add_flip`/`_sub_flip`, so keeping those two is defensible, but keeping all three plus the generic lemmas is a parallel API.",
+   "issue": "`fromF1F2_add_smul_flip` is `Bilin.flip_add_smul_of_isSymm_of_isAlt` (added in this PR at Tensors/Basic.lean:266) applied to `fromF1F2_isSymm g K hSymm F1 F2` \u2014 its entire proof is that one application \u2014 and nothing in the repo references it (grep for `fromF1F2_add_smul_flip` across `code/` hits only its own definition; it is not even listed in the module's Main results). The two theorems right below it, `inv_two_smul_fromF1F2_add_smul_add_flip` (line 202) and `inv_two_smul_fromF1F2_add_smul_sub_flip` (line 210), are the same pattern against `Bilin.inv_two_smul_add_flip_of_isSymm_of_isAlt` / `inv_two_smul_sub_flip_of_isSymm_of_isAlt` (Basic.lean:272, 279) and are likewise unreferenced.",
+   "line": "196"
+  }
+ ],
+ "head_sha": "195d25c168edd87db9d111e691d51d528ff42a60",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 227,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "dd7e94699f40a68f4992496123948c6b4fe8a951602880a1f1b055b90dae016a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T200112Z-227-reuse-23da68",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T20:01:12Z",
+ "submitted_by": "wdconinc",
+ "summary": "Reuse is generally good: the PR routes the new reflection lemmas through Mathlib (`Module.involutive_preReflection`, `LinearMap.det_comp`, `LinearMap.det_eq_one_of_not_module_finite`), factors `reflect_comp_reflect_isKinematicStabilizer` out of `exists_half_turn`, and refactors `uniquenessWit` and `ParityOdd.apply_eq_mul_apply_e\u2081_e\u2082` onto the new shared constructions. The one defect is a set of one-line re-instantiations of the generic `Bilin` flip lemmas added in the same PR, none of which has a consumer.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Spectators.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/QuadraticForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Reflection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/Relativity/LorentzGroup/Invariants/RankFour.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/InnerProductSpace/BilinearForm.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 24,
+  "trace_truncated": false
+ },
+ "transcript_blob": "39868e9c5de1c062a6c83adb7398add5b9fc3f245543eb8fa935b097eb7a0999",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 234782,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 234782,
+  "cache_read_input_tokens": 2268166,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 644,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 644,
+    "cache_read_input_tokens": 194302,
+    "input_tokens": 2,
+    "output_tokens": 2029,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16063,
+  "output_tokens_details": {
+   "thinking_tokens": 10827
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

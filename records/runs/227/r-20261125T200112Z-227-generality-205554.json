@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.1108184999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 182.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 218331,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 218331,
+    "cache_read_input_tokens": 1143387,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4177,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4177,
+      "cache_read_input_tokens": 175182,
+      "input_tokens": 2,
+      "output_tokens": 4967,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14229,
+    "output_tokens_details": {
+     "thinking_tokens": 11112
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 3.110818,
+ "dedupe_key": "eic/EpsilonEridani|227|195d25c168edd87db9d111e691d51d528ff42a60|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "d0fc2201d4bbb03181e0f09e40f1f8f197e07b4dbc966a36061408e82e326a8f",
+ "diff_sha256": "d0fc2201d4bbb03181e0f09e40f1f8f197e07b4dbc966a36061408e82e326a8f",
+ "duration_s": 182.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:978-983 `decomposition_unique ... (hU : UniquenessAssumptions g K)`; Decomposition.lean:279-288 shows `hSymm`/`hQ2`/`hTT`/`he` occurring only inside the `uniquenessAssumptionsOfSpectator` application, and `fromF1F2_add_smul_apply_of_spectator` (line 188) takes only `heq heT hee'`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "fix": "State it as `theorem fromF1F2_add_smul_injective {A : Bilin V} (hU : UniquenessAssumptions g K) {e e' : V} (heq : g K.q e = 0) (heT : g (pTransverse g K) e = 0) (hee' : g e e' = 0) (hA : A e e' \u2260 0) : Function.Injective fun F : \u211d \u00d7 \u211d \u00d7 \u211d => fromF1F2 g K F.1 F.2.1 + F.2.2 \u2022 A`, passing `hU` to `decomposition_unique`; `existsUnique_eq_fromF1F2_add_smul` then supplies `uniquenessAssumptionsOfSpectator hSymm hQ2 hTT hP.q_orthogonal_e\u2081 hP.pT_orthogonal_e\u2081 hP.e\u2081_self_ne_zero` itself.",
+   "issue": "`fromF1F2_add_smul_injective` takes `hSymm`, `hQ2`, `hTT` and `he`, which are used only to build `uniquenessAssumptionsOfSpectator hSymm hQ2 hTT heq heT he` (line 288); the parity-odd step uses only `heq`, `heT`, `hee'`, `hA`. The general `decomposition_unique` is stated for an arbitrary `UniquenessAssumptions g K`, so this uniqueness statement is needlessly tied to spectator-built probe pairs.",
+   "line": 269
+  },
+  {
+   "evidence": "grep for `fromF1F2_add_smul_flip` over `EpsilonEridani/` returns only its own declaration at Decomposition.lean:196; lines 206 and 213 apply the `Bilin.` lemmas directly.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "fix": "Drop it, or use it in the proofs of the two `inv_two_smul_fromF1F2_add_smul_*` theorems so it carries weight.",
+   "issue": "`fromF1F2_add_smul_flip` has no use in the repository: the two `inv_two_smul_fromF1F2_add_smul_*` theorems below it go straight to `Bilin.inv_two_smul_{add,sub}_flip_of_isSymm_of_isAlt`, and it is not cited in the module docstring's main results. It is a bare specialization of `Bilin.flip_add_smul_of_isSymm_of_isAlt` at `fromF1F2_isSymm`.",
+   "line": 196
+  }
+ ],
+ "head_sha": "195d25c168edd87db9d111e691d51d528ff42a60",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 227,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1b0ba4abf849991475674ebc21fb0c0ba2562c3ad88d25b65236b1906d2c5102",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T200112Z-227-generality-205554",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T20:01:12Z",
+ "submitted_by": "wdconinc",
+ "summary": "The decomposition sits at the right level overall, but the uniqueness theorem hard-wires one construction of the F1/F2 probe pairs and so carries three hypotheses the underlying `decomposition_unique` does not need; one new flip specialization has no use anywhere.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Decomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Spectators.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "838a0d280288f54e4d5d4e3d20352a23f1da93ee68ef9388d348a0bb4a71aa2b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 218331,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 218331,
+  "cache_read_input_tokens": 1143387,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4177,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4177,
+    "cache_read_input_tokens": 175182,
+    "input_tokens": 2,
+    "output_tokens": 4967,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14229,
+  "output_tokens_details": {
+   "thinking_tokens": 11112
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
