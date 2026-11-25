@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1062784999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 243.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 141383,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 141383,
+    "cache_read_input_tokens": 444057,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 352,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 352,
+      "cache_read_input_tokens": 96909,
+      "input_tokens": 2,
+      "output_tokens": 7570,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18814,
+    "output_tokens_details": {
+     "thinking_tokens": 15324
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f27f6693afe3386e2c206dff3301b50f4f3b0409",
+ "cost_usd": 2.106278,
+ "dedupe_key": "eic/EpsilonEridani|103|1ae875ce16fedb013602e8bb9d5dbe4ea8b630f3|naming|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "b7e384a4170e316df60b879af49f4ee4280b07d1c6a34aaec4d738e9117bf604",
+ "diff_sha256": "b7e384a4170e316df60b879af49f4ee4280b07d1c6a34aaec4d738e9117bf604",
+ "duration_s": 243.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/mathlib/Mathlib/LinearAlgebra/SesquilinearForm/Basic.lean:388 `def IsOrthogonal`, :398 `lemma isOrthogonal_of_forall_apply_same`; code .../OrthogonalProjection.lean:169 `lemma reflect_isometry ... : g.IsOrthogonal (reflect g u)`; code .../SesquilinearForm/Basic.lean:25 `lemma isOrthogonal_id`.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/OrthogonalProjection.lean",
+   "fix": "Rename to `isOrthogonal_reflect` (or `reflect_isOrthogonal`), and rename the field to `isOrthogonal`, updating `hf.isometry` uses at DIS/Tensors/Basic.lean:510, 533, 551, 989.",
+   "issue": "`reflect_isometry` now concludes `g.IsOrthogonal (reflect g u)`, but the name still says \"isometry\" \u2014 the word of the `Bilin.IsIsometry` this PR deleted. In Mathlib `Isometry` is a different (metric-space) notion, and the PR's own sibling lemma spells the predicate out (`LinearMap.isOrthogonal_id`, SesquilinearForm/Basic.lean:25), as does Mathlib's `LinearMap.isOrthogonal_of_forall_apply_same`. Same mismatch on the structure field `IsKinematicStabilizer.isometry : g.IsOrthogonal f` (DIS/Tensors/Basic.lean:448), whose type this PR changed.",
+   "line": 169
+  },
+  {
+   "evidence": "Jets/Frame/Basic.lean:292 `(hc : 0 < c)` vs lines 300/305/311 `(hc : c \u2260 0)`, all named `\u2026_eq_of_n_eq_smul`; naming conventions, \"hypotheses described with `of` to disambiguate\".",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Rename to `energy_eq_of_n_eq_smul_of_pos` (or `energy_eq_of_n_eq_smul_pos`), so the hypothesis distinguishing it from the `c \u2260 0` siblings appears in the name.",
+   "issue": "`energy_eq_of_n_eq_smul` requires `0 < c`, while the three sibling lemmas with the identical name shape (`spatialPart_eq_of_n_eq_smul`:300, `spatialNorm_eq_of_n_eq_smul`:305, `cosAngle_eq_of_n_eq_smul`:311) require only `c \u2260 0`. The name gives no hint that this one is the restricted case, although the same file marks positivity elsewhere (`cosAngle_smul_left_of_pos`:263).",
+   "line": 292
+  }
+ ],
+ "head_sha": "1ae875ce16fedb013602e8bb9d5dbe4ea8b630f3",
+ "merge_base_sha": "f27f6693afe3386e2c206dff3301b50f4f3b0409",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fbb1c39426bb3805ae4bcddda310d95bdf478e0212f52c9ae5152ecee3651d3b",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T114435Z-103-naming-4fa227",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T11:44:35Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names are mostly accurate and well placed (dot notation on LinearMap.BilinForm, no notation introduced), but `reflect_isometry` keeps terminology the PR itself deleted in favour of Mathlib's `IsOrthogonal`, and `energy_eq_of_n_eq_smul` hides a strictly stronger hypothesis than its three identically-shaped siblings.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/SesquilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Reflection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/SesquilinearForm/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Order",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/InnerProductSpace/Trace.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4b819dec25496859e51973b98327c54403fb5d3254076e122bb9b5e6b86d9284",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 141383,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 141383,
+  "cache_read_input_tokens": 444057,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 352,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 352,
+    "cache_read_input_tokens": 96909,
+    "input_tokens": 2,
+    "output_tokens": 7570,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18814,
+  "output_tokens_details": {
+   "thinking_tokens": 15324
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

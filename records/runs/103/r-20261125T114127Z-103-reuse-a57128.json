@@ -1,0 +1,257 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.527538,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 187.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 151185,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 151185,
+    "cache_read_input_tokens": 1328456,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1276,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1276,
+      "cache_read_input_tokens": 111019,
+      "input_tokens": 2,
+      "output_tokens": 1935,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14052,
+    "output_tokens_details": {
+     "thinking_tokens": 8439
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f27f6693afe3386e2c206dff3301b50f4f3b0409",
+ "cost_usd": 2.527538,
+ "dedupe_key": "eic/EpsilonEridani|103|1ae875ce16fedb013602e8bb9d5dbe4ea8b630f3|reuse|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "b7e384a4170e316df60b879af49f4ee4280b07d1c6a34aaec4d738e9117bf604",
+ "diff_sha256": "b7e384a4170e316df60b879af49f4ee4280b07d1c6a34aaec4d738e9117bf604",
+ "duration_s": 187.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Hom.lean:271 `def linMulLin (f g : M \u2192\u2097[R] R) : BilinForm R M := (LinearMap.mul R R).compl\u2081\u2082 f g`, :276 `@[simp] linMulLin_apply : linMulLin f g x y = f x * g y := rfl`. `grep rankOne_isSymm code/` matches only its own definition and docstring in RankOne.lean:17,38.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/RankOne.lean",
+   "fix": "Delete `RankOne.lean` and write `linMulLin (g a) (g b)` at the five call sites (`Tensors/Basic.lean:105,354,539,612` and the `rankOne_apply` rewrites at 360,541,619), dropping `rankOne_apply` in favour of Mathlib's `@[simp] linMulLin_apply`; if the symmetry lemma is ever needed, state it as `(linMulLin f f).IsSymm`. Otherwise at minimum define `rankOne g a b := linMulLin (g a) (g b)`.",
+   "issue": "`rankOne g a b := (g a).smulRight (g b)` is Mathlib's `LinearMap.BilinForm.linMulLin (g a) (g b)` under a new name, placed in the same `LinearMap.BilinForm` namespace; `rankOne_apply` restates `linMulLin_apply`, and `rankOne_isSymm` has no consumer anywhere in the repo.",
+   "line": "31"
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/LinearAlgebra/Reflection.lean:79-81 `lemma involutive_preReflection (h : f x = 2) : Involutive (preReflection x f)`; OrthogonalProjection.lean:137-149 defines `reflect` as `Module.preReflection` and already uses `Module.preReflection_apply_self` with that hypothesis proof.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/OrthogonalProjection.lean",
+   "fix": "Replace the proof by `Module.involutive_preReflection (by rw [LinearMap.smul_apply, smul_eq_mul, mul_assoc, inv_mul_cancel\u2080 hu, mul_one]) v` \u2014 the same `f u = 2` side condition already discharged two lines above in `reflect_apply_self`.",
+   "issue": "`reflect_reflect` hand-derives involutivity (an auxiliary `g u (reflect g u v) = -g u v` plus `field_simp`/`ring`/`module`) although `reflect` is by definition `Module.preReflection u ((2 * (g u u)\u207b\u00b9) \u2022 g u)` and Mathlib proves involutivity for any `f` with `f u = 2`.",
+   "line": "159"
+  }
+ ],
+ "head_sha": "1ae875ce16fedb013602e8bb9d5dbe4ea8b630f3",
+ "merge_base_sha": "f27f6693afe3386e2c206dff3301b50f4f3b0409",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "96198f42fa37ec27f46bf233b4e7ac2a2aa9b360fba48c09d98ae917eee76f06",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T114127Z-103-reuse-a57128",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T11:41:27Z",
+ "submitted_by": "wdconinc",
+ "summary": "The Frame/projOrthogonal material is genuinely new and reuses Mathlib where it can. Two misses: the re-authored `rankOne` duplicates Mathlib's `linMulLin` (and its only new lemma has no consumer), and `reflect_reflect` re-derives `Module.involutive_preReflection`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Hom.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/RankOne.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Reflection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/SesquilinearForm/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/QuadraticForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/OrthogonalProjection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/Reflection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/RootSystem",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 25,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fe01976891829be8c6de91ba1eeab4224f2ade09eb23af912ed7ec9c6c40e9f1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 151185,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 151185,
+  "cache_read_input_tokens": 1328456,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1276,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1276,
+    "cache_read_input_tokens": 111019,
+    "input_tokens": 2,
+    "output_tokens": 1935,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14052,
+  "output_tokens_details": {
+   "thinking_tokens": 8439
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

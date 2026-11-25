@@ -1,0 +1,202 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.155669,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 224.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 138550,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 138550,
+    "cache_read_input_tokens": 736188,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 647,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 647,
+      "cache_read_input_tokens": 100609,
+      "input_tokens": 2,
+      "output_tokens": 7062,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16079,
+    "output_tokens_details": {
+     "thinking_tokens": 12213
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f27f6693afe3386e2c206dff3301b50f4f3b0409",
+ "cost_usd": 2.155669,
+ "dedupe_key": "eic/EpsilonEridani|103|1ae875ce16fedb013602e8bb9d5dbe4ea8b630f3|api-design|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "b7e384a4170e316df60b879af49f4ee4280b07d1c6a34aaec4d738e9117bf604",
+ "diff_sha256": "b7e384a4170e316df60b879af49f4ee4280b07d1c6a34aaec4d738e9117bf604",
+ "duration_s": 224.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/mathlib/Mathlib/Algebra/Order/Group/Unbundled/Basic.lean:85 `@[to_additive (attr := simp) Left.neg_pos_iff ...]`, i.e. `0 < -a \u2194 a < 0` is simp and applies at `\u211d`.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "State it as `0 < F.spatialNorm p \u2194 g (F.spatialPart p) (F.spatialPart p) < 0` (adjust `cosAngle_self`, which uses `.mp` at line 258, accordingly).",
+   "issue": "`@[simp] spatialNorm_pos_iff` has RHS `0 < -g (F.spatialPart p) (F.spatialPart p)`, which the default simp set immediately rewrites further, so no goal ever rests in the stated form and `rw [spatialNorm_pos_iff]` leaves a non-normal hypothesis.",
+   "line": "197"
+  },
+  {
+   "evidence": "Frame/Basic.lean:212-219 (`spatialNorm_zero`, `spatialNorm_smul`) with no `spatialNorm_neg` anywhere in the file; Frame/Witness.lean:52-57 proves the `(1,1,0)`/`(1,-1,0)` case by `norm_num`+`linarith` rather than by a general negation lemma.",
+   "file": "EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "fix": "Add `@[simp] theorem spatialNorm_neg (p : V) : F.spatialNorm (-p) = F.spatialNorm p` (from `spatialNorm_def`, `map_neg`), and, since the witness statement is about back-to-back momenta, the companion `cosAngle_neg_left`/`cosAngle_neg_right` (`F.cosAngle (-a) b = -F.cosAngle a b`), which would let `cosAngle_backToBack_restFrameWit_eq_neg_one` follow from `cosAngle_self` instead of a bespoke numeric `linarith`.",
+   "issue": "`spatialNorm` has its interaction with every operation in scope except negation: `spatialNorm_zero`, `spatialNorm_smul`, `spatialNorm_n`, `spatialNorm_spatialPart` are all `@[simp]`, but `F.spatialNorm (-p)` is not reachable \u2014 `spatialNorm_smul` does not fire on `-p`, so a consumer must first rewrite `-p` as `(-1 : \u211d) \u2022 p`. Back-to-back momenta are exactly the case the witness file exercises.",
+   "line": "217"
+  }
+ ],
+ "head_sha": "1ae875ce16fedb013602e8bb9d5dbe4ea8b630f3",
+ "merge_base_sha": "f27f6693afe3386e2c206dff3301b50f4f3b0409",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 103,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "3edbc054e9bd43ebf5e82498b77b92a7189f99d1f4164ba050876d07d7123305",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T114435Z-103-api-design-6e7ca9",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T11:44:35Z",
+ "submitted_by": "wdconinc",
+ "summary": "Surface is minimal, bodies unexposed, no compatibility artifacts, and the projection/energy/spatialPart API is complete and annotated. Two small gaps remain in the `spatialNorm` row: one simp lemma stated off normal form, and no interaction with negation.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Jets/Frame/Witness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Algebra/Order/Group/Unbundled/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/OrthogonalProjection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/JetsAndEventShapes/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra/SesquilinearForm/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/Reciprocity.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0631c07caf3c3dd684b7566d2fe18dee1f2b39e206f5c2d377053fd32e974785",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 138550,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 138550,
+  "cache_read_input_tokens": 736188,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 647,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 647,
+    "cache_read_input_tokens": 100609,
+    "input_tokens": 2,
+    "output_tokens": 7062,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16079,
+  "output_tokens_details": {
+   "thinking_tokens": 12213
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
