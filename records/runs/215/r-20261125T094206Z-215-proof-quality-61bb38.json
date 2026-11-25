@@ -1,0 +1,161 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.9679089999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 124.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 66791,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 66791,
+    "cache_read_input_tokens": 97038,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6126,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6126,
+      "cache_read_input_tokens": 63888,
+      "input_tokens": 2,
+      "output_tokens": 9571,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10058,
+    "output_tokens_details": {
+     "thinking_tokens": 7137
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d245b5ef9f515e1c231c93995c042da5e13ee357",
+ "cost_usd": 0.967909,
+ "dedupe_key": "eic/EpsilonEridani|215|8628e7dcde4797a61b0012df99aff46a3212ab97|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4dcdc2ff5175a188254cf6ea55d83389a5a3d90a35870b719bee890f4488f5e4",
+ "diff_sha256": "4dcdc2ff5175a188254cf6ea55d83389a5a3d90a35870b719bee890f4488f5e4",
+ "duration_s": 124.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`crossSectionBracket_add` and `crossSectionBracket_const_mul` are themselves proved by `simp only [crossSectionBracket_def]` + `ring` at Inclusive/CrossSection.lean:229-230 and 236-237, so the same one-liner closes `hB`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "fix": "Replace the body with `simp only [crossSectionBracket_def]; ring`. If the three-term split is wanted as a fact, state it as a named lemma next to `crossSectionBracket_add` rather than an inline `have`.",
+   "issue": "The `hB` have-block proves bracket linearity for the three effective structure functions via five backward rewrites (`\u2190 crossSectionBracket_const_mul` x3, `\u2190 crossSectionBracket_add` x2) plus `mul_zero`/`add_zero` cleanup; the chain depends on each `\u2190` firing on the intended subterm in the intended order.",
+   "line": "442"
+  },
+  {
+   "evidence": "Lines 334-335 and 349-351; `helicitySign_sq` (Parameters.lean:69) is the only non-ring input, and `helicitySign_true/false` (65-67) make the Bool split immediate.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "fix": "Case split instead: `cases h` then `simp only [gammaZTerm_def, helicityCoupling_def, dSigmaDxDQ2_def, crossSectionBracket_def, helicitySign_true, helicitySign_false]; ring` \u2014 no coefficient to tune. Otherwise add a comment stating that the coefficient is exactly the `helicitySign h ^ 2 - 1` remainder.",
+   "issue": "`gammaZTerm_eq_crossSectionBracket_sub` (334-335) and `zBosonTerm_eq_crossSectionBracket_sub` (349-351) close with `linear_combination <magic coefficient> * helicitySign_sq h`; nothing explains why the \u03bb\u00b2=1 correction enters with that coefficient, so the reason the proof works is invisible and the term must be re-derived by hand if the statement changes.",
+   "line": "334"
+  },
+  {
+   "evidence": "Lines 229-232: `\u2190 dSigmaDxDQ2_add` is applied twice although the F\u2083 slot of `neutralCurrent_def` (line 158) has only two summands, so the sign-0 photon contribution appears as `q ^ 2 * 0` and only `congr 1` absorbs it.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "fix": "Either prove it directly by `simp only [neutralCurrent_def, photonTerm_def, gammaZTerm_def, zBosonTerm_def, dSigmaDxDQ2_def, crossSectionBracket_def]; ring`, or keep the linearity route and add a one-line comment saying the residual goals are the F\u2081/F\u2082/F\u2083 arguments, the F\u2083 one differing by `q ^ 2 * 0`.",
+   "issue": "`neutralCurrent_eq_add` ends with `congr 1 <;> ring` after an eight-step rewrite chain; which argument goals `congr 1` produces (the F\u2083 slot acquires a spurious `q ^ 2 * 0` from the backward `dSigmaDxDQ2_add`) is undocumented, and the step relies on congruence closure splitting the whole 9-argument spine.",
+   "line": "232"
+  },
+  {
+   "evidence": "Lines 217-218, 275-277, 301, 305-306, 310-312 of the new file; each ends in library-name plumbing rather than a single robust closer.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "fix": "Keep the one domain rewrite and finish with `simp`/`ring`, e.g. `rw [photonTerm_def, dSigmaDxDQ2_def, dSigmaDxDQ2_def, crossSectionBracket_eq_sign_zero_sub M s]; simp` at 217-218 and `simp [zBosonTerm_def]` at 305-306.",
+   "issue": "Terminal chains of generic arithmetic lemmas where robust automation applies: line 218 (`mul_zero, mul_zero, sub_zero`), line 306 (`zero_pow two_ne_zero`, whose hypothesis form has changed upstream before), line 277 (`add_right_comm`), line 312 (`add_zero, add_zero`).",
+   "line": "218"
+  }
+ ],
+ "head_sha": "8628e7dcde4797a61b0012df99aff46a3212ab97",
+ "merge_base_sha": "8b52f6a293d930d2445354db8480a605944ea0b1",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 215,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b0ee4db6296a6525128416eebf6c9f344cd7703e988fc070033f5053874ec48c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T094206Z-215-proof-quality-61bb38",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T09:42:06Z",
+ "submitted_by": "veprbl",
+ "summary": "Proofs are short and mostly local, but two spots hide their reasoning: an inline backward-rewrite chain reproving bracket linearity instead of the file's one-line `simp only [crossSectionBracket_def]; ring` idiom, and two `linear_combination` calls with undocumented hand-tuned coefficients on `helicitySign_sq`. Several terminal rewrite chains of generic arithmetic lemmas are needlessly brittle.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "96d1a88eb939f173d156d96187554a9f65f9a5e656f1726b25228bf2a42194a2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 66791,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 66791,
+  "cache_read_input_tokens": 97038,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6126,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6126,
+    "cache_read_input_tokens": 63888,
+    "input_tokens": 2,
+    "output_tokens": 9571,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10058,
+  "output_tokens_details": {
+   "thinking_tokens": 7137
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

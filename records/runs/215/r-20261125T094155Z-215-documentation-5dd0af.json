@@ -1,0 +1,174 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.647437,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 254.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 94250,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 94250,
+    "cache_read_input_tokens": 358754,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4721,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4721,
+      "cache_read_input_tokens": 92752,
+      "input_tokens": 2,
+      "output_tokens": 9590,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21020,
+    "output_tokens_details": {
+     "thinking_tokens": 17537
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d245b5ef9f515e1c231c93995c042da5e13ee357",
+ "cost_usd": 1.647437,
+ "dedupe_key": "eic/EpsilonEridani|215|8628e7dcde4797a61b0012df99aff46a3212ab97|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "4dcdc2ff5175a188254cf6ea55d83389a5a3d90a35870b719bee890f4488f5e4",
+ "diff_sha256": "4dcdc2ff5175a188254cf6ea55d83389a5a3d90a35870b719bee890f4488f5e4",
+ "duration_s": 254.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`gammaZTerm_eta_zero : gammaZTerm K M x Q2 y q 0 \u2113 H h = 0` (line 300) in the same file: at \u03b7 = 0 both helicities give 0, so the term is odd while `\u2113.gV * crossSectionBracket M 0 x Q2 y H.gammaZF1 H.gammaZF2 0 + \u2113.gA * (Yminus y * (x * H.gammaZF3))` is arbitrary. Same for q = 0 or K = 0.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "fix": "Drop \"only\"/\"exactly\": say the term is odd wherever this combination vanishes (and wherever the prefactor `\u03b7 q K/(xQ\u00b2)` does), matching `gammaZTerm_true_eq_neg_false_of_even_eq_zero`.",
+   "issue": "Two docstrings claim the vanishing of the helicity-even combination is necessary for oddness, which the file disproves. `gammaZTerm_true_add_false` (lines 367-368): \"the interference term is therefore odd under helicity reversal only where this combination vanishes\"; module docstring (lines 71-72): \"it is odd exactly where this vanishes\". Only the sufficient direction is proved (`gammaZTerm_true_eq_neg_false_of_even_eq_zero`, line 381), and the converse is false.",
+   "line": "368"
+  },
+  {
+   "evidence": "Statements take `photonTerm (2 * Real.pi * \u03b1 ^ 2 / Q2) 0 x Q2 y q H` (lines 286, 295, 319); the imported `dSigmaDxDQ2_eq_loNCdSigma` docstring (Inclusive/CrossSection.lean:285-287) does name it: \"For photon exchange (`K = 2\u03c0 \u03b1\u00b2 / Q\u00b2`), with no parity-odd term, zero target mass and the Callan-Gross relation\".",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "fix": "Add \"at the photon flux factor `K = 2\u03c0 \u03b1\u00b2 / Q\u00b2`\" to each of the three docstrings, as the upstream analogue already does.",
+   "issue": "All three `loNCdSigma` comparisons enumerate their hypotheses but silently omit the flux-factor specialisation `K = 2\u03c0 \u03b1\u00b2 / Q\u00b2`, which the statements hard-code: `photonTerm_eq_sq_mul_loNCdSigma` (doc lines 281-283), `photonTerm_eq_loNCdSigma_of_sq_eq_one` (lines 290-292, \"it is `loNCdSigma`, with no residual factor\"), `neutralCurrent_eq_loNCdSigma_of_eta_zero` (lines 314-316). Read as written each claims a normalisation-independent identity; at general `K` the two sides differ by `K Q\u00b2/(2\u03c0 \u03b1\u00b2)`.",
+   "line": "281"
+  },
+  {
+   "evidence": "Statement line 426: `dSigmaDxDQ2 K M (-1) x Q2 y ...` with `q` free. Inclusive/CrossSection.lean:65-66: \"`s = 1` for a positron or antineutrino beam and `s = -1` for an electron or neutrino beam.\" Averaging `-\u03bb q (\u2113.gV - \u03bb \u2113.gA)` over \u03bb = \u00b11 gives `+q \u2113.gA`, i.e. the sign slot is `-1` independently of `q`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "fix": "Say the helicity average lands on the fixed sign slot `-1` whatever the charge, the charge dependence sitting in the effective structure functions; keep the electron remark as an illustration only.",
+   "issue": "`neutralCurrent_true_add_false_div_two` is stated for arbitrary charge `q`, but its docstring (line 421) and the module docstring (line 76) call the hard-coded sign slot \"the electron sign `-1`\". Under the imported convention `s = -1` means an electron beam, so the gloss reads as restricting the identity to electrons; in fact the `-1` is what the \u03bb-average produces for any `q`, and the beam charge is carried by `q` inside the effective `F\u2083`.",
+   "line": "421"
+  }
+ ],
+ "head_sha": "8628e7dcde4797a61b0012df99aff46a3212ab97",
+ "merge_base_sha": "8b52f6a293d930d2445354db8480a605944ea0b1",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 215,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e357a37deecbc20441698ef90de9a8e996a51dc963899becb26567259eda5987",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T094155Z-215-documentation-5dd0af",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T09:41:55Z",
+ "submitted_by": "veprbl",
+ "summary": "The module docstring and main-result docstrings are substantive, process-free, and mostly match their statements exactly, but three docstrings promise more than the theorems deliver: a biconditional for the oddness of the interference term, a missing flux-factor hypothesis in all three `loNCdSigma` comparisons, and a charge-specific gloss on a charge-independent sign slot.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Electroweak/Parameters.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/Interference/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/PVES/CrossSection/NeutralCurrent.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/CrossSection.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e86ab429aff968aef75e68ddde869fbd328c31eec6d63570f287a0453e165e07",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 94250,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 94250,
+  "cache_read_input_tokens": 358754,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4721,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4721,
+    "cache_read_input_tokens": 92752,
+    "input_tokens": 2,
+    "output_tokens": 9590,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21020,
+  "output_tokens_details": {
+   "thinking_tokens": 17537
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,223 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.062198,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 182.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 116405,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 116405,
+    "cache_read_input_tokens": 1084186,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3729,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3729,
+      "cache_read_input_tokens": 115899,
+      "input_tokens": 2,
+      "output_tokens": 3168,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14237,
+    "output_tokens_details": {
+     "thinking_tokens": 9484
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 2.062198,
+ "dedupe_key": "eic/EpsilonEridani|174|1eb4e674339f09297243c4e22f628a28154270cd|reuse|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "df00fd05130e37b180a8706b185d5073cff94d90cafab3e28fd9297c9406b4b6",
+ "diff_sha256": "df00fd05130e37b180a8706b185d5073cff94d90cafab3e28fd9297c9406b4b6",
+ "duration_s": 182.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/mathlib/Mathlib/MeasureTheory/Integral/IntegralEqImproper.lean:922 `theorem integral_Ioi_of_hasDerivAt_of_nonpos (hcont : ContinuousWithinAt g (Ici a) a) (hderiv : \u2200 x \u2208 Ioi a, HasDerivAt g (g' x) x) (g'neg : \u2200 x \u2208 Ioi a, g' x \u2264 0) (hg : Tendsto g atTop (\ud835\udcdd l)) : \u222b x in Ioi a, g' x = l - g a`; each helper has exactly one call site, all inside `photonFluxProfile_eq_integral` (lines 177-179).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "fix": "Delete all three and prove `photonFluxProfile_eq_integral` from `MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonpos` applied to `photonFluxProfile` itself: `have h := integral_Ioi_of_hasDerivAt_of_nonpos ((continuousOn_photonFluxProfile.continuousAt (Ioi_mem_nhds h\u03be)).continuousWithinAt) (fun t ht \u21a6 hasDerivAt_photonFluxProfile (h\u03be.trans ht)) (fun t ht \u21a6 neg_nonpos.2 (id_mul_besselK_one_sq_nonneg h\u03be ht)) tendsto_photonFluxProfile_atTop_nhds_zero`, then `rw [integral_neg] at h; linarith`.",
+   "issue": "`continuousWithinAt_neg_photonFluxProfile` (156), `hasDerivAt_neg_photonFluxProfile` (160) and `tendsto_neg_photonFluxProfile_atTop_nhds_zero` (164) are three single-use private lemmas that only negate the public `continuousOn_photonFluxProfile`, `hasDerivAt_photonFluxProfile` and `tendsto_photonFluxProfile_atTop_nhds_zero`, so that `integral_Ioi_of_hasDerivAt_of_nonneg` applies at line 177. Mathlib already provides the nonpositive-derivative form, making all three unnecessary.",
+   "line": "156"
+  }
+ ],
+ "head_sha": "1eb4e674339f09297243c4e22f628a28154270cd",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 174,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "cc6f84303e8acab2c419331f771ea32569d04a588694ff7cc2cd203456e45fbf",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261124T160152Z-174-reuse-641558",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-24T16:01:52Z",
+ "submitted_by": "veprbl",
+ "summary": "No duplicated mathematics: K_\u03bd is absent from Mathlib, TauCeti (whose besselKernel is the Bessel-potential heat-kernel subordination) and Physlib, and no equivalent-photon flux exists elsewhere in the repo. One reuse gap: three private helpers negate the profile only to fit the nonneg form of the improper FTC, which Mathlib's nonpos variant already covers.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/SpecialFunctions/BesselK/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Flux/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Sobolev/BesselPotential/Kernel.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/SpecialFunctions",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/IntegralEqImproper.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/IntegralEqImproper.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/Integral/IntegralEqImproper.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "99bc6508649aaa804e3bd5957b1ac2efd435cc561e054df0e2a35d1bc9d20485",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 116405,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 116405,
+  "cache_read_input_tokens": 1084186,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3729,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3729,
+    "cache_read_input_tokens": 115899,
+    "input_tokens": 2,
+    "output_tokens": 3168,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14237,
+  "output_tokens_details": {
+   "thinking_tokens": 9484
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
