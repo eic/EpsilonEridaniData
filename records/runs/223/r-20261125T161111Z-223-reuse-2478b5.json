@@ -1,0 +1,235 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5836985,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 266.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 147965,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 147965,
+    "cache_read_input_tokens": 1278797,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3582,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3582,
+      "cache_read_input_tokens": 119407,
+      "input_tokens": 2,
+      "output_tokens": 5188,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18580,
+    "output_tokens_details": {
+     "thinking_tokens": 13566
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 2.583699,
+ "dedupe_key": "eic/EpsilonEridani|223|a06fd0bbcab14f8992da20f6a9a7330de93b6ba5|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "093bebafbacb3c002de87356f170e94182275fced48a586774555dae147189e7",
+ "diff_sha256": "093bebafbacb3c002de87356f170e94182275fced48a586774555dae147189e7",
+ "duration_s": 266.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean:321-326` (`def relativeTransverse (k P : Vector 3) : E\u00b2 := transversePart k - (plusComponent k / plusComponent P) \u2022 transversePart P`) versus the new `LightCone.lean:94` definition with `xiLC L K = L.plus (deltaLost K) / L.plus K.p` (LightCone.lean:47-48) \u2014 identical formula. `grep -rn relativeTransverse EpsilonEridani` returns only LightFront.lean, so there is no existing bridge.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/LightCone.lean",
+   "fix": "Define the general version once in its canonical home, `Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean` \u2014 `LightConeBasis.relativeTransverse (L) (k P : V) := L.transverseProj k - (L.plus k / L.plus P) \u2022 L.transverseProj P`, with the membership and `transverseProj P = 0` lemmas there \u2014 and set `deltaLostRelativeTransverse L K := L.relativeTransverse (deltaLost K) K.p`, noting `Lorentz.Vector.relativeTransverse` as the `Vector 3` counterpart in the docstring. This is the same principle the PR applies to `bilinForm_self_eq_two_mul_plus_mul_minus_add`.",
+   "issue": "`deltaLostRelativeTransverse L K = L.transverseProj (deltaLost K) - xiLC L K \u2022 L.transverseProj K.p` is exactly the existing relative-transverse construction `Lorentz.Vector.relativeTransverse k P = transversePart k - (plusComponent k / plusComponent P) \u2022 transversePart P` (LightFront.lean:321), specialized to `k = \u0394`, `P = P`; its lemma `deltaLostRelativeTransverse_eq_transverseProj_deltaLost_of_transverseProj_p_eq_zero` likewise mirrors `relativeTransverse_of_transversePart_eq_zero` (LightFront.lean:354). The repo now carries the same notion twice with no cross-reference, and the new copy is tied to one pair of momenta so TMD/GPD users of the `LightConeBasis` layer will add a third.",
+   "line": "94"
+  }
+ ],
+ "head_sha": "a06fd0bbcab14f8992da20f6a9a7330de93b6ba5",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 223,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6feb73e740f9d85a4f106723a33eee9e4b75f8abf3b87d3e99376a0f42f1083a",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T161111Z-223-reuse-2478b5",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T16:11:11Z",
+ "submitted_by": "wdconinc",
+ "summary": "The boundary functions, the bound and the attainability results are genuinely new relative to GPD's `tZero` development (and correctly bridged to it), but `deltaLostRelativeTransverse` re-implements the already-existing `Lorentz.Vector.relativeTransverse` construction `k_T - (k\u207a/P\u207a) P_T` as a bespoke \u0394/P-specific definition inside the diffractive layer.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Invariants.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Bounds.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "376b87bb839d788dad8713bb11a83e1cc30ac19205bc9395cc06d2a6e2ecc95a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 147965,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 147965,
+  "cache_read_input_tokens": 1278797,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3582,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3582,
+    "cache_read_input_tokens": 119407,
+    "input_tokens": 2,
+    "output_tokens": 5188,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18580,
+  "output_tokens_details": {
+   "thinking_tokens": 13566
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

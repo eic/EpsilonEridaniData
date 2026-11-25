@@ -1,0 +1,177 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6287235,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 180.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 115494,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 115494,
+    "cache_read_input_tokens": 312147,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5259,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5259,
+      "cache_read_input_tokens": 85861,
+      "input_tokens": 2,
+      "output_tokens": 2511,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12706,
+    "output_tokens_details": {
+     "thinking_tokens": 10041
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 1.628723,
+ "dedupe_key": "eic/EpsilonEridani|223|a06fd0bbcab14f8992da20f6a9a7330de93b6ba5|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "093bebafbacb3c002de87356f170e94182275fced48a586774555dae147189e7",
+ "diff_sha256": "093bebafbacb3c002de87356f170e94182275fced48a586774555dae147189e7",
+ "duration_s": 180.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 321-329; the `(rfl : \u2026 = _)` idiom occurs nowhere else in the repo (grep `\\(rfl : .* = _\\)` over EpsilonEridani/ returns only this line).",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "fix": "Name the witness: `refine \u27e8a \u2022 L.nPlus + ((m - B w w) / (2 * a)) \u2022 L.nMinus + w, ?_, ?_, ?_\u27e9`, then discharge the three goals with `smul_add_smul_add_eq_iff hw` applied to `rfl` (or `obtain \u27e8hp, hm, hT\u27e9 := (L.smul_add_smul_add_eq_iff hw).1 (rfl : _ = v)` with `v` set by `set`).",
+   "issue": "`exists_plus_eq_transverseProj_eq_bilinForm_self_eq` introduces its witness implicitly: `(L.smul_add_smul_add_eq_iff hw).1 (rfl : a \u2022 L.nPlus + ((m - B w w) / (2 * a)) \u2022 L.nMinus + w = _)` lets higher-order unification assign the `_`, and `refine \u27e8_, hp.symm, hT.symm, ?_\u27e9` then relies on that assignment. The reader cannot see what `v` is without replaying metavariable instantiation, and the proof breaks if the `iff`'s shape changes.",
+   "line": 324
+  },
+  {
+   "evidence": "OffForwardBoundary.lean:38-40 with `tMinElastic_def` (Boundary.lean) and `tZero_def` (Particles/Parton/GPD/Kinematics.lean:87 `tZero M \u03be = -4 * \u03be ^ 2 * M ^ 2 / (1 - \u03be ^ 2)`): at `\u03be = 1` the skewness is `1/(2-1) = 1` and both denominators vanish.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/OffForwardBoundary.lean",
+   "fix": "Add a one-line comment above the `by_cases` stating that at `\u03be = 1` both boundaries are the division junk `0`, so the equality there is not a kinematic statement (the docstring excludes only `\u03be = 2`).",
+   "issue": "`by_cases h1 : \u03be = 1` \u2026 `subst h1; norm_num` closes the pole branch only because both sides are the `x / 0 = 0` junk value (`tMinElastic M 1 = -(M\u00b2)/0 = 0` and `tZero M 1 = -4M\u00b2/0 = 0`); nothing in the proof or docstring says this, so the split looks like a genuine case of the mathematics.",
+   "line": 38
+  }
+ ],
+ "head_sha": "a06fd0bbcab14f8992da20f6a9a7330de93b6ba5",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 223,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6219dcf4d4255fbcea0034e583b9b1b81c96359b76b1fa11e1a1f8b84c80e199",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T161537Z-223-proof-quality-e3e769",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T16:15:37Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly short and automation-based, which is right. Two places hide their reasoning: the existence lemma in LightConeBasis.lean constructs its witness by metavariable unification against a `rfl` cast instead of naming it, and the \u03be = 1 branch of `tMinElastic_eq_tZero` is closed on division-junk values with no comment saying so.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/OffForwardBoundary.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/LightCone.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "48250676ab1ada0433f20352d11da6153d9c77949afbafaf9498164b669053af",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 115494,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 115494,
+  "cache_read_input_tokens": 312147,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5259,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5259,
+    "cache_read_input_tokens": 85861,
+    "input_tokens": 2,
+    "output_tokens": 2511,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12706,
+  "output_tokens_details": {
+   "thinking_tokens": 10041
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

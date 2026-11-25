@@ -1,0 +1,212 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.650258,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 376.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 142647,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 142647,
+    "cache_read_input_tokens": 1064846,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7917,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7917,
+      "cache_read_input_tokens": 110615,
+      "input_tokens": 2,
+      "output_tokens": 3673,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 27649,
+    "output_tokens_details": {
+     "thinking_tokens": 22855
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 2.650258,
+ "dedupe_key": "eic/EpsilonEridani|223|a06fd0bbcab14f8992da20f6a9a7330de93b6ba5|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "093bebafbacb3c002de87356f170e94182275fced48a586774555dae147189e7",
+ "diff_sha256": "093bebafbacb3c002de87356f170e94182275fced48a586774555dae147189e7",
+ "duration_s": 376.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "From `P' = P - \u0394` and bilinearity, `g P' P' = M\u00b2 - (\u0394\u00b7P + P\u00b7\u0394) + t`, so `\u0394\u00b7P + P\u00b7\u0394 = M\u00b2 + t - M_Y\u00b2`; then `g (\u0394-\u03be\u2022P) (\u0394-\u03be\u2022P) = t - \u03be(M\u00b2+t-M_Y\u00b2) + \u03be\u00b2M\u00b2 = t(1-\u03be) + \u03be(M_Y\u00b2 - (1-\u03be)M\u00b2)`, which with `tMin_def` (Boundary.lean:`tMin`) is exactly `t = tMin + u\u00b2/(1-\u03be)`. The light-cone version follows since `L.plus (deltaLost K - xiLC L K \u2022 K.p) = 0` (xiLC_def, LightCone.lean:49, with `hp`) makes `g u u = g (L.transverseProj u) (L.transverseProj u)` by `bilinForm_self_eq_two_mul_plus_mul_minus_add` (LightConeBasis.lean:280), and `L.transverseProj u = deltaLostRelativeTransverse L K` (LightCone.lean:105-108).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "Prove the covariant statement first \u2014 e.g. `theorem tMom_eq_tMin_add' (g : Bilin V) (K : DisKinematics V) {M MY \u03be : \u211d} (hM : g K.p K.p = M^2) (hMY : MY2 g K = MY^2) (h\u03be : \u03be \u2260 1) : tMom g K = tMin M MY \u03be + g (deltaLost K - \u03be \u2022 K.p) (deltaLost K - \u03be \u2022 K.p) / (1 - \u03be)` \u2014 and derive the present light-cone version from it, together with the bound and the equality criterion; keep the light-cone forms as the corollaries used by `setOf_tMom_eq_Iic_tMin`.",
+   "issue": "`tMom_eq_tMin_add` assumes `hg : g.IsRefl`, a `LightConeBasis L` and `hp : L.plus K.p \u2260 0` for an identity that needs none of them: for any bilinear `g`, any real `\u03be \u2260 1`, `g P P = M\u00b2` and `g P' P' = M_Y\u00b2`, bilinearity alone gives `t = tMin M M_Y \u03be + g (\u0394 - \u03be\u2022P) (\u0394 - \u03be\u2022P) / (1 - \u03be)`. The same over-assumption propagates to `tMom_le_tMin` (line 101), `tMom_eq_tMin_iff` (line 112) and `tMom_nonpos` (line 126), whose covariant forms need only `\u03be < 1` (resp. `\u03be \u2260 1`) plus `g (\u0394 - \u03be\u2022P) (\u0394 - \u03be\u2022P) \u2264 0`.",
+   "line": "83"
+  },
+  {
+   "evidence": "`tZero M (-1) = -4 * (-1)^2 * M^2 / (1 - (-1)^2) = -4M^2/0 = 0` (GPD/Kinematics.lean:87 `tZero_def`), while `2 * (-1) / (1 + (-1)) = -2/0 = 0` and `tMinElastic M 0 = 0` (Boundary.lean `tMinElastic_xiLC_zero`). This also matches the PR's own practice of stating the junk-value cases unconditionally (`le_tMin_iff`, `neg_tMin`).",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/OffForwardBoundary.lean",
+   "fix": "Drop `h\u03b7` and open the proof with `by_cases h : \u03b7 = -1`, closing that branch by `norm_num [Particles.Parton.GPD.tZero_def]` (both sides reduce to `0`); keep the current argument for `\u03b7 \u2260 -1`.",
+   "issue": "`tZero_eq_tMinElastic` assumes `h\u03b7 : \u03b7 \u2260 -1`, but the statement is true at `\u03b7 = -1` as well, so the hypothesis only restricts the lemma.",
+   "line": "53"
+  }
+ ],
+ "head_sha": "a06fd0bbcab14f8992da20f6a9a7330de93b6ba5",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 223,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "35534223cae0a3c17dd89886c22c9e81d7d7b871b0a8296bf03b7268dd73eb4c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T161111Z-223-generality-74fd58",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T16:11:11Z",
+ "submitted_by": "wdconinc",
+ "summary": "The core identity `tMom_eq_tMin_add` and its corollaries are stated with a light-cone basis, reflexivity and `P\u207a \u2260 0` for a fact that holds for an arbitrary bilinear form and arbitrary `\u03be \u2260 1`; and `tZero_eq_tMinElastic` carries a hypothesis that is not needed. Otherwise the tMin/tMinElastic layering (general first, elastic derived) is at the right level.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/LightCone.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Diffraction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Exclusive",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "48e8316e5ffbcf11569fd5526c5c545edad8b3b9c7ff5c3816e740e40d88d987",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 142647,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 142647,
+  "cache_read_input_tokens": 1064846,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7917,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7917,
+    "cache_read_input_tokens": 110615,
+    "input_tokens": 2,
+    "output_tokens": 3673,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 27649,
+  "output_tokens_details": {
+   "thinking_tokens": 22855
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
