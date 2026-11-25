@@ -1,0 +1,167 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3338235,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 138.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 187457,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 187457,
+    "cache_read_input_tokens": 450907,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4547,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4547,
+      "cache_read_input_tokens": 152635,
+      "input_tokens": 2,
+      "output_tokens": 2266,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9350,
+    "output_tokens_details": {
+     "thinking_tokens": 6836
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 2.333823,
+ "dedupe_key": "eic/EpsilonEridani|226|e749539a1dab98e63cd990ae104d51ec1dabb031|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c4bd35f56ff40070c63093bb890def69f2340751c7da67f4dda54d278826d9e0",
+ "diff_sha256": "c4bd35f56ff40070c63093bb890def69f2340751c7da67f4dda54d278826d9e0",
+ "duration_s": 138.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 203\u2013218 define the structure with only `reflect_isPairStabilizer` as an introduction rule; lines 1103\u20131106 and 1335 reconstruct the composite and identity stabilizers inline.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Add `Bilin.isPairStabilizer_id (g a b)` and `Bilin.IsPairStabilizer.comp` next to `reflect_isPairStabilizer`, and use them at lines 1103\u20131106 and 1335.",
+   "issue": "`Bilin.IsPairStabilizer` is introduced as \"an element of the stabilizer ... inside the isometry group\" but gets no closure API: the identity element is built by hand at line 1335 (`\u27e8Bilin.isIsometry_id gWit, rfl, rfl\u27e9`) and the composite of two stabilizers by hand at lines 1103\u20131106 (`fun v w => by simp only [LinearMap.comp_apply, h\u2081.isometry _ _, h\u2082.isometry _ _]`, plus two `fixes_left`/`fixes_right` rewrites). Consumers of the new general notion must re-derive the group operations.",
+   "line": 203
+  },
+  {
+   "evidence": "Lines 366\u2013372: the stated lemma concludes only `F t = A` from a supplied `J p p' = A \u2022 (p + p')`; grep for a second `HasFormFactor` hypothesis in the `HasFormFactor` namespace (lines 350\u2013391) returns nothing.",
+   "file": "EpsilonEridani/QFT/Scattering/Elastic/FormFactor/Basic.lean",
+   "fix": "Add `HasFormFactor.formFactor_eq (hF : HasFormFactor g m2 J F) (hF' : HasFormFactor g m2 J F') (hp hp' hP) : F (g (p'-p) (p'-p)) = F' (g (p'-p) (p'-p))`, proved by `hF.formFactor_eq_of_apply_eq_smul hp hp' hP (hF' p p' hp hp')`.",
+   "issue": "`HasFormFactor.formFactor_eq_of_apply_eq_smul`'s docstring claims \"In particular two form factors of one family agree at every such `t`\", but no such lemma exists \u2014 the uniqueness of `F` on realised momentum transfers, the only extensionality `HasFormFactor` admits, is left for every consumer to assemble.",
+   "line": 366
+  }
+ ],
+ "head_sha": "e749539a1dab98e63cd990ae104d51ec1dabb031",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 226,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c8abd2a28f500dd05b07b54dfcd47bd22fda35fa0bc6dfbe28bc3fab889bd7f4",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T120733Z-226-api-design-4ee669",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T12:07:33Z",
+ "submitted_by": "wdconinc",
+ "summary": "No compatibility residue and no hidden infrastructure; bodies stay unexposed with `(rfl)` restatements. Two characteristic lemmas are missing: the new `Bilin.IsPairStabilizer` has no identity/composition closure (both open-coded in-file), and the determination of `F` that `formFactor_eq_of_apply_eq_smul`'s docstring advertises is not stated.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Elastic/FormFactor/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9f9eb127dfc5f091bba3ba000a14f8abc2ff470ef857978678de4172ef68004c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 187457,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 187457,
+  "cache_read_input_tokens": 450907,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4547,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4547,
+    "cache_read_input_tokens": 152635,
+    "input_tokens": 2,
+    "output_tokens": 2266,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9350,
+  "output_tokens_details": {
+   "thinking_tokens": 6836
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
