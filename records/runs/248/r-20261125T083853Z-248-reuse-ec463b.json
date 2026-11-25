@@ -1,0 +1,297 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 4.402375999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 284.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 226362,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 226362,
+    "cache_read_input_tokens": 3292572,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 44,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1376,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1376,
+      "cache_read_input_tokens": 197007,
+      "input_tokens": 2,
+      "output_tokens": 2120,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19690,
+    "output_tokens_details": {
+     "thinking_tokens": 12277
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 4.402376,
+ "dedupe_key": "eic/EpsilonEridani|248|5cc2110a2b6d7de94d2193c5a34ccdbaf5c9c2fb|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2ed93fa913cba91430b5b87e7e2dc25398592f000d64c90e2c43340c781b787c",
+ "diff_sha256": "2ed93fa913cba91430b5b87e7e2dc25398592f000d64c90e2c43340c781b787c",
+ "duration_s": 284.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/TauCeti/TauCeti/Analysis/Asymptotics/Lemmas.lean:55 `theorem isBigO_norm_pow_norm_pow_nhds_zero_of_le {E : Type*} [SeminormedAddCommGroup E] {m n : \u2115} (h : n \u2264 m) : (fun x : E \u21a6 \u2016x\u2016 ^ m) =O[\ud835\udcdd (0 : E)] fun x \u21a6 \u2016x\u2016 ^ n`; its docstring at line 21-23 states the same content. Mathlib has only the strict version `isLittleO_pow_pow` (Mathlib/Analysis/Asymptotics/Lemmas.lean:583) and the cobounded `isBigO_pow_pow_cobounded_of_le`, so TauCeti's is the located replacement.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Asymptotics/TruncatedExpansion.lean",
+   "fix": "Import `TauCeti.Analysis.Asymptotics.Lemmas` and derive it, e.g. `theorem isBigO_pow_pow (h : m \u2264 n) : ... := isBigO_norm_norm.1 (by simpa only [norm_pow] using isBigO_norm_pow_norm_pow_nhds_zero_of_le h)`, or drop the declaration and use that one-liner at the two call sites (`ApproximatesToOrder.mono`, `approximatesToOrder_effectiveAmplitude`). If kept as a field-valued restatement (as Mathlib keeps `isLittleO_pow_pow` beside `isLittleO_norm_pow_norm_pow`), still base the proof on the TauCeti lemma and name it in the docstring so the duplication is explicit.",
+   "issue": "`Asymptotics.isBigO_pow_pow (h : m \u2264 n) : (fun x : \ud835\udd5c => x ^ n) =O[\ud835\udcdd 0] fun x => x ^ m` duplicates TauCeti's `Asymptotics.isBigO_norm_pow_norm_pow_nhds_zero_of_le`, which states the same comparison of powers at the origin for a seminormed group (and whose module docstring already flags this exact gap in Mathlib). Two libraries in the same dependency chain now carry the fact under the same namespace, both written for upstreaming.",
+   "line": 44
+  }
+ ],
+ "head_sha": "5cc2110a2b6d7de94d2193c5a34ccdbaf5c9c2fb",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 248,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b3f1124aa3df09ec0a2fa07f5846e75b3f566cc03e7b1df3c06c6a8cb3d44a9f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T083853Z-248-reuse-ec463b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T08:38:53Z",
+ "submitted_by": "wdconinc",
+ "summary": "The core truncated-expansion uniqueness result and the NRQCD matching material are new and reuse upstream API well, but the new `Asymptotics.isBigO_pow_pow` restates a fact TauCeti already carries in the same `Asymptotics` namespace.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Asymptotics/TruncatedExpansion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Asymptotics/ApproximatesToOrder.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Asymptotics/Lemmas.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Asymptotics/MvPolynomial.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Asymptotics/Lemmas.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Asymptotics/Lemmas.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/PowerCounting.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Analytic/Order.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Polynomial/Order.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 35,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1c9c5aa510f8c8db9d2d7cadc797b7eb94fb6fb158674567fa3ad041f432cec2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 226362,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 226362,
+  "cache_read_input_tokens": 3292572,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 44,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1376,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1376,
+    "cache_read_input_tokens": 197007,
+    "input_tokens": 2,
+    "output_tokens": 2120,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19690,
+  "output_tokens_details": {
+   "thinking_tokens": 12277
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

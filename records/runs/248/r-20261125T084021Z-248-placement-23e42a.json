@@ -1,0 +1,185 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5821115,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 193.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 182461,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 182461,
+    "cache_read_input_tokens": 815043,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3591,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3591,
+      "cache_read_input_tokens": 151173,
+      "input_tokens": 2,
+      "output_tokens": 3853,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13996,
+    "output_tokens_details": {
+     "thinking_tokens": 10461
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.582111,
+ "dedupe_key": "eic/EpsilonEridani|248|5cc2110a2b6d7de94d2193c5a34ccdbaf5c9c2fb|placement|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2ed93fa913cba91430b5b87e7e2dc25398592f000d64c90e2c43340c781b787c",
+ "diff_sha256": "2ed93fa913cba91430b5b87e7e2dc25398592f000d64c90e2c43340c781b787c",
+ "duration_s": 193.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The file's own module docstring concedes the point: \"These are statements of real analysis about the `\u03bb \u2192 0\u207a` expansion; they are not statements about QCD. They are placed in the TMD namespace because the power counting they encode is the TMD power counting\" (PowerCorrections.lean:49-51) \u2014 a justification this PR undercuts by moving `ApproximatesToOrder` and `isBigO_pow_of_le` out to generic modules. Statements confirmed by reading lines 101-171: every hypothesis is `ApproximatesToOrder W (fun lam => Wlp lam + c * lam ^ n) (n + 1)` or a raw `IsBigO` on `\ud835\udcdd[>] 0`; nothing from `TMD.Basic` appears.",
+   "file": "EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean",
+   "fix": "Move those five lemmas to `EpsilonEridani/Mathematics/Analysis/Asymptotics/ApproximatesToOrder.lean` (namespace `EpsilonEridani`, dot-notation where it applies), keeping `powerRatio`, `Kpc`, `monomialKpc`, `monomialKpc_leadingPower_not_approx_succ`, `tendsto_powerRatio_atTop` and `isBigO_inv_pow_atTop` \u2014 the genuinely TMD-flavoured material \u2014 in `PowerCorrections.lean`, which already publicly imports the new module. `eq_zero_of_isBigO_pow_succ` could equally become a corollary in `TruncatedExpansion.lean`, since it is one `Pi.single` step from `isBigO_sum_range_pow_smul_pow_succ_iff` and mentions no `ApproximatesToOrder`.",
+   "issue": "`eq_zero_of_isBigO_pow_succ` (line 101), `coeff_unique` (115), `coeff_unique_of_leadingPower_zero` (138), `leadingPower_approximatesToOrder` (147) and `not_approximatesToOrder_succ_of_coeff_ne_zero` (165) are statements purely about `ApproximatesToOrder` / `=O[\ud835\udcdd[>] 0]` on `\u211d \u2192 \u211d` with no TMD data in any hypothesis, yet they stay in `EpsilonEridani.Particles.Parton.TMD.PowerCorrections` now that the predicate they are about lives in `Mathematics/Analysis/Asymptotics/ApproximatesToOrder.lean`. The second consumer added by this PR (`QFT/Quarkonium/NRQCD/Matching.lean`) cannot reach uniqueness-of-coefficient facts sitting under the TMD namespace, so the generic API is hidden behind a process-specific path.",
+   "line": 101
+  }
+ ],
+ "head_sha": "5cc2110a2b6d7de94d2193c5a34ccdbaf5c9c2fb",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 248,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "60d13ff6b74db288168613e517c568982d85b401c0971c596ba4f7ac230de222",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T084021Z-248-placement-23e42a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T08:40:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "New file and directory placement is right (Asymptotics mirror path, Matching.lean beside PowerCounting.lean, totalDegreePiece next to truncation) and no import is unused or unnecessarily broad. But moving ApproximatesToOrder to a generic module left its entirely generic lemma API stranded in the TMD-specific file.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Analytic/Uniqueness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/Scales.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/PowerCounting.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "19d4baecff0e489549f9c4068f5357783ccb96a50de2bdb4cae518639c7c6776",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 182461,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 182461,
+  "cache_read_input_tokens": 815043,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3591,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3591,
+    "cache_read_input_tokens": 151173,
+    "input_tokens": 2,
+    "output_tokens": 3853,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13996,
+  "output_tokens_details": {
+   "thinking_tokens": 10461
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

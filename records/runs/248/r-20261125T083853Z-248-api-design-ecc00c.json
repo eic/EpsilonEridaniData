@@ -1,0 +1,194 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.8506444999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 244.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 199764,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 199764,
+    "cache_read_input_tokens": 777269,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 437,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 437,
+      "cache_read_input_tokens": 171381,
+      "input_tokens": 2,
+      "output_tokens": 5783,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18572,
+    "output_tokens_details": {
+     "thinking_tokens": 15115
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.850644,
+ "dedupe_key": "eic/EpsilonEridani|248|5cc2110a2b6d7de94d2193c5a34ccdbaf5c9c2fb|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "2ed93fa913cba91430b5b87e7e2dc25398592f000d64c90e2c43340c781b787c",
+ "diff_sha256": "2ed93fa913cba91430b5b87e7e2dc25398592f000d64c90e2c43340c781b787c",
+ "duration_s": 244.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "ApproximatesToOrder.lean lines 54-77 define `refl`, `mono`, `congr`, `trans` and nothing else; `grep -n approximatesToOrder_iff` shows the escape-hatch used at Matching.lean:256,257 and PowerCorrections.lean:120,122.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Asymptotics/ApproximatesToOrder.lean",
+   "fix": "Add `lemma ApproximatesToOrder.symm {W Wapp n} (h : ApproximatesToOrder W Wapp n) : ApproximatesToOrder Wapp W n` and rewrite both call sites as `h\u2081.symm.trans h\u2082` followed by `.congr`, so consumers never need `approximatesToOrder_iff` to compare two approximants.",
+   "issue": "The module advertises the relation as \"reflexive and transitive\" and supplies `ApproximatesToOrder.refl`/`.trans`/`.mono`/`.congr`, but not `.symm`, which holds trivially (`IsBigO.neg_left` on the difference). Consequence: the PR's own proofs cannot express \"two approximations of the same function differ by `O(\u03bb^n)`\" inside the API and drop to raw `IsBigO`: `Matching.lean:256-257` (`(approximatesToOrder_iff.1 (hc a)).sub (approximatesToOrder_iff.1 (hc' a))`) and `PowerCorrections.lean:119-127` (`h\u2081'.sub h\u2082'` after two `approximatesToOrder_iff.1` unfoldings).",
+   "line": 73
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/Data/Fintype/Card.lean:365-366 \u2014 `@[simp] theorem Fintype.card_coe (s : Finset \u03b1) [Fintype s] : Fintype.card s = #s`.",
+   "file": "EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "fix": "State the condition as `(P.matchingMatrix M k).rank = (P.totalDegreePiece k).card` in `IsMatching.eqOn_totalDegreePiece` (272), `eqOn_truncation` (283), `forall_eqOn_totalDegreePiece_iff` (295) and `forall_eqOn_truncation_iff` (329), inserting `Fintype.card_coe` internally where TauCeti's `Matrix.rank_eq_card_iff_mulVec_injective` is applied.",
+   "issue": "The rank hypothesis is stated as `(P.matchingMatrix M k).rank = Fintype.card (P.totalDegreePiece k)`, i.e. `Fintype.card \u21a5(Finset \u2026)`. `Fintype.card_coe` is `@[simp]` in Mathlib, so this is not simp-normal: a consumer who `simp`s the hypothesis or the goal gets `#(P.totalDegreePiece k)` and no longer matches the lemma. This affects all four uniqueness statements that carry the condition.",
+   "line": 272
+  },
+  {
+   "evidence": "ApproximatesToOrder.lean:8 is the file's only import; the sole use of TruncatedExpansion is `isBigO_pow_pow` at line 62, inside a proof term.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Asymptotics/ApproximatesToOrder.lean",
+   "fix": "Demote to `import EpsilonEridani.Mathematics.Analysis.Asymptotics.TruncatedExpansion` and add `public import Mathlib.Analysis.Asymptotics.Lemmas` directly. Matching.lean:11 and PowerCorrections.lean:10 already carry their own private `import` of TruncatedExpansion, so nothing downstream breaks.",
+   "issue": "`public import \u2026Asymptotics.TruncatedExpansion` re-exports that module to every downstream consumer, but no statement in this file mentions anything from it \u2014 it is used only in the proof of `ApproximatesToOrder.mono` (`isBigO_pow_pow`). The file's public statements need Mathlib's `Asymptotics`/`Topology`, which it currently gets only transitively.",
+   "line": 8
+  }
+ ],
+ "head_sha": "5cc2110a2b6d7de94d2193c5a34ccdbaf5c9c2fb",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 248,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c36437dabd0db9023dcb70f3a044ca90860f916dd7b3f35f81321bc570395e4e",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T083853Z-248-api-design-ecc00c",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T08:38:53Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is mostly well-formed (bodies unexposed, `*_def`/`mem_*` lemmas present, no compatibility residue), but `ApproximatesToOrder` ships `refl`/`trans` without `symm`, which its own consumers need and therefore bypass into raw `IsBigO`; the central rank hypothesis is stated in a non-simp-normal form; and one `public import` over-exposes a proof-only dependency.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/Matching.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Asymptotics/TruncatedExpansion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Quarkonium/NRQCD/PowerCounting.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/Matrix/Rank.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/PowerCorrections.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "11fd05d99f822fe502a941e266dbd569a91f00d88cc6cd4611058dde692b46d5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 199764,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 199764,
+  "cache_read_input_tokens": 777269,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 437,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 437,
+    "cache_read_input_tokens": 171381,
+    "input_tokens": 2,
+    "output_tokens": 5783,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18572,
+  "output_tokens_details": {
+   "thinking_tokens": 15115
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
