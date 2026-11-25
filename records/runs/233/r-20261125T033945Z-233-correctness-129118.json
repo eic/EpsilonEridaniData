@@ -1,0 +1,184 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.714898,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 210.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 180947,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 180947,
+    "cache_read_input_tokens": 1030276,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3364,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3364,
+      "cache_read_input_tokens": 162160,
+      "input_tokens": 2,
+      "output_tokens": 4062,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15608,
+    "output_tokens_details": {
+     "thinking_tokens": 12442
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "6abfc81dfe86638f850566b671287b97f8d34fc0",
+ "cost_usd": 2.714898,
+ "dedupe_key": "eic/EpsilonEridani|233|cee62cee961726a6f0ab9371dce3af903acf690c|correctness|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c69ff480eea02a4b4ee9a6efe057cfaf302804a11dbc8a818c62fc23eef994ae",
+ "diff_sha256": "c69ff480eea02a4b4ee9a6efe057cfaf302804a11dbc8a818c62fc23eef994ae",
+ "duration_s": 210.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "ChargeConjugation.lean:159-160 `valenceNumber ... := mellinMoment f 0 (.quark i) Q2 - mellinMoment f 0 (.antiquark i) Q2`; Basic.lean:35-36 `mellinMoment ... := \u222b x in Set.Icc 0 1, x ^ n * f i x Q2`; Gottfried.lean:281-287 proves `x\u207b\u00b9` is not interval integrable on `[0,1]` for this model.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Gottfried.lean",
+   "fix": "State it as the interval integral of the difference \u2014 `\u222b\u2080\u00b9 (q_i \u2212 q\u0304_i)` equals `2`, `1`, `0` \u2014 and note explicitly that `PDF.valenceNumber` of this model vanishes because the separate zeroth moments do not exist; that is precisely why `gottfriedSum_charge_quarkAddAntiquark_of_regularity` does not apply here.",
+   "issue": "The `gottfriedModel` docstring says \"the valence numbers are `2`, `1` and `0`\", but under the library's `PDF.valenceNumber` (opened in this file, line 89) every valence number of this model is `0`: `valenceNumber = mellinMoment f 0 (.quark i) \u2212 mellinMoment f 0 (.antiquark i)` (ChargeConjugation.lean:159), `mellinMoment` is a Bochner integral (Basic.lean:35), and each species' zeroth-moment integrand is `x\u207b\u00b9` on `[0,1]`, hence non-integrable and the integral is `0`. So `valenceNumber (gottfriedModel a) u Q2 = 0 \u2260 2`.",
+   "line": "227"
+  },
+  {
+   "evidence": "Basic.lean:35 indexes `mellinMoment f n` by the power `x ^ n`, so `n = 0` is `\u222b\u2080\u00b9 f` and `n = 1` is `\u222b\u2080\u00b9 x f`; `x \u00b7 x\u207b\u00b9 = 1` a.e. on `(0,1]`, so the `n = 1` moment of every species of `gottfriedModel` converges.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Inclusive/Gottfried.lean",
+   "fix": "Replace \"no first moment\" by \"no zeroth moment\" (or \"is not integrable on the unit interval\") at lines 35, 227 and 296.",
+   "issue": "\"a sea that rises like `1/x` at small `x` has no first moment\" is wrong: it is the *zeroth* moment that diverges. For this model `mellinMoment (gottfriedModel a) 1 s Q2 = \u222b\u2080\u00b9 x (x\u207b\u00b9 + c) dx = 1 + c/2`, which exists. Same error at line 227 (\"The densities themselves have no first moment\") and lines 295-296 (\"although no antiquark density of the model has a first moment\"); line 204 of this same file uses \"zeroth moments\" correctly, as does Fragmentation/MomentumSumRule.lean:46 for `\u222b\u2080\u00b9 D(z)`.",
+   "line": "35"
+  }
+ ],
+ "head_sha": "cee62cee961726a6f0ab9371dce3af903acf690c",
+ "merge_base_sha": "6abfc81dfe86638f850566b671287b97f8d34fc0",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 233,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4268cbb66db52693eade1421a7b0193cfec7052803ae76266624dde0e4a00194",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T033945Z-233-correctness-129118",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T03:39:45Z",
+ "submitted_by": "wdconinc",
+ "summary": "The statements and proofs are faithful: the Gottfried sum, its splitting into valence numbers plus sea asymmetry, the 1/3 + (2/3)\u222b(\u016b\u2212d\u0304) identity, the iff corollary, and the 1/x-sea witness all say what they claim. Two docstring claims about `gottfriedModel` are false as stated and should be corrected.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Inclusive/Gottfried.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Isospin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/CrossSection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/InclusiveStructureFunctions/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Isospin.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d95355b58edae45007fe3565772fe489b71f9ea1fb091527dcb855c007f37620",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 180947,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 180947,
+  "cache_read_input_tokens": 1030276,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3364,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3364,
+    "cache_read_input_tokens": 162160,
+    "input_tokens": 2,
+    "output_tokens": 4062,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15608,
+  "output_tokens_details": {
+   "thinking_tokens": 12442
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
