@@ -1,0 +1,196 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.7377910000000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 315.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 178490,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 178490,
+    "cache_read_input_tokens": 657972,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2322,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2322,
+      "cache_read_input_tokens": 125025,
+      "input_tokens": 2,
+      "output_tokens": 2926,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24953,
+    "output_tokens_details": {
+     "thinking_tokens": 20535
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0bb7b2ba939f9a0c8071b8bfd701b1ba0443d1c",
+ "cost_usd": 2.737791,
+ "dedupe_key": "eic/EpsilonEridani|183|0696fcd8912f0355dc0bb30ba3c8903a84475d4a|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "9208bcb88e04a094a9df944b53a89de216846a641c71e3b2cb5f8f67c7099e93",
+ "diff_sha256": "9208bcb88e04a094a9df944b53a89de216846a641c71e3b2cb5f8f67c7099e93",
+ "duration_s": 315.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/Physlib/Physlib/Relativity/Tensors/ComplexTensor/Vector/Basic.lean:53 `def ComplexVector.basisFin4 : Basis (Fin 4) \u2102 ComplexVector := ...`, with `basisFin4_apply_zero/one/two/three/succ` at lines 65-91; the file's own docstring (BasicExtensions.lean:34-36) states the definition mirrors them.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "fix": "Declare it as `Lorentz.Vector.basisFin4` inside the existing `namespace Lorentz / namespace Vector` block, with lemmas `basisFin4_apply`, `basisFin4_repr_apply`, `basisFin4_apply_zero`, \u2026, matching the Physlib names; update the uses in `VolumeForm.lean` and `Metrics/LeviCivita/VolumeForm.lean`.",
+   "issue": "`EpsilonEridani.minkowskiBasisFin4` (and its lemmas `_apply`, `_repr_apply`, `_apply_zero/one/two/three/succ`) is the real-vector mirror of Physlib's `Lorentz.ComplexVector.basisFin4`, but is named differently and placed in `EpsilonEridani` rather than `Lorentz.Vector`, in a file whose other declarations are in `Lorentz.Vector` (lines 43-114). The `minkowski` prefix is also redundant for a basis of `Lorentz.Vector 3`.",
+   "line": "122"
+  },
+  {
+   "evidence": "The statement's only constants are `finSumFinEquiv`, `Sum.inl/inr` and `Matrix.vecCons`; nothing in it mentions Minkowski space or `Lorentz.Vector`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "fix": "Name it for its conclusion and put it in the root namespace next to the Mathlib declaration it is about, e.g. `finSumFinEquiv_symm_one_three_eq_cons` (or `..._eq_cons`).",
+   "issue": "`EpsilonEridani.finSumFinEquiv_symm_minkowski` states `\u21d1(finSumFinEquiv (m := 1) (n := 3)).symm = ![Sum.inl 0, Sum.inr 0, Sum.inr 1, Sum.inr 2]`, a pure statement about Mathlib's `finSumFinEquiv` with no Minkowski content; the `_minkowski` suffix describes neither the conclusion nor any symbol in it, and the `finSumFinEquiv_` head under `EpsilonEridani` reads as an EpsilonEridani notion of that name.",
+   "line": "129"
+  },
+  {
+   "evidence": "VolumeForm.lean:216 `exact minkowskiVolumeForm.bilinMap_apply_right_eq_zero ![a, b] 0 u` inside the lemma named `..._left_eq_zero`; BilinMap.lean:87-96 define `bilinMap_apply_left_eq_zero`/`_right_eq_zero` by argument slot.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/VolumeForm.lean",
+   "fix": "Reserve `left`/`right` for the argument slots as in `bilinMap_apply_left_eq_zero`/`_right_eq_zero`, and name the fixed vectors `fst`/`snd`: `minkowskiProduct_minkowskiVolumeFormRaise_fst_eq_zero`, `_snd_eq_zero`, `minkowskiVolumeFormRaise_apply_fst_eq_zero`, `_apply_snd_eq_zero`.",
+   "issue": "`left`/`right` means the two fixed vectors `a`, `b` here but the bilinear-argument slot in the general lemmas, and the two clash: `minkowskiProduct_minkowskiVolumeFormRaise_left_eq_zero : \u27eaE u, a\u27eb\u2098 = 0` has the distinguished vector in the *right* slot and is proved by `bilinMap_apply_right_eq_zero`. Same clash at line 220 (`_right_eq_zero`, `\u27eaE u, b\u27eb\u2098`) and at lines 227/234 (`minkowskiVolumeFormRaise_apply_left_eq_zero`/`_apply_right_eq_zero`, which are `bilinMapRaise_apply_eq_zero` at indices 0 and 1, while `_apply_left` in `bilinMap_apply_left_eq_zero` means the left argument).",
+   "line": "213"
+  },
+  {
+   "evidence": "upstream/mathlib/Mathlib/LinearAlgebra/BilinearForm/Properties.lean:451 `theorem symmCompOfNondegenerate_left_apply (B\u2081) ... : B\u2082 (symmCompOfNondegenerate B\u2081 B\u2082 b\u2082 w) v = B\u2081 w v` \u2014 the exact statement shape, named after the definition with `_left_apply`; BilinMap.lean:151 shows the PR's lemma is literally this lemma.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "fix": "Follow the upstream precedent: `bilinMapRaise_left_apply`, `bilinMapRaise_left_apply_swap`, `transverseEpsRaise_left_apply`, `transverseEpsRaise_left_apply_swap`.",
+   "issue": "`bilinForm_bilinMapRaise_apply` (and `bilinForm_bilinMapRaise_apply_swap`, line 161; `bilinForm_transverseEpsRaise_apply` and `_apply_swap`, LightConeBasis.lean:419/428) name the lemma after the bound variable's type rather than the declaration, so the characteristic simp lemma of `bilinMapRaise` is not in that definition's name prefix; Mathlib's lemma for the very construction being wrapped keeps the definition first.",
+   "line": "149"
+  }
+ ],
+ "head_sha": "0696fcd8912f0355dc0bb30ba3c8903a84475d4a",
+ "merge_base_sha": "b0bb7b2ba939f9a0c8071b8bfd701b1ba0443d1c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 183,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9e2d1dcb16599a62a34d691dd261e98b876e9c5429d79b4fc0d178ea923e9e80",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T054337Z-183-naming-f6201f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T05:43:37Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names are mostly conventional, but the new Fin 4 basis diverges in name and namespace from the Physlib counterpart it explicitly mirrors, an index-bookkeeping lemma carries a `_minkowski` suffix it does not earn, and `left`/`right` is used for two different things across the volume-form lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/Nondegenerate.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/VolumeForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e102826f37d987f587c927ea0b6dcea75e197c1f548579c8d946529adcd55b1f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 178490,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 178490,
+  "cache_read_input_tokens": 657972,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2322,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2322,
+    "cache_read_input_tokens": 125025,
+    "input_tokens": 2,
+    "output_tokens": 2926,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24953,
+  "output_tokens_details": {
+   "thinking_tokens": 20535
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
