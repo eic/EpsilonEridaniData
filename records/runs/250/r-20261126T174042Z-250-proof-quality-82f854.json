@@ -1,0 +1,252 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.0552949999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 405.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 154686,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 154686,
+    "cache_read_input_tokens": 1526910,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 36,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1898,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1898,
+      "cache_read_input_tokens": 126728,
+      "input_tokens": 2,
+      "output_tokens": 4823,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 29792,
+    "output_tokens_details": {
+     "thinking_tokens": 23910
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 3.055295,
+ "dedupe_key": "eic/EpsilonEridani|250|9bc88d39b99e33e72a88908dc1e0dce45a191c33|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "d492010d5893a44b7ab527372ca4c519de4c9bcc8c855d68536f70a0cee1277a",
+ "diff_sha256": "d492010d5893a44b7ab527372ca4c519de4c9bcc8c855d68536f70a0cee1277a",
+ "duration_s": 405.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Matrix.entryLinearMap` is `Mathlib/Data/Matrix/Basic.lean:352`; `Continuous.matrix_elem` is `Mathlib/Topology/Instances/Matrix.lean:102`. TauCeti's `Matrix.exp_series_hasSum_exp_apply` (`TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean:101-108`) proves the same statement this way, with no `Pi.hasSum` and no positional `@`.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "fix": "Map the series through the entry map instead: `(NormedSpace.exp_series_hasSum_exp' (\ud835\udd42 := \ud835\udd42) (u \u2022 A)).map (Matrix.entryLinearMap \ud835\udd42 \ud835\udd38 i j).toAddMonoidHom (continuous_id.matrix_elem i j)`, then `simp [Matrix.entryLinearMap_apply]`.",
+   "issue": "`Pi.hasSum.1 (Pi.hasSum.1 \u2026 i) j` extracts the entry by treating `Matrix m m \ud835\udd38` as `m \u2192 m \u2192 \ud835\udd38` and the operator-norm topology as the product topology \u2014 two defeq identifications at once, held together only by the comment above. Mathlib has the explicit API for this step.",
+   "line": 118
+  },
+  {
+   "evidence": "Lines 48-63 and 111-119: the comments enumerate \"the three `_` are exactly the `RCLike \ud835\udd42`, `NormedRing` and `NormedAlgebra \ud835\udd42` instances\" / \"the five `_` are \u2026\". Those lists match `Mathlib/Analysis/SpecialFunctions/Exponential.lean:385` and `Mathlib/Analysis/Normed/Algebra/Exponential.lean:489` only as of the current pin.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "fix": "Put the counting against a signature this repo owns: a private helper `theorem \u2026 {A : Type*} [NormedRing A] [NormedAlgebra \ud835\udd42 A] (hA : CompleteSpace A) (x : A) (t : \ud835\udd42) : HasDerivAt \u2026 := by letI := hA; exact _root_.hasDerivAt_exp_smul_const' x t` (instance synthesis inside has only the local candidate), and apply it to `(inferInstance : CompleteSpace (Matrix m m \ud835\udd38))`; same for the series lemma.",
+   "issue": "`@_root_.hasDerivAt_exp_smul_const' \ud835\udd42 (Matrix m m \ud835\udd38) _ _ _ (inferInstance) A t` (and the five-underscore `@NormedSpace.exp_series_hasSum_exp'` at line 118) pin the number and order of Mathlib's instance binders. Any upstream change to those binder lists (e.g. an added `CharZero`/`ContinuousSMul` hypothesis) breaks these proofs in a way the comment's hand-maintained count cannot track.",
+   "line": 62
+  }
+ ],
+ "head_sha": "9bc88d39b99e33e72a88908dc1e0dce45a191c33",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 250,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "883b8f3a0a4eb9fb8ceb9a2a87ce0f3e6ac2ba9e2a40910b3f8d49e6a3271329",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261126T174042Z-250-proof-quality-82f854",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T17:40:42Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are readable and the defeq bridges are commented, but two steps in MatrixExponential.lean are gratuitously fragile: entries are read off with `Pi.hasSum` through the `Matrix`-as-pi synonym where Mathlib's `Matrix.entryLinearMap` + `Continuous.matrix_elem` give the same thing through API (TauCeti uses exactly that idiom), and two proofs hard-code the positional instance count of Mathlib signatures with `@f \ud835\udd42 X _ _ _ inst`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Data/Matrix/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Exponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/Exponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Exponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Instances/Matrix.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Matrix/Normed.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Topology/Instances/Matrix.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 24,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e3397d6cfc8c633b6b3df3c8ce7ccf89d53c518f6fad166641616c67c653a4ae",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 154686,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 154686,
+  "cache_read_input_tokens": 1526910,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 36,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1898,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1898,
+    "cache_read_input_tokens": 126728,
+    "input_tokens": 2,
+    "output_tokens": 4823,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 29792,
+  "output_tokens_details": {
+   "thinking_tokens": 23910
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

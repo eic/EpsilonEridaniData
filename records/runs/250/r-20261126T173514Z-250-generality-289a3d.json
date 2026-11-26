@@ -1,0 +1,265 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.086036,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 349.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 146382,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 146382,
+    "cache_read_input_tokens": 1938472,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 46,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1643,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1643,
+      "cache_read_input_tokens": 118933,
+      "input_tokens": 2,
+      "output_tokens": 2660,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 26110,
+    "output_tokens_details": {
+     "thinking_tokens": 19085
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 3.086036,
+ "dedupe_key": "eic/EpsilonEridani|250|9bc88d39b99e33e72a88908dc1e0dce45a191c33|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "d492010d5893a44b7ab527372ca4c519de4c9bcc8c855d68536f70a0cee1277a",
+ "diff_sha256": "d492010d5893a44b7ab527372ca4c519de4c9bcc8c855d68536f70a0cee1277a",
+ "duration_s": 349.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "confidence": "high",
+   "evidence": "Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean:125 `variable [Fintype m] [DecidableEq m] [NormedRing \ud835\udd38] [NormedAlgebra \u211a \ud835\udd38] [CompleteSpace \ud835\udd38]` governs `Matrix.exp_add_of_commute`, `exp_nsmul`, `isUnit_exp`; TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean:98 `variable {R} [NormedRing R] [NormedAlgebra \u211a R] [CompleteSpace R]` with `exp_series_hasSum_exp_apply` at `(k.factorial\u207b\u00b9 : \u211a)` (line 103) and `exp_apply_eq_of_forall_pow_apply_eq` (line 111) \u2014 no `RCLike` and no smul anywhere.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "fix": "State `Matrix.exp_apply_of_row_apply_eq_zero_of_ne {A : Matrix m m \ud835\udd38} {i} (h : \u2200 j, j \u2260 i \u2192 A i j = 0) (j) : exp A i j = if i = j then exp (A i i) else 0` in a section with `[NormedRing \ud835\udd38] [NormedAlgebra \u211a \ud835\udd38] [CompleteSpace \ud835\udd38]` (take `\ud835\udd42 = \u211a` in `NormedSpace.exp_series_hasSum_exp'`), and derive the `u \u2022 A` instance at the call site in `momentEvolution_apply_of_gamma_row_apply_eq_zero_of_ne` from `(u \u2022 A) i j = 0` for `j \u2260 i` and `(u \u2022 A) i i = u * A i i`.",
+   "issue": "`Matrix.exp_smul_apply_of_row_apply_eq_zero_of_ne` is the `u \u2022 A` special case of a statement about `A`, carried by hypotheses stronger than the module it mirrors: `[RCLike \ud835\udd42] [NormedAlgebra \ud835\udd42 \ud835\udd38]` plus a scalar argument, where the proof (powers + entrywise series) needs only a \u211a-algebra.",
+   "line": 99
+  },
+  {
+   "confidence": "high",
+   "evidence": "Lines 84-93: the `mkContinuous`/`linfty_opNorm_mulVec`/`comp_hasDerivAt` steps never mention `NormedSpace.exp`; only the final `simpa` rewrites `mulVec_mulVec`/`smul_mulVec`.",
+   "file": "EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "fix": "Extract `theorem HasDerivAt.mulVec_const {M : \ud835\udd5c \u2192 Matrix m m \ud835\udd38} {M' : Matrix m m \ud835\udd38} {t : \ud835\udd5c} (hM : HasDerivAt M M' t) (v : m \u2192 \ud835\udd38) : HasDerivAt (fun s => M s *\u1d65 v) (M' *\u1d65 v) t` with the existing `LinearMap.mkContinuous ((mulVecBilin \ud835\udd5c \ud835\udd5c).flip v) \u2016v\u2016 \u2026 linfty_opNorm_mulVec` proof, and obtain the exp version (if still wanted) as `(hf.matrix_exp_smul_const' A).mulVec_const v`.",
+   "issue": "`HasDerivAt.matrix_exp_smul_const_mulVec'` proves inside its own proof a fact independent of the exponential \u2014 that `fun M : Matrix m m \ud835\udd38 => M *\u1d65 v` is a bounded linear map, so any matrix-valued `HasDerivAt` composes with it \u2014 and exposes it only in the exp-specialized form.",
+   "line": 80
+  },
+  {
+   "confidence": "medium",
+   "evidence": "MomentSpace.lean:324 `simpa only [momentEvolution_def] using hc.matrix_exp_smul_const_mulVec' (S.gamma N) F\u2080`; grep for `hasDerivAt_momentEvolution ` outside its own declaration and the docstring at line 40 returns no uses.",
+   "file": "EpsilonEridani/QFT/Factorization/Evolution/MomentSpace.lean",
+   "fix": "With `HasDerivAt.mulVec_const` in place, prove it as `(hasDerivAt_momentEvolution S N \u03c4\u2080 \u03c4).mulVec_const F\u2080` (rewriting `smul_mulVec`/`mulVec_mulVec`), making the general matrix statement the load-bearing one.",
+   "issue": "Second instance of the same inversion: `hasDerivAt_momentEvolution_mulVec` re-derives from `HasDerivAt.matrix_exp_smul_const_mulVec'` instead of from the matrix ODE `hasDerivAt_momentEvolution` proved 10 lines above, which consequently has no consumer in the repository.",
+   "line": 317
+  }
+ ],
+ "head_sha": "9bc88d39b99e33e72a88908dc1e0dce45a191c33",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 250,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ab3c0af925eb12d11dd2003d1c355d0602acc362e0012a787905173e5153164f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261126T173514Z-250-generality-289a3d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T17:35:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "The entrywise exponential lemma is stated for `u \u2022 A` under `RCLike \ud835\udd42`/`NormedAlgebra \ud835\udd42 \ud835\udd38` where the mirrored Mathlib and TauCeti modules state the same content for `A` under `NormedAlgebra \u211a \ud835\udd38`, and the mulVec derivative bundles a generic matrix-path-times-constant-vector composition into the exponential lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Data/Matrix/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/Exponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/Exponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/Exponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/Exponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Exponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Matrix/Normed.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LieAlgebra/SpecialUnitary/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/CollinearEvolution/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 25,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6027016b634ca3aa5db9b485a83bcca7f3bcf80308ec4b578492655599fda22e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 146382,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 146382,
+  "cache_read_input_tokens": 1938472,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 46,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1643,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1643,
+    "cache_read_input_tokens": 118933,
+    "input_tokens": 2,
+    "output_tokens": 2660,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 26110,
+  "output_tokens_details": {
+   "thinking_tokens": 19085
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
