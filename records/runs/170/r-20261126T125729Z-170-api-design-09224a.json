@@ -1,0 +1,197 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.4826055,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 269.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 243606,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 243606,
+    "cache_read_input_tokens": 1088381,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7032,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7032,
+      "cache_read_input_tokens": 201006,
+      "input_tokens": 2,
+      "output_tokens": 3070,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20091,
+    "output_tokens_details": {
+     "thinking_tokens": 16039
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "cost_usd": 3.482606,
+ "dedupe_key": "eic/EpsilonEridani|170|c186c0aa32a9b711c0346de4db33b55c6e5b8305|api-design|claude-opus-5|30e3cfe49d22c07d|production|3",
+ "diff_blob": "dc041dfdda7384bf40b424eae576a68f697ac01e0982f834860896b4f2b84db1",
+ "diff_sha256": "dc041dfdda7384bf40b424eae576a68f697ac01e0982f834860896b4f2b84db1",
+ "duration_s": 269.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Symmetries.lean:325-328 proves the goal from `C.image_conj_inter_valence` alone; ValenceContent.lean:205-207 shows `image_conj_valence := C.valenceInvariant_conj.image_valence Species.conj_involutive.surjective h`, i.e. only the ValenceInvariant field is consumed \u2014 `C.conj_involutive` appears nowhere in those proofs. ValenceContent.lean:245-249 performs the same derivation from a bare `hv : ValenceInvariant valence \u03c4 Species.conj`.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "fix": "State the three with `{\u03c4 : Hadron \u2192 Hadron} (hv : ValenceInvariant valence \u03c4 Species.conj)` in place of `C`, as IsValenceFlavor.inter_valence_conj_eq_sdiff already does; derive the HadronMultiplet form as a one-line corollary from `C.valenceInvariant_conj` if a bundled spelling is wanted.",
+   "issue": "favored_conj_of_chargeConjRelation (:322), unfavored_conj_of_chargeConjRelation (:332) and chargeConjRelation_valenceStepFrag (:430) require a bundled `C : HadronMultiplet Hadron Flavor`, while the parallel flavour-symmetry results (favored_map_of_flavorSymmetryRelation :343, unfavored_map_of_flavorSymmetryRelation :364, invariant_valenceStepFrag :419) and the valence-side results (IsValenceFlavor.conj, IsValenceFlavor.inter_valence_conj_eq_sdiff in ValenceContent.lean:234,245) take the unbundled `ValenceInvariant valence \u03c4 Species.conj`. A consumer with a bare `valence : Hadron \u2192 Finset (Species Flavor)` and that invariance cannot apply the charge-conjugation theorems without building a HadronMultiplet, whose `conj_involutive` field none of the three proofs uses.",
+   "line": 322
+  },
+  {
+   "evidence": "grep: Species.lean:187 `theorem map_injective {\u03c1 : Flavor \u2192 Flavor'} (h\u03c1 : Function.Injective \u03c1)`; no `map_surjective`/`map_bijective` anywhere in EpsilonEridani/. ValenceContent.lean:164 `(h\u03c3 : Function.Surjective \u03c3)`; PDF/Basic.lean:189 `{\u03c3 : \u03ba \u2192 \u03b9} (h\u03c3 : \u03c3.Bijective)`. The conj side has the analogue available as `Species.conj_involutive.surjective`/`.bijective`, used at ValenceContent.lean:207 and PDF/ChargeConjugation.lean:100.",
+   "file": "EpsilonEridani/Particles/Parton/Species.lean",
+   "fix": "Add `theorem map_surjective {\u03c1 : Flavor \u2192 Flavor'} (h\u03c1 : Function.Surjective \u03c1) : Function.Surjective (map \u03c1)` (and `map_bijective`), next to `map_injective`.",
+   "issue": "`Species.map_injective` is given, but there is no `map_surjective` / `map_bijective`. These are the hypotheses the repo's own pullback API asks of the species map: `ValenceInvariant.image_valence` (ValenceContent.lean:163) requires `Function.Surjective \u03c3`, and `PDF.sum_mellinMoment_comap` / `SumRuleAssumptions.comap` (PDF/Basic.lean:189,215) require `\u03c3.Bijective`. For `\u03c3 = Species.map \u03c1` with a general bijective relabelling, neither is reachable from the new API; only the involutive case is, via `(map_involutive h\u03c1).surjective`.",
+   "line": 187
+  }
+ ],
+ "head_sha": "c186c0aa32a9b711c0346de4db33b55c6e5b8305",
+ "merge_base_sha": "8e4de750a56dd79ceb5b522fc400d18fec687a0e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 170,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "c85a4b145b3c65afa3f88d6095ae0b16bf00196538c58f0fb990a023b9c00689",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261126T125729Z-170-api-design-09224a",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T12:57:29Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, bodies are hidden, and the characteristic APIs for Species.map, flavorPair, comap/Invariant and favored/unfavored are essentially complete and correctly annotated. Two gaps: the charge-conjugation theorems are gated behind the bundled HadronMultiplet while every parallel statement takes the unbundled ValenceInvariant, and Species.map lacks the surjective/bijective companion its own consumers need.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/ValenceContent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Symmetries.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f06b886696a6dc452e0b83cf1d798f801dd910e09b3569df13a2a51af8e1b0d1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 243606,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 243606,
+  "cache_read_input_tokens": 1088381,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7032,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7032,
+    "cache_read_input_tokens": 201006,
+    "input_tokens": 2,
+    "output_tokens": 3070,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20091,
+  "output_tokens_details": {
+   "thinking_tokens": 16039
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
