@@ -1,0 +1,162 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6550755000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 174.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 122963,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 122963,
+    "cache_read_input_tokens": 169561,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7271,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7271,
+      "cache_read_input_tokens": 83529,
+      "input_tokens": 2,
+      "output_tokens": 6948,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13625,
+    "output_tokens_details": {
+     "thinking_tokens": 10762
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 1.655076,
+ "dedupe_key": "eic/EpsilonEridani|126|af89f6505fccc96cdfe0eafa876c23f25b548de3|generality|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "4702696f79c21bd43e389063d282664a04eac4f374d25528b69cffc7450836bd",
+ "diff_sha256": "4702696f79c21bd43e389063d282664a04eac4f374d25528b69cffc7450836bd",
+ "duration_s": 174.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean:81`: `theorem artanh_tanh (x : \u211d) : artanh (tanh x) = x` \u2014 unconditional. Also `h` is already implied by `hy`, since `tanh y \u2208 Ioo (-1) 1` forces the quotient into `(-1,1)`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Drop `h`: `theorem rapidity_eq_of_tanh_eq {v n} {y : \u211d} (hy : tanh y = \u27eav.spatialPart, n\u27eb_\u211d / (\u2016n\u2016 * v.timeComponent)) : v.rapidity n = y := by rw [rapidity_def, \u2190 hy, artanh_tanh]`.",
+   "issue": "`rapidity_eq_of_tanh_eq` carries `h : |\u27eav.spatialPart, n\u27eb_\u211d| < \u2016n\u2016 * v.timeComponent`, which the statement does not need; the characterisation holds for every real `y`.",
+   "line": "142"
+  },
+  {
+   "evidence": "Line 137 proof body: `tanh_artanh (div_mem_Ioo_neg_one_one_of_abs_lt_abs (h.trans_le (le_abs_self _)))` \u2014 the hypothesis is weakened to the abs form before use; the PR's own helper `div_mem_Ioo_neg_one_one_of_abs_lt_abs` (Mathematics/Algebra/Order/Field/Basic.lean:22) and `rapidity_eq_zero_of_abs_timeComponent_le` (line 121) are both stated in that abs form.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "State it with `h : |\u27eav.spatialPart, n\u27eb_\u211d| < |\u2016n\u2016 * v.timeComponent|`; the proof becomes `tanh_artanh (div_mem_Ioo_neg_one_one_of_abs_lt_abs h)`. Callers holding the one-sided bound add `h.trans_le (le_abs_self _)`. Leave `exp_rapidity`/`exp_two_mul_rapidity`/`rapidity_eq_half_log` as they are \u2014 the square roots there need the sign.",
+   "issue": "`tanh_rapidity` assumes the one-sided `|\u27eav.spatialPart, n\u27eb_\u211d| < \u2016n\u2016 * v.timeComponent`, stronger than the `|x| < |y|` bound the proof actually uses, so the past-directed case the module docstring advertises (line 27, `|v_\u2225| < -v\u2070`) is unreachable from the API.",
+   "line": "134"
+  }
+ ],
+ "head_sha": "af89f6505fccc96cdfe0eafa876c23f25b548de3",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "b5b6d3a1b2d1279658feec092397a651b558cef73eb33962d80a81f0b9ca463d",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261126T224446Z-126-generality-e5a307",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T22:44:46Z",
+ "submitted_by": "wdconinc",
+ "summary": "Prior generality findings are fixed (unrestricted sqrt_minkowskiProduct_self_pos; real-photon family now on the light-cone hypothesis). Two remaining over-strong hypotheses in Rapidity.lean: rapidity_eq_of_tanh_eq needs no hypothesis at all, and tanh_rapidity needs only the absolute-value bound its own proof weakens to.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fc53ca80025a3c0e2d197b58526467eeff31b477a9c727d5b1005065e2157a7e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 122963,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 122963,
+  "cache_read_input_tokens": 169561,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7271,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7271,
+    "cache_read_input_tokens": 83529,
+    "input_tokens": 2,
+    "output_tokens": 6948,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13625,
+  "output_tokens_details": {
+   "thinking_tokens": 10762
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

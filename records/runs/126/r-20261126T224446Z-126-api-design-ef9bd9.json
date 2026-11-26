@@ -1,0 +1,245 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.044294,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 319.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 163833,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 163833,
+    "cache_read_input_tokens": 1647538,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4632,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4632,
+      "cache_read_input_tokens": 127067,
+      "input_tokens": 2,
+      "output_tokens": 3241,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23281,
+    "output_tokens_details": {
+     "thinking_tokens": 18130
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 3.044294,
+ "dedupe_key": "eic/EpsilonEridani|126|af89f6505fccc96cdfe0eafa876c23f25b548de3|api-design|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "4702696f79c21bd43e389063d282664a04eac4f374d25528b69cffc7450836bd",
+ "diff_sha256": "4702696f79c21bd43e389063d282664a04eac4f374d25528b69cffc7450836bd",
+ "duration_s": 319.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `isReal` across `EpsilonEridani/` returns only `isReal_iff`, `isReal_iff_norm_spatialPart_eq_energy` and `not_isReal_of_mem_photonRegion`; the `|a| = |v\u2070|` form exists only at the Lorentz level (`MinkowskiProductExtensions.lean:128`, about `\u27eav,v\u27eb\u2098 = 0`, not about `IsReal`).",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "fix": "Add to `Kinematics/Basic.lean` the collinear criterion `isReal_iff_abs_eq_energy_of_spatialPart_eq_smul (hn : \u2016n\u2016 = 1) (hq) (h\u03b3) (hk) (hq' : q.spatialPart = a \u2022 n) : \u03b3.IsReal \u2194 |a| = \u03b3.energy` (one rewrite from `Lorentz.Vector.minkowskiProduct_self_eq_zero_iff_of_spatialPart_eq_smul`), and the forward-cone corollary `q.spatialPart = \u03b3.energy \u2022 n` from `\u03b3.IsReal` and `0 \u2264 a`, then cite it in the docstrings at lines 35-39, 104 and 137.",
+   "issue": "The module docstring claims \"a photon of momentum `a` along the beam axis is real exactly when `|a| = k`\" and cites `PhotonKinematics.isReal_iff_norm_spatialPart_eq_energy`, but that lemma only gives `\u2016q.spatialPart\u2016 = \u03b3.energy` (Kinematics/Basic.lean:103). No declaration states the collinear form, and nothing converts `\u03b3.IsReal` plus `q.spatialPart = a \u2022 n`, `0 \u2264 a` into `q.spatialPart = \u03b3.energy \u2022 n` \u2014 the hypothesis gating both headline theorems (lines 106 and 139), so the real-photon entry point to this module is unreachable without hand-rolled `norm_smul`/sign work.",
+   "line": 35
+  },
+  {
+   "evidence": "Rapidity.lean:93-99 is the only place the quotient appears; the file's direction lemma `rapidity_smul_right_of_pos` (line 108) covers positive rescaling of `n` only, and no lemma mentions `-v`.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Add the unconditional `rapidity_neg_left : (-v).rapidity n = v.rapidity n`, proved from `rapidity_def` with `neg_apply`/`inner_neg_left` and `neg_div_neg_eq`.",
+   "issue": "The `rapidity` docstring (and the module docstring, line 27) asserts \"for a past-directed `v` with `|v_\u2225| < -v\u2070` it is the rapidity of `-v`\", i.e. `(-v).rapidity n = v.rapidity n`, but no lemma states it; a user wanting it must unfold `rapidity_def`.",
+   "line": 91
+  }
+ ],
+ "head_sha": "af89f6505fccc96cdfe0eafa876c23f25b548de3",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "7b0c1527e783085950dcedab5774d8b3744dfd7af5e25ec35451388f09893276",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261126T224446Z-126-api-design-ef9bd9",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T22:44:46Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal, the body of `rapidity` stays unexposed, and the earlier `private` sqrt lemma is now public in its canonical home. Two documented facts have no lemma: the collinear real-photon criterion `IsReal \u2194 |a| = k` (which is also the only way into the two headline null-photon theorems), and the invariance of `rapidity` under `v \u21a6 -v`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/InvariantMass.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/Real/Sqrt.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/TMD/CollinsSoper.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Factorization/Evolution/SmallX.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 23,
+  "trace_truncated": false
+ },
+ "transcript_blob": "baccad048f5e405c7626c1344b9a7087be571fbaae520a3acfa123ba594fc920",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 163833,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 163833,
+  "cache_read_input_tokens": 1647538,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4632,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4632,
+    "cache_read_input_tokens": 127067,
+    "input_tokens": 2,
+    "output_tokens": 3241,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23281,
+  "output_tokens_details": {
+   "thinking_tokens": 18130
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,317 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.682493,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 266.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 182683,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 182683,
+    "cache_read_input_tokens": 2674936,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 54,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2734,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2734,
+      "cache_read_input_tokens": 149131,
+      "input_tokens": 2,
+      "output_tokens": 4073,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20717,
+    "output_tokens_details": {
+     "thinking_tokens": 12897
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "cost_usd": 3.682493,
+ "dedupe_key": "eic/EpsilonEridani|126|af89f6505fccc96cdfe0eafa876c23f25b548de3|reuse|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "4702696f79c21bd43e389063d282664a04eac4f374d25528b69cffc7450836bd",
+ "diff_sha256": "4702696f79c21bd43e389063d282664a04eac4f374d25528b69cffc7450836bd",
+ "duration_s": 266.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Grep hits for `minkowskiProduct_self_eq_zero_iff_of_spatialPart_eq_smul`: MinkowskiProductExtensions.lean:34 (docstring), :128 (declaration). No use site.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "fix": "Delete it; any future caller gets it in one step from `minkowskiProduct_self_eq_zero_iff` (`rw [minkowskiProduct_self_eq_zero_iff, hv, norm_smul, hn, mul_one, Real.norm_eq_abs]`), which is exactly its current proof.",
+   "issue": "`minkowskiProduct_self_eq_zero_iff_of_spatialPart_eq_smul` is `minkowskiProduct_self_eq_zero_iff` (line 122) plus `norm_smul`/`hn`, and has no consumer: grep for the name across `code/EpsilonEridani` returns only its own declaration and the module docstring. The one place the nullness characterisation is used, `PhotonKinematics.isReal_iff_norm_spatialPart_eq_energy` (Kinematics/Basic.lean:106), calls the general iff.",
+   "line": 128
+  },
+  {
+   "evidence": "Grep for `rapidity_eq_artanh_of_norm_eq_one` in `code/EpsilonEridani`: Rapidity.lean:22 (docstring), :102 (declaration). No use site.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "fix": "Delete it; callers with `hn : \u2016n\u2016 = 1` write `rw [rapidity_def, hn, one_mul]`, and every downstream lemma in the file already carries `hn` and states the unit-`n` form explicitly.",
+   "issue": "`rapidity_eq_artanh_of_norm_eq_one` is `rapidity_def` with `\u2016n\u2016 = 1` substituted (`rw [rapidity_def, hn, one_mul]`) and has no consumer; grep returns only the declaration and the module docstring at line 22.",
+   "line": 102
+  },
+  {
+   "evidence": "BasicExtensions.lean:109-119 (`inner_spatialPart_eq_of_spatialPart_eq_smul`, then the wrapper); only use sites are Rapidity.lean:242 and :253.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "fix": "Drop the lemma and inline `(by rwa [inner_spatialPart_eq_of_spatialPart_eq_smul hn hv])` at its two call sites, Rapidity.lean:242 and Rapidity.lean:253.",
+   "issue": "`abs_inner_spatialPart_lt_timeComponent_of_spatialPart_eq_smul` states no new fact: its whole body is `rwa [inner_spatialPart_eq_of_spatialPart_eq_smul hn hv]` (line 119), i.e. hypothesis transport along the lemma declared seven lines above it.",
+   "line": 116
+  }
+ ],
+ "head_sha": "af89f6505fccc96cdfe0eafa876c23f25b548de3",
+ "merge_base_sha": "9307f2519dc61f2948e874dae091f49cc3c71649",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 126,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "4859f4da68758c83bfd7741295157272aca8e649eca04efbc787145ae8dc3f92",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261126T224020Z-126-reuse-a41991",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T22:40:20Z",
+ "submitted_by": "wdconinc",
+ "summary": "The PR reuses Mathlib's artanh API and Physlib's Minkowski/vector lemmas well, and nothing it adds is replaced by an existing upstream declaration. Three new declarations are one-rewrite restatements of other declarations in the same diff, two of them with no consumer at all.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Analysis/SpecialFunctions/Artanh.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/LightFront.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/Rapidity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Causality/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/Relativity/Causality/LightCone.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/MinkowskiProduct.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 36,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ce686d884248cd5fe3aa2dd63d523d174b8c6a7795ef6b8bcba4231a15ff553a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 182683,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 182683,
+  "cache_read_input_tokens": 2674936,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 54,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2734,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2734,
+    "cache_read_input_tokens": 149131,
+    "input_tokens": 2,
+    "output_tokens": 4073,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20717,
+  "output_tokens_details": {
+   "thinking_tokens": 12897
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
