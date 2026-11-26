@@ -1,0 +1,191 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8901705000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 232.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 118108,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 118108,
+    "cache_read_input_tokens": 555501,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7161,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7161,
+      "cache_read_input_tokens": 98665,
+      "input_tokens": 2,
+      "output_tokens": 7147,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17250,
+    "output_tokens_details": {
+     "thinking_tokens": 13946
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f373893d471bbca457667f127123f8fee29c7098",
+ "cost_usd": 1.890171,
+ "dedupe_key": "eic/EpsilonEridani|244|05a70db3884cc55704fc157d2096e1f6b48267f4|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "69b9396ebcc0860b95c83f79965c692a50a664111b5e9ddeacfd66064d2b980d",
+ "diff_sha256": "69b9396ebcc0860b95c83f79965c692a50a664111b5e9ddeacfd66064d2b980d",
+ "duration_s": 232.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:315-318: `refine MeasureTheory.Integrable.integrableOn ?_; simpa only [pow_zero, one_mul] using h.momentIntegrable 0 i Q2` \u2014 the `Integrable` is derived, then discarded.",
+   "file": "EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "fix": "State `Regularity.integrable {f : Pdf Flavor} (h : Regularity f) (i) (Q2) : MeasureTheory.Integrable (fun x : \u211d => f i x Q2)` and write `(hr.integrable s Q2).integrableOn` at the single use site (`PartonModel.lean:166`).",
+   "issue": "`Regularity.integrableOn` proves global `Integrable (fun x => f i x Q2)` (`simpa only [pow_zero, one_mul] using h.momentIntegrable 0 i Q2`) and then weakens it to `IntegrableOn (Set.Icc 0 1)` inside the lemma, so the stronger fact is unavailable to any consumer needing a different set or global integrability.",
+   "line": 315
+  },
+  {
+   "evidence": "PartonModel.lean:103 `g1 x Q2 := (1 / 2) * \u2211 f, charge f ^ 2 * (\u0394 (.quark f) x Q2 + \u0394 (.antiquark f) x Q2)` \u2014 no `.gluon`; Positivity.lean:113-126 documents `SpinDensity` as the per-quark-flavour forward quark-nucleon helicity-amplitude matrix.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/PartonModel.lean",
+   "fix": "Restrict the hypotheses to the species that occur: `\u2200 f x Q2, (x < 0 \u2228 1 < x) \u2192 \u0394 (.quark f) x Q2 = 0 \u2227 \u0394 (.antiquark f) x Q2 = 0` and likewise for measurability/integrability, and let the spin-density version constrain only the quark and antiquark entries of \u0394, leaving `\u0394 .gluon` free; keep `assumptions_partonModel_of_regularity` (full `PDF.Regularity` bundle) as the ergonomic wrapper.",
+   "issue": "Hypotheses are quantified over all of `Species Flavor` though `partonModel` reads only `\u0394 (.quark f)` and `\u0394 (.antiquark f)` (line 103); the gluon instance is never used. Worst for `assumptions_partonModel_helicityPdfOfSpinDensity`, which takes `\u03c1 : Species Flavor \u2192 \u211d \u2192 \u211d \u2192 SpinDensity` plus `SpinDensityAssumptions \u03c1`: it demands a positive-semidefinite quark-nucleon helicity-amplitude matrix for the gluon, so a \u0394 whose gluon entry is defined independently of any `SpinDensity` is outside the theorem's reach even though \u0394g does not enter g\u2081. Same over-quantification at lines 122 (`h\u0394`), 130-132 (`hm`, `hi`), 150-153, 184-185 and 228.",
+   "line": 173
+  }
+ ],
+ "head_sha": "05a70db3884cc55704fc157d2096e1f6b48267f4",
+ "merge_base_sha": "f373893d471bbca457667f127123f8fee29c7098",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 244,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2b1c314d99cbfcc30c30aca1ffe94ae8e5bf66a9aa29cde02ea2e5c0213f5e7c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261126T171953Z-244-generality-a8ddb1",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T17:19:53Z",
+ "submitted_by": "wdconinc",
+ "summary": "Two hypotheses sit below the natural level: `Regularity.integrableOn` discards the global integrability its own proof produces, and every parton-model lemma quantifies over all species including the gluon, which `partonModel` never reads \u2014 which makes the spin-density theorem inapplicable to any helicity set whose gluon entry is not read off a quark-nucleon spin-density matrix.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/PartonModel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/SumRules.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Flavor.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/CrossSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d23cf151c800cc8aa1f685c96b8709aa992226a93d7602e53a4edf44f5d51ee2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 118108,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 118108,
+  "cache_read_input_tokens": 555501,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7161,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7161,
+    "cache_read_input_tokens": 98665,
+    "input_tokens": 2,
+    "output_tokens": 7147,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17250,
+  "output_tokens_details": {
+   "thinking_tokens": 13946
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
