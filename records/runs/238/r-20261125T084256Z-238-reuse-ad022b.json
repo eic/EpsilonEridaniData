@@ -1,0 +1,196 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.1648235000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 169.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 219328,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 219328,
+    "cache_read_input_tokens": 1324737,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3383,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3383,
+      "cache_read_input_tokens": 190517,
+      "input_tokens": 2,
+      "output_tokens": 2162,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12363,
+    "output_tokens_details": {
+     "thinking_tokens": 8780
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 3.164824,
+ "dedupe_key": "eic/EpsilonEridani|238|66908dd1aa61f55c85601c4e5da24a32841d6458|reuse|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "c1754e04e5c5f0c989e9769fc581448d2c85b0efd306a371467987d893701c42",
+ "diff_sha256": "c1754e04e5c5f0c989e9769fc581448d2c85b0efd306a371467987d893701c42",
+ "duration_s": 169.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Meson/Basic.lean:440 `@[simp] theorem piMinus_eq_chargeConj_piPlus : piMinus = piPlus.chargeConj := (rfl)`; Meson/Basic.lean:472 `piPlus.swapFlavor LightFlavor.charge u d = piMinus`; Isospin.lean:119-121 proves the same by `.trans piMinus_eq_chargeConj_piPlus`.",
+   "file": "EpsilonEridani/Particles/Meson/Pdf/Isospin.lean",
+   "fix": "Delete `piPlus_swapFlavor_u_d_eq_chargeConj` and pass `piPlus_swapFlavor_u_d_eq_piMinus` at the six `hM` sites (lines 126, 133, 140, 147, 166, 174); if the elaborator needs the explicit form, write `piPlus_swapFlavor_u_d_eq_piMinus.trans piMinus_eq_chargeConj_piPlus` inline.",
+   "issue": "`piPlus_swapFlavor_u_d_eq_chargeConj` duplicates the PR's own `piPlus_swapFlavor_u_d_eq_piMinus` (Meson/Basic.lean:472) up to defeq: `piMinus` is `piPlus.chargeConj` by `rfl` (`piMinus_eq_chargeConj_piPlus := (rfl)`, Meson/Basic.lean:440), so the two statements are the same equation under two names, one of them `@[simp]`.",
+   "line": 118
+  },
+  {
+   "evidence": "grep for `piMinus_swapFlavor_u_d_eq_piPlus` across `EpsilonEridani/` returns only its own declaration site (Meson/Basic.lean:476); its proof is `rw [\u2190 piPlus_swapFlavor_u_d_eq_piMinus, PseudoscalarMeson.swapFlavor_swapFlavor]`.",
+   "file": "EpsilonEridani/Particles/Meson/Basic.lean",
+   "fix": "Drop the lemma; any goal needing it is closed by `simp [\u2190 piPlus_swapFlavor_u_d_eq_piMinus]` or the two simp lemmas directly. Add it back when a caller appears.",
+   "issue": "`piMinus_swapFlavor_u_d_eq_piPlus` is a one-rewrite consequence of two `@[simp]` lemmas already present (`piPlus_swapFlavor_u_d_eq_piMinus`, `PseudoscalarMeson.swapFlavor_swapFlavor`) and has no consumer anywhere in the repo.",
+   "line": 476
+  }
+ ],
+ "head_sha": "66908dd1aa61f55c85601c4e5da24a32841d6458",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 238,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6fe522570e99dfbccf90b53b675f7505bc5f504cd7ff9284d694fff4eabf2a5f",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261125T084256Z-238-reuse-ad022b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T08:42:56Z",
+ "submitted_by": "wdconinc",
+ "summary": "Reuse is good overall: the new species exchange is built on the existing `PDF.comap` transport API and does not duplicate `PDF.isospinConj`, and nothing equivalent to `Species.map` or `PseudoscalarMeson.swapFlavor` exists in EpsilonEridani or upstream. Two new lemmas restate `piPlus_swapFlavor_u_d_eq_piMinus` up to `rfl`/one rewrite.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/Species.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Isospin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/ChargeConjugation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/Pdf/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Isospin.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "69e2d89b40a822ce07b36fed898907ebf9d8fc0fdf2508597b915000254d7cef",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 219328,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 219328,
+  "cache_read_input_tokens": 1324737,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3383,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3383,
+    "cache_read_input_tokens": 190517,
+    "input_tokens": 2,
+    "output_tokens": 2162,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12363,
+  "output_tokens_details": {
+   "thinking_tokens": 8780
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
