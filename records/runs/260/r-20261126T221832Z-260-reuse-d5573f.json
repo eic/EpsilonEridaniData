@@ -1,0 +1,311 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 4.24841,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 293.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 214252,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 214252,
+    "cache_read_input_tokens": 3136290,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 54,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3430,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3430,
+      "cache_read_input_tokens": 181128,
+      "input_tokens": 2,
+      "output_tokens": 3590,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21499,
+    "output_tokens_details": {
+     "thinking_tokens": 12596
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 4.24841,
+ "dedupe_key": "eic/EpsilonEridani|260|4b019cab6d23ea94647798dd607206fa1a4e2df8|reuse|claude-opus-5|30e3cfe49d22c07d|production|2",
+ "diff_blob": "6df8dd533d0f8e454836c5307a0134c73a06a4387e9dbc20a4a7d54bd673a365",
+ "diff_sha256": "6df8dd533d0f8e454836c5307a0134c73a06a4387e9dbc20a4a7d54bd673a365",
+ "duration_s": 293.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Rotations.lean:51-53 `mem_rotations_iff (\u039b) : \u039b \u2208 Rotations d \u2194 \u039b.1 (Sum.inl 0) (Sum.inl 0) = 1 \u2227 IsProper \u039b := by rfl`, and :189-192 `toVector_rotation` proved by `exact ((mem_rotations_iff _).1 \u039b.2).1`. grep for `rotation_timeComponent_eq_one` over code/ returns only RotationsExtensions.lean:16 (docstring) and :38 (the declaration).",
+   "file": "EpsilonEridani/Relativity/LorentzGroup/RotationsExtensions.lean",
+   "fix": "Delete it; a caller holding `\u039b : Rotations d` discharges the hypothesis with `((mem_rotations_iff _).1 \u039b.2).1`.",
+   "issue": "`rotation_timeComponent_eq_one` is a thin restatement of Physlib's `LorentzGroup.mem_rotations_iff`; its proof is literally `((mem_rotations_iff _).1 \u039b.2).1`, the same term Physlib already uses for `toVector_rotation`. Nothing in the repository uses it: the PR's whole rotation API takes `h\u039b : \u039b.1 (Sum.inl 0) (Sum.inl 0) = 1` directly and never mentions the `Rotations` subgroup.",
+   "line": "38"
+  },
+  {
+   "evidence": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean:338-339 `spatialPart_apply_eq_toCoord (v) (i) : spatialPart v i = v (Sum.inr i) := rfl`; MassShell.lean:135-138 proves the lemma by exactly `rw [\u2190 spatialPart_apply_eq_toCoord \u2026, spatialPart_onShellMomentum]`. grep for `onShellMomentum_inr` over code/ returns only its declaration.",
+   "file": "EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MassShell.lean",
+   "fix": "Delete `onShellMomentum_inr`; use `spatialPart_onShellMomentum` (composed with `Lorentz.Vector.spatialPart_apply_eq_toCoord`, which is `rfl`, where a component is wanted).",
+   "issue": "`onShellMomentum_inr` restates `spatialPart_onShellMomentum` (same file, line 129) up to defeq: `(onShellMomentum m p).spatialPart i` is `onShellMomentum m p (Sum.inr i)` by `rfl` (Physlib `spatialPart_apply_eq_toCoord`), so the statement is `congrFun` of the earlier lemma. Both are `@[simp]`, and it has no consumer in the repository.",
+   "line": "135"
+  }
+ ],
+ "head_sha": "4b019cab6d23ea94647798dd607206fa1a4e2df8",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 260,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "721fefdaf2277c1e0f261392a127e6d588e5f7ffb39aa5d63394f1284e211b53",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261126T221832Z-260-reuse-d5573f",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T22:18:32Z",
+ "submitted_by": "wdconinc",
+ "summary": "The PR reuses upstream well and its main constructions have no counterpart in Mathlib, Physlib/PhyslibAlpha or TauCeti. Two declarations restate existing facts and have no consumer: `rotation_timeComponent_eq_one` (Physlib's `mem_rotations_iff`) and `onShellMomentum_inr` (the same PR's `spatialPart_onShellMomentum` up to defeq).",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Boosts/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Rotations.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/ClassicalFieldTheory/KleinGordon",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/ClassicalFieldTheory/KleinGordon/Multiplier.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MassShell.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/Tensors/RealTensor/Vector",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/BasicExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/MeasureTheory/Measure/WithDensity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/PhaseSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Kinematics/Emission.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 36,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7a912c343476b405f8b5417b695c84f2953338289652eee7a0ccb3e180904f51",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 214252,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 214252,
+  "cache_read_input_tokens": 3136290,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 54,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3430,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3430,
+    "cache_read_input_tokens": 181128,
+    "input_tokens": 2,
+    "output_tokens": 3590,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21499,
+  "output_tokens_details": {
+   "thinking_tokens": 12596
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
