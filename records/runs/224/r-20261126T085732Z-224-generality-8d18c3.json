@@ -1,0 +1,225 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2563055,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 297.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 130850,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 130850,
+    "cache_read_input_tokens": 835621,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5611,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5611,
+      "cache_read_input_tokens": 100446,
+      "input_tokens": 2,
+      "output_tokens": 2871,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21195,
+    "output_tokens_details": {
+     "thinking_tokens": 16671
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 2.256305,
+ "dedupe_key": "eic/EpsilonEridani|224|20602355827403bcc6fdba0c0f3a40bd9887f1fc|generality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "0ab34ac6d35fd822d6be347b5a268b7229085b6542c0a4fedfadcb522ce54d79",
+ "diff_sha256": "0ab34ac6d35fd822d6be347b5a268b7229085b6542c0a4fedfadcb522ce54d79",
+ "duration_s": 297.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 394-402 use only `causallyFollows_zero_iff` (Physlib `Relativity/Causality/CausallyFollows.lean:63`), `minkowskiProduct_self_le_timeComponent_sq`, and `0 < M\u00b2` via `nlinarith [T.mass_pos]`; nothing about the mass shell or `\u039b` beyond `causallyFollows_zero_smul`. No upstream equivalent exists: grepping `timeComponent_pos` across ./upstream yields only `Velocity.timeComponent_pos` (Physlib `Relativity/Tensors/RealTensor/Velocity/Basic.lean:48`).",
+   "file": "EpsilonEridani/Particles/Hadron/GravitationalFormFactors/Kinematics.lean",
+   "fix": "Extract `lemma timeComponent_pos_of_causallyFollows_zero (h : causallyFollows 0 y) (hy : 0 < \u27eay, y\u27eb\u2098) : 0 < y.timeComponent` into the vector-level extension module (e.g. `Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean`, where the other general Minkowski facts of this PR live) and apply it to `\u039b \u2022 K.p`, `\u039b \u2022 K.pPrime`.",
+   "issue": "The `hpos` block inside `exists_isBreitFrame` proves a general vector fact \u2014 a causal vector of positive Minkowski square has positive time component \u2014 but states it only for `\u27eax, x\u27eb\u2098 = T.mass ^ 2` under a fixed `\u039b`, locking it inside a hadron-kinematics theorem.",
+   "line": "394"
+  },
+  {
+   "evidence": "Physlib `Relativity/LorentzGroup/Boosts/Generalized.lean:258-260`: `@[simp] lemma generalizedBoost_apply_fst (u v : Velocity d) : generalizedBoost u v \u2022 u.1 = v.1`. The new lemma's whole proof is `rw [generalizedBoost_apply_fst, Velocity.zero_spatialPart]`, and its only use is `GeneralizedExtensions.lean:51`.",
+   "file": "EpsilonEridani/Relativity/LorentzGroup/Boosts/GeneralizedExtensions.lean",
+   "fix": "Delete it and inline `rw [generalizedBoost_apply_fst, Velocity.zero_spatialPart]` at its one call site (line 51), or, if a spatial-part form is wanted, state it generally as `(generalizedBoost u v \u2022 u.1).spatialPart = v.1.spatialPart`.",
+   "issue": "`spatialPart_generalizedBoost_smul_eq_zero` is the `v := 0` case of the upstream `@[simp] generalizedBoost_apply_fst`, composed with `Velocity.zero_spatialPart`; it is a trivial restatement of an existing Physlib result in an upstream namespace, with a single use.",
+   "line": "30"
+  }
+ ],
+ "head_sha": "20602355827403bcc6fdba0c0f3a40bd9887f1fc",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 224,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8640c61f8a9a0f1fcdd0ddc778d99d394a37a627dc6f3613ff33d567e743a1b5",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261126T085732Z-224-generality-8d18c3",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T08:57:32Z",
+ "submitted_by": "wdconinc",
+ "summary": "The shared equal-square lemmas are at the right level and remove the former GPD proof duplication, but two pieces sit below it: a general causality fact is proved inline only for mass-shell momenta, and a new upstream-namespace lemma is a two-rewrite specialization of an existing Physlib simp lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/HadronMassAndEnergyMomentumTensor/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/Physlib/Relativity/LorentzGroup/Boosts/Generalized.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/LorentzGroup/Restricted/FromBoostRotationExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/Relativity/Poincare/Causality.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/Physlib/PhyslibAlpha/Relativity/Causality",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3d7b3af1823f4ce3f857f0d27701b65063e608fcf19c7e370ca8dce4b0469e71",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 130850,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 130850,
+  "cache_read_input_tokens": 835621,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5611,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5611,
+    "cache_read_input_tokens": 100446,
+    "input_tokens": 2,
+    "output_tokens": 2871,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21195,
+  "output_tokens_details": {
+   "thinking_tokens": 16671
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
