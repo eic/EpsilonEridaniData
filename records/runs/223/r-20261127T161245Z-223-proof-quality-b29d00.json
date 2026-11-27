@@ -1,0 +1,174 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.328963,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 180.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 178506,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 178506,
+    "cache_read_input_tokens": 442656,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2484,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2484,
+      "cache_read_input_tokens": 151643,
+      "input_tokens": 2,
+      "output_tokens": 3753,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12901,
+    "output_tokens_details": {
+     "thinking_tokens": 10033
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "cost_usd": 2.328963,
+ "dedupe_key": "eic/EpsilonEridani|223|a06fd0bbcab14f8992da20f6a9a7330de93b6ba5|proof-quality|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "093bebafbacb3c002de87356f170e94182275fced48a586774555dae147189e7",
+ "diff_sha256": "093bebafbacb3c002de87356f170e94182275fced48a586774555dae147189e7",
+ "duration_s": 180.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 324-326: `obtain \u27e8hp, hm, hT\u27e9 := (L.smul_add_smul_add_eq_iff hw).1 (rfl : \u2026 = _)` followed by `refine \u27e8_, hp.symm, hT.symm, ?_\u27e9`; the `_` in the anonymous constructor is the statement's witness.",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "fix": "Write the witness explicitly: `refine \u27e8a \u2022 L.nPlus + ((m - B w w) / (2 * a)) \u2022 L.nMinus + w, ?_, ?_, ?_\u27e9` (or `set v := \u2026 with hv` and apply `smul_add_smul_add_eq_iff` to `hv.symm`), then discharge the three components.",
+   "issue": "The existential witness is never written: `(L.smul_add_smul_add_eq_iff hw).1 (rfl : a \u2022 L.nPlus + ((m - B w w) / (2 * a)) \u2022 L.nMinus + w = _)` fixes the implicit `v` by unification against `_`, and `refine \u27e8_, hp.symm, hT.symm, ?_\u27e9` then recovers it from the type of `hp.symm`. The reader cannot see what vector is being exhibited without replaying elaboration.",
+   "line": 324
+  },
+  {
+   "evidence": "Lines 89-95: `rw [MY2_def, L.bilinForm_self_eq_two_mul_plus_mul_minus_add hg] at hMY` \u2026 `rw [deltaLostRelativeTransverse_def, tMin_def, one_sub_xiLC L K hp, xiLC_def, \u2190 hM, \u2190 hMY, tMom_def, \u2026]`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "Add a one-line comment before the `rw` stating that the masses are substituted back into light-cone components so that `field_simp`/`ring` can clear `P\u207a` and `1 - \u03be`.",
+   "issue": "The file's central identity rewrites the on-shell hypotheses backwards (`\u2190 hM`, `\u2190 hMY`), i.e. replaces the literals `M ^ 2` and `MY ^ 2` in the goal by the light-cone expansions of `g K.p K.p` and `g K.pPrime K.pPrime`, inside a seven-element `rw` list that otherwise only unfolds definitions. Nothing says that is what is happening, so the step reads as arbitrary.",
+   "line": 89
+  },
+  {
+   "evidence": "Lines 155-159 define `s` and `hs2`; `s` appears afterwards only inside `hpT` and in `rw [\u2190 mul_assoc, \u2190 sq, hs2]` at line 183.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "fix": "Introduce `s` by its property instead, e.g. `obtain \u27e8s, hs2\u27e9 : \u2203 s : \u211d, s ^ 2 * g e e = -((tMin M MY \u03be - t) * (1 - \u03be)) := \u27e8\u221a((tMin M MY \u03be - t) * (1 - \u03be) / -g e e), by rw [Real.sq_sqrt \u2026]; field_simp [hee.ne]\u27e9`, confining the square root and its non-negativity side condition to one place.",
+   "issue": "`set s := \u221a(\u2026) with hs` is immediately undone by `rw [hs, Real.sq_sqrt \u2026]`, so `set` buys no abstraction and the proof depends on the orientation `set` gives `hs`. Everything after line 159 uses only `hs2`, the single property of `s`.",
+   "line": 155
+  }
+ ],
+ "head_sha": "a06fd0bbcab14f8992da20f6a9a7330de93b6ba5",
+ "merge_base_sha": "832a6d7a58bc5d29f6d024fe7f50dd9450b76b33",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 223,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "22999bd016a9fadb600b3c4ea2a9875883e69e7b0885da951c8af439ccbf2261",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261127T161245Z-223-proof-quality-b29d00",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T16:12:45Z",
+ "submitted_by": "wdconinc",
+ "summary": "Proofs are mostly short and close with robust automation, but the existence lemma in LightConeBasis.lean never writes its witness down (it is produced by a `rfl : \u2026 = _` unification trick), and two other proofs hide their key step: the backwards substitution of the on-shell conditions in `tMom_eq_tMin_add` and the `set`/`rw` dance that introduces the square root in `exists_tMom_eq_of_le_tMin`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/MomentumTransferBound.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/BilinearForm/LightConeBasis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Diffractive/Kinematics/LightCone.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/GPD/Kinematics.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9ec594df869a9f250ab4e2b384362f37ceec09d3d94f2c80c81cfe20bfc52fe7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 178506,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 178506,
+  "cache_read_input_tokens": 442656,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2484,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2484,
+    "cache_read_input_tokens": 151643,
+    "input_tokens": 2,
+    "output_tokens": 3753,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12901,
+  "output_tokens_details": {
+   "thinking_tokens": 10033
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
