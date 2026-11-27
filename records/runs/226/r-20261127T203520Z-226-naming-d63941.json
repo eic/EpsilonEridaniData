@@ -1,0 +1,234 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.0790640000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 350.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 180163,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 180163,
+    "cache_read_input_tokens": 1252408,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3434,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3434,
+      "cache_read_input_tokens": 137342,
+      "input_tokens": 2,
+      "output_tokens": 3566,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 26044,
+    "output_tokens_details": {
+     "thinking_tokens": 20318
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "02b225d29c4812b9bdfd55d2f4f06f4044799e54",
+ "cost_usd": 3.079064,
+ "dedupe_key": "eic/EpsilonEridani|226|c1660e8b6c142b051826ea13044e09f39caaea73|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "cd588ea5f640ad13eae31e88309cc49b39aed942e785fd910720f1fb5a00b93b",
+ "diff_sha256": "cd588ea5f640ad13eae31e88309cc49b39aed942e785fd910720f1fb5a00b93b",
+ "duration_s": 350.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Kinematics/Basic.lean:34 `abbrev Bilin \u2026 := LinearMap.BilinForm \u211d V`, :36 `namespace Bilin`; Tensors/Basic.lean:105 new `namespace Bilin`; Tensors/Basic.lean:503 vs :577; Elastic/FormFactor/Basic.lean:106-108.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Keep the block in this file (as round 1 asked) but declare it under the one existing namespace: replace `namespace Bilin` with a fully-qualified `namespace EpsilonEridani.QFT.Scattering.DIS.Kinematics.Bilin` block placed before `namespace Tensors`, so all `Bilin.*` names live in a single namespace and the elastic module needs only one `open`.",
+   "issue": "`namespace Bilin` opened here is a *second* namespace with that leaf name: the `Bilin` abbrev and its generic API already live in `EpsilonEridani.QFT.Scattering.DIS.Kinematics.Bilin` (Kinematics/Basic.lean:34,36). The same prefix now means two things in this one file \u2014 line 577 `Bilin.apply_eq_zero_of_apply_eq_self_of_apply_eq_neg` resolves to `Kinematics.Bilin`, line 503 `Bilin.IsPairStabilizer` to `Tensors.Bilin` \u2014 and consumers must open both (Elastic/FormFactor/Basic.lean:106-108 opens `Kinematics (Bilin)` and `Tensors (Bilin.IsPairStabilizer \u2026)`).",
+   "line": 105
+  },
+  {
+   "evidence": "Line 137-138 statement vs line 134 docstring \"Two vectors with non-zero Gram determinant split `V`\"; Mathlib has no `gram` declaration to anchor the abbreviated reading.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "fix": "Rename to `isSpectatorSplit_of_gramDet_ne_zero` (update the use at Tensors/Basic.lean:733 and the PR description's prose).",
+   "issue": "`isSpectatorSplit_of_gram_ne_zero` names the hypothesis `g a a * g b b - g a b * g b a \u2260 0`, which is the non-vanishing of the Gram *determinant*, not of a Gram matrix/form; the docstring (line 134) says \"non-zero Gram determinant\".",
+   "line": 137
+  },
+  {
+   "evidence": "grep for primed declarations in `EpsilonEridani/` returns only variants (`sum_sum_erase_const'`, `lie_jacobi'`, `invariants_mem_kinematicDomain_iff'`, \u2026) plus this one; `DisKinematics` fields `pPrime`/`kPrime` at DIS/Kinematics/Basic.lean:68,72.",
+   "file": "EpsilonEridani/QFT/Scattering/Elastic/FormFactor/Basic.lean",
+   "fix": "Rename `pWit'` to `pWitPrime` (and `pWit'_def`, `gWit_pWit'_self_eq_nine`, `gWit_pWit'_sub_pWit_self_eq_neg_twelve`, `isLorentzCovariant_pWit'_sub_pWit`, `pWit_add_pWit'_ne_zero` accordingly), matching `DisKinematics.pPrime`.",
+   "issue": "`def pWit'` uses a prime to denote a different object (the outgoing momentum), whereas in Mathlib and everywhere else in this repo a primed name is a variant of the unprimed declaration; it is the only primed `def` in `EpsilonEridani/`. The repo's own convention for an outgoing momentum spells it out (`DisKinematics.pPrime`, `kPrime`). It also propagates into compound names like `gWit_pWit'_sub_pWit_self_eq_neg_twelve` (line 277).",
+   "line": 259
+  }
+ ],
+ "head_sha": "c1660e8b6c142b051826ea13044e09f39caaea73",
+ "merge_base_sha": "02b225d29c4812b9bdfd55d2f4f06f4044799e54",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 226,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "72925d0afb4547ac9bb484add09eebbb74f6d7548a51fdd034821a2f87042b48",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261127T203520Z-226-naming-d63941",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T20:35:20Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names mostly describe their conclusions in standard terminology, but the PR creates a second namespace named `Bilin` for the API of the same abbreviation, so `Bilin.foo` now resolves to two different namespaces inside one file; two smaller naming slips (`gram` for a Gram determinant, a primed `def`).",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Elastic/FormFactor/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Meson/FormFactor/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MesonStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/MesonStructure/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "65088994b2f7e0fef1274ea88dd5b29cb6d77f7f58c7d382b1eadb5a0126848b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 180163,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 180163,
+  "cache_read_input_tokens": 1252408,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3434,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3434,
+    "cache_read_input_tokens": 137342,
+    "input_tokens": 2,
+    "output_tokens": 3566,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 26044,
+  "output_tokens_details": {
+   "thinking_tokens": 20318
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
