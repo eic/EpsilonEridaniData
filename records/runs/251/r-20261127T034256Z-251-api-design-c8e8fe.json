@@ -1,0 +1,196 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.150496,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 234.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 134526,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 134526,
+    "cache_read_input_tokens": 733722,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5390,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5390,
+      "cache_read_input_tokens": 105077,
+      "input_tokens": 2,
+      "output_tokens": 5282,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17531,
+    "output_tokens_details": {
+     "thinking_tokens": 13903
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.150496,
+ "dedupe_key": "eic/EpsilonEridani|251|64de7c707c8eea754b3c4c3290cd2e8f982ae83a|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "d0eabdcaf4457d603e211123f5a07c5ec38cbe8806755532002182b2522b2ccd",
+ "diff_sha256": "d0eabdcaf4457d603e211123f5a07c5ec38cbe8806755532002182b2522b2ccd",
+ "duration_s": 234.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Coherence.lean:118-119 claims `R\u00b2 = d \u03c3\u00b2` so \"this is `exp (-Q\u00b2 R\u00b2 / d)`\"; the only lemma with `R\u00b2` in it is MultivariateExtensions.lean:77 `integral_norm_sq_map_smul_stdGaussian`, which is never combined with the decay bound anywhere in the PR. Roadmap Photoproduction/README.md:356-362 asks for the virtuality/energy bounds \"in terms of the radius\".",
+   "file": "EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "fix": "Add the radius form, e.g. `\u2016charFun ((stdGaussian (EuclideanSpace \u211d (Fin d))).map (\u03c3 \u2022 \u00b7)) q.spatialPart\u2016 ^ 2 \u2264 Real.exp (-(\u222b r, \u2016r\u2016 ^ 2 \u2202((stdGaussian _).map (\u03c3 \u2022 \u00b7))) * -\u27eaq, q\u27eb\u2098 / d)` for `d \u2260 0`, derived from the \u03c3-form through `ProbabilityTheory.integral_norm_sq_map_smul_stdGaussian`; likewise for `one_sub_norm_charFun_map_smul_stdGaussian_spatialPart_sub_le`.",
+   "issue": "`norm_sq_charFun_map_smul_stdGaussian_spatialPart_le` is stated only in the width `\u03c3`, yet the module docstring (lines 43-44) and this docstring (lines 118-119) advertise the headline product `\u2016F(q)\u2016\u00b2 \u2264 exp (-Q\u00b2 R\u00b2 / d)` in the rms radius `R`. No lemma states it; a consumer must redo `\u03c3\u00b2 = R\u00b2/d` plumbing (with `d \u2260 0`) each time. The general-measure companion `one_sub_norm_charFun_spatialPart_sub_le` (line 94) does use `\u222b r, \u2016r\u2016\u00b2 \u2202\u03bc`, so the two halves of the file speak different languages.",
+   "line": 124
+  },
+  {
+   "evidence": "MultivariateExtensions.lean:46-49 (no attribute) against :61-63 (`@[simp]`); Mathlib Probability/Distributions/Gaussian/Multivariate.lean:75 `@[simp] integral_id_stdGaussian` and :112 `@[simp] integral_strongDual_stdGaussian` mark exactly this class of lemma.",
+   "file": "EpsilonEridani/Mathematics/Probability/Distributions/Gaussian/MultivariateExtensions.lean",
+   "fix": "Mark `integral_inner_sq_stdGaussian` `@[simp]`; the LHS is a valid higher-order pattern (`v` does not depend on the bound variable) and cannot loop.",
+   "issue": "`integral_inner_sq_stdGaussian` carries no `@[simp]`, while the sibling it feeds, `integral_norm_sq_stdGaussian` (line 61), does. Both are side-condition-free closed-form evaluations of an integral against a fixed measure, so the asymmetry leaves `\u222b x, \u27eax, v\u27eb ^ 2 \u2202(stdGaussian E)` unreduced by `simp`.",
+   "line": 48
+  }
+ ],
+ "head_sha": "64de7c707c8eea754b3c4c3290cd2e8f982ae83a",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 251,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5bcd043272d0c3d3c12bcd89b050ec97dc546483ae03aa6f60450a4ca77fab55",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261127T034256Z-251-api-design-c8e8fe",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T03:42:56Z",
+ "submitted_by": "wdconinc",
+ "summary": "The surface is minimal and free of compatibility artifacts, but the Gaussian decay bound is never exposed in terms of the root-mean-square radius that the roadmap target and the module docstrings advertise, and one of the two parallel second-moment lemmas is missing the `@[simp]` its sibling carries.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Coherence.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Distributions/Gaussian/MultivariateExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/Photoproduction/Kinematics/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Probability/Distributions/Gaussian/Multivariate.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Relativity/Tensors/RealTensor/Vector/MinkowskiProductExtensions.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/Photoproduction/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/Analysis/Bochner/Gaussian/Measure.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "10072735e8194caec5b3dca0475940e554a83791d315051c16218d5cfc6b6d0e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 134526,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 134526,
+  "cache_read_input_tokens": 733722,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5390,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5390,
+    "cache_read_input_tokens": 105077,
+    "input_tokens": 2,
+    "output_tokens": 5282,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17531,
+  "output_tokens_details": {
+   "thinking_tokens": 13903
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
