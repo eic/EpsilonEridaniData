@@ -1,0 +1,170 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4940444999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 121.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 188057,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 188057,
+    "cache_read_input_tokens": 750559,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2159,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2159,
+      "cache_read_input_tokens": 165197,
+      "input_tokens": 2,
+      "output_tokens": 3031,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9525,
+    "output_tokens_details": {
+     "thinking_tokens": 6656
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.494044,
+ "dedupe_key": "eic/EpsilonEridani|247|701607d13382c8e650374e891d279f064840b931|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "ba76860eef83c18d89c061d727f7569ac45f58382130acf8a09265dbe83a595d",
+ "diff_sha256": "ba76860eef83c18d89c061d727f7569ac45f58382130acf8a09265dbe83a595d",
+ "duration_s": 121.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Positivity.lean:74 `variable {Hadron Flavor : Type} (\u03c1 : Hadron \u2192 Flavor \u2192 \u211d \u2192 \u211d \u2192 SpinDensityC)` vs Parton/PDF/Positivity.lean:250 `def pdfOfSpinDensity (\u03c1 : Flavor \u2192 \u211d \u2192 \u211d \u2192 SpinDensity) : Pdf Flavor`. The `C` marker is the file-local convention for the complex type throughout SpinDensityC.lean: `SpinDensity.toSpinDensityC` (428), `mat_toSpinDensityC` (437), `f1_toSpinDensityC` (446), `isParityInvariant_toSpinDensityC_iff` (469). Mathlib naming guide: `_`-separated strings in a lemma name should correspond to a definition name.",
+   "file": "EpsilonEridani/Particles/Fragmentation/Positivity.lean",
+   "fix": "Rename to `fragOfSpinDensityC`, `helicityFragOfSpinDensityC`, `transversityFragOfSpinDensityC`, and the derived names accordingly: `fragOfSpinDensityC_apply` (94), `helicityFragOfSpinDensityC_apply` (98), `transversityFragOfSpinDensityC_apply` (102), `fragOfSpinDensityC_nonneg` (113), `assumptions_fragOfSpinDensityC_iff` (141), `helicityFragOfSpinDensityC_eq_zero_of_notMem_unitInterval` (152), `transversityFragOfSpinDensityC_eq_zero_of_notMem_unitInterval` (159), updating the module docstring references at lines 29-48.",
+   "issue": "`fragOfSpinDensity`, `helicityFragOfSpinDensity`, `transversityFragOfSpinDensity` (lines 80, 85, 90) take `\u03c1 : Hadron \u2192 Flavor \u2192 \u211d \u2192 \u211d \u2192 SpinDensityC`, but the name says `SpinDensity`, which is a different, real type in the same project. The sibling declarations `PDF.pdfOfSpinDensity` / `helicityPdfOfSpinDensity` / `transversityPdfOfSpinDensity` (Parton/PDF/Positivity.lean:250,256,261) take `Flavor \u2192 \u211d \u2192 \u211d \u2192 SpinDensity`, the real one \u2014 so the `OfSpinDensity` suffix already means the real matrix here. The mismatch also mispredicts the value type: `transversityPdfOfSpinDensity : Pdf` is real, while `transversityFragOfSpinDensity` is \u2102-valued precisely because the input is complex.",
+   "line": "80"
+  }
+ ],
+ "head_sha": "701607d13382c8e650374e891d279f064840b931",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 247,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "136fd720a9f2ac1f3b187d9af6a5edccee78628e2c80fe9102e12dc1d2edc3f2",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261127T043921Z-247-naming-256664",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T04:39:21Z",
+ "submitted_by": "wdconinc",
+ "summary": "Names and the absence of notation are otherwise fine, but the new fragmentation definitions are suffixed `OfSpinDensity` while their argument is `SpinDensityC`, contradicting the established in-repo convention where `...OfSpinDensity` takes the real `SpinDensity` and the complex type is always marked with `C`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/SpinDensityC.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Parton/PDF/Positivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Particles/Fragmentation/MomentumSumRule.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d1ccdad4078e396bf68fb7363a38231d0e57e10198d4514a78964b1f8bd1d7f6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 188057,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 188057,
+  "cache_read_input_tokens": 750559,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2159,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2159,
+    "cache_read_input_tokens": 165197,
+    "input_tokens": 2,
+    "output_tokens": 3031,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9525,
+  "output_tokens_details": {
+   "thinking_tokens": 6656
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
