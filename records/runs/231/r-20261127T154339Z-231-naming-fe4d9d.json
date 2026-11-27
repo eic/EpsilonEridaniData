@@ -1,0 +1,186 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.627229,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 170.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 197672,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 197672,
+    "cache_read_input_tokens": 636748,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2919,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2919,
+      "cache_read_input_tokens": 162846,
+      "input_tokens": 2,
+      "output_tokens": 4585,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13283,
+    "output_tokens_details": {
+     "thinking_tokens": 9622
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 2.627229,
+ "dedupe_key": "eic/EpsilonEridani|231|b6081b78b7cb3992361cdccac74c4cd49cb042f0|naming|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "3317476d28cc25dd24d5070f5349a6197b8156667abcbe123fcf888277a69b5f",
+ "diff_sha256": "3317476d28cc25dd24d5070f5349a6197b8156667abcbe123fcf888277a69b5f",
+ "duration_s": 170.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 402-408: conclusion is an `=` to a scaled `withDensity`; the adjacent example lemma carries `_eq_smul_withDensity_min`.",
+   "file": "EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "fix": "Rename to `acceptedLaw_one_add_sq_div_two_eq_smul_withDensity` and update the module docstring entry (:59).",
+   "issue": "`acceptedLaw_one_add_sq_div_two` states an equality `acceptedLaw \u2026 = (ofReal (2/3))\u207b\u00b9 \u2022 withDensity \u2026` but the name omits the conclusion, unlike its sibling `acceptedLaw_two_mul_three_div_two_eq_smul_withDensity_min` (:423) and the general `acceptedLaw_eq_smul_withDensity_of_ae_le` (:238).",
+   "line": "402"
+  },
+  {
+   "evidence": "Lines 303-307: hypotheses `hviol : \u03bc {x | c * g x < f x \u2227 0 < f x} \u2260 0`, `hresp : \u03bc {x | 0 < f x \u2227 f x \u2264 c * g x} \u2260 0`; docstring lines 298-302 state both are necessary.",
+   "file": "EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "fix": "Rename to name the right-hand side and both hypotheses, e.g. `acceptedLaw_ne_smul_withDensity_of_measure_lt_ne_zero_of_measure_le_ne_zero` (the form the PR description already uses).",
+   "issue": "`acceptedLaw_ne_of_measure_setOf_lt_ne_zero` names neither side of the disequality (RHS is `(\u222b\u207b ofReal f)\u207b\u00b9 \u2022 \u03bc.withDensity (ofReal \u2218 f)`), and `_of_measure_setOf_lt_ne_zero` advertises one hypothesis while two set hypotheses (`hviol`, `hresp`) are essential \u2014 the docstring itself says both are needed; `setOf_lt` does not distinguish them.",
+   "line": "303"
+  },
+  {
+   "evidence": "AcceptReject.lean:359, 368 integrands are `ENNReal.ofReal \u2026`; Distributions/Uniform/Basic.lean:81 `lintegral_uniformMeasure (k : \u211d \u2192 \u211d\u22650\u221e)` vs :88 `lintegral_ofReal_uniformMeasure {f : \u211d \u2192 \u211d}`; Mathlib precedent `lintegral_ofReal_ne_top_iff_integrable`.",
+   "file": "EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "fix": "Rename to `lintegral_ofReal_one_add_sq_div_two_uniformMeasure_zero_one` and `lintegral_ofReal_min_two_mul_three_div_two_uniformMeasure_zero_one`; update docstring entries (:69-71).",
+   "issue": "`lintegral_one_add_sq_div_two_uniformMeasure_zero_one` and `lintegral_min_two_mul_three_div_two_uniformMeasure_zero_one` (:367) integrate `ENNReal.ofReal (\u2026)`, not an `\u211d\u22650\u221e`-valued function, but drop `ofReal`; the general lemma they are instances of, `lintegral_ofReal_uniformMeasure`, keeps it, as does `lintegral_uniformMeasure` for the genuine `\u211d\u22650\u221e` case.",
+   "line": "358"
+  },
+  {
+   "evidence": "Lines 424 and 436: `acceptedLaw \u2026 (fun z => 2 * z) (fun _ => 1) (3 / 2)` \u2014 `3 / 2` is the constant `c`, not a factor of the target.",
+   "file": "EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "fix": "Separate the two, e.g. `acceptedLaw_two_mul_bound_three_div_two_eq_smul_withDensity_min` and `measureReal_trialLaw_acceptSet_two_mul_bound_three_div_two`.",
+   "issue": "`acceptedLaw_two_mul_three_div_two_eq_smul_withDensity_min` and `measureReal_trialLaw_acceptSet_two_mul_three_div_two` (:434) run the target `2 * z` and the separate bound constant `3 / 2` together, so the name reads as the single expression `2 * (3 / 2)`.",
+   "line": "423"
+  }
+ ],
+ "head_sha": "b6081b78b7cb3992361cdccac74c4cd49cb042f0",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 231,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "da7eaa319ff290751654c5bcce15579d32ae72425d66344ab7bdd028c3575d53",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261127T154339Z-231-naming-fe4d9d",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T15:43:39Z",
+ "submitted_by": "wdconinc",
+ "summary": "Core API names (trialLaw, acceptSet, acceptedLaw, map_fst_restrict_prod, uniformMeasure_*) are conventional and match TauCeti/Mathlib style, but four example/bias names do not describe their conclusions or are ambiguous, and they disagree with the sibling declarations in the same PR.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Distributions/Uniform/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/EpsilonEridaniRoadmaps/EventGeneration/Suggested.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "bcdfeadb56b7d3328f67c88a75c83e34b99b812b7020c9c608241fb8f35381cc",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 197672,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 197672,
+  "cache_read_input_tokens": 636748,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2919,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2919,
+    "cache_read_input_tokens": 162846,
+    "input_tokens": 2,
+    "output_tokens": 4585,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13283,
+  "output_tokens_details": {
+   "thinking_tokens": 9622
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,172 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.4592459999999994,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 197.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 184938,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 184938,
+    "cache_read_input_tokens": 464782,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 663,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 663,
+      "cache_read_input_tokens": 162209,
+      "input_tokens": 2,
+      "output_tokens": 3272,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15097,
+    "output_tokens_details": {
+     "thinking_tokens": 12289
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "cost_usd": 2.459246,
+ "dedupe_key": "eic/EpsilonEridani|231|b6081b78b7cb3992361cdccac74c4cd49cb042f0|documentation|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "3317476d28cc25dd24d5070f5349a6197b8156667abcbe123fcf888277a69b5f",
+ "diff_sha256": "3317476d28cc25dd24d5070f5349a6197b8156667abcbe123fcf888277a69b5f",
+ "duration_s": 197.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `ofReal` in the file returns no hit inside lines 11-82 (the module docstring); first hit is line 102 in `trialLaw`. The sibling file does state it: `Uniform/Basic.lean:107` \"`min (a x) 1`, read as `0` where `a x` is negative\".",
+   "file": "EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "fix": "Add one sentence to the module docstring: densities are read through `ENNReal.ofReal`, so negative values of `f` and `g` count as `0` and \"`f` normalised\" means the positive part of `f` normalised. Write `\u03bc.withDensity (ENNReal.ofReal \u2218 g)` on line 20.",
+   "issue": "The module docstring never records the `ENNReal.ofReal` convention (the PR description claims it does). It says the trial law is \"the product of the proposal law `\u03bc.withDensity g`\" (line 20), which is not the definition \u2014 `trialLaw` uses `\u03bc.withDensity fun x => ENNReal.ofReal (g x)` (line 102) \u2014 and the Main-results entries say the accepted law is \"`min f (c * g)` normalised\" / \"`f` normalised\" (lines 37-44). For `f` or `g` with negative values these are the positive parts, so \"f normalised\" is not what the theorems give. Only `trialLaw`'s own docstring (line 99) states the convention, and only for `g`.",
+   "line": 19
+  },
+  {
+   "evidence": "Lines 178-179, 214-215, 240-241 all wrap the density in `ENNReal.ofReal`, while the docstrings at 173-175, 211-212, 236-237 name the bare real function and stress the absence of a sign hypothesis.",
+   "file": "EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "fix": "In each of the three docstrings say the density is read through `ENNReal.ofReal`, i.e. the negative part of `f` (and of `c * g`) contributes `0` \u2014 e.g. \"density `ENNReal.ofReal (min f (c * g) / c)`, so negative values contribute `0`\".",
+   "issue": "Same elision where it is most misleading: `map_fst_restrict_trialLaw_acceptSet` is documented as \"the measure `\u03bc` with density `min f (c * g) / c`\" and \"No bound and no sign hypothesis on `f` or `g` is needed\", but the statement's density is `ENNReal.ofReal (min (f x) (c * g x) / c)`, i.e. clipped at `0` exactly in the unsigned case the sentence advertises. Same pairing in `acceptedLaw_eq_smul_withDensity_min` (line 211, \"the law `min f (c * g)` normalised against `\u03bc`\", \"whatever the relation between `f` and `c * g`\") and `acceptedLaw_eq_smul_withDensity_of_ae_le` (line 236, \"the accepted variate has the law `f` normalised\").",
+   "line": 173
+  }
+ ],
+ "head_sha": "b6081b78b7cb3992361cdccac74c4cd49cb042f0",
+ "merge_base_sha": "b4e9a408ccf864ee810f4d11639b77a6943cc43e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 231,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "15b20eef6ef3fa4d29e96619181ef503a62ff78432023dbe622ff99f21c88612",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261127T154355Z-231-documentation-c8c9b4",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T15:43:55Z",
+ "submitted_by": "wdconinc",
+ "summary": "Documentation is otherwise accurate and the examples check out, but AcceptReject.lean's module docstring and three headline docstrings describe the results in terms of `f` and `g` themselves while every statement reads densities through `ENNReal.ofReal`; combined with the repeated \"no sign hypothesis\" claim this promises more than the theorems deliver.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/Measure/Prod.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/Distributions/Uniform/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Order/Filter/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/AcceptReject.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/Order/Filter",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b6407f53b6674958491bdb5c09a8c83526abbd63c4eecaf951533070fa6a0774",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 184938,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 184938,
+  "cache_read_input_tokens": 464782,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 663,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 663,
+    "cache_read_input_tokens": 162209,
+    "input_tokens": 2,
+    "output_tokens": 3272,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15097,
+  "output_tokens_details": {
+   "thinking_tokens": 12289
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
