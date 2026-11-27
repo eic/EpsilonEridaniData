@@ -1,0 +1,249 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.4892815000000006,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 155.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 217152,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 217152,
+    "cache_read_input_tokens": 2043073,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3280,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3280,
+      "cache_read_input_tokens": 175621,
+      "input_tokens": 2,
+      "output_tokens": 2441,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11843,
+    "output_tokens_details": {
+     "thinking_tokens": 6991
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "02b225d29c4812b9bdfd55d2f4f06f4044799e54",
+ "cost_usd": 3.489282,
+ "dedupe_key": "eic/EpsilonEridani|120|7ec45ab6f403e4635ced9b889cf17cb461296c3a|reuse|claude-opus-5|30e3cfe49d22c07d|production|9",
+ "diff_blob": "d871ab80007ba9cf2807d7a1884859dda6758fb060fc66ac72b13eff9b5a7915",
+ "diff_sha256": "d871ab80007ba9cf2807d7a1884859dda6758fb060fc66ac72b13eff9b5a7915",
+ "duration_s": 155.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`upstream/TauCeti/TauCeti/LinearAlgebra/Matrix/Determinant/FinFour.lean:30-38` states `theorem det_fin_four (m : Matrix (Fin 4) (Fin 4) R) : m.det = m 0 0 * (m 1 1 * (m 2 2 * m 3 3 - m 2 3 * m 3 2) - \u2026` \u2014 term for term the statement at `Determinant.lean:32-45`, in the same `Matrix` namespace with `variable {R : Type*} [CommRing R]`. TauCeti is required in `code/lakefile.toml:15-18` and already imported by EpsilonEridani (e.g. `EpsilonEridani/Mathematics/DataStructures/Matrix/PosSemidef.lean:10`).",
+   "file": "EpsilonEridani/Mathematics/LinearAlgebra/Matrix/Determinant.lean",
+   "fix": "Delete `det_fin_four` from this file and `public import TauCeti.LinearAlgebra.Matrix.Determinant.FinFour` instead; keep only `detRowAlternating_fin_four`, whose proof `det_fin_four (of v)` then uses the upstream lemma, and correct the module docstring.",
+   "issue": "`Matrix.det_fin_four` already exists upstream in TauCeti, a declared dependency of this package, with the identical statement and the identical fully-qualified name \u2014 a duplicate theorem name, not just a reproof. The file's docstring claim that only Mathlib's `det_fin_three` exists ignores it.",
+   "line": "32"
+  },
+  {
+   "evidence": "`grep -n 'Matrix.diagonal !\\[1, -1, -1, -1\\]' code/` returns exactly two hits: `Polarized/Kinematics.lean:352` and `Tensors/ParityOdd.lean:405`. `gFour_apply` (ParityOdd.lean:407-412) and `gWit4_apply` (Kinematics.lean:354-359) are the same `simp only [...]; ring`; `gFour_isSymm` (ParityOdd.lean:416) and `gWit4_isSymm` (Kinematics.lean:363) are the same term `Matrix.isSymm_toBilin'_iff_isSymm.mpr (Matrix.isSymm_diagonal _)`.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "fix": "Delete the `gWit4` trio and use `gFour` for `kWit4`. `Polarized/Kinematics.lean` does not import `Tensors/ParityOdd.lean`, so move `gFour`/`gFour_apply`/`gFour_isSymm` into `Kinematics/Witness.lean` beside `gWit` (both files already import it) and have `ParityOdd.lean` and `kWit4` share that one definition.",
+   "issue": "`gWit4`, `gWit4_apply`, `gWit4_isSymm` duplicate the existing `Tensors.Hadronic.Witness.gFour`, `gFour_apply`, `gFour_isSymm`: same type `Bilin (Fin 4 \u2192 \u211d)`, same body `Matrix.toBilin' (Matrix.diagonal ![1, -1, -1, -1])`, same simp statement and identical proof scripts.",
+   "line": "351"
+  },
+  {
+   "evidence": "`grep -n isG1G2Decomposition_iff code/` returns only the declaration (Tensor.lean:333, body `Iff.rfl`) and its two uses, `isG1G2Decomposition_iff.mpr rfl` (line 344) and `isG1G2Decomposition_iff.mp h` (line 354, the body of `.eq`); the definition at Tensor.lean:327-329 is that equation.",
+   "file": "EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "fix": "Delete `isG1G2Decomposition_iff`, keep `IsG1G2Decomposition.eq := h`, and prove `fromG1G2_isDecomposition` by `rfl`. (Unlike `Tensors.Hadronic.IsF1F2Decomposition.eq`, which converts a pointwise predicate via `LinearMap.ext\u2082` and does carry content.)",
+   "issue": "`isG1G2Decomposition_iff` is `Iff.rfl` on a definition that already *is* the equation `W = fromG1G2 \u2026`, and `IsG1G2Decomposition.eq` is literally its `.mp`; two public names for one trivial fact.",
+   "line": "333"
+  }
+ ],
+ "head_sha": "7ec45ab6f403e4635ced9b889cf17cb461296c3a",
+ "merge_base_sha": "02b225d29c4812b9bdfd55d2f4f06f4044799e54",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 120,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "633f714786e49a855ca5ee83f7f2996a6a118033db22f8e5305899d617253d96",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 9,
+ "rubric": "reuse",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261127T044614Z-120-reuse-84d61b",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T04:46:14Z",
+ "submitted_by": "wdconinc",
+ "summary": "The new `Matrix.det_fin_four` is a verbatim copy of TauCeti's already-available `Matrix.det_fin_four` (same fully-qualified name), and `Witness.gWit4` and its two lemmas are a verbatim copy of `Tensors.Hadronic.Witness.gFour`. The `isG1G2Decomposition_iff` / `IsG1G2Decomposition.eq` pair states the same `Iff.rfl` fact twice.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Kinematics.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Kinematics/Witness.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Polarized/Tensor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti/TauCeti/LinearAlgebra/Matrix/Determinant/FinFour.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "upstream/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/LinearAlgebra/Alternating/BilinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/QFT/Scattering/DIS/Tensors/ParityOdd.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "226ea6371217a5b5f87bd6d29f0b677fad9c5e9305e2b8c26e43c3a5fa823e60",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 217152,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 217152,
+  "cache_read_input_tokens": 2043073,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3280,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3280,
+    "cache_read_input_tokens": 175621,
+    "input_tokens": 2,
+    "output_tokens": 2441,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11843,
+  "output_tokens_details": {
+   "thinking_tokens": 6991
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "block"
+}
