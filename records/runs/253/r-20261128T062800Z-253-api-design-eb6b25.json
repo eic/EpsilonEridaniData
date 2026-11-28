@@ -1,0 +1,209 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.7095934999999995,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 252.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 173290,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 173290,
+    "cache_read_input_tokens": 994257,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3328,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3328,
+      "cache_read_input_tokens": 150494,
+      "input_tokens": 2,
+      "output_tokens": 2170,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19179,
+    "output_tokens_details": {
+     "thinking_tokens": 14943
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "cost_usd": 2.709593,
+ "dedupe_key": "eic/EpsilonEridani|253|910c3dca50085eb8879450ded9b753e179eec709|api-design|claude-opus-5|30e3cfe49d22c07d|production|1",
+ "diff_blob": "b7cf1948741d2860c19d293c4478dc94ddbc643ad23bf9ee57d22e23512c2d35",
+ "diff_sha256": "b7cf1948741d2860c19d293c4478dc94ddbc643ad23bf9ee57d22e23512c2d35",
+ "duration_s": 252.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 95/102/106/112 of the file: `@[simp]` appears only before `weight_mul` and `weight_abs_apply`. The PR description states \"the function-level forms `weight_mul'` ... and `weight_abs` ... sit beside the pointwise `weight_mul` and `weight_abs_apply`, both `@[simp]`\", which the code does not do.",
+   "file": "EpsilonEridani/Mathematics/Probability/ImportanceSampling.lean",
+   "fix": "Add `@[simp]` to `weight_mul'` and `weight_abs`. Since `weight_optimalProposal` (l.301, simp) and `weight_mul` both match `weight (f * O) (optimalProposal (f * O) \u03bc) x` and give different normal forms \u2014 the `weight_mul` branch blocking the stronger evaluation \u2014 give `weight_optimalProposal` a higher priority (`@[simp high]`) so the set is confluent on that term.",
+   "issue": "`weight_mul'` (l.102) and `weight_abs` (l.112) are not `@[simp]`, only the pointwise `weight_mul` (l.95) and `weight_abs_apply` (l.106) are. The pointwise lemmas cannot fire on unapplied occurrences, which is exactly the form the file's own statements take (`MemLp (weight f g * O) 2`, `variance (weight f g * O)`, `MemLp (weight (f * O) g) 2`), so `simp` cannot move between the two sides and each `_mul` proof does it by hand with `rw [\u2190 weight_mul']`.",
+   "line": "102"
+  },
+  {
+   "evidence": "Hypotheses at l.215, l.242, l.385 are all `MemLp (weight f g * O) 2 (\u03bc.withDensity g)`; the only `MemLp` characterisation in the file (l.190) is stated for `weight f g`.",
+   "file": "EpsilonEridani/Mathematics/Probability/ImportanceSampling.lean",
+   "fix": "Add `memLp_weight_mul_two_iff : MemLp (weight f g * O) 2 (\u03bc.withDensity g) \u2194 Integrable (fun x => (f x * O x) ^ 2 / (g x).toReal) \u03bc` and `integrable_weight_mul_iff`, each one `rw [\u2190 weight_mul']` away from the base lemma, so the `_mul` family's hypotheses are dischargeable from the `_mul` API.",
+   "issue": "Every result theorem has a `_mul` form (`integral_weight_mul`, `variance_weight_mul`, `sq_integral_abs_sub_sq_integral_le_variance_weight_mul`, `variance_weight_mul_optimalProposal`, `variance_weight_mul_optimalProposal_le_variance_weight_mul`), but the two lemmas that supply their hypotheses do not: `memLp_weight_two_iff` (l.190) and `integrable_weight_iff` (l.163). A consumer of the `_mul` theorems has no API lemma to produce `hw : MemLp (weight f g * O) 2 (\u03bc.withDensity g)`.",
+   "line": "190"
+  },
+  {
+   "evidence": "Lines 86-92: the only characterisation of `weight` is `weight_apply`; `grep` for `weight_` in the file lists `weight_apply`, `weight_mul`, `weight_mul'`, `weight_abs_apply`, `weight_abs`, `weight_optimalProposal` and no zero/top lemma.",
+   "file": "EpsilonEridani/Mathematics/Probability/ImportanceSampling.lean",
+   "fix": "Add `@[simp] weight_of_eq_zero (h : g x = 0) : weight f g x = 0` and `@[simp] weight_of_eq_top (h : g x = \u221e) : weight f g x = 0`.",
+   "issue": "The `weight` docstring advertises \"It is `0` where `g x` is `0` or `\u221e`\" \u2014 the behaviour the standing hypotheses `hfg` and `hg_top` exist to control \u2014 but no lemma states it; a consumer checking those hypotheses for a concrete `g` must go through `weight_apply` and `ENNReal.toReal` lemmas by hand.",
+   "line": "89"
+  }
+ ],
+ "head_sha": "910c3dca50085eb8879450ded9b753e179eec709",
+ "merge_base_sha": "67c886d54a293d361d27e4d1a4dad18ca23a95a4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 253,
+ "prices_sha": "bb78c23f3775",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "706c46498026159ffbe196c89d4543319596531250249d9e0e061685ff45fc6c",
+ "provider": "claude",
+ "repo": "eic/EpsilonEridani",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "eic/EpsilonEridaniReview",
+ "rubrics_sha": "64c033894d50fe5b9ec82ca5a227b98a5ba004d3",
+ "rubrics_version": "30e3cfe49d22c07d",
+ "run_id": "r-20261128T062800Z-253-api-design-eb6b25",
+ "schema": "epsiloneridani.run/v1",
+ "source": "live",
+ "started_at": "2026-11-28T06:28:00Z",
+ "submitted_by": "wdconinc",
+ "summary": "Bodies are unexposed and the surface is otherwise minimal, but the function-level rewrite lemmas lack the `@[simp]` the PR description claims for them, leaving the unapplied `weight (f * O) g` form \u2014 the form every `_mul` hypothesis uses \u2014 outside the simp normal form. The `_mul` family also has no counterpart of the two lemmas that discharge its own integrability hypotheses.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/ImportanceSampling.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/MonteCarloAverage.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/WithDensity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/StrictMono.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/MeasureTheory/FinRev.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "upstream/mathlib/Mathlib/MeasureTheory/VectorMeasure/WithDensity.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/EpsilonEridani/Mathematics/Probability/ImportanceSampling.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2cbf8b53cc66c3614dfc2f380912830c632d12b373648a846ec4ad56eb2ab6f2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 173290,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 173290,
+  "cache_read_input_tokens": 994257,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3328,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3328,
+    "cache_read_input_tokens": 150494,
+    "input_tokens": 2,
+    "output_tokens": 2170,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19179,
+  "output_tokens_details": {
+   "thinking_tokens": 14943
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
